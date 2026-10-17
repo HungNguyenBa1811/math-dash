@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Retro Arcade High-Contrast Palette -->
+    <color name="arcade_bg">#101419</color>
+    <color name="arcade_panel_bg">#18202A</color>
+    <color name="arcade_panel_stroke">#2C3E50</color>
+    <color name="arcade_btn_bg">#1E293B</color>
+    <color name="arcade_btn_pressed">#334155</color>
+    <color name="arcade_btn_stroke">#475569</color>
+
+    <!-- High-readability phosphor accents -->
+    <color name="arcade_green">#00FF66</color>
+    <color name="arcade_amber">#FFB800</color>
+    <color name="arcade_cyan">#00E5FF</color>
+    <color name="arcade_red">#FF3344</color>
+
+    <color name="arcade_text_bright">#F8FAFC</color>
+    <color name="arcade_text_dim">#94A3B8</color>
+    <color name="arcade_overlay_dim">#D90A0D12</color>
+</resources>

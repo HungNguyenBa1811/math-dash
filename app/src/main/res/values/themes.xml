@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.Mathdash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/arcade_bg</item>
+        <item name="android:statusBarColor">@color/arcade_bg</item>
+        <item name="android:navigationBarColor">@color/arcade_bg</item>
+    </style>
+
+    <style name="Theme.Mathdash" parent="Base.Theme.Mathdash" />
+</resources>
