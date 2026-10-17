@@ -7,6 +7,7 @@ Chạy thật:
     python scripts/create_issues.py
 
 Chạy lại nhiều lần được: issue trùng tiêu đề sẽ bị bỏ qua, milestone đã có thì chỉ cập nhật.
+Thêm --relink để ghi đè body mọi issue theo ISSUES_PLAN.md (sẽ mất các ô checklist đã tick).
 """
 import json
 import re
@@ -179,15 +180,29 @@ def create_issue(issue):
     return int(url.rstrip("/").split("/")[-1])
 
 
+def parse_dependencies(dep_line, numbers):
+    """Đọc dòng 'Phụ thuộc': bỏ qua 'không có', mở rộng 'Mx-aa → Mx-bb' và 'Toàn bộ Mx'."""
+    text = dep_line.replace("- **Phụ thuộc:**", "").strip()
+    if text.startswith("không có"):
+        return []
+    codes = set(re.findall(r"M\d-\d\d", text))
+    for start, end in re.findall(r"(M\d-\d\d) → (M\d-\d\d)", text):
+        prefix, first, last = start[:3], int(start[3:]), int(end[3:])
+        codes.update("%s%02d" % (prefix, n) for n in range(first, last + 1))
+    for module in re.findall(r"Toàn bộ (M\d)\b", text):
+        codes.update(c for c in numbers if c.startswith(module + "-"))
+    return sorted(c for c in codes if c in numbers)
+
+
 def link_dependencies(issues, numbers):
     """Thêm mục 'Liên kết' trỏ tới số issue thật của các task phụ thuộc."""
     for issue in issues:
         dep_line = next((l for l in issue["body"].splitlines() if l.startswith("- **Phụ thuộc:**")), "")
-        codes = sorted(set(re.findall(r"M\d-\d\d", dep_line)))
-        links = ["- %s → #%d" % (c, numbers[c]) for c in codes if c in numbers]
-        if not links:
-            continue
-        body = issue["body"] + "\n---\n### Liên kết phụ thuộc\n" + "\n".join(links) + "\n"
+        codes = parse_dependencies(dep_line, numbers)
+        links = ["- %s → #%d" % (c, numbers[c]) for c in codes]
+        body = issue["body"]
+        if links:
+            body += "\n---\n### Liên kết phụ thuộc\n" + "\n".join(links) + "\n"
         gh(["issue", "edit", str(numbers[issue["code"]]), "-R", REPO], body=body)
         print("  liên kết #%d %s" % (numbers[issue["code"]], ", ".join(codes)))
 
@@ -220,15 +235,20 @@ def main():
     print("Issues:")
     numbers = existing_issue_numbers()
     numbers = {i["code"]: numbers[i["title"]] for i in issues if i["title"] in numbers}
+    created = set()
     for issue in issues:
         if issue["code"] in numbers:
             print("  bỏ qua (đã có) #%d %s" % (numbers[issue["code"]], issue["title"]))
             continue
         numbers[issue["code"]] = create_issue(issue)
+        created.add(issue["code"])
         print("  tạo #%d %s" % (numbers[issue["code"]], issue["title"]))
 
+    # Mặc định chỉ ghi body cho issue vừa tạo, để không xóa mất checklist đã tick.
+    # Muốn ghi đè lại body của mọi issue theo ISSUES_PLAN.md thì chạy kèm --relink.
+    targets = issues if "--relink" in sys.argv else [i for i in issues if i["code"] in created]
     print("Liên kết phụ thuộc:")
-    link_dependencies(issues, numbers)
+    link_dependencies(targets, numbers)
     print("\nXong: https://github.com/%s/issues" % REPO)
 
 
