@@ -1,10 +1,10 @@
-# 🎮 Math Dash — Retro Arcade Speed Math (Android Java)
+# Math Dash - Retro Arcade Speed Math (Android Java)
 
 > **Math Dash** là ứng dụng game giải toán nhanh sinh tồn (Speed Arithmetic Survival) trên nền tảng **Android Native (Java)**, được thiết kế theo phong cách đồ họa **Retro Arcade cổ điển**, độ tương phản cao và kiến trúc chuẩn **MVC + Frm / DAO / Entity** tuân thủ nguyên lý **Single Responsibility Principle (SRP)**.
 
 ---
 
-## 📑 Mục lục
+## Mục lục
 1. [Giới thiệu & Lối chơi](#-giới-thiệu--lối-chơi)
 2. [Kiến trúc ứng dụng (MVC + Frm - DAO - Entity)](#-kiến-trúc-ứng-dụng)
 3. [Mô hình dữ liệu (ERD)](#-mô-hình-dữ-liệu-erd)
@@ -14,7 +14,7 @@
 
 ---
 
-## 🎯 Giới thiệu & Lối chơi
+## Giới thiệu & Lối chơi
 
 Người chơi sẽ hóa thân vào một thử thách tính nhẩm phản xạ cao:
 * **Thời gian giới hạn:** Mỗi câu hỏi có đúng **6 giây** đếm ngược. Nếu thanh thời gian về 0, tính là mất lượt!
@@ -27,7 +27,7 @@ Người chơi sẽ hóa thân vào một thử thách tính nhẩm phản xạ 
 
 ---
 
-## 🏛️ Kiến trúc ứng dụng
+## Kiến trúc ứng dụng
 
 Dự án áp dụng mô hình phân lớp rõ ràng, phân định trách nhiệm đơn nhất (**Single Responsibility**):
 
@@ -77,7 +77,7 @@ Các JavaBean / POJO thuần túy, đóng gói dữ liệu:
 
 ---
 
-## 📊 Mô hình dữ liệu (ERD)
+## Mô hình dữ liệu (ERD)
 
 Cơ sở dữ liệu SQLite cục bộ được thiết kế theo sơ đồ quan hệ:
 
@@ -105,21 +105,21 @@ erDiagram
 
 ---
 
-## 🎨 Giao diện & Phong cách Retro
+## Giao diện & Phong cách Retro
 
 Lấy cảm hứng từ máy game thùng **Arcade 80s** và màn hình **CRT xanh Phosphor**:
 
 * **Màu nền chủ đạo:** Đen carbon CRT (`#101419`) và xám khối bảng điều khiển (`#18202A`).
 * **Hệ thống màu chỉ báo độ tương phản cao:**
-  * 🟢 **Xanh Neon Phosphor (`#00FF66`):** Điểm số hiện tại, thông báo đúng `+ PTS`.
-  * 🟡 **Vàng Hổ Phách (`#FFB800`):** Chuỗi Combo streak, kỷ lục cá nhân.
-  * 🔵 **Xanh Cyan Neon (`#00E5FF`):** Thanh thời gian đếm ngược 6s, viền tiêu đề.
-  * 🔴 **Đỏ Arcade (`#FF3344`):** Biểu tượng trái tim sinh mệnh `♥ ♥ ♥`, cảnh báo Game Over.
+  *  **Xanh Neon Phosphor (`#00FF66`):** Điểm số hiện tại, thông báo đúng `+ PTS`.
+  *  **Vàng Hổ Phách (`#FFB800`):** Chuỗi Combo streak, kỷ lục cá nhân.
+  *  **Xanh Cyan Neon (`#00E5FF`):** Thanh thời gian đếm ngược 6s, viền tiêu đề.
+  *  **Đỏ Arcade (`#FF3344`):** Biểu tượng trái tim sinh mệnh `♥ ♥ ♥`, cảnh báo Game Over.
 * **Touch Targets lớn:** 4 nút bấm phương án (lưới 2x2) có chiều cao tối thiểu **72dp**, chữ số monospace cỡ lớn `26sp`, viền nổi vật lý phản hồi xúc giác khi chạm.
 
 ---
 
-## 📂 Cấu trúc thư mục dự án
+## Cấu trúc thư mục dự án
 
 ```
 math-dash/
@@ -173,7 +173,7 @@ math-dash/
 
 ---
 
-## 🚀 Hướng dẫn cài đặt & Chạy ứng dụng
+## Hướng dẫn cài đặt & Chạy ứng dụng
 
 ### Yêu cầu môi trường
 * **Hệ điều hành:** Windows / macOS / Linux.
@@ -203,7 +203,7 @@ math-dash/
 
 ---
 
-## 🌐 Kế hoạch Mở rộng Realtime 1v1 Multiplayer (Firebase)
+## Kế hoạch Mở rộng Realtime 1v1 Multiplayer (Firebase)
 
 Dự án hiện tại mới là **khung stub** (đủ class và chữ ký hàm, phần thân để `// TODO`). Bản nâng cấp đấu trường trực tuyến **1v1 Realtime** dùng **Firebase**, không cần tự dựng server:
 
@@ -224,13 +224,13 @@ rooms/{roomId}
         {uid} : { name: String, score: int, online: bool, finished: bool }
 ```
 
-👉 Phân chia module: **[PLAN.md](PLAN.md)** · Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)**
+Phân chia module: **[PLAN.md](PLAN.md)** · Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)**
 
 ---
 
-## 👨‍💻 Tác giả
+## Tác giả
 * **Lớp:** E23CNPM01
 * **Sinh viên thực hiện:**
-  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) — Nhóm trưởng: Core Logic & Realtime Firebase
-  * Hoàng ([@Minahn210](https://github.com/Minahn210)) — Giao diện, SQLite & Media
+  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Core Logic & Realtime Firebase
+  * Hoàng ([@Minahn210](https://github.com/Minahn210)) - Giao diện, SQLite & Media
 * **Học viện Công nghệ Bưu chính Viễn thông (PTIT)**
