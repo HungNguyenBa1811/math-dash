@@ -8,6 +8,8 @@ Chạy thật:
 
 Chạy lại nhiều lần được: issue trùng tiêu đề sẽ bị bỏ qua, milestone đã có thì chỉ cập nhật.
 Thêm --relink để ghi đè body mọi issue theo ISSUES_PLAN.md (sẽ mất các ô checklist đã tick).
+Thêm --reuse-from=N để ghi đè lần lượt lên các issue số N, N+1, ... (đổi tiêu đề, body, milestone,
+label, người làm, mở lại nếu đã đóng) thay vì tạo issue mới; thiếu số nào thì mới tạo.
 """
 import json
 import re
@@ -43,10 +45,10 @@ LABELS = {
 
 # Mã milestone -> (tiêu đề milestone, hạn chót)
 MILESTONES = {
-    "M1": ("M1 - Phan tich", "2026-10-28"),
-    "M2": ("M2 - Thiet ke", "2026-11-01"),
-    "M3": ("M3 - Lap trinh", "2026-11-10"),
-    "M4": ("M4 - Kiem thu & Bao cao", "2026-11-15"),
+    "M1": ("M1 - Phan chung", "2026-10-25"),
+    "M2": ("M2 - Demo", "2026-10-28"),
+    "M3": ("M3 - Phan tich", "2026-11-04"),
+    "M4": ("M4 - Thiet ke & Bao cao", "2026-11-15"),
 }
 
 HEADER = ("> Tên gọi chung (UC, lớp, bảng) và quy ước: xem [`ISSUES_PLAN.md`](https://github.com/{0}/blob/main/ISSUES_PLAN.md) mục 2 và 3. "
@@ -74,6 +76,7 @@ OOAD_CHECKLIST = """
 """
 
 DRY_RUN = "--dry-run" in sys.argv
+REUSE_FROM = next((int(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--reuse-from=")), None)
 
 
 # ---------- Đọc ISSUES_PLAN.md ----------
@@ -175,6 +178,7 @@ def ensure_labels():
 
 
 def ensure_milestones(descs):
+    """Tạo hoặc cập nhật milestone, trả về {tiêu đề: số milestone}."""
     existing = {m["title"]: m["number"] for m in json.loads(gh(["api", "repos/%s/milestones?state=all" % REPO]))}
     for code, (title, due) in MILESTONES.items():
         fields = {"title": title, "description": descs[code], "due_on": due + "T12:00:00Z"}
@@ -182,8 +186,18 @@ def ensure_milestones(descs):
             gh_api("PATCH", "repos/%s/milestones/%d" % (REPO, existing[title]), fields)
             print("  milestone (cập nhật)", title)
         else:
-            gh_api("POST", "repos/%s/milestones" % REPO, fields)
+            existing[title] = gh_api("POST", "repos/%s/milestones" % REPO, fields)["number"]
             print("  milestone (mới)    ", title)
+    return existing
+
+
+def reuse_issue(number, issue, milestone_numbers):
+    """Ghi đè tiêu đề, milestone, label, người làm lên issue có sẵn và mở lại nếu đã đóng."""
+    data = {"title": issue["title"], "milestone": milestone_numbers[issue["milestone"]],
+            "labels": issue["labels"], "assignees": issue["assignees"], "state": "open"}
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json", delete=False) as f:
+        json.dump(data, f, ensure_ascii=False)
+    gh(["api", "-X", "PATCH", "repos/%s/issues/%d" % (REPO, number), "--input", f.name])
 
 
 def existing_issue_numbers():
@@ -249,7 +263,11 @@ def main():
     print("Labels:")
     ensure_labels()
     print("Milestones:")
-    ensure_milestones(descs)
+    milestone_numbers = ensure_milestones(descs)
+
+    if REUSE_FROM is not None:
+        reuse_all(issues, milestone_numbers)
+        return
 
     print("Issues:")
     numbers = existing_issue_numbers()
@@ -268,6 +286,25 @@ def main():
     targets = issues if "--relink" in sys.argv else [i for i in issues if i["code"] in created]
     print("Liên kết phụ thuộc:")
     link_dependencies(targets, numbers)
+    print("\nXong: https://github.com/%s/issues" % REPO)
+
+
+def reuse_all(issues, milestone_numbers):
+    print("Issues (ghi đè từ #%d):" % REUSE_FROM)
+    existing = set(json.loads(gh(["issue", "list", "-R", REPO, "--state", "all", "--limit", "500",
+                                  "--json", "number", "--jq", "[.[].number]"])))
+    numbers = {}
+    for index, issue in enumerate(issues):
+        number = REUSE_FROM + index
+        if number in existing:
+            reuse_issue(number, issue, milestone_numbers)
+            numbers[issue["code"]] = number
+            print("  ghi đè #%d %s" % (number, issue["title"]))
+        else:
+            numbers[issue["code"]] = create_issue(issue)
+            print("  tạo #%d %s" % (numbers[issue["code"]], issue["title"]))
+    print("Liên kết phụ thuộc:")
+    link_dependencies(issues, numbers)
     print("\nXong: https://github.com/%s/issues" % REPO)
 
 

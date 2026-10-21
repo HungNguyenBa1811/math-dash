@@ -19,10 +19,21 @@
 >
 > Bài này nộp lấy điểm thi cuối kì của môn học (điểm thi cuối kì chiếm 60% điểm tổng kết môn học, trong đó bài báo cáo thiết kế chiếm 30% - điểm demo chiếm 30%).
 
+**Lưu ý thêm của thầy:** demo riêng từng người, **tối đa 3 chức năng** mỗi người.
+
+**Mốc thời gian:**
+
+| Hạng mục | Ngày |
+|---|---|
+| Demo cá nhân (module của mình) | **28/10/2026** |
+| Nộp báo cáo thiết kế cá nhân | **15/11/2026** |
+
 **Hệ quả cho nhóm:**
-- Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Phân công ở `ISSUES_PLAN.md` mục 2.1.
+- Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Mỗi người đúng 3 chức năng, phân công ở `ISSUES_PLAN.md` mục 2.1.
 - Mỗi người **một file báo cáo riêng**. Không viết chung, không chép nguyên phần của người kia.
-- Phần dùng chung (lớp thực thể, CSDL) làm chung để 2 bản không lệch nhau. Mỗi người chỉ đưa vào báo cáo của mình **phần liên quan đến chức năng của mình**.
+- **Phần chung** gồm use case tổng quát, lớp thực thể, CSDL:
+  - Nhóm trưởng làm trước khi code; thành viên còn lại duyệt.
+  - Mỗi người chỉ đưa vào báo cáo của mình **phần liên quan đến chức năng của mình**.
 
 ---
 
@@ -53,6 +64,11 @@ Các bước phân tích (kịch bản v1, v2, biểu đồ lớp phân tích, t
 
 Làm đúng thứ tự dưới đây. Mỗi bước dùng kết quả của bước trước, không nhảy cóc.
 
+Vì demo (28/10) đến trước hạn báo cáo (15/11), nhóm làm theo 2 đợt:
+- **Trước demo:** chỉ làm phần chung, vì code cần dùng. Gồm use case tổng quát, A2 lớp thực thể, D1 thiết kế lớp thực thể, D2 CSDL.
+- **Sau demo:** mỗi người làm A1 → A3 → A4 → D3 → D4 cho 3 chức năng của mình, **đối chiếu với code thật**.
+  - Nếu kịch bản phát hiện thiếu lớp thực thể thì bổ sung vào tài liệu chung (qua PR, người kia duyệt).
+
 ```
 PHÂN TÍCH                                         THIẾT KẾ
 A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thực thể thiết kế ─> D2 CSDL
@@ -62,14 +78,15 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 
 | Bước | Tên | Issue | Mục báo cáo |
 |---|---|---|---|
-| A1 | Đặc tả + kịch bản v1 | M1-02, M1-03 | 1 |
-| A2 | Lớp thực thể phân tích | M1-04 | (Phụ lục) |
-| A3 | Thiết kế tĩnh phân tích: View + thực thể | M1-05, M1-06 | (Phụ lục) |
-| A4 | Thiết kế động phân tích: kịch bản v2 + tuần tự | M1-07, M1-08 | (Phụ lục) |
-| D1 | Thiết kế lớp thực thể | M2-01 | 3 |
-| D2 | Thiết kế CSDL | M2-02 | 2 |
-| D3 | Thiết kế tĩnh: giao diện + biểu đồ lớp chi tiết | M2-03, M2-04 | 4.x.1, 4.x.2 |
-| D4 | Thiết kế động: kịch bản v3 + tuần tự chi tiết | M2-05, M2-06 | 4.x.3 |
+| — | Phạm vi + use case tổng quát (chung) | M1-01 | (Mở đầu) |
+| A1 | Đặc tả + kịch bản v1 | M3-01, M3-02 | 1 |
+| A2 | Lớp thực thể phân tích (chung) | M1-02 | (Phụ lục) |
+| A3 | Thiết kế tĩnh phân tích: View + thực thể | M3-03, M3-04 | (Phụ lục) |
+| A4 | Thiết kế động phân tích: kịch bản v2 + tuần tự | M3-05, M3-06 | (Phụ lục) |
+| D1 | Thiết kế lớp thực thể (chung) | M1-02 | 3 |
+| D2 | Thiết kế CSDL (chung) | M1-03 | 2 |
+| D3 | Thiết kế tĩnh: giao diện + biểu đồ lớp chi tiết | M4-01, M4-02 | 4.x.1, 4.x.2 |
+| D4 | Thiết kế động: kịch bản v3 + tuần tự chi tiết | M4-03, M4-04 | 4.x.3 |
 
 ### A1. Đặc tả + kịch bản v1 (Người chơi ↔ Hệ thống)
 
