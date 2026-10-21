@@ -1,0 +1,78 @@
+@startuml lop-thuc-the-phan-tich
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+  FontColor #000000
+  FontSize 11
+  AttributeFontSize 10
+  BorderThickness 1
+}
+left to right direction
+title Biểu đồ lớp thực thể pha phân tích – Math Dash 1v1
+
+class Player {
+  - username
+  - createdAt
+}
+class MathProblem {
+  - operand1
+  - operand2
+  - operator
+  - correctAnswer
+  - options
+}
+class GameSession {
+  - score
+  - streak
+  - maxStreak
+  - lives
+  - totalCorrect
+  - totalWrong
+  - isGameOver
+}
+class GameRecord {
+  - score
+  - maxStreak
+  - totalCorrect
+  - totalWrong
+  - playedAt
+}
+class Room {
+  - status
+  - seed
+  - createdAt
+}
+class RoomPlayer {
+  - uid
+  - name
+  - score
+  - online
+  - finished
+}
+class MatchHistory {
+  - opponentName
+  - myScore
+  - opponentScore
+  - playedAt
+}
+
+' Thông tin A nằm trong B: hình thoi đặt ở B
+GameSession "n" o-- "1" Player
+GameRecord "n" o-- "1" Player
+MatchHistory "n" o-- "1" Player
+GameSession "1" *-- "n" MathProblem
+
+' Quan hệ n-n Người chơi – Phòng đấu (mỗi phòng tối đa 2 người), lớp liên kết RoomPlayer
+Player "n" -- "2" Room
+(Player, Room) .. RoomPlayer
+@enduml
