@@ -224,13 +224,13 @@ rooms/{roomId}
         {uid} : { name: String, score: int, online: bool, finished: bool }
 ```
 
-Phân chia module: **[PLAN.md](PLAN.md)** · Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)**
+Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)** · Quy ước báo cáo OOAD: **[REPORT_CONVENTION.md](REPORT_CONVENTION.md)**
 
 ---
 
 ## Tác giả
 * **Lớp:** E23CNPM01
 * **Sinh viên thực hiện:**
-  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Core Logic & Realtime Firebase
-  * Hoàng ([@Minahn210](https://github.com/Minahn210)) - Giao diện, SQLite & Media
+  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Tìm trận, Thi đấu online, Quản lý lịch sử đấu
+  * Hoàng ([@Minahn210](https://github.com/Minahn210)) - Chơi offline, Xem bảng vàng, Cài đặt âm thanh
 * **Học viện Công nghệ Bưu chính Viễn thông (PTIT)**

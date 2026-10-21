@@ -28,23 +28,29 @@ PEOPLE = {
 }
 
 LABELS = {
-    "module-1-core": ("1D76DB", "Module 1: Core Logic & Realtime"),
-    "module-2-ui": ("0E8A16", "Module 2: Giao diện & Offline Data"),
-    "module-3-integration": ("D93F0B", "Module 3: Ghép nối, Kiểm thử & Báo cáo"),
-    "docs": ("C5DEF5", "Báo cáo, tài liệu"),
+    "ooad": ("5319E7", "Phân tích / thiết kế OOAD (tài liệu, biểu đồ)"),
+    "chung": ("BFD4F2", "Việc chung của cả hệ thống"),
+    "uc-tim-tran": ("1D76DB", "UC1 Tìm trận (Hùng)"),
+    "uc-thi-dau-online": ("0052CC", "UC2 Thi đấu online (Hùng)"),
+    "uc-lich-su": ("006B75", "UC3 Quản lý lịch sử đấu (Hùng)"),
+    "uc-choi-offline": ("0E8A16", "UC4 Chơi offline (Hoàng)"),
+    "uc-bang-vang": ("FBCA04", "UC5 Xem bảng vàng (Hoàng)"),
+    "uc-cai-dat": ("C2E0C6", "UC6 Cài đặt âm thanh (Hoàng)"),
+    "docs": ("C5DEF5", "Báo cáo cá nhân"),
     "bug": ("D73A4A", "Lỗi phát hiện khi kiểm thử"),
     "enhancement": ("A2EEEF", "Ý tưởng tính năng mới, không gắn milestone"),
 }
 
-# Mã module -> (tiêu đề milestone, hạn chót, tiêu đề mục mô tả trong ISSUES_PLAN.md)
+# Mã milestone -> (tiêu đề milestone, hạn chót)
 MILESTONES = {
-    "M1": ("M1 - Core & Realtime", "2026-11-01"),
-    "M2": ("M2 - UI & Offline", "2026-11-08"),
-    "M3": ("M3 - Tich hop", "2026-11-15"),
+    "M1": ("M1 - Phan tich", "2026-10-28"),
+    "M2": ("M2 - Thiet ke", "2026-11-01"),
+    "M3": ("M3 - Lap trinh", "2026-11-10"),
+    "M4": ("M4 - Kiem thu & Bao cao", "2026-11-15"),
 }
 
-HEADER = ("> Chi tiết hợp đồng chung (schema Firebase, interface, entity) và quy ước: "
-          "xem [`ISSUES_PLAN.md`](https://github.com/%s/blob/main/ISSUES_PLAN.md) mục 2 và 3.\n\n" % REPO)
+HEADER = ("> Tên gọi chung (UC, lớp, bảng) và quy ước: xem [`ISSUES_PLAN.md`](https://github.com/{0}/blob/main/ISSUES_PLAN.md) mục 2 và 3. "
+          "Yêu cầu báo cáo và quy trình OOAD: xem [`REPORT_CONVENTION.md`](https://github.com/{0}/blob/main/REPORT_CONVENTION.md).\n\n".format(REPO))
 
 CHECKLIST = """
 ---
@@ -54,6 +60,17 @@ CHECKLIST = """
 - [ ] Mỗi hàm < 20 dòng, callback lồng tối đa 2 cấp
 - [ ] Dùng Anonymous Class, KHÔNG dùng lambda
 - [ ] Comment tiếng Việt cho các khối code quan trọng
+"""
+
+OOAD_CHECKLIST = """
+---
+### Checklist OOAD
+- [ ] Làm đúng các bước của `REPORT_CONVENTION.md` mục 3
+- [ ] Tên UC, lớp, bảng khớp mục 2 của `ISSUES_PLAN.md`
+- [ ] Kịch bản và biểu đồ tuần tự khớp từng bước (cùng số bước, cùng thứ tự)
+- [ ] Mỗi hình có chú thích "Hình x: ..." và 3–5 dòng giải thích
+- [ ] Đã lưu Markdown + PNG vào `docs/` và dán vào báo cáo cá nhân
+- [ ] Người còn lại đã review
 """
 
 DRY_RUN = "--dry-run" in sys.argv
@@ -85,7 +102,7 @@ def read_sections(text):
 def read_summary_table(text):
     """Đọc bảng 'Tổng hợp nhanh' để lấy assignee và label của từng issue."""
     table = {}
-    part = text.split("## 8. Tổng hợp nhanh", 1)[1]
+    part = re.split(r"^## \d+\. Tổng hợp nhanh", text, maxsplit=1, flags=re.M)[1]
     for row in re.findall(r"^\| (M\d-\d\d) \|(.+)$", part, re.M):
         cells = [c.strip() for c in row[1].strip(" |").split("|")]
         table[row[0]] = {"assignees": PEOPLE[cells[1]], "labels": [l.strip() for l in cells[2].split(",")]}
@@ -105,6 +122,8 @@ def build_issues(text):
         info = summary[code]
         if "docs" in info["labels"]:
             body += report_checklist(body)
+        elif "ooad" in info["labels"]:
+            body += OOAD_CHECKLIST
         else:
             body += CHECKLIST
         issues.append({"code": code, "title": title, "body": body,
@@ -214,7 +233,7 @@ def main():
     text = PLAN.read_text(encoding="utf-8")
     issues = build_issues(text)
     descs = build_milestone_descriptions(text)
-    assert len(descs) == 3, "Thiếu mô tả module: %s" % list(descs)
+    assert len(descs) == len(MILESTONES), "Thiếu mô tả milestone: %s" % list(descs)
 
     if DRY_RUN:
         PREVIEW.mkdir(parents=True, exist_ok=True)

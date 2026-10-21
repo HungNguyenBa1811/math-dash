@@ -1,29 +1,34 @@
-# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN NHÁP CHỜ DUYỆT)
+# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 2: CHIA THEO CHỨC NĂNG + OOAD, CHỜ DUYỆT)
 
-> Nguồn: `PLAN.md`, `CONVENTION.md` và khung stub trong `app/`.
+> Nguồn: `PLAN.md`, `CONVENTION.md` (quy ước code), `REPORT_CONVENTION.md` (yêu cầu báo cáo + quy trình OOAD), khung stub trong `app/`.
 > Thành viên: **@HungNguyenBa1811** (Hùng – nhóm trưởng) · **@Minahn210** (Hoàng – thành viên 2).
 > Sau khi duyệt, mỗi mục `[Mx-yy]` bên dưới sẽ thành 1 GitHub issue (title, label, milestone, assignee, body giữ nguyên).
-> Số thứ tự trong mỗi module là thứ tự nên làm.
+> Số thứ tự trong mỗi milestone là thứ tự nên làm.
+
+**Thay đổi so với bản 1:**
+- Bản 1 chia theo **tầng**: Hùng làm logic + Firebase, Hoàng làm giao diện + SQLite.
+- Bản 2 chia theo **chức năng (use case)**: mỗi người làm trọn chức năng của mình, từ giao diện đến DAO, CSDL và thực thể.
+  Lý do: đề yêu cầu *"bạn nào demo chức năng nào thì trình bày thiết kế cho chức năng đấy"*, gồm biểu đồ lớp và biểu đồ tuần tự cho cả frontend lẫn backend.
+- Milestone đi theo đúng quy trình OOAD: **Phân tích → Thiết kế → Lập trình → Kiểm thử & Báo cáo**.
+- Báo cáo là **bài cá nhân**: mỗi người một file, không còn báo cáo chung.
 
 ---
 
-## 0. Hiện trạng code (điểm xuất phát)
+## 0. Yêu cầu của đề (bài làm cá nhân)
 
-Repo hiện chỉ còn **khung stub**: đủ package, class, interface và chữ ký các hàm public, thân hàm để `// TODO`. Project vẫn build được và `gradlew test` pass.
+Mỗi người trình bày đúng các chức năng mình **demo**, theo thứ tự:
 
-| File stub | Còn lại gì | Ai làm (issue) |
-|---|---|---|
-| `entity/MathProblem`, `entity/GameSession` | Field, hằng số luật điểm, chữ ký `getExpression`/`isCorrect`/`reset`/`recordCorrectAnswer`/`recordWrongAnswer` | Hùng – M1-02 |
-| `dao/ProblemDAO` | Constructor nhận `Random` (để đồng bộ bằng seed), chữ ký `generateProblem(level)` | Hùng – M1-03 |
-| `controller/GameController` | Interface `GameControllerListener`, chữ ký `startGame`/`submitAnswer`/`onPause`/`onResume`/`onDestroy` | Hùng – M1-04 |
-| `dao/DatabaseHelper` | Constructor, `onCreate`/`onUpgrade` rỗng | Hoàng – M2-03 |
-| `entity/Player`, `entity/GameRecord`, `dao/PlayerDAO`, `dao/GameRecordDAO` | Field, chữ ký hàm | Hoàng – M2-06 |
-| `frm/FrmMainActivity`, `FrmGameActivity`, `FrmLeaderboardActivity` + 3 layout | Chỉ có `setContentView`; layout chỉ hiện tên màn | Hoàng – M2-01, M2-02, M2-06 |
-| `res/values`, `res/drawable` | Giữ nguyên: bảng màu Retro, theme, nền nút `bg_retro_*` | Dùng chung |
-| `test/GameSessionTest`, `test/ProblemDAOTest` | Class rỗng | Hùng – M1-02, M1-03 |
+1. Mô tả chi tiết các chức năng mình làm bằng ngôn ngữ tự nhiên (specification).
+2. Thiết kế CSDL (trình bày 1 lần cho tất cả chức năng của mình).
+3. Thiết kế lớp thực thể (trình bày 1 lần cho tất cả chức năng của mình).
+4. Lần lượt cho **từng** chức năng (xong chức năng 1 mới sang chức năng 2):
+   - Thiết kế giao diện.
+   - Biểu đồ lớp chi tiết (frontend + backend, client + server).
+   - Biểu đồ tuần tự chi tiết.
 
-**Chưa có:** Firebase, quyền `INTERNET`, màn Phòng chờ / Gameplay online / Lịch sử / Cài đặt, âm thanh.
-**README:** Mục Multiplayer đã đổi từ WebSocket sang Firebase, khớp với PLAN.
+Điểm: báo cáo thiết kế 30% + demo 30% điểm tổng kết. Vì vậy **ai demo chức năng nào thì phải tự code và tự vẽ chức năng đó**.
+
+Đề bài nguyên văn, khung báo cáo, cách làm từng bước OOAD và checklist trước khi nộp: xem **`REPORT_CONVENTION.md`**.
 
 ---
 
@@ -31,19 +36,94 @@ Repo hiện chỉ còn **khung stub**: đủ package, class, interface và chữ
 
 | # | Vấn đề | Đề xuất | Lý do |
 |---|---|---|---|
-| D1 | Firebase Realtime Database hay Firestore | **Realtime Database** | Có sẵn `onDisconnect()` cho M1-09, listener đơn giản, độ trễ thấp |
-| D2 | Luật trận 1v1 | **60 giây/trận**, cả 2 người làm chung một bộ câu hỏi, ai nhanh thì làm được nhiều câu hơn. Trả lời đúng được +10 + combo (giống offline). Trả lời sai được 0 điểm và reset combo, **không mất mạng**. Hết giờ, ai nhiều điểm hơn thì thắng, bằng điểm thì hòa | Đơn giản, dễ giải thích, dùng lại được `GameSession` |
-| D3 | Đồng bộ câu hỏi | Chủ phòng tạo `seed` (kiểu long) và ghi lên phòng. Cả 2 máy tạo `new ProblemDAO(new Random(seed))` nên ra cùng một dãy câu | Không phải đẩy từng câu lên Firebase, ít lỗi đồng bộ |
-| D4 | Đăng nhập | **Ẩn danh** + tên lấy từ ô nhập tên ở màn Chính. Đăng nhập email làm sau, không bắt buộc | Nhanh, không phải làm màn đăng ký |
-| D5 | Lưu lịch sử đấu online | Tạo **bảng riêng `match_history`**, nằm cạnh 2 bảng `players` và `game_records` dùng cho Bảng vàng offline | Bảng đơn giản, tách biệt với dữ liệu offline |
-| D6 | Mức độ của stub | Giữ chữ ký hàm public và interface, còn toàn bộ thân hàm do nhóm tự viết | Chữ ký cố định thì 2 người làm song song được mà không lệch nhau |
-| D7 | Màn Cài đặt (PLAN có nút nhưng chưa có task) | Chỉ 2 công tắc **Âm thanh / Rung**, lưu bằng SharedPreferences, gộp vào M2-09 | Phạm vi nhỏ, liên quan trực tiếp tới Media |
+| D1 | Firebase Realtime Database hay Firestore | **Realtime Database** | Có sẵn `onDisconnect()`, listener đơn giản, độ trễ thấp |
+| D2 | Luật trận 1v1 | **60 giây/trận**, 2 người làm chung một dãy câu. Đúng: +10 + combo×2. Sai: 0 điểm, reset combo, **không mất mạng**. Hết giờ ai nhiều điểm hơn thắng, bằng điểm thì hòa | Đơn giản, dùng lại được `GameSession` |
+| D3 | Đồng bộ câu hỏi | Chủ phòng tạo `seed` (long) ghi lên phòng; 2 máy cùng tạo `new ProblemDAO(new Random(seed))` | Không phải đẩy từng câu lên Firebase |
+| D4 | Đăng nhập | Firebase **ẩn danh** + tên nhập ở màn Chính | Không phải làm màn đăng ký |
+| D5 | Chia việc | **Theo chức năng** (mục 2.1). Mỗi người làm trọn chức năng của mình | Đúng yêu cầu báo cáo và demo cá nhân |
+| D6 | Lõi dùng chung `MathProblem`, `ProblemDAO`, `GameSession` | Hùng viết (tuần 1 Hoàng bận). **Hoàng bắt buộc review PR** vì 3 lớp này nằm trong biểu đồ lớp của "Chơi offline" | Hoàng phải giải thích được khi bị hỏi lúc demo |
+| D7 | Lớp DAO | Theo mẫu OOAD: **lớp cha giữ kết nối dùng chung** (`DAO` cho SQLite, `FirebaseDAO` cho Firebase), các DAO con kế thừa | Đúng tài liệu môn học |
+| D8 | Tên bảng | Tiền tố `tbl` + tên lớp thực thể: `tblPlayer`, `tblGameRecord`, `tblMatchHistory`. Khóa ngoại `tblPlayerId` | Đúng bước 1 và bước 4 thiết kế CSDL |
+| D9 | Thuộc tính dẫn xuất | **Không lưu** cột tính được từ cột khác: bỏ `high_score` (= MAX điểm trong `tblGameRecord`), `result` (suy từ 2 điểm), `% chính xác` | Đúng bước 5 thiết kế CSDL |
+| D10 | Màn Cài đặt | 2 công tắc **Âm thanh / Rung**, lưu bằng SharedPreferences. Là chức năng đầu tiên bị cắt nếu trễ | Phạm vi nhỏ |
+| D11 | Báo cáo | Mỗi người **một file riêng**. Phần chung (use case tổng quát, lớp thực thể, CSDL) làm chung để 2 bản không lệch nhau, nhưng mỗi người chỉ đưa vào báo cáo phần liên quan đến chức năng của mình | Đề ghi "bài làm cá nhân" |
 
 ---
 
-## 2. Hợp đồng chung (chốt trong M1-01, sau đó KHÔNG đổi tùy tiện)
+## 2. Hợp đồng chung (chốt ở M1-01 và M2-07, sau đó KHÔNG đổi tùy tiện)
 
-### 2.1. Cấu trúc dữ liệu trên Firebase Realtime Database
+Mục này cố định **tên gọi** để 2 bản báo cáo và code khớp nhau. Thuộc tính và phương thức cụ thể do các issue phân tích/thiết kế quyết định.
+
+### 2.1. Use case và người phụ trách
+
+Tác nhân duy nhất: **Người chơi**. Đối thủ trong trận online cũng là một Người chơi.
+
+| UC | Tên use case | Người làm và demo | Label |
+|---|---|---|---|
+| UC1 | Tìm trận | Hùng | `uc-tim-tran` |
+| UC2 | Thi đấu online (gồm xử lý thoát trận, mất mạng) | Hùng | `uc-thi-dau-online` |
+| UC3 | Quản lý lịch sử đấu (xem, xóa) | Hùng | `uc-lich-su` |
+| UC4 | Chơi offline | Hoàng | `uc-choi-offline` |
+| UC5 | Xem bảng vàng | Hoàng | `uc-bang-vang` |
+| UC6 | Cài đặt âm thanh | Hoàng | `uc-cai-dat` |
+
+### 2.2. Tên lớp
+
+| Loại | Lớp | Chủ sở hữu |
+|---|---|---|
+| Thực thể | `Player`, `GameRecord` | Hoàng |
+| Thực thể | `MathProblem`, `GameSession` (lõi dùng chung, D6) | Hùng |
+| Thực thể | `Room`, `RoomPlayer`, `MatchHistory` | Hùng |
+| DAO SQLite | `DAO` (lớp cha), `DatabaseHelper`, `PlayerDAO`, `GameRecordDAO` | Hoàng |
+| DAO SQLite | `MatchHistoryDAO` | Hùng |
+| DAO Firebase | `FirebaseDAO` (lớp cha), `AuthDAO`, `RoomDAO` | Hùng |
+| Sinh câu hỏi | `ProblemDAO` (không kế thừa `DAO`, không truy cập CSDL) | Hùng |
+| Điều khiển | `GameController` (offline) | Hoàng |
+| Điều khiển | `MatchController` (online, Singleton) | Hùng |
+| Giao diện | `FrmMainActivity`, `FrmGameActivity`, `FrmLeaderboardActivity`, `LeaderboardAdapter`, `FrmSettingsActivity` | Hoàng |
+| Giao diện | `FrmLobbyActivity`, `FrmOnlineGameActivity`, `FrmHistoryActivity`, `HistoryAdapter` | Hùng |
+| Tiện ích | `SoundManager` (Singleton) | Hoàng |
+
+Lớp giao diện ở bước **phân tích** đặt tên `XxxView`; sang bước **thiết kế** ánh xạ sang Activity thật:
+
+| Phân tích | Thiết kế |
+|---|---|
+| `MainView` | `FrmMainActivity` |
+| `GameView`, `GameOverView` | `FrmGameActivity` (Game Over là overlay trong cùng Activity) |
+| `LeaderboardView` | `FrmLeaderboardActivity` |
+| `SettingsView` | `FrmSettingsActivity` |
+| `LobbyView` | `FrmLobbyActivity` |
+| `OnlineGameView`, `MatchResultView` | `FrmOnlineGameActivity` (Kết quả là overlay trong cùng Activity) |
+| `HistoryView` | `FrmHistoryActivity` |
+
+### 2.3. Lớp DAO dùng chung kết nối (D7)
+
+```java
+// dao/DAO.java — lớp cha của mọi DAO SQLite, chỉ giữ kết nối dùng chung
+public abstract class DAO {
+    protected static SQLiteDatabase con;
+
+    public DAO(Context context) {
+        if (con == null) {
+            con = new DatabaseHelper(context.getApplicationContext()).getWritableDatabase();
+        }
+    }
+}
+// PlayerDAO, GameRecordDAO, MatchHistoryDAO: "extends DAO", dùng con để truy vấn
+
+// dao/FirebaseDAO.java — lớp cha của mọi DAO Firebase
+public abstract class FirebaseDAO {
+    protected static DatabaseReference con;
+    protected static FirebaseAuth auth;
+    // constructor: nếu con == null thì lấy FirebaseDatabase.getInstance().getReference() và FirebaseAuth.getInstance()
+}
+// AuthDAO, RoomDAO: "extends FirebaseDAO"
+```
+
+### 2.4. CSDL
+
+- **SQLite:** 3 bảng `tblPlayer`, `tblGameRecord`, `tblMatchHistory`. Cột cụ thể chốt ở M2-02.
+- **Firebase Realtime Database:**
 
 ```
 rooms/{roomId}
@@ -54,165 +134,444 @@ rooms/{roomId}
         {uid} : { name: String, score: int, online: bool, finished: bool }
 ```
 
-### 2.2. Interface giữa logic (Hùng) và giao diện (Hoàng)
+### 2.5. Ba phiên bản kịch bản
 
-```java
-// controller/LobbyListener.java — FrmLobbyActivity implement
-public interface LobbyListener {
-    void onWaiting(String myName);                          // Đã vào phòng, đang chờ đối thủ
-    void onMatchFound(String myName, String opponentName);  // Đủ 2 người
-    void onError(String message);
-}
-
-// controller/OnlineGameListener.java — FrmOnlineGameActivity implement
-public interface OnlineGameListener {
-    void onQuestion(MathProblem problem);
-    void onTimerTick(long millisLeft);
-    void onMyScore(int score, int streak, boolean isCorrect);
-    void onOpponentScore(int score);
-    void onOpponentLeft();
-    void onConnectionLost();
-    void onMatchEnd(MatchHistory result);
-}
-
-// controller/MatchController.java — Singleton (Pattern 4), giữ trạng thái qua 2 Activity
-public void findMatch(String myName, LobbyListener listener);
-public void cancelFind();
-public void startGame(OnlineGameListener listener);
-public void submitAnswer(int value);
-public void leaveMatch();
-```
-
-### 2.3. Entity dùng chung
-
-```java
-// entity/MatchHistory.java
-int id; String playedAt; String opponentName;
-int myScore; int opponentScore; String result; // "WIN" | "LOSE" | "DRAW"
-```
+| Phiên bản | Issue | Đối tượng xuất hiện | Đi kèm |
+|---|---|---|---|
+| v1 | M1-02, M1-03 | Người chơi ↔ Hệ thống | — |
+| v2 | M1-07, M1-08 | Người chơi, lớp `XxxView`, lớp thực thể | Biểu đồ tuần tự phân tích, **khớp từng bước** |
+| v3 | M2-05, M2-06 | Người chơi, `FrmXxxActivity` (boundary), Controller + DAO (control), thực thể (entity) | Biểu đồ tuần tự thiết kế, **khớp từng bước** |
 
 ---
 
 ## 3. Quy ước chung cho mọi issue
 
-- **Branch:** `feat/M1-03-question-level` (tạo nhanh bằng lệnh `gh issue develop <số> --checkout`).
-- **PR:** mô tả ghi `Closes #<số>`. Người còn lại review rồi mới merge.
-- **Definition of Done:** build pass + chạy được trên máy ảo + đạt hết mục *Requirement* + đánh dấu hết checklist convention.
-- **Luyện live-coding:** mỗi người tự luyện, không tạo issue.
-- **Checklist convention** (tự động thêm vào cuối body mỗi issue):
+- **Branch:**
+  - Tài liệu: `docs/M1-02-kich-ban-v1`.
+  - Code: `feat/M3-03-tim-tran`.
+  - Tạo nhanh bằng `gh issue develop <số> --checkout`.
+- **PR:** mô tả ghi `Closes #<số>`. Người còn lại review rồi mới merge, kể cả PR tài liệu.
+- **Thư mục tài liệu:**
+  ```
+  docs/
+    chung/   use case tổng quát, lớp thực thể (phân tích + thiết kế), CSDL
+    hung/    kịch bản v1/v2/v3, biểu đồ lớp và tuần tự cho UC1–UC3
+    hoang/   kịch bản v1/v2/v3, biểu đồ lớp và tuần tự cho UC4–UC6
+    TEST_REPORT.md
+  ```
+  - Kịch bản viết bằng Markdown để xem được thay đổi trên GitHub.
+  - Biểu đồ vẽ bằng Visual Paradigm hoặc draw.io, xuất PNG lưu cạnh file Markdown.
+  - Mỗi người giữ file dự án vẽ riêng (`docs/hung/*.vpp`, `docs/hoang/*.vpp`). File nhị phân không merge được, nên không sửa file của người kia.
+- **Đưa vào báo cáo:** xong mỗi issue phân tích hoặc thiết kế thì dán ngay hình và chữ vào báo cáo cá nhân, không dồn đến cuối.
+- **Definition of Done:**
+  - Issue tài liệu (label `ooad`): đạt hết *Requirement* và tick hết checklist OOAD ở cuối issue.
+  - Issue code: build pass, chạy được trên máy ảo, đạt hết *Requirement* và tick hết checklist CONVENTION.
+- **Checklist CONVENTION** (tự thêm vào cuối issue code):
   - [ ] Không dùng Hilt/Dagger, Room, RxJava/LiveData/ViewModel, ViewBinding/DataBinding
   - [ ] Chỉ dùng `findViewById`, `SQLiteOpenHelper`, `Thread` + `runOnUiThread`
   - [ ] Mỗi hàm < 20 dòng, callback lồng tối đa 2 cấp
   - [ ] Dùng Anonymous Class, KHÔNG dùng lambda
   - [ ] Comment tiếng Việt cho các khối code quan trọng
+- **Checklist OOAD** (tự thêm vào cuối issue tài liệu):
+  - [ ] Làm đúng các bước của `REPORT_CONVENTION.md` mục 3
+  - [ ] Tên UC, lớp, bảng khớp mục 2 của `ISSUES_PLAN.md`
+  - [ ] Kịch bản và biểu đồ tuần tự khớp từng bước (cùng số bước, cùng thứ tự)
+  - [ ] Mỗi hình có chú thích "Hình x: ..." và 3–5 dòng giải thích
+  - [ ] Đã lưu Markdown + PNG vào `docs/` và dán vào báo cáo cá nhân
+  - [ ] Người còn lại đã review
 
 ---
 
-## 4. MODULE 1 — Core Logic & Realtime · @HungNguyenBa1811 · label `module-1-core`
+## 4. MILESTONE 1 — Phân tích · label `ooad`
 
-### Mô tả module (dùng làm description cho Milestone `M1 - Core & Realtime`)
+### Mô tả milestone (dùng làm description cho Milestone `M1 - Phan tich`)
 
-**Người phụ trách:** @HungNguyenBa1811 (Hùng). Bắt đầu ngay, không phải chờ ai.
-**Thời gian:** 19/10 → **01/11/2026** (2 tuần). Riêng M1-01 phải merge **trước 21/10** để Hoàng có hợp đồng mà làm.
+**Người phụ trách:** Hùng làm UC1–UC3, Hoàng làm UC4–UC6. M1-01 và M1-04 làm chung.
+**Thời gian:** 21/10 → **28/10/2026**. Hùng làm phần mình trong tuần 21–25/10. Hoàng làm từ 26/10, vì tuần 19–25/10 Hoàng bận.
 
-**Mục tiêu.** Làm toàn bộ phần chạy ngầm của game, tức mọi thứ không phải giao diện:
-- Luật tính điểm, sinh câu hỏi, đồng hồ đếm ngược, chấm đúng/sai cho cả 2 chế độ offline và online.
-- Kết nối Firebase: đăng nhập ẩn danh, ghép trận, đồng bộ điểm giữa 2 máy, xử lý mất mạng hoặc thoát trận.
+**Mục tiêu.** Hiểu hệ thống phải làm gì, từ góc nhìn người chơi, trước khi nghĩ đến code:
+- Mô tả chức năng bằng ngôn ngữ tự nhiên.
+- Kịch bản v1.
+- Lớp thực thể.
+- Biểu đồ lớp phân tích.
+- Kịch bản v2 kèm biểu đồ tuần tự phân tích.
 
-Module này được kiểm tra bằng **unit test và Logcat**, không cần màn hình hoàn chỉnh.
+**Trong phạm vi:** 6 use case ở mục 2.1, chỉ dùng 3 loại đối tượng: tác nhân, lớp `XxxView`, lớp thực thể.
 
-**Trong phạm vi:**
-- Hợp đồng chung giữa 2 module: interface `LobbyListener`, `OnlineGameListener`; entity `MatchHistory`; khung `MatchController` (mục 2).
-- Entity `MathProblem`, `GameSession` và luật điểm: +10 + combo×2; offline sai thì mất 1 mạng; online sai không mất mạng.
-- `ProblemDAO`: sinh câu theo 4 level, kết quả không âm, cùng seed thì cùng dãy câu.
-- `GameController`: ván offline, 6s mỗi câu, 3 mạng.
-- `MatchController`: ván online 60s, ghép trận, đồng bộ điểm, xử lý sự cố.
-- Firebase: project, Anonymous Auth, Realtime Database, Database Rules.
-
-**Ngoài phạm vi** (KHÔNG làm trong module này):
-- Layout, Activity, Adapter → Module 2.
-- SQLite và việc lưu điểm sau khi kết thúc ván → Module 2 và M3-01. `GameController` / `MatchController` không gọi DAO.
-- Đăng nhập email, chơi từ 3 người trở lên, chống gian lận (mỗi máy tự ghi điểm của mình lên Firebase).
+**Ngoài phạm vi:**
+- DAO, Controller, Activity, kiểu dữ liệu, thuộc tính id → milestone Thiết kế.
+- Code. Ngoại lệ duy nhất là M3-01 (dựng Firebase), được làm song song vì là hạ tầng, không phụ thuộc thiết kế.
 
 **Sản phẩm bàn giao:**
 
-| Loại | File / Hạng mục |
+| Loại | File |
 |---|---|
-| Entity | `entity/MatchHistory.java`, `entity/MathProblem.java`, `entity/GameSession.java` |
-| DAO | `dao/ProblemDAO.java`, `dao/FirebaseHelper.java`, `dao/AuthDAO.java`, `dao/RoomDAO.java` |
-| Controller | `controller/GameController.java`, `controller/MatchController.java`, `controller/LobbyListener.java`, `controller/OnlineGameListener.java` |
-| Unit test | `test/.../GameSessionTest.java`, `test/.../ProblemDAOTest.java` |
-| Cấu hình | `app/google-services.json`; plugin + thư viện Firebase trong `build.gradle.kts` và `libs.versions.toml`; quyền `INTERNET`, `ACCESS_NETWORK_STATE` trong Manifest |
-| Firebase Console | Project đã tạo, Anonymous Auth đã bật, Realtime Database + Rules (`auth != null`, `.indexOn: status`), @Minahn210 đã được thêm vào project |
+| Chung | `docs/chung/01-pham-vi-use-case.md` + `uc-tong-quat.png`; `docs/chung/02-lop-thuc-the-phan-tich.md` + `.png` |
+| Hùng | `docs/hung/1-kich-ban-v1.md`, `docs/hung/2-lop-phan-tich.md` + 3 PNG, `docs/hung/3-kich-ban-v2.md` + 3 PNG tuần tự |
+| Hoàng | `docs/hoang/1-kich-ban-v1.md`, `docs/hoang/2-lop-phan-tich.md` + 3 PNG, `docs/hoang/3-kich-ban-v2.md` + 3 PNG tuần tự |
 
-**Quy tắc sửa file (tránh conflict với Hoàng):**
-- Module 1 chỉ sửa các file trong bảng trên.
-- **Không** sửa `frm/`, `res/layout/`, `dao/DatabaseHelper.java` và các DAO SQLite.
-- `AndroidManifest.xml`, `build.gradle.kts` và `libs.versions.toml` là file dùng chung với Module 2:
-  - Mỗi lần chỉ thêm đúng dòng mình cần.
-  - Pull `main` trước khi sửa.
-  - Merge PR có sửa các file này sớm, không ôm lâu.
+**Điều kiện hoàn thành milestone:**
+1. 8 issue M1-01 → M1-08 đã đóng, mỗi issue có PR đã merge.
+2. Mỗi phương thức trên biểu đồ tuần tự v2 đều có trên biểu đồ lớp phân tích tương ứng.
+3. Mỗi lớp thực thể trên biểu đồ lớp phân tích đều có trên biểu đồ lớp thực thể chung (M1-04).
 
-**Giao tiếp với Module 2:**
-- M1-01 là việc **chặn** Module 2: M2-03, M2-04, M2-07, M2-08 đều cần M1-01 đã merge vào `main`.
-- Sau khi merge M1-01, chữ ký trong mục 2 bị khóa. Muốn đổi thì phải báo Hoàng và sửa cả 2 phía trong cùng một PR.
+**Rủi ro đã biết:** Hoàng chỉ có 3 ngày (26–28/10) cho 4 issue phân tích. Hùng làm xong phần mình trước để Hoàng có mẫu bám theo.
 
-**Thứ tự làm:** M1-01 → M1-02 → M1-03 → M1-04 (lõi chạy local), song song với M1-05 → M1-06 → M1-07 → M1-08 → M1-09 (Firebase).
+### [M1-01] Phạm vi hệ thống + biểu đồ use case tổng quát · @HungNguyenBa1811
+- **Phụ thuộc:** không có. **LÀM ĐẦU TIÊN.**
+- **Mô tả:** Bước "Yêu cầu" của OOAD, phần dùng chung cho cả 2 báo cáo. Hùng soạn, Hoàng review, để 2 người có cùng một bức tranh hệ thống và cùng tên use case.
+- **Input:** README (luật chơi), `PLAN.md`, mục 1 và 2 của tài liệu này.
+- **Output:** `docs/chung/01-pham-vi-use-case.md` + `docs/chung/uc-tong-quat.png`, gồm:
+  - **Mục tiêu và phạm vi:** app Android, chơi offline trên 1 máy hoặc đấu 1v1 online qua Firebase.
+  - **Người dùng và chức năng:** Người chơi dùng được 6 chức năng ở mục 2.1.
+  - **Biểu đồ use case tổng quát:** tác nhân Người chơi, 6 UC, các quan hệ `<<include>>` / `<<extend>>` nếu có (ví dụ Tìm trận include Đăng nhập ẩn danh).
+  - **Mô tả mỗi UC 1 dòng**, kèm bảng UC → người làm.
+- **Requirement:**
+  - Hoàng đã review và approve PR.
+  - Từ đây tên 6 UC dùng nguyên văn trong mọi tài liệu và báo cáo.
+- **Constraint:** Không đi vào chi tiết từng UC; phần đó làm ở M1-02 và M1-03.
 
-**Điều kiện hoàn thành module** (đủ tất cả mới được đóng milestone):
-1. 9 issue M1-01 → M1-09 đã đóng, mỗi issue có PR đã merge.
-2. `gradlew test` pass: có đủ các test liệt kê trong M1-02 và M1-03.
-3. Logcat 1 ván offline: hết giờ thì mất mạng, hết 3 mạng thì game over.
-4. Trên 2 máy ảo cùng lúc:
-   - Vào chung một phòng.
-   - Hiện cùng một dãy câu.
-   - Điểm đối thủ cập nhật dưới 1 giây.
-   - Kết quả 2 bên khớp nhau (A `WIN` thì B `LOSE`, hoặc cả 2 `DRAW`).
-5. Pass 4 test case sự cố của M1-09. Trên Console không còn phòng `waiting` nào khi không có ai chờ.
-6. Database Rules không ở chế độ public.
+### [M1-02] Đặc tả + kịch bản v1: Tìm trận, Thi đấu online, Quản lý lịch sử đấu · @HungNguyenBa1811
+- **Phụ thuộc:** M1-01.
+- **Mô tả:** Mô tả chức năng bằng ngôn ngữ tự nhiên và viết kịch bản v1 (chỉ có Người chơi và Hệ thống) cho UC1–UC3. Phần đặc tả chính là mục 1 trong báo cáo của Hùng.
+- **Input:** M1-01; luật D2, D3; schema mục 2.4.
+- **Output:** `docs/hung/1-kich-ban-v1.md`. Với mỗi UC:
+  - **Đặc tả:** viết theo mẫu luồng nghiệp vụ "Người chơi … → Giao diện … xuất hiện với … → Người chơi … → …". Mỗi giao diện ghi rõ gồm những ô nhập, nút, danh sách nào.
+  - **Kịch bản chuẩn v1:** các bước đánh số, xen kẽ Người chơi và Hệ thống, dùng dữ liệu cụ thể (tên `HUNG`, đối thủ `HOANG`, tỉ số `120 - 96`…). Nếu có danh sách thì vẽ bảng dữ liệu mẫu.
+  - **Kịch bản ngoại lệ**, tối thiểu:
+    - Tìm trận: không có mạng; bấm Hủy khi đang chờ; 2 người bấm gần như cùng lúc.
+    - Thi đấu online: đối thủ thoát giữa trận; mình mất mạng; hòa điểm.
+    - Quản lý lịch sử đấu: chưa có trận nào; bấm xóa rồi chọn Hủy.
+- **Requirement:**
+  - Không có tên lớp hay tên hàm trong kịch bản v1.
+  - Mỗi bước của hệ thống ghi rõ giao diện hiện ra gồm thành phần gì.
+- **Constraint:** Dùng đúng tên UC ở M1-01.
+
+### [M1-03] Đặc tả + kịch bản v1: Chơi offline, Xem bảng vàng, Cài đặt âm thanh · @Minahn210
+- **Phụ thuộc:** M1-01.
+- **Mô tả:** Như M1-02, cho UC4–UC6. Phần đặc tả chính là mục 1 trong báo cáo của Hoàng.
+- **Input:** M1-01; luật offline trong README (6 giây/câu, 3 mạng, +10 + combo×2); `docs/hung/1-kich-ban-v1.md` để tham khảo cách viết.
+- **Output:** `docs/hoang/1-kich-ban-v1.md`. Với mỗi UC: đặc tả, kịch bản chuẩn v1, kịch bản ngoại lệ. Ngoại lệ tối thiểu:
+  - Chơi offline: bỏ trống tên (dùng `PLAYER_1`); hết giờ 1 câu; hết 3 mạng; đạt kỷ lục mới; bấm Back giữa ván.
+  - Xem bảng vàng: chưa có ván nào.
+  - Cài đặt âm thanh: tắt âm thanh rồi vào chơi.
+- **Requirement:** Giống M1-02.
+- **Constraint:** Dùng đúng tên UC ở M1-01.
+
+### [M1-04] Lớp thực thể phân tích (toàn hệ thống) · @HungNguyenBa1811 @Minahn210
+- **Phụ thuộc:** M1-02, M1-03.
+- **Mô tả:** Trích lớp thực thể từ đặc tả và kịch bản v1, rồi vẽ **một** biểu đồ lớp thực thể chung cho cả hệ thống.
+  - Hùng làm trước phần UC1–UC3; Hoàng bổ sung phần UC4–UC6 vào cùng biểu đồ.
+  - Mỗi người đưa vào báo cáo phần liên quan đến chức năng của mình.
+- **Input:** M1-02, M1-03; danh sách lớp thực thể ở mục 2.2.
+- **Output:** `docs/chung/02-lop-thuc-the-phan-tich.md` + `.png`:
+  - **Bảng trích danh từ:** mỗi danh từ trong đặc tả được giữ thành lớp, thành thuộc tính, hoặc bị loại, kèm lý do. Ví dụ "điểm", "combo", "mạng" là thuộc tính; "đồng hồ" bị loại vì không phải dữ liệu.
+  - **Biểu đồ lớp thực thể:** mỗi lớp ghi tên tiếng Anh theo mục 2.2 kèm tên tiếng Việt, cùng các thuộc tính chính.
+  - **Quan hệ và bội số giữa các lớp:**
+    - Nếu thông tin của A nằm trong B thì vẽ quan hệ kết tập (aggregation) `A --<> B`, hình thoi ở phía B.
+    - Ví dụ: thông tin Người chơi nằm trong Kết quả ván, nên vẽ `Player --<> GameRecord`.
+- **Requirement:**
+  - Mỗi lớp truy được về ít nhất một bước trong kịch bản v1.
+  - Cả 2 người đã đồng ý biểu đồ.
+- **Constraint:**
+  - **Không cần đủ thuộc tính, không thêm id** (id thêm ở M2-01).
+  - Không vẽ DAO, View, Controller.
+
+### [M1-05] Biểu đồ lớp phân tích: Tìm trận, Thi đấu online, Quản lý lịch sử đấu · @HungNguyenBa1811
+- **Phụ thuộc:** M1-02, M1-04.
+- **Mô tả:** Bước phân tích tĩnh. Mỗi UC một biểu đồ, gồm các lớp View và các lớp thực thể liên quan.
+- **Input:** Kịch bản v1 (M1-02); lớp thực thể (M1-04); bảng tên View ở mục 2.2.
+- **Output:** `docs/hung/2-lop-phan-tich.md` + 3 PNG. Với mỗi UC:
+  - **Lớp View:** mỗi giao diện một lớp, trừ thông báo và hộp thoại xác nhận. Ví dụ `MainView`, `LobbyView`, `OnlineGameView`, `MatchResultView`, `HistoryView`.
+  - **Thành phần của View, đặt tiền tố theo loại:**
+    - `in`: ô nhập.
+    - `out`: thành phần hiển thị.
+    - `sub`: nút bấm.
+    - Có thể ghép, ví dụ `outsubListMatch`.
+    - Ví dụ `LobbyView`: `outMyName`, `outOpponentName`, `outStatus`, `subCancel`.
+  - **Phương thức:** mỗi xử lý hệ thống phải làm được trả lời 4 câu hỏi: tên hàm, đầu vào, đầu ra, gán cho lớp nào. Quy tắc gán:
+    - Đầu ra là lớp thực thể nào thì gán vào lớp đó.
+    - Nếu không, xét đầu vào thuộc lớp thực thể nào.
+  - **Biểu đồ lớp:** View, thực thể và quan hệ giữa chúng.
+- **Requirement:** Mỗi thành phần giao diện nêu trong kịch bản v1 đều có trong View tương ứng.
+- **Constraint:** Chưa có DAO, Controller, Activity. Tên lớp giao diện kết thúc bằng `View`.
+
+### [M1-06] Biểu đồ lớp phân tích: Chơi offline, Xem bảng vàng, Cài đặt âm thanh · @Minahn210
+- **Phụ thuộc:** M1-03, M1-04.
+- **Mô tả:** Như M1-05, cho UC4–UC6.
+- **Input:** Kịch bản v1 (M1-03); lớp thực thể (M1-04); `docs/hung/2-lop-phan-tich.md` để tham khảo cách làm.
+- **Output:** `docs/hoang/2-lop-phan-tich.md` + 3 PNG.
+  - View dự kiến: `MainView` (`inUsername`, `subPlayOffline`…), `GameView`, `GameOverView`, `LeaderboardView`, `SettingsView`.
+  - Phương thức gán vào thực thể theo quy tắc 4 câu hỏi.
+- **Requirement:** Giống M1-05.
+- **Constraint:** Giống M1-05.
+
+### [M1-07] Kịch bản v2 + biểu đồ tuần tự phân tích: Tìm trận, Thi đấu online, Quản lý lịch sử đấu · @HungNguyenBa1811
+- **Phụ thuộc:** M1-05.
+- **Mô tả:** Bước phân tích động. Viết lại kịch bản chuẩn thành v2 và vẽ biểu đồ tuần tự khớp từng bước.
+- **Input:** Kịch bản v1 (M1-02); biểu đồ lớp phân tích (M1-05).
+- **Output:** `docs/hung/3-kich-ban-v2.md` + 3 PNG. Với mỗi UC:
+  - **Kịch bản v2:** đánh số, mỗi bước là đúng một thông điệp giữa Người chơi, `XxxView` và lớp thực thể. Ví dụ "5. `LobbyView` gọi phương thức `findWaitingRoom()` của lớp `Room`".
+  - **Biểu đồ tuần tự** đánh số giống kịch bản.
+  - Ngoại lệ quan trọng nhất của UC vẽ bằng khung `alt`.
+- **Requirement:**
+  - Số bước trong kịch bản bằng số thông điệp trên biểu đồ, cùng thứ tự.
+  - Mọi phương thức trên biểu đồ đã có ở M1-05.
+- **Constraint:** Chỉ có 3 loại đối tượng: tác nhân, View, thực thể.
+
+### [M1-08] Kịch bản v2 + biểu đồ tuần tự phân tích: Chơi offline, Xem bảng vàng, Cài đặt âm thanh · @Minahn210
+- **Phụ thuộc:** M1-06.
+- **Mô tả:** Như M1-07, cho UC4–UC6.
+- **Input:** Kịch bản v1 (M1-03); biểu đồ lớp phân tích (M1-06); `docs/hung/3-kich-ban-v2.md` để tham khảo cách làm.
+- **Output:** `docs/hoang/3-kich-ban-v2.md` + 3 PNG.
+- **Requirement:** Giống M1-07.
+- **Constraint:** Giống M1-07.
+
+---
+
+## 5. MILESTONE 2 — Thiết kế · label `ooad`
+
+### Mô tả milestone (dùng làm description cho Milestone `M2 - Thiet ke`)
+
+**Người phụ trách:** Hùng làm UC1–UC3, Hoàng làm UC4–UC6. M2-01, M2-02 làm chung; M2-07 do Hùng làm.
+**Thời gian:** 26/10 → **01/11/2026**.
+
+**Mục tiêu.** Biến kết quả phân tích thành bản thiết kế đủ chi tiết để code theo:
+- Lớp thực thể thiết kế.
+- CSDL.
+- Biểu đồ lớp thiết kế theo MVC (boundary – control – entity).
+- Kịch bản v3 kèm biểu đồ tuần tự thiết kế.
+
+Đây là **4 phần chính của báo cáo**: CSDL, lớp thực thể, lớp chi tiết, tuần tự chi tiết.
+
+**Trong phạm vi:**
+- Thêm id, kiểu dữ liệu, kết tập/hợp thành vào lớp thực thể.
+- Bảng `tbl*`, cây Firebase.
+- Activity, Adapter, Controller, DAO với chữ ký hàm đầy đủ.
+- Phác thảo giao diện từng màn.
+- M2-07: sửa khung code cho khớp thiết kế.
+
+**Ngoài phạm vi:** Thân hàm (milestone Lập trình).
+
+**Sản phẩm bàn giao:**
+
+| Loại | File |
+|---|---|
+| Chung | `docs/chung/03-lop-thuc-the-thiet-ke.md` + `.png`; `docs/chung/04-csdl.md` + `.png` |
+| Hùng | `docs/hung/4-lop-thiet-ke.md` + 3 PNG + phác thảo giao diện; `docs/hung/5-kich-ban-v3.md` + 3 PNG tuần tự |
+| Hoàng | `docs/hoang/4-lop-thiet-ke.md` + 3 PNG + phác thảo giao diện; `docs/hoang/5-kich-ban-v3.md` + 3 PNG tuần tự |
+| Code | Khung stub khớp thiết kế (M2-07) |
+
+**Điều kiện hoàn thành milestone:**
+1. 7 issue M2-01 → M2-07 đã đóng.
+2. Mỗi View ở bước phân tích ánh xạ sang đúng một Activity hoặc overlay (bảng ở mục 2.2).
+3. Mỗi phương thức của thực thể ở bước phân tích đã được chuyển sang DAO hoặc Controller phù hợp.
+4. Tên lớp và tên hàm trong code (sau M2-07) giống hệt trên biểu đồ.
 
 **Rủi ro đã biết:**
-- Khi mất mạng đột ngột, Firebase cần tới vài chục giây mới báo `onDisconnect`. Chấp nhận điều này và ghi vào báo cáo; không cố tự viết heartbeat.
-- Nếu `ProblemDAO` có chỗ random không đi qua `this.random`, 2 máy sẽ lệch câu. Test cùng seed trong M1-03 là để bắt lỗi này.
+- Firebase là bất đồng bộ, nên trên biểu đồ tuần tự kết quả trả về qua callback (`onDataChange`, `onComplete`).
+- Quy ước nhóm: vẽ lời gọi DAO là một thông điệp, kết quả là một thông điệp trả về từ callback. Cả 2 người vẽ cùng một kiểu.
 
-### [M1-01] Chốt hợp đồng chung (interface, entity, schema)
-- **Phụ thuộc:** không có. **LÀM ĐẦU TIÊN**, vì đây là việc gỡ chặn cho Hoàng.
-- **Mô tả:** Tạo trước các file "khung" ở mục 2 để Hoàng làm UI và SQLite bằng dữ liệu giả (mock) song song. Khi ghép chỉ cần thay mock bằng lời gọi thật.
-- **Input:** Mục 2 của tài liệu này; các quyết định D1–D5 đã được duyệt.
-- **Output:**
-  - `entity/MatchHistory.java` có đủ constructor, getter/setter.
-  - `controller/LobbyListener.java` và `controller/OnlineGameListener.java`.
-  - `controller/MatchController.java` dạng singleton: các hàm public có thân rỗng và comment `// TODO M1-0x`.
-  - Schema Firebase (mục 2.1) ghi vào `PLAN.md`.
-- **Requirement:** Build pass. Hoàng đọc là biết Activity nào implement interface nào.
-- **Constraint:** Sau khi merge, không đổi chữ ký hàm. Nếu bắt buộc phải đổi thì báo Hoàng và sửa cả phía UI trong cùng PR.
+### [M2-01] Thiết kế lớp thực thể (toàn hệ thống) · @HungNguyenBa1811 @Minahn210
+- **Phụ thuộc:** M1-04.
+- **Mô tả:** Từ biểu đồ lớp thực thể phân tích, áp dụng 4 bước thiết kế lớp thực thể của OOAD. Mỗi người làm các lớp mình sở hữu (mục 2.2) trên cùng một biểu đồ.
+- **Input:** `docs/chung/02-lop-thuc-the-phan-tich.md`.
+- **Output:** `docs/chung/03-lop-thuc-the-thiet-ke.md` + `.png`, trình bày theo 4 bước:
+  1. **Thêm thuộc tính khóa** `id` cho các lớp không kế thừa lớp khác. Với `RoomPlayer`, khóa là `uid`.
+  2. **Thêm kiểu dữ liệu Java** cho mọi thuộc tính.
+  3. **Chuyển mọi quan hệ liên kết (association) thành kết tập/hợp thành**, ghi rõ lớp nào là thành phần của lớp nào và bội số.
+     - Ví dụ: `RoomPlayer` là thành phần (hợp thành) của `Room`; `Player` là thành phần của `GameRecord`.
+  4. **Thêm thuộc tính đối tượng** tương ứng với các quan hệ ở bước 3.
+     - `GameRecord` có `Player player`, thay cho `playerId` + `playerName` đang có trong stub.
+     - `Room` có `List<RoomPlayer> players`.
+- **Requirement:** Không còn đường liên kết trơn nào trên biểu đồ.
+- **Constraint:** Thuộc tính dẫn xuất (D9) nếu cần thì là **phương thức** (ví dụ `MatchHistory.getResult()`), không phải thuộc tính lưu trữ.
 
-### [M1-02] Entity MathProblem + GameSession (luật tính điểm)
-- **Phụ thuộc:** không có (làm song song với M1-01).
-- **Mô tả:** Viết phần thân cho 2 entity lõi. `GameSession` giữ luật tính điểm, dùng chung cho cả offline và online.
-- **Input:** Stub `entity/MathProblem.java`, `entity/GameSession.java`; luật chơi trong README (mục "Giới thiệu & Lối chơi") và D2.
-- **Output:**
-  - `MathProblem`: constructor, getter/setter; `getExpression()` trả chuỗi kiểu `"12 + 7"`; `isCorrect(int)`.
-  - `GameSession`: constructor, getter/setter và các hàm:
-    - `reset()`: đưa ván về trạng thái ban đầu.
-    - `recordCorrectAnswer()`: cộng `10 + streak * 2`, tăng `streak`, `maxStreak`, `totalCorrect`; trả về số điểm vừa cộng.
-    - `recordWrongAnswer()`: reset `streak`, tăng `totalWrong`, trừ 1 mạng; mạng về 0 thì `isGameOver = true`.
-  - Thêm cờ hoặc hàm riêng cho chế độ online: trả lời sai **không trừ mạng** (D2).
-- **Requirement:** `GameSessionTest` có các test sau và `gradlew test` pass:
-  - Trạng thái ban đầu đúng.
-  - Combo cộng dồn: lần đúng thứ nhất +10, lần thứ hai +12.
-  - Trả lời sai thì reset combo và trừ mạng.
-  - Sai 3 lần thì game over.
-  - Chế độ online: trả lời sai không trừ mạng.
-- **Constraint:** Entity không import `android.*`, để chạy được unit test thuần Java. Mỗi hàm < 20 dòng.
+### [M2-02] Thiết kế CSDL: SQLite + Firebase · @HungNguyenBa1811 @Minahn210
+- **Phụ thuộc:** M2-01.
+- **Mô tả:** Từ lớp thực thể thiết kế, làm theo 5 bước thiết kế CSDL của OOAD.
+  - Hoàng làm `tblPlayer`, `tblGameRecord`.
+  - Hùng làm `tblMatchHistory` và cây `rooms` trên Firebase.
+- **Input:** `docs/chung/03-lop-thuc-the-thiet-ke.md`; mục 2.4.
+- **Output:** `docs/chung/04-csdl.md` + `.png`:
+  - **SQLite, trình bày đủ 5 bước:**
+    1. Mỗi lớp thực thể cần lưu thành một bảng `tbl` + tên lớp.
+    2. Thuộc tính không phải đối tượng thành cột.
+    3. Quan hệ số lượng giữa các bảng.
+    4. Khóa chính `id`; khóa ngoại `tblPlayerId` trong `tblGameRecord` và `tblMatchHistory`.
+    5. Loại thuộc tính dẫn xuất theo D9.
+  - **Câu lệnh `CREATE TABLE`** cho cả 3 bảng. M3-07 sẽ dán nguyên các câu này vào `DatabaseHelper`.
+  - **Firebase:** ánh xạ `Room` và `RoomPlayer` sang cây `rooms`:
+    - Mỗi lớp thành một node; thuộc tính thường thành field.
+    - Quan hệ hợp thành thành node con; khóa là push id hoặc `uid`.
+  - Lớp `MathProblem` và `GameSession` không lưu, ghi rõ lý do.
+- **Requirement:**
+  - Mỗi bảng có khóa chính.
+  - Khóa ngoại đúng chiều 1-n.
+  - Cột khớp với thuộc tính không phải đối tượng của lớp thực thể.
+- **Constraint:** Không dùng Room ORM (CONVENTION). Không có cột dẫn xuất.
 
-### [M1-03] Sinh câu hỏi tăng dần độ khó
-- **Phụ thuộc:** M1-02 (cần entity `MathProblem`).
-- **Mô tả:** PLAN mục M1.2. Sinh phép tính ngẫu nhiên, kết quả không âm, độ khó tăng 1 level sau mỗi 5 câu.
-- **Input:** Stub `dao/ProblemDAO.java` (đã có constructor nhận `Random`); `questionIndex` (số câu đã ra).
+### [M2-03] Biểu đồ lớp thiết kế + phác thảo giao diện: Tìm trận, Thi đấu online, Quản lý lịch sử đấu · @HungNguyenBa1811
+- **Phụ thuộc:** M1-05, M2-01, M2-02.
+- **Mô tả:** Bước thiết kế tĩnh, mỗi UC một biểu đồ đủ 3 loại lớp. Đây là 2 mục "Thiết kế giao diện" và "Biểu đồ lớp chi tiết" trong báo cáo của Hùng.
+- **Input:** Biểu đồ lớp phân tích (M1-05); thực thể và CSDL (M2-01, M2-02); mục 2.2, 2.3.
+- **Output:** `docs/hung/4-lop-thiet-ke.md` + 3 PNG. Với mỗi UC:
+  - **Thiết kế giao diện:**
+    - Phác thảo từng màn (wireframe hoặc ảnh chụp layout).
+    - Bảng thành phần: tên `id` trong layout (`btnCancel`, `tvOpponentName`…), loại View, chức năng.
+  - **Lớp giao diện (boundary):** `FrmLobbyActivity`, `FrmOnlineGameActivity`, `FrmHistoryActivity`, `HistoryAdapter`, cùng các interface listener nếu dùng.
+  - **Lớp điều khiển (control):**
+    - `MatchController`.
+    - `FirebaseDAO` ← `AuthDAO`, `RoomDAO`.
+    - `DAO` ← `MatchHistoryDAO`.
+    - `ProblemDAO`.
+    - Mọi phương thức ghi đủ tham số và kiểu trả về.
+  - **Lớp thực thể:** `Room`, `RoomPlayer`, `MatchHistory`, `Player`, `MathProblem`, `GameSession`.
+  - **Mô tả từng lớp 1–2 dòng**, theo mẫu tài liệu OOAD: "`RoomDAO` có phương thức `findWaitingRoom` để …".
+- **Requirement:** Đi được từ mỗi nút trên giao diện, qua Controller/DAO, đến thực thể trên biểu đồ.
+- **Constraint:** Tên lớp và hàm phải là tên sẽ dùng trong code; M2-07 sẽ khóa lại.
+
+### [M2-04] Biểu đồ lớp thiết kế + phác thảo giao diện: Chơi offline, Xem bảng vàng, Cài đặt âm thanh · @Minahn210
+- **Phụ thuộc:** M1-06, M2-01, M2-02.
+- **Mô tả:** Như M2-03, cho UC4–UC6.
+- **Input:** Biểu đồ lớp phân tích (M1-06); M2-01, M2-02; mục 2.2, 2.3; `docs/hung/4-lop-thiet-ke.md` để tham khảo cách làm.
+- **Output:** `docs/hoang/4-lop-thiet-ke.md` + 3 PNG. Với mỗi UC:
+  - **Thiết kế giao diện:** phác thảo và bảng thành phần.
+    - Màn chơi offline cần: tên, BEST, điểm, combo `xN`, mạng `♥ ♥ ♥`, thanh thời gian, phép tính, lưới 2x2 nút đáp án, dòng phản hồi, overlay Game Over.
+  - **Lớp giao diện (boundary):** `FrmMainActivity`, `FrmGameActivity`, `FrmLeaderboardActivity`, `LeaderboardAdapter`, `FrmSettingsActivity`.
+  - **Lớp điều khiển (control):**
+    - `GameController`.
+    - `DAO` ← `PlayerDAO`, `GameRecordDAO`.
+    - `DatabaseHelper`, `ProblemDAO`, `SoundManager`.
+  - **Lớp thực thể:** `Player`, `GameRecord`, `MathProblem`, `GameSession`.
+  - **Mô tả từng lớp 1–2 dòng.**
+- **Requirement:** Giống M2-03.
+- **Constraint:** Giống M2-03.
+
+### [M2-05] Kịch bản v3 + biểu đồ tuần tự thiết kế: Tìm trận, Thi đấu online, Quản lý lịch sử đấu · @HungNguyenBa1811
+- **Phụ thuộc:** M1-07, M2-03.
+- **Mô tả:** Bước thiết kế động. Đây là mục "Biểu đồ tuần tự chi tiết" trong báo cáo của Hùng.
+- **Input:** Kịch bản v2 (M1-07); biểu đồ lớp thiết kế (M2-03).
+- **Output:** `docs/hung/5-kich-ban-v3.md` + 3 PNG. Với mỗi UC:
+  - **Kịch bản v3:** đánh số theo mẫu tài liệu OOAD, mỗi bước một thông điệp. Ví dụ một đoạn:
+    - "Người chơi nhấn nút CHƠI NGAY trên `FrmMainActivity`."
+    - "Phương thức `onClick` được gọi."
+    - "`onClick` gọi `FrmLobbyActivity`."
+    - "`findMatch` gọi `findWaitingRoom` của `RoomDAO`."
+    - "`RoomDAO` đóng gói kết quả vào đối tượng `Room`."
+    - "`Room` trả về cho `findWaitingRoom`."
+  - **Biểu đồ tuần tự** đủ boundary, control (Controller + DAO) và entity, đánh số khớp kịch bản.
+  - Ngoại lệ chính (đối thủ thoát, mất mạng) vẽ bằng khung `alt`.
+- **Requirement:** Số bước bằng số thông điệp, cùng thứ tự. Mọi hàm trên biểu đồ có trong M2-03.
+- **Constraint:** Callback Firebase vẽ theo quy ước nêu trong mô tả milestone.
+
+### [M2-06] Kịch bản v3 + biểu đồ tuần tự thiết kế: Chơi offline, Xem bảng vàng, Cài đặt âm thanh · @Minahn210
+- **Phụ thuộc:** M1-08, M2-04.
+- **Mô tả:** Như M2-05, cho UC4–UC6. Đây là mục "Biểu đồ tuần tự chi tiết" trong báo cáo của Hoàng.
+- **Input:** Kịch bản v2 (M1-08); biểu đồ lớp thiết kế (M2-04); `docs/hung/5-kich-ban-v3.md` để tham khảo cách làm.
+- **Output:** `docs/hoang/5-kich-ban-v3.md` + 3 PNG.
+  - Bộ đếm giờ (`CountDownTimer`) vẽ như một đối tượng điều khiển.
+  - Truy vấn SQLite trong `Thread` vẽ như lời gọi từ Activity tới DAO.
+- **Requirement:** Giống M2-05.
+- **Constraint:** Mọi hàm trên biểu đồ có trong M2-04.
+
+### [M2-07] Chốt khung code theo thiết kế · @HungNguyenBa1811
+- **Phụ thuộc:** M2-01, M2-02, M2-03, M2-04.
+- **Mô tả:** Sửa khung stub hiện có cho khớp bản thiết kế, để lúc lập trình 2 người không phải đổi tên lớp hay chữ ký hàm nữa. Hoàng review.
+- **Input:** Biểu đồ lớp thiết kế (M2-03, M2-04); thực thể (M2-01); khung stub hiện tại.
 - **Output:**
-  - Hàm `MathProblem generateProblem(int level)`, với `level = min(questionIndex / 5 + 1, 4)`.
-  - Hàm private sinh 4 đáp án: khác nhau, không âm, có đáp án đúng, xáo trộn bằng `Collections.shuffle(list, random)`.
+  - **Entity:** thuộc tính, kiểu, constructor, getter/setter đúng như M2-01. Cụ thể:
+    - Sửa `GameRecord` dùng `Player player`.
+    - Sửa `Player` bỏ `highScore`.
+    - Thêm `MatchHistory`, `Room`, `RoomPlayer`.
+  - **DAO:**
+    - `dao/DAO.java` theo mục 2.3.
+    - `PlayerDAO`, `GameRecordDAO`, `MatchHistoryDAO` `extends DAO`.
+    - `FirebaseDAO`, `AuthDAO`, `RoomDAO` theo mục 2.3; nếu M3-01 chưa merge thì để TODO.
+    - Mọi hàm có chữ ký đúng như biểu đồ, thân để `// TODO`.
+  - **Controller và Frm:** đủ lớp và chữ ký theo biểu đồ.
+    - Activity mới chỉ có `setContentView` và được khai báo trong Manifest.
+    - Layout tạm chỉ hiện tên màn.
+  - **Tài liệu:** `PLAN.md` và README dùng tên bảng `tbl*`.
+- **Requirement:**
+  - Build pass, `gradlew test` pass.
+  - Hoàng đối chiếu: tên lớp và tên hàm trong code trùng 100% với biểu đồ của mình.
+- **Constraint:** Chỉ có chữ ký và `// TODO`, không viết logic.
+
+---
+
+## 6. MILESTONE 3 — Lập trình · label theo UC
+
+### Mô tả milestone (dùng làm description cho Milestone `M3 - Lap trinh`)
+
+**Người phụ trách:** Hùng làm M3-01 → M3-06 (hạ tầng Firebase, lõi câu hỏi, UC1–UC3). Hoàng làm M3-07 → M3-10 (CSDL SQLite, màn Chính, UC4–UC6).
+**Thời gian:** 31/10 → **10/11/2026**. Riêng M3-01 làm từ tuần 1, song song với phân tích.
+
+**Mục tiêu.** Code đúng như bản thiết kế. Mỗi người code trọn chức năng mình sẽ demo: layout, Activity, Controller, DAO, câu SQL / truy vấn Firebase.
+
+**Trong phạm vi:** Mọi lớp ở mục 2.2; âm thanh và rung; unit test cho lõi.
+
+**Ngoài phạm vi** (KHÔNG làm):
+- Đăng nhập email, chơi từ 3 người trở lên, chống gian lận.
+- Đổi tên lớp hoặc chữ ký hàm so với thiết kế. Nếu bắt buộc phải đổi thì sửa luôn biểu đồ trong cùng PR.
+
+**Sản phẩm bàn giao:** Code của 6 UC chạy được.
+- Hùng: `FrmLobbyActivity`, `FrmOnlineGameActivity`, `FrmHistoryActivity`, `HistoryAdapter`, `MatchController`, `FirebaseDAO`, `AuthDAO`, `RoomDAO`, `MatchHistoryDAO`, `MathProblem`, `ProblemDAO`, `GameSession`, `Room`, `RoomPlayer`, `MatchHistory`, 2 unit test.
+- Hoàng: `FrmMainActivity`, `FrmGameActivity`, `FrmLeaderboardActivity`, `LeaderboardAdapter`, `FrmSettingsActivity`, `GameController`, `DAO`, `DatabaseHelper`, `PlayerDAO`, `GameRecordDAO`, `Player`, `GameRecord`, `SoundManager`, `res/raw/*.mp3`.
+
+**Quy tắc sửa file (tránh conflict):**
+- Mỗi người chỉ sửa file mình sở hữu ở mục 2.2.
+- File dùng chung: `AndroidManifest.xml`, `build.gradle.kts`, `libs.versions.toml`, `DatabaseHelper` (chỉ Hoàng sửa).
+  - Pull `main` trước khi sửa.
+  - Chỉ thêm đúng dòng mình cần.
+  - Merge sớm, không giữ nhánh lâu.
+
+**Điều kiện hoàn thành milestone:**
+1. 10 issue M3-01 → M3-10 đã đóng.
+2. `gradlew test` pass.
+3. Từ màn Chính mở được mọi chức năng; bấm Back ở mọi màn không crash; xoay màn hình không crash.
+4. Trên 2 máy ảo đấu được 1 trận trọn vẹn, và trận đó hiện trong Lịch sử của cả 2 máy.
+5. Tìm `"-> "` trong `app/src/main/java` không ra kết quả nào (không dùng lambda).
+
+**Rủi ro đã biết:**
+- Khi mất mạng đột ngột, Firebase có thể mất vài chục giây mới báo `onDisconnect`. Chấp nhận điều này và ghi vào báo cáo.
+- `VibrationEffect` chỉ có từ API 26, trong khi minSdk là 24. Phải rẽ nhánh theo `Build.VERSION.SDK_INT`.
+- Hoàng cần M3-02 (lõi câu hỏi) trước khi làm M3-08. Hùng phải merge M3-02 **trước 03/11**.
+
+### [M3-01] Hạ tầng Firebase: FirebaseDAO + đăng nhập ẩn danh · @HungNguyenBa1811
+- **Phụ thuộc:** không có. Là hạ tầng nên làm song song với phân tích ở tuần 1.
+- **Mô tả:** Tạo project Firebase, nối với app, viết lớp cha `FirebaseDAO` và `AuthDAO`. Phục vụ UC1 Tìm trận (include đăng nhập ẩn danh).
+- **Input:** applicationId `ptit.e23cnpm01.nguyenbahung.math_dash`; mục 2.3.
+- **Output:**
+  - **Cấu hình:**
+    - File `app/google-services.json`.
+    - Plugin `com.google.gms.google-services`.
+    - Firebase BoM + `firebase-auth` + `firebase-database` trong `libs.versions.toml`.
+    - Quyền `INTERNET` và `ACCESS_NETWORK_STATE` trong Manifest.
+  - **Database Rules:** chỉ user đã đăng nhập (`auth != null`) mới được đọc/ghi; có `.indexOn: "status"` cho `rooms`.
+  - **Code:**
+    - `dao/FirebaseDAO.java` theo mục 2.3.
+    - `dao/AuthDAO.java extends FirebaseDAO` có `signIn(AuthCallback)` và `getUid()`.
+    - Interface `AuthCallback { onSuccess(String uid); onError(String message); }`.
+  - **Thêm @Minahn210 vào Firebase project.**
+- **Requirement:**
+  - Logcat in `Firebase OK`.
+  - Lần đầu mở app tạo UID mới; tắt app mở lại vẫn giữ UID cũ.
+  - Mất mạng thì gọi `onError` với thông báo tiếng Việt, app không crash.
+- **Constraint:** Không để rules public (`.read/.write: true`). Không dùng Firestore.
+
+### [M3-02] Lõi câu hỏi và luật điểm: MathProblem, ProblemDAO, GameSession · @HungNguyenBa1811
+- **Phụ thuộc:** M2-07.
+- **Mô tả:** Lõi dùng chung cho UC2 (online) và UC4 (offline), theo D6. **Hoàng bắt buộc review PR** để giải thích được khi demo "Chơi offline".
+- **Input:** Stub sau M2-07; luật trong README và D2; biểu đồ lớp M2-03, M2-04.
+- **Output:**
+  - **`MathProblem`:** `getExpression()` trả chuỗi kiểu `"12 + 7"`; `isCorrect(int)`.
+  - **`GameSession`:**
+    - `reset()`.
+    - `recordCorrectAnswer()`: cộng `10 + streak * 2`, trả về số điểm vừa cộng.
+    - `recordWrongAnswer()`: reset combo, trừ 1 mạng; hết mạng thì game over.
+    - Chế độ online (D2): trả lời sai không trừ mạng.
+  - **`ProblemDAO.generateProblem(int level)`**, với `level = min(questionIndex / 5 + 1, 4)`:
 
     | Level | Phép tính | Khoảng số |
     |---|---|---|
@@ -221,510 +580,366 @@ Module này được kiểm tra bằng **unit test và Logcat**, không cần m�
     | 3 | `+ − ×` | `+ −`: 1–50, `×`: 2–9 |
     | 4 | `+ − ×` | `+ −`: 1–100, `×`: 2–12 |
 
-  - Viết `ProblemDAOTest`:
-    - Sinh 1000 câu mỗi level: không có kết quả âm, có 4 đáp án khác nhau, trong đó có đáp án đúng.
-    - **Hai `ProblemDAO` cùng seed sinh ra 30 câu giống hệt nhau.**
-- **Requirement:** `gradlew test` pass.
-- **Constraint:** Mọi chỗ random phải đi qua `this.random`; không dùng `Math.random()` hay `new Random()` bên trong hàm. Nếu vi phạm, 2 máy cùng seed sẽ ra câu khác nhau.
-
-### [M1-04] Timer & chấm điểm: ván offline + ván online (chạy local)
-- **Phụ thuộc:** M1-01, M1-02, M1-03.
-- **Mô tả:** PLAN mục M1.3. Hai chế độ dùng chung `GameSession` và `ProblemDAO`:
-  - Offline: 6s mỗi câu, 3 mạng (theo README).
-  - Online: đồng hồ 60s cho cả trận, không mạng (D2).
-
-  Test bằng log, chưa cần giao diện và Firebase.
-- **Input:** Stub `controller/GameController.java` (đã có interface `GameControllerListener`); `GameSession`, `ProblemDAO`.
-- **Output:**
-  - `GameController` (offline):
-    - Constructor nhận `(GameSession, ProblemDAO, int highScore, GameControllerListener)`.
-    - `startGame()`.
-    - Timer 6s mỗi câu theo Pattern 5; hết giờ tính như trả lời sai.
-    - `submitAnswer()`.
-    - Level tăng theo số câu đã ra.
-    - `onPause`/`onResume`/`onDestroy`: dừng hoặc chạy lại timer.
-    - Hết mạng thì gọi `onGameOver(session, score > highScore)`.
-  - `MatchController` (online, chạy local):
-    - Timer 60s, tick mỗi 1s và gọi `onTimerTick`.
-    - `submitAnswer()`: chấm điểm, gọi `onMyScore`, rồi sinh câu tiếp theo và gọi `onQuestion`.
-    - Hết giờ thì ngừng nhận đáp án.
-- **Requirement:**
-  - Log 1 ván offline: hết giờ thì mất mạng, hết 3 mạng thì game over.
-  - Log 1 ván online 60s: điểm và combo đúng, trả lời sai không mất mạng.
+    4 đáp án khác nhau, không âm, có đáp án đúng, xáo trộn bằng `Collections.shuffle(list, random)`.
+  - **Unit test `GameSessionTest`:** trạng thái ban đầu; combo +10 rồi +12; sai thì reset combo và trừ mạng; sai 3 lần thì game over; online sai không trừ mạng.
+  - **Unit test `ProblemDAOTest`:**
+    - Sinh 1000 câu mỗi level: không âm, 4 đáp án khác nhau, có đáp án đúng.
+    - **2 `ProblemDAO` cùng seed sinh ra 30 câu giống hệt nhau.**
+- **Requirement:** `gradlew test` pass. Hoàng đã approve PR.
 - **Constraint:**
-  - `GameController` **không gọi DAO/SQLite**. Việc lưu điểm làm ở M3-01, để phần này không phải chờ phần của Hoàng.
-  - Hủy timer trong `onDestroy()` / `leaveMatch()` để tránh leak.
+  - Entity không import `android.*`.
+  - Mọi chỗ random đi qua `this.random`, không dùng `Math.random()` hay `new Random()` bên trong hàm. Nếu vi phạm, 2 máy cùng seed sẽ ra câu khác nhau.
 
-### [M1-05] Khởi tạo Firebase cho project
-- **Phụ thuộc:** không có (làm song song được với M1-01 → M1-04).
-- **Mô tả:** Tạo project trên Firebase Console, thêm app Android, bật Anonymous Auth và Realtime Database.
-- **Input:** applicationId `ptit.e23cnpm01.nguyenbahung.math_dash`; tài khoản Google của nhóm.
+### [M3-03] UC Tìm trận: FrmLobbyActivity + RoomDAO + MatchController · @HungNguyenBa1811
+- **Phụ thuộc:** M3-01, M2-07.
+- **Mô tả:** Code UC1 đúng theo M2-03 và M2-05. Người chơi bấm CHƠI NGAY thì app tìm phòng `waiting`: có thì vào, không có thì tạo phòng mới rồi chờ.
+- **Input:** Biểu đồ lớp và tuần tự UC1; schema mục 2.4; tên người chơi từ Intent.
 - **Output:**
-  - File `app/google-services.json`.
-  - Plugin `com.google.gms.google-services` trong `build.gradle.kts` gốc và `app/build.gradle.kts`.
-  - Firebase BoM + `firebase-auth` + `firebase-database` khai báo trong `gradle/libs.versions.toml`.
-  - Quyền `INTERNET` và `ACCESS_NETWORK_STATE` trong Manifest.
-  - `dao/FirebaseHelper.java` dạng singleton (Pattern 4), trả về `FirebaseAuth` và `DatabaseReference` gốc.
-  - Database Rules: chỉ user đã đăng nhập (`auth != null`) mới được đọc/ghi; có `.indexOn: "status"` cho `rooms`.
-- **Requirement:** Chạy app thì Logcat in `Firebase OK`, và ghi thử một node `test` lên DB thì thấy trên Console.
-- **Constraint:**
-  - KHÔNG để rules public (`.read/.write: true`), vì như vậy ai cũng xóa được DB.
-  - Không dùng Firestore (D1).
-  - Thêm @Minahn210 vào Firebase project để Hoàng tự xem dữ liệu khi test.
-
-### [M1-06] Đăng nhập Firebase ẩn danh
-- **Phụ thuộc:** M1-05.
-- **Mô tả:** PLAN mục M1.4. Mỗi máy có một UID cố định để định danh trong phòng đấu.
-- **Input:** `FirebaseHelper`.
-- **Output:** `dao/AuthDAO.java`:
-  - Hàm `signIn(AuthCallback cb)`: nếu `currentUser` khác null thì trả UID luôn; nếu null thì gọi `signInAnonymously()`.
-  - Hàm `getUid()`.
-  - Interface `AuthCallback { onSuccess(String uid); onError(String message); }`.
-- **Requirement:**
-  - Lần đầu mở app tạo UID mới; tắt app mở lại thì **giữ nguyên UID**.
-  - Mất mạng thì gọi `onError` với thông báo tiếng Việt, app không crash.
-- **Constraint:** Chưa làm email (D4). Callback lồng tối đa 2 cấp.
-
-### [M1-07] Matchmaking: tạo phòng / tìm phòng / xử lý phòng đầy
-- **Phụ thuộc:** M1-06.
-- **Mô tả:** PLAN mục M1.5. Người chơi bấm "Chơi ngay" thì app tìm phòng đang `waiting`. Có phòng thì join, không có thì tạo phòng mới và chờ.
-- **Input:** uid, name; schema ở mục 2.1.
-- **Output:**
-  - `dao/RoomDAO.java` gồm:
-    - `findWaitingRoom()`: query `orderByChild("status").equalTo("waiting").limitToFirst(1)`.
+  - **`RoomDAO extends FirebaseDAO`:**
+    - `findWaitingRoom()`: query `orderByChild("status").equalTo("waiting").limitToFirst(1)`, kết quả đóng gói vào `Room`.
     - `createRoom(seed)`.
     - `joinRoom(roomId)`: dùng `runTransaction`.
-  - Trong `MatchController`:
-    - `findMatch(name, LobbyListener)`: gọi `onWaiting` hoặc `onMatchFound`.
+  - **`MatchController`:**
+    - `findMatch(name, listener)`.
     - `cancelFind()`: nếu mình là chủ phòng thì xóa phòng.
+  - **Xử lý phòng chờ:**
+    - Khi tạo phòng: `onDisconnect().removeValue()`.
+    - Khi có người vào: `onDisconnect().cancel()`.
+  - **`FrmLobbyActivity`** + layout: tên mình; tên đối thủ hoặc "Đang tìm đối thủ..." kèm ProgressBar; dòng trạng thái; nút HỦY. Có đối thủ thì sau 1.5s tự chuyển sang `FrmOnlineGameActivity`.
 - **Requirement:**
   - 2 máy bấm gần như cùng lúc thì vào chung 1 phòng.
-  - Máy thứ 3 không join được phòng đã đủ 2 người mà phải tạo phòng mới.
+  - Máy thứ 3 phải tạo phòng mới.
   - Đủ 2 người thì phòng chuyển sang `playing`.
+  - Bấm HỦY hoặc kill app khi đang chờ thì phòng biến mất trên Console.
 - **Constraint:**
-  - Join **bắt buộc** qua transaction: kiểm tra `status == "waiting"` và `players < 2` *bên trong* transaction.
-  - Không tự join phòng của chính mình.
+  - Join **bắt buộc** qua transaction, kiểm tra `status == "waiting"` và số người < 2 *bên trong* transaction.
+  - Activity không gọi Firebase trực tiếp, chỉ gọi `MatchController`.
+  - Nếu M3-07 chưa xong, test bằng cách mở thẳng `FrmLobbyActivity` với tên mặc định.
 
-### [M1-08] Realtime gameplay: đồng bộ câu hỏi & điểm
-- **Phụ thuộc:** M1-04, M1-07.
-- **Mô tả:** PLAN mục M1.6. 2 máy chơi cùng một bộ câu (theo seed), mỗi máy đẩy điểm của mình lên phòng và lắng nghe điểm đối thủ.
-- **Input:** Phòng đang `playing`, `seed`, uid của đối thủ.
-- **Output:** `MatchController.startGame(OnlineGameListener)` làm các việc sau:
-  - Dựng `ProblemDAO` theo seed, chạy timer của M1-04.
-  - Mỗi lần trả lời thì `setValue` vào `players/{myUid}/score`.
-  - `addValueEventListener` trên `players/{opponentUid}/score`, có thay đổi thì gọi `onOpponentScore`.
-  - Hết giờ thì set `finished = true`. Khi cả 2 đều `finished` (hoặc đã quá 3s sau khi hết giờ) thì tính kết quả và gọi `onMatchEnd(MatchHistory)`.
+### [M3-04] UC Thi đấu online: FrmOnlineGameActivity + đồng bộ realtime · @HungNguyenBa1811
+- **Phụ thuộc:** M3-02, M3-03.
+- **Mô tả:** Code UC2 (luồng chính) đúng theo M2-03 và M2-05. 2 máy chơi cùng một dãy câu theo seed, mỗi máy ghi điểm của mình và lắng nghe điểm đối thủ.
+- **Input:** Biểu đồ UC2; phòng đang `playing`; `seed`; uid đối thủ.
+- **Output:**
+  - **`MatchController`:**
+    - `startGame(listener)`: dựng `ProblemDAO(new Random(seed))`; `CountDownTimer` 60s tick mỗi 1s.
+    - `submitAnswer(value)`: chấm bằng `GameSession`, rồi `setValue` vào `players/{myUid}/score`.
+    - `addValueEventListener` trên `players/{opponentUid}/score`.
+    - Hết giờ: set `finished = true`. Cả 2 cùng `finished` (hoặc quá 3s sau khi hết giờ) thì gọi `onMatchEnd(MatchHistory)`.
+  - **`FrmOnlineGameActivity`** + layout: đồng hồ 60s, phép tính, lưới 2x2 nút đáp án, điểm **MÌNH vs ĐỐI THỦ**, overlay THẮNG / THUA / HÒA có tỉ số và nút "Về menu".
 - **Requirement:**
   - 2 máy thấy cùng một dãy câu.
   - Điểm đối thủ cập nhật dưới 1s khi mạng bình thường.
-  - Kết quả 2 máy khớp nhau (A `WIN` thì B `LOSE`).
+  - Kết quả 2 máy khớp nhau (A `WIN` thì B `LOSE`, hoặc cả 2 `DRAW`).
 - **Constraint:**
   - Chỉ ghi vào node của chính mình.
-  - Gọi `removeEventListener` khi kết thúc hoặc thoát trận.
+  - `removeEventListener` và hủy timer khi kết thúc.
+  - Không tính điểm trong Activity.
 
-### [M1-09] Xử lý sự cố: mất mạng, thoát app, bỏ trận
-- **Phụ thuộc:** M1-08.
-- **Mô tả:** PLAN mục M1.7. Không để trận bị treo hoặc để lại phòng "rác" trên DB.
-- **Input:** Phòng hiện tại, uid.
+### [M3-05] UC Thi đấu online: xử lý thoát trận và mất mạng · @HungNguyenBa1811
+- **Phụ thuộc:** M3-04.
+- **Mô tả:** Code các kịch bản ngoại lệ của UC2 (khung `alt` trong M2-05), để không bao giờ để trận bị treo.
+- **Input:** Kịch bản ngoại lệ UC2 (M1-02); biểu đồ tuần tự M2-05.
 - **Output:**
-  - Khi tạo phòng: `onDisconnect().removeValue()` cho cả phòng. Có người join thì **gọi `onDisconnect().cancel()`**, nếu không phòng sẽ tự bị xóa giữa trận.
   - Khi vào trận: `onDisconnect().setValue(false)` cho `players/{uid}/online`.
-  - Đang chơi mà thấy đối thủ `online == false` thì gọi `onOpponentLeft()` và tính mình thắng.
-  - `leaveMatch()` (nút Back/Thoát): set `online = false`, mình bị xử thua.
-  - Lắng nghe `.info/connected` của chính mình; mất kết nối thì gọi `onConnectionLost()`.
+  - Đối thủ `online == false` thì gọi `onOpponentLeft()` và tính mình thắng.
+  - `leaveMatch()` (nút Back + `AlertDialog` "Thoát sẽ bị xử thua?"): set `online = false`, mình bị xử thua.
+  - Lắng nghe `.info/connected`; mất kết nối thì gọi `onConnectionLost()`.
 - **Requirement:** Pass cả 4 test case:
-  1. Máy A đang chờ thì kill app → phòng biến mất trên Console.
+  1. Máy A đang chờ thì kill app → phòng biến mất.
   2. Đang chơi, B bấm Back → A thắng ngay.
-  3. Đang chơi, B tắt Wi-Fi → A nhận "Đối thủ đã thoát". Lưu ý: khi mất mạng đột ngột, Firebase có thể mất tới vài chục giây mới phát hiện, điều này chấp nhận được.
+  3. Đang chơi, B tắt Wi-Fi → A nhận "Đối thủ đã thoát". Firebase có thể mất vài chục giây mới phát hiện, điều này chấp nhận được.
   4. A mất mạng → A thấy thông báo, app không crash.
 - **Constraint:** Không còn phòng `waiting` nào tồn tại khi không có người chờ.
 
----
-
-## 5. MODULE 2 — Giao diện & Offline Data · @Minahn210 · label `module-2-ui`
-
-### Mô tả module (dùng làm description cho Milestone `M2 - UI & Offline`)
-
-**Người phụ trách:** @Minahn210 (Hoàng). Tuần 19/10–25/10 Hoàng bận (theo PLAN.md).
-**Thời gian:** 26/10 → **08/11/2026** (2 tuần). Phần offline M2-01 → M2-06 xong trước 01/11.
-
-**Mục tiêu.** Làm toàn bộ những gì người chơi nhìn và chạm vào, cùng với dữ liệu lưu trên máy:
-- Tất cả màn hình.
-- Database SQLite cho lịch sử đấu và Bảng vàng.
-- Âm thanh, rung và màn Cài đặt.
-
-Module này làm **hoàn toàn bằng dữ liệu giả (mock)**, không cần Firebase hay logic thật của Module 1. Việc nối với logic thật làm ở M3-01.
-
-**Trong phạm vi:**
-- 8 màn hình: Chính, Gameplay offline, Lịch sử, Bảng vàng, Phòng chờ, Gameplay online (kèm overlay kết quả), Cài đặt. Overlay Game Over nằm trong màn Gameplay offline.
-- SQLite: `DatabaseHelper` với 3 bảng `players`, `game_records`, `match_history`, cùng 3 DAO tương ứng.
-- 2 RecyclerView: Lịch sử và Bảng vàng.
-- `SoundManager`: âm đúng / sai / hết giờ và rung, bật/tắt bằng SharedPreferences.
-
-**Ngoài phạm vi** (KHÔNG làm trong module này):
-- Tính điểm, đếm giờ theo luật chơi, sinh câu hỏi → đã có ở `GameController` / `MatchController` / `ProblemDAO` của Module 1. Activity chỉ hiển thị những gì listener truyền vào.
-- Gọi Firebase dưới bất kỳ hình thức nào.
-- Thay mock bằng lời gọi thật → M3-01.
-
-**Sản phẩm bàn giao:**
-
-| Loại | File / Hạng mục |
-|---|---|
-| Activity | `frm/FrmMainActivity`, `FrmGameActivity`, `FrmHistoryActivity`, `FrmLeaderboardActivity`, `FrmLobbyActivity`, `FrmOnlineGameActivity`, `FrmSettingsActivity` |
-| Adapter | `frm/HistoryAdapter.java`, `frm/LeaderboardAdapter.java` |
-| Layout | `activity_frm_main`, `activity_frm_game`, `activity_frm_history`, `item_history`, `activity_frm_leaderboard`, `item_leaderboard`, `activity_frm_lobby`, `activity_frm_online_game`, `activity_frm_settings` |
-| Entity | `entity/Player.java`, `entity/GameRecord.java` |
-| DAO SQLite | `dao/DatabaseHelper.java`, `dao/MatchHistoryDAO.java`, `dao/PlayerDAO.java`, `dao/GameRecordDAO.java` |
-| Media | `util/SoundManager.java`; `res/raw/correct.mp3`, `wrong.mp3`, `timeout.mp3` |
-| Cấu hình | Khai báo 4 Activity mới và quyền `VIBRATE` trong Manifest; thư viện `recyclerview` trong `libs.versions.toml` và `app/build.gradle.kts` |
-
-**Quy tắc mock (bắt buộc, để M3-01 xóa nhanh):**
-- Mỗi Activity gom toàn bộ dữ liệu giả vào **đúng một hàm private `loadMockData()`**, gọi ở cuối `onCreate`.
-- Dòng đầu hàm có comment `// MOCK - xóa ở M3-01`.
-- Dữ liệu giả phải đi qua chính các hàm của listener (ví dụ gọi `onScoreUpdated(120, 3, 200)`), không gán thẳng vào View.
-
-**Quy tắc sửa file (tránh conflict với Hùng):**
-- Module 2 chỉ sửa các file trong bảng trên.
-- **Không** sửa `controller/`, `entity/MathProblem`, `entity/GameSession`, `entity/MatchHistory`, `dao/ProblemDAO`, các file Firebase.
-- Nếu thấy interface ở mục 2.2 thiếu hàm hoặc sai, mở comment trong issue M1-01 để Hùng sửa; không tự sửa.
-- `AndroidManifest.xml`, `build.gradle.kts` và `libs.versions.toml` là file dùng chung: chỉ thêm đúng dòng cần thiết, pull `main` trước khi sửa.
-
-**Phong cách:** Dùng bảng màu trong `res/values/colors.xml` và nền nút `drawable/bg_retro_*.xml`. Không thêm màu mã hex trực tiếp vào layout.
-
-**Phụ thuộc vào Module 1:**
-- M2-01, M2-02 làm được ngay.
-- M2-03, M2-04, M2-07, M2-08 cần M1-01 (interface + `MatchHistory`) đã merge vào `main`.
-
-**Thứ tự làm:** phần offline M2-01 → M2-06, rồi phần online M2-07 → M2-08, cuối cùng là Media M2-09.
-
-**Điều kiện hoàn thành module** (đủ tất cả mới được đóng milestone):
-1. 9 issue M2-01 → M2-09 đã đóng, mỗi issue có PR đã merge.
-2. Từ màn Chính mở được cả 7 màn còn lại; bấm Back ở mọi màn không crash.
-3. Mỗi màn hiển thị đúng dữ liệu mock, và xoay màn hình không crash.
-4. Logcat CRUD `match_history` đúng như Requirement của M2-03. Bảng vàng sắp đúng thứ tự điểm.
-5. Tắt Âm thanh hoặc Rung trong Cài đặt thì có hiệu lực ngay, và vẫn giữ sau khi tắt app mở lại.
-6. Tìm `"-> "` trong `app/src/main/java` không ra kết quả nào (không dùng lambda).
-7. Đã chạy thử trên 1 máy ảo Android 8.0 (API 26) trở lên.
-
-**Rủi ro đã biết:**
-- Máy ảo không rung được. Kiểm tra rung bằng log, hoặc trên điện thoại thật nếu có.
-- `VibrationEffect` chỉ có từ API 26, trong khi minSdk là 24. Phải rẽ nhánh theo `Build.VERSION.SDK_INT` như ghi trong M2-09.
-
-### [M2-01] Giao diện màn hình Chính
-- **Phụ thuộc:** không có.
-- **Mô tả:** PLAN mục M2.1. Màn menu đầu tiên khi mở app.
-- **Input:** Stub `FrmMainActivity.java` và `activity_frm_main.xml` (hiện chỉ có tên màn); bảng màu trong `colors.xml` và các nền nút `bg_retro_*`.
+### [M3-06] UC Quản lý lịch sử đấu: MatchHistoryDAO + FrmHistoryActivity · @HungNguyenBa1811
+- **Phụ thuộc:** M3-04, M3-07.
+- **Mô tả:** Code UC3 đúng theo M2-03 và M2-05: lưu kết quả khi trận kết thúc, xem danh sách, xóa một trận.
+- **Input:** Bảng `tblMatchHistory` (M2-02, đã được tạo trong `DatabaseHelper` ở M3-07); `DAO` và `PlayerDAO` (M3-07).
 - **Output:**
-  - Tiêu đề game, ô nhập tên `etUsername`.
-  - 5 nút:
-    - `btnPlayOnline` "CHƠI NGAY" → `FrmLobbyActivity`, truyền tên qua Intent.
-    - `btnPlayOffline` "CHƠI OFFLINE" → `FrmGameActivity`, truyền tên qua Intent.
-    - `btnHistory` "LỊCH SỬ" → `FrmHistoryActivity`.
-    - `btnLeaderboard` "BẢNG VÀNG" → `FrmLeaderboardActivity`.
-    - `btnSettings` "CÀI ĐẶT" → `FrmSettingsActivity`.
-- **Requirement:** Mỗi nút mở đúng màn. Màn nào chưa làm thì hiện `Toast` "Đang phát triển".
-- **Constraint:** Dùng `findViewById` và `new View.OnClickListener()`, không dùng lambda.
-
-### [M2-02] Giao diện màn Gameplay offline
-- **Phụ thuộc:** không có (interface `GameControllerListener` đã có sẵn trong stub).
-- **Mô tả:** PLAN mục M2.3. Màn chơi offline theo luật trong README: 6s mỗi câu, 3 mạng, combo.
-- **Input:** Stub `FrmGameActivity` (đã implement `GameControllerListener`, các hàm để trống); `activity_frm_game.xml` (hiện chỉ có tên màn); mục "Giao diện & Phong cách Retro" trong README.
-- **Output:**
-  - Layout gồm:
-    - Tên người chơi, BEST, điểm, combo `xN`, mạng `♥ ♥ ♥`.
-    - ProgressBar thời gian kèm số giây còn lại.
-    - Phép tính chữ to.
-    - Lưới 2x2 nút đáp án: cao ≥ 72dp, chữ monospace 26sp.
-    - Dòng phản hồi `+12 PTS!` / `MISS!`.
-    - Overlay Game Over: điểm cuối, kỷ lục, nút CHƠI LẠI / VỀ MENU.
-  - Viết thân 6 hàm của listener để cập nhật đúng View.
-  - Mock trong `loadMockData()`: gọi lần lượt cả 6 hàm listener với dữ liệu giả; thêm 1 nút tạm hoặc `Handler` để gọi `onGameOver` sau 3s, nhằm kiểm tra overlay.
-- **Requirement:** Mỗi hàm listener cập nhật đúng View. Overlay hiện/ẩn đúng lúc.
-- **Constraint:** Không tính điểm trong Activity (logic nằm ở `GameController`). Dùng `findViewById` và anonymous class.
-
-### [M2-03] SQLite: DatabaseHelper + bảng `match_history` + CRUD
-- **Phụ thuộc:** M1-01 (cần entity `MatchHistory`).
-- **Mô tả:** PLAN mục M2.5. Tạo database của app và phần lưu kết quả trận online (D5).
-- **Input:** Stub `dao/DatabaseHelper.java`; Pattern 2.
-- **Output:**
-  - `DatabaseHelper.onCreate` tạo cả 3 bảng:
-    - `players (id, username UNIQUE, high_score, created_at)`
-    - `game_records (id, player_id, score, max_streak, total_correct, total_wrong, played_at)`
-    - `match_history`:
-      ```sql
-      CREATE TABLE match_history (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          opponent_name TEXT,
-          my_score INTEGER,
-          opponent_score INTEGER,
-          result TEXT
-      )
-      ```
-  - `onUpgrade`: DROP rồi tạo lại, giống Pattern 2.
-  - `dao/MatchHistoryDAO.java` với 4 hàm:
-    - `insert(MatchHistory)`
-    - `getAll()`: mới nhất xếp trước
-    - `update(MatchHistory)`
-    - `delete(int id)`
-- **Requirement:** Test bằng log: insert 3 bản ghi → `getAll()` trả về 3 → update 1 → delete 1 → còn 2, đúng dữ liệu.
-- **Constraint:**
-  - Dùng `ContentValues` và `rawQuery`/`query`, không dùng Room.
-  - `update`/`delete` dùng placeholder `"id = ?"`, không nối chuỗi.
-
-### [M2-04] Màn Lịch sử + HistoryAdapter
-- **Phụ thuộc:** M1-01 (cần entity `MatchHistory`).
-- **Mô tả:** PLAN mục M2.4. Hiển thị danh sách các trận online đã đấu.
-- **Input:** Pattern 1 trong CONVENTION; entity `MatchHistory`.
-- **Output:**
-  - Thêm `androidx.recyclerview` vào `libs.versions.toml` và `app/build.gradle.kts`.
-  - `FrmHistoryActivity` + layout `activity_frm_history.xml` (RecyclerView, nút Back).
-  - Layout `item_history.xml`: thời gian, tên đối thủ, tỉ số `X - Y`, kết quả (WIN xanh `arcade_green`, LOSE đỏ `arcade_red`, DRAW vàng).
-  - `frm/HistoryAdapter.java` theo Pattern 1, dùng `List<MatchHistory>`.
-  - Mock trong `loadMockData()`: tự viết tay một `List<MatchHistory>` 5 phần tử, có đủ 3 kết quả WIN / LOSE / DRAW.
-- **Requirement:** Danh sách cuộn được. Danh sách rỗng thì hiện "Chưa có trận nào".
-- **Constraint:** Theo đúng Pattern 1: không dùng DiffUtil, ListAdapter hay ViewBinding.
-
-### [M2-05] Đổ dữ liệu SQLite lên màn Lịch sử
-- **Phụ thuộc:** M2-03, M2-04.
-- **Mô tả:** PLAN mục M2.6. Thay mock bằng dữ liệu thật đọc từ SQLite.
-- **Input:** `MatchHistoryDAO`, `HistoryAdapter`.
-- **Output:**
-  - `FrmHistoryActivity` gọi `getAll()` trong `Thread`, rồi dùng `runOnUiThread` để gán cho adapter (Pattern 3).
-  - Nhấn giữ 1 dòng thì hiện `AlertDialog` "Xóa trận này?"; đồng ý thì gọi `delete`, xóa khỏi list và `notifyItemRemoved`.
+  - **`MatchHistoryDAO extends DAO`:**
+    - `insert(MatchHistory)`.
+    - `getAll(Player)`: mới nhất xếp trước.
+    - `delete(int id)`.
+  - **Lưu kết quả:** khi `onMatchEnd`, `FrmOnlineGameActivity` gọi `insert` trong `Thread`.
+  - **`FrmHistoryActivity`** + `HistoryAdapter` (Pattern 1) + `item_history.xml`:
+    - Mỗi dòng gồm thời gian, đối thủ, tỉ số `X - Y`, kết quả: WIN màu `arcade_green`, LOSE màu `arcade_red`, DRAW màu vàng.
+    - Kết quả tính bằng `getResult()`, không lưu vào CSDL.
+  - **Xóa:** nhấn giữ 1 dòng thì hiện `AlertDialog` "Xóa trận này?"; đồng ý thì `delete` + `notifyItemRemoved`.
+  - Thêm `androidx.recyclerview` vào `libs.versions.toml` nếu M3-09 chưa thêm.
 - **Requirement:**
-  - Insert thêm bản ghi rồi mở lại màn thì thấy bản ghi mới.
+  - Đấu xong 1 trận thì Lịch sử có thêm dòng mới.
+  - Chưa có trận thì hiện "Chưa có trận nào".
   - Xoay màn hình không crash.
-- **Constraint:** Không truy vấn SQLite trên main thread.
-
-### [M2-06] Bảng vàng offline: Player, GameRecord, DAO + màn hình
-- **Phụ thuộc:** M2-03 (bảng đã được tạo), M2-04 (dùng lại cách làm RecyclerView).
-- **Mô tả:** PLAN mục M2.4 (phần Bảng xếp hạng). Lưu và hiển thị top điểm của chế độ offline.
-- **Input:** Stub `entity/Player`, `entity/GameRecord`, `dao/PlayerDAO`, `dao/GameRecordDAO`, `frm/FrmLeaderboardActivity`.
-- **Output:**
-  - Constructor, getter/setter cho `Player` và `GameRecord`.
-  - `PlayerDAO`:
-    - `findOrCreateByUsername()`: trim tên, viết hoa; tên rỗng thì dùng `PLAYER_1`.
-    - `updateHighScoreIfHigher()`.
-  - `GameRecordDAO`:
-    - `insertRecord()`.
-    - `getTopRecords(limit)`: JOIN với `players`, sắp `score DESC`.
-  - `FrmLeaderboardActivity`: RecyclerView top 20, mỗi dòng gồm hạng, tên, điểm, combo cao nhất, % chính xác.
-  - `frm/LeaderboardAdapter.java` (theo Pattern 1) + layout `item_leaderboard.xml`.
-- **Requirement:** Insert 3 ván giả thì Bảng vàng xếp đúng thứ tự. Chưa có dữ liệu thì hiện "Chưa có kỷ lục".
 - **Constraint:**
-  - Truy vấn chạy trong `Thread` (Pattern 3).
-  - Dùng placeholder `?` thay vì nối chuỗi tên người chơi, nếu không tên có dấu `'` sẽ làm lỗi câu SQL.
+  - SQLite chạy trong `Thread` + `runOnUiThread` (Pattern 3).
+  - `delete` dùng placeholder `"id = ?"`, không nối chuỗi.
+  - Không dùng DiffUtil, ListAdapter.
 
-### [M2-07] Giao diện màn Phòng chờ
-- **Phụ thuộc:** M1-01.
-- **Mô tả:** PLAN mục M2.2. Màn hiển thị trong lúc ghép trận.
-- **Input:** `LobbyListener` (mục 2.2), tên người chơi lấy từ Intent.
+### [M3-07] CSDL SQLite + DAO cha + PlayerDAO + màn hình Chính · @Minahn210
+- **Phụ thuộc:** M2-07.
+- **Mô tả:** Nền SQLite cho cả nhóm và màn mở đầu của UC4 (nhập tên). Hùng cần issue này cho M3-06, nên **merge trước 04/11**.
+- **Input:** Câu `CREATE TABLE` ở M2-02; mục 2.3; biểu đồ lớp M2-04.
 - **Output:**
-  - `FrmLobbyActivity implements LobbyListener` + layout `activity_frm_lobby.xml`.
-  - Màn hiển thị: tên mình; tên đối thủ (hoặc dòng "Đang tìm đối thủ..." kèm ProgressBar); dòng trạng thái; nút HỦY.
-  - Đăng ký Activity trong Manifest.
-  - Mock trong `loadMockData()`: gọi `onWaiting(name)`, rồi `new Handler().postDelayed(new Runnable(){...}, 2000)` để gọi `onMatchFound(name, "HOANG")`.
-  - Khi `onMatchFound` được gọi: hiện tên đối thủ, sau 1.5s tự chuyển sang `FrmOnlineGameActivity`.
-- **Requirement:** Hiển thị đúng 2 trạng thái (đang chờ / đã có đối thủ). Bấm HỦY thì quay về màn Chính.
-- **Constraint:** Activity **không gọi Firebase trực tiếp**, chỉ được gọi `MatchController` (phần này ghép ở M3-01).
-
-### [M2-08] Giao diện màn Gameplay online
-- **Phụ thuộc:** M1-01, M2-02 (dùng lại layout màn offline).
-- **Mô tả:** PLAN mục M2.3. Màn thi đấu 1v1 hiển thị điểm 2 bên.
-- **Input:** `OnlineGameListener` (mục 2.2); layout `activity_frm_game.xml` làm xong ở M2-02.
-- **Output:**
-  - `FrmOnlineGameActivity implements OnlineGameListener` + layout `activity_frm_online_game.xml`.
-  - Màn gồm: đồng hồ 60s, phép tính, lưới 2x2 nút đáp án, điểm **MÌNH vs ĐỐI THỦ**.
-  - Overlay kết quả THẮNG / THUA / HÒA, có tỉ số và nút "Về menu".
-  - Mock trong `loadMockData()`:
-    - Mỗi lần bấm đáp án gọi `onQuestion(...)` với một câu hỏi giả.
-    - Một `Handler` cứ 3s gọi `onOpponentScore` với điểm tăng dần.
-    - Một `CountDownTimer` 60s gọi `onTimerTick`; hết giờ gọi `onMatchEnd` với dữ liệu giả.
+  - **`DatabaseHelper.onCreate`:** tạo đủ 3 bảng `tblPlayer`, `tblGameRecord`, `tblMatchHistory`, dán nguyên câu lệnh từ M2-02. `onUpgrade`: DROP rồi tạo lại.
+  - **`dao/DAO.java`** đúng mục 2.3.
+  - **`PlayerDAO extends DAO`:** `findOrCreateByUsername(String)`: trim tên, viết hoa; tên rỗng thì dùng `PLAYER_1`.
+  - **`FrmMainActivity`** + layout:
+    - Tiêu đề game, ô nhập `etUsername`.
+    - 5 nút, đều truyền tên qua Intent:
+      - `btnPlayOnline` "CHƠI NGAY" → `FrmLobbyActivity`.
+      - `btnPlayOffline` "CHƠI OFFLINE" → `FrmGameActivity`.
+      - `btnHistory` "LỊCH SỬ" → `FrmHistoryActivity`.
+      - `btnLeaderboard` "BẢNG VÀNG" → `FrmLeaderboardActivity`.
+      - `btnSettings` "CÀI ĐẶT" → `FrmSettingsActivity`.
 - **Requirement:**
-  - Mỗi hàm trong `OnlineGameListener` cập nhật đúng View.
-  - Bấm Back thì hiện `AlertDialog` "Thoát sẽ bị xử thua?".
-- **Constraint:** **Không tính điểm trong Activity** (logic tính điểm nằm ở `MatchController`). Mỗi hàm < 20 dòng.
+  - Log: gọi `findOrCreateByUsername("hung")` 2 lần thì trả về cùng id.
+  - Tên `O'NEIL` không làm lỗi SQL.
+  - Mỗi nút mở đúng màn.
+- **Constraint:**
+  - Dùng `ContentValues` và placeholder `?`, không nối chuỗi.
+  - Truy vấn trong `Thread`.
+  - `findViewById` và `new View.OnClickListener()`, không dùng lambda.
 
-### [M2-09] Media: âm thanh, rung + màn Cài đặt
-- **Phụ thuộc:** M2-01, M2-02.
-- **Mô tả:** PLAN mục M2.7. Phản hồi âm thanh/rung khi trả lời; người chơi tắt/bật được (D7).
-- **Input:** Pattern 4 (SoundManager).
+### [M3-08] UC Chơi offline: GameController + FrmGameActivity + lưu kết quả · @Minahn210
+- **Phụ thuộc:** M3-02, M3-07.
+- **Mô tả:** Code UC4 đúng theo M2-04 và M2-06. Đây là chức năng chính Hoàng demo.
+- **Input:** Biểu đồ UC4; lõi `GameSession` và `ProblemDAO` (M3-02); `PlayerDAO` (M3-07).
 - **Output:**
-  - `res/raw/correct.mp3`, `wrong.mp3`, `timeout.mp3`: lấy từ nguồn miễn phí và ghi lại nguồn để đưa vào báo cáo.
-  - `util/SoundManager.java` dạng singleton, gồm `playSound(context, resId)` và `vibrate(context, ms)`.
+  - **`GameController`:**
+    - Constructor nhận `(GameSession, ProblemDAO, int bestScore, GameControllerListener)`.
+    - `startGame()`.
+    - `CountDownTimer` 6s mỗi câu; hết giờ tính như trả lời sai.
+    - `submitAnswer()`.
+    - Level tăng theo số câu đã ra.
+    - `onPause`/`onResume`/`onDestroy`: dừng hoặc chạy lại timer.
+    - Hết mạng thì gọi `onGameOver(session, score > bestScore)`.
+  - **`GameRecordDAO extends DAO`:**
+    - `insertRecord(GameRecord)`.
+    - `getBestScore(Player)`: `SELECT MAX(score)`, thay cho cột `high_score` đã bỏ.
+  - **`FrmGameActivity`** + layout theo phác thảo M2-04:
+    - Lưới 2x2 nút đáp án, cao ≥ 72dp, chữ monospace 26sp.
+    - Overlay Game Over: điểm cuối, kỷ lục, nút CHƠI LẠI / VỀ MENU.
+    - Khi `onGameOver`: lưu `GameRecord` trong `Thread`.
+- **Requirement:**
+  - Hết giờ thì mất mạng; hết 3 mạng thì hiện Game Over.
+  - Ván vừa chơi được lưu vào `tblGameRecord`.
+  - Điểm vượt kỷ lục thì hiện "KỶ LỤC MỚI".
+- **Constraint:**
+  - Không tính điểm trong Activity (logic nằm ở `GameController` / `GameSession`).
+  - Hủy timer trong `onDestroy()`.
+
+### [M3-09] UC Xem bảng vàng: FrmLeaderboardActivity + LeaderboardAdapter · @Minahn210
+- **Phụ thuộc:** M3-08.
+- **Mô tả:** Code UC5 đúng theo M2-04 và M2-06. Đây là phần thầy hay yêu cầu xóa đi và code lại ngay tại chỗ (Adapter + SQLite).
+- **Input:** Biểu đồ UC5; `tblGameRecord`, `tblPlayer`.
+- **Output:**
+  - **`GameRecordDAO.getTopRecords(int limit)`:**
+    - JOIN `tblGameRecord` với `tblPlayer`, sắp `score DESC`.
+    - Mỗi dòng đóng gói vào `GameRecord` có `Player` bên trong.
+  - Thêm `androidx.recyclerview` vào `libs.versions.toml` và `app/build.gradle.kts`.
+  - **`FrmLeaderboardActivity`** + `LeaderboardAdapter` (Pattern 1) + `item_leaderboard.xml`:
+    - Hiện top 20.
+    - Mỗi dòng gồm hạng, tên, điểm, combo cao nhất, % chính xác. % chính xác tính khi hiển thị, không lưu.
+- **Requirement:**
+  - Chơi 3 ván thì Bảng vàng xếp đúng thứ tự.
+  - Chưa có dữ liệu thì hiện "Chưa có kỷ lục".
+- **Constraint:**
+  - Truy vấn trong `Thread` (Pattern 3).
+  - Không dùng DiffUtil, ListAdapter, ViewBinding.
+
+### [M3-10] UC Cài đặt âm thanh: SoundManager + FrmSettingsActivity · @Minahn210
+- **Phụ thuộc:** M3-08.
+- **Mô tả:** Code UC6 đúng theo M2-04 và M2-06: phản hồi âm thanh và rung khi trả lời, người chơi tắt/bật được. Đây là chức năng **bị cắt đầu tiên** nếu trễ (mục 8).
+- **Input:** Biểu đồ UC6; Pattern 4 (Singleton).
+- **Output:**
+  - `res/raw/correct.mp3`, `wrong.mp3`, `timeout.mp3`: lấy từ nguồn miễn phí, ghi lại nguồn để đưa vào báo cáo.
+  - **`util/SoundManager.java`** dạng Singleton:
+    - `playSound(context, resId)` và `vibrate(context, ms)`.
+    - Kiểm tra cờ trong SharedPreferences `"settings"` trước khi phát âm hoặc rung.
   - Quyền `VIBRATE` trong Manifest.
-  - `FrmSettingsActivity` + layout `activity_frm_settings.xml`: 2 Switch (Âm thanh / Rung) lưu vào SharedPreferences `"settings"`.
-  - `SoundManager` kiểm tra cờ trong SharedPreferences trước khi phát âm hoặc rung.
-  - Gắn ngay vào màn offline (`FrmGameActivity.onFeedback`, khi hết giờ) để test được luôn.
+  - **`FrmSettingsActivity`** + layout: 2 Switch Âm thanh / Rung.
+  - Gắn vào `FrmGameActivity` (khi trả lời và khi hết giờ). Màn online do Hùng gắn ở M4-01.
 - **Requirement:** Bật/tắt có hiệu lực ngay và vẫn giữ sau khi tắt app mở lại.
 - **Constraint:**
-  - Gọi `release()` MediaPlayer cũ trước khi tạo cái mới.
-  - minSdk là 24 nhưng `VibrationEffect` cần API 26, nên phải kiểm tra `Build.VERSION.SDK_INT`.
+  - `release()` MediaPlayer cũ trước khi tạo cái mới.
+  - Kiểm tra `Build.VERSION.SDK_INT` trước khi dùng `VibrationEffect`.
   - Mỗi file âm thanh < 100KB.
 
 ---
 
-## 6. MODULE 3 — Ghép nối, Kiểm thử & Báo cáo · label `module-3-integration`
+## 7. MILESTONE 4 — Kiểm thử & Báo cáo
 
-### Mô tả module (dùng làm description cho Milestone `M3 - Tich hop`)
+### Mô tả milestone (dùng làm description cho Milestone `M4 - Kiem thu & Bao cao`)
 
-**Người phụ trách:** Cả 2 (@HungNguyenBa1811, @Minahn210).
-**Thời điểm:**
-- M3-03 (báo cáo) mở ngay từ đầu dự án.
-- M3-01 bắt đầu khi milestone M1 và M2 đều đã đóng.
-- M3-02 bắt đầu sau M3-01.
+**Người phụ trách:** M4-01 làm chung. M4-02 là của Hùng, M4-03 là của Hoàng; mỗi người tự viết báo cáo của mình.
+**Thời gian:** 10/11 → **15/11/2026**. Hai issue báo cáo mở ngay từ đầu dự án, và mỗi issue phân tích/thiết kế xong là dán luôn vào báo cáo.
 
-**Thời gian:** 09/11 → **15/11/2026** (1 tuần). Báo cáo M3-03 viết dần từ 19/10.
-
-**Mục tiêu.** Biến 2 nửa đã làm riêng thành một app chạy thật trên 2 máy, chứng minh bằng kết quả kiểm thử, và hoàn thành báo cáo nộp thầy.
+**Mục tiêu.** Chứng minh app chạy đúng trên 2 máy và nộp 2 bài báo cáo cá nhân đúng khung đề (mục 0).
 
 **Trong phạm vi:**
-- Xóa toàn bộ `loadMockData()`.
-- Nối Activity với `GameController` / `MatchController`.
-- Lưu kết quả vào SQLite khi ván kết thúc; gắn âm thanh vào các sự kiện đúng / sai / hết giờ.
-- Kiểm thử trên 2 máy và đo độ trễ.
-- Báo cáo chung trên một file online.
+- Gắn âm thanh vào màn online.
+- Kiểm thử 2 máy và đo độ trễ.
+- Chụp ảnh giao diện từ app thật.
+- Hoàn thiện 2 báo cáo.
 
 **Ngoài phạm vi:**
-- **Không thêm tính năng mới.** Phát hiện lỗi thì mở issue mới với label `bug` và gắn vào milestone này.
-- Ý tưởng tính năng mới thì ghi vào issue riêng, label `enhancement`, không gắn milestone.
+- **Không thêm tính năng mới.** Lỗi phát hiện được thì mở issue mới, label `bug`, gắn vào milestone này.
+- Ý tưởng mới thì mở issue label `enhancement`, không gắn milestone.
 
 **Sản phẩm bàn giao:**
+- `docs/TEST_REPORT.md`.
+- APK debug.
+- `docs/BaoCao_Hung.docx` và `docs/BaoCao_Hoang.docx`.
 
-| Loại | File / Hạng mục |
-|---|---|
-| App | APK debug (`app/build/outputs/apk/debug/app-debug.apk`) chạy được luồng đầy đủ trên 2 máy |
-| Kiểm thử | `docs/TEST_REPORT.md`: bảng test case + độ trễ trung bình của 10 lần đo |
-| Báo cáo | Link file online dùng chung (dán trong issue M3-03) và bản cuối `docs/BaoCao.docx` |
+**Điều kiện hoàn thành milestone:**
+1. M4-01 → M4-03 và mọi issue `bug` trong milestone đều đã đóng.
+2. Chạy được trên 2 máy:
+   - Luồng online: Chính → Tìm trận → Thi đấu → Kết quả → Lịch sử có dòng mới.
+   - Luồng offline: Chính → Chơi offline → Game Over → Bảng vàng có dòng mới.
+3. Mỗi báo cáo có đủ các mục theo thứ tự đề yêu cầu. Mỗi hình và mỗi tên lớp đều khớp với code.
 
-**Cách làm việc:**
-- M3-01: ngồi cùng nhau trên một nhánh `feat/M3-01-integration`. Hùng nối phần controller, Hoàng nối phần Activity. Commit nhỏ, mỗi commit một màn.
-- M3-03: ai xong task nào ở M1/M2 thì viết luôn mục báo cáo tương ứng (bảng phân công trong M3-03), không dồn đến cuối.
-
-**Điều kiện hoàn thành module** (đủ tất cả mới coi là xong dự án):
-1. 3 issue M3-01 → M3-03 và mọi issue `bug` trong milestone đều đã đóng.
-2. Trên 2 máy chạy được luồng: Chính → Phòng chờ → Chơi online → Kết quả → Lịch sử có dòng mới. Thêm luồng: Chơi offline → Game Over → Bảng vàng có dòng mới.
-3. Tìm `MOCK` trong `app/src` không ra kết quả nào.
-4. `docs/TEST_REPORT.md` có đủ test case của M1-07, M1-09 và luồng chính; mỗi case đều Pass hoặc có issue `bug` đã đóng.
-5. Báo cáo: mọi mục trong checklist M3-03 đã tick; mỗi người đã đọc lại phần của người kia; `docs/BaoCao.docx` đã có trong `main`.
-
-### [M3-01] Ghép giao diện với logic · @HungNguyenBa1811 @Minahn210
-- **Phụ thuộc:** Toàn bộ M1 và M2-01 → M2-09.
-- **Mô tả:** PLAN mục M3.1. Xóa mock, nối các Activity với `GameController` và `MatchController`.
-- **Input:** Các Activity đang dùng mock; `GameController`, `MatchController` đã hoàn chỉnh.
+### [M4-01] Ghép nối, kiểm thử chéo trên 2 máy + đo độ trễ · @HungNguyenBa1811 @Minahn210
+- **Phụ thuộc:** Toàn bộ M3.
+- **Mô tả:** Chạy toàn bộ app trên 2 máy ảo (hoặc 2 điện thoại), ghi kết quả kiểm thử.
+- **Input:** Kịch bản chuẩn và ngoại lệ của 6 UC (M1-02, M1-03); test case của M3-03, M3-05.
 - **Output:**
-  - `FrmLobbyActivity` gọi `signIn` rồi `findMatch`; nút HỦY gọi `cancelFind`.
-  - `FrmOnlineGameActivity` gọi `startGame`, `submitAnswer`, `leaveMatch`.
-  - Khi `onMatchEnd`: lưu `MatchHistoryDAO.insert` trong `Thread`.
-  - Offline: `FrmGameActivity` lấy `Player` qua `PlayerDAO.findOrCreateByUsername` rồi tạo `GameController` thật. Khi `onGameOver`: gọi `GameRecordDAO.insertRecord` và `PlayerDAO.updateHighScoreIfHigher` trong `Thread`.
-  - Gọi `SoundManager` khi trả lời đúng/sai và khi hết giờ.
-- **Requirement:** Chạy được luồng đầy đủ trên 2 máy: Chính → Phòng chờ → Chơi → Kết quả → Lịch sử có thêm dòng mới.
-- **Constraint:** Ngồi làm cùng nhau trên một nhánh `feat/M3-01-integration` để tránh conflict. Không còn đoạn mock nào trong code.
+  - Hùng gắn `SoundManager` vào `FrmOnlineGameActivity`.
+  - **`docs/TEST_REPORT.md`:**
+    - Ghi môi trường test: máy ảo hay máy thật, phiên bản Android, loại mạng.
+    - Bảng test case: Bước / Kỳ vọng / Thực tế / Pass-Fail.
+    - Mỗi UC tối thiểu kịch bản chuẩn + các ngoại lệ đã viết.
+  - **Độ trễ:**
+    - Log `System.currentTimeMillis()` lúc máy A gửi điểm và lúc máy B nhận được.
+    - 2 máy ảo trên cùng 1 PC dùng chung đồng hồ nên trừ trực tiếp được.
+    - Đo 10 lần, ghi trung bình.
+  - Mỗi bug phát hiện được thành một issue mới, có label `bug`.
+  - Chụp ảnh từng màn của app thật cho 2 báo cáo.
+- **Requirement:** Pass toàn bộ test case, hoặc các case Fail đều đã có issue `bug` đã đóng.
+- **Constraint:** Không thêm tính năng mới trong issue này.
 
-### [M3-02] Kiểm thử chéo trên 2 máy + đo độ trễ · @HungNguyenBa1811 @Minahn210
-- **Phụ thuộc:** M3-01.
-- **Mô tả:** PLAN mục M3.2. Test trên 2 máy ảo (hoặc 2 điện thoại thật).
-- **Input:** Các test case trong M1-07, M1-09 và luồng chính của M3-01.
+### [M4-02] Báo cáo cá nhân – Hùng (Tìm trận, Thi đấu online, Quản lý lịch sử đấu) · @HungNguyenBa1811
+- **Phụ thuộc:** M1-02, M2-01, M2-02, M2-03, M2-05, M4-01.
+- **Mô tả:** Báo cáo thiết kế cá nhân của Hùng, đúng khung đề ở mục 0. Mở issue từ đầu; mỗi mục dán vào ngay khi issue nguồn được đóng.
+- **Input:** `REPORT_CONVENTION.md` (khung + checklist trước khi nộp); tài liệu trong `docs/chung/` và `docs/hung/`; ảnh app thật từ M4-01.
 - **Output:**
-  - `docs/TEST_REPORT.md`: bảng test case gồm Bước / Kỳ vọng / Thực tế / Pass-Fail.
-  - Độ trễ: log `System.currentTimeMillis()` lúc máy A gửi điểm và lúc máy B nhận được. 2 máy ảo trên cùng 1 PC dùng chung đồng hồ nên trừ trực tiếp được. Đo 10 lần, ghi trung bình.
-  - Mỗi bug phát hiện được tạo thành một issue mới, có label `bug`.
-- **Requirement:** Pass toàn bộ test case, hoặc các case Fail đều đã có issue bug tương ứng.
-- **Constraint:** Ghi rõ môi trường test (máy ảo hay máy thật, Android version, loại mạng).
+  - Một file báo cáo online của riêng Hùng; dán link vào issue này.
+  - Bản cuối xuất ra `docs/BaoCao_Hung.docx`.
+  - Thứ tự mục bắt buộc:
 
-### [M3-03] Báo cáo chung (1 file, cả 2 cùng viết) · @HungNguyenBa1811 @Minahn210 · label `docs`
-- **Phụ thuộc:** Mở issue và tạo file ngay từ đầu. Mỗi người viết phần của mình **ngay khi xong task liên quan**, không dồn đến cuối. Ảnh giao diện và kết quả test chốt sau M3-01 và M3-02.
-- **Mô tả:** PLAN mục M2.8 + M3.3, gộp thành một báo cáo duy nhất. Cả 2 cùng soạn trên **một file online dùng chung** (Google Docs hoặc Word Online), không mỗi người một file rồi ghép.
-- **Input:** Code và sơ đồ thật trong repo; schema mục 2.1; kết quả M3-02.
-- **Output:**
-  - **Một file báo cáo dùng chung.** Dán link vào phần mô tả issue, cả 2 đều có quyền sửa.
-  - Bản cuối xuất `.docx`, lưu vào `docs/BaoCao.docx`.
-  - Phân công theo mục, ghi thành checklist trong issue:
-
-    | Mục | Nội dung | Người viết |
+    | Mục | Nội dung | Lấy từ |
     |---|---|---|
-    | 1 | Giới thiệu đề tài, luật chơi | Hùng |
-    | 2 | Phân tích yêu cầu: sơ đồ Use case (Đăng nhập ẩn danh, Chơi online, Chơi offline, Xem/Xóa lịch sử, Xem bảng vàng, Cài đặt) | Hùng |
-    | 3.1 | Kiến trúc: MVC, các package `entity` / `dao` / `controller` / `frm` | Hùng |
-    | 3.2 | CSDL SQLite: ERD 3 bảng `players`, `game_records`, `match_history` | Hoàng |
-    | 3.3 | Firebase: schema `rooms`; Activity diagram cho Matchmaking, Realtime gameplay, Xử lý mất kết nối | Hùng |
-    | 3.4 | Thiết kế giao diện: ảnh từng màn (Chính, Phòng chờ, Gameplay online, Kết quả, Gameplay offline, Lịch sử, Bảng vàng, Cài đặt) | Hoàng |
-    | 3.5 | Media: âm thanh, rung, nguồn file âm thanh | Hoàng |
-    | 4 | Kiểm thử: bảng test case, độ trễ đo được (từ M3-02) | Cả 2 |
-    | 5 | **Hướng dẫn sử dụng sản phẩm**: các bước đánh số, gồm cài APK → nhập tên → chơi online → chơi offline → xem/xóa lịch sử → bảng vàng → cài đặt | Hoàng |
-    | 6 | Kết luận, bảng phân công công việc | Cả 2 |
+    | 1 | Mô tả chi tiết 3 chức năng bằng ngôn ngữ tự nhiên | M1-02 |
+    | 2 | Thiết kế CSDL: `tblMatchHistory` (kèm `tblPlayer` được tham chiếu) và cây `rooms` trên Firebase | M2-02 |
+    | 3 | Thiết kế lớp thực thể: `Room`, `RoomPlayer`, `MatchHistory`, `Player`, `MathProblem`, `GameSession` | M2-01 |
+    | 4.1.1 | Tìm trận: thiết kế giao diện | M2-03 + ảnh app thật |
+    | 4.1.2 | Tìm trận: biểu đồ lớp chi tiết | M2-03 |
+    | 4.1.3 | Tìm trận: kịch bản v3 + biểu đồ tuần tự chi tiết | M2-05 |
+    | 4.2.1 | Thi đấu online: thiết kế giao diện | M2-03 + ảnh app thật |
+    | 4.2.2 | Thi đấu online: biểu đồ lớp chi tiết | M2-03 |
+    | 4.2.3 | Thi đấu online: kịch bản v3 + biểu đồ tuần tự chi tiết (cả ngoại lệ thoát trận, mất mạng) | M2-05 |
+    | 4.3.1 | Quản lý lịch sử đấu: thiết kế giao diện | M2-03 + ảnh app thật |
+    | 4.3.2 | Quản lý lịch sử đấu: biểu đồ lớp chi tiết | M2-03 |
+    | 4.3.3 | Quản lý lịch sử đấu: kịch bản v3 + biểu đồ tuần tự chi tiết | M2-05 |
 
 - **Requirement:**
-  - Mọi mục trong checklist đều đã được tick.
-  - Mỗi ảnh và sơ đồ có chú thích "Hình x: ...", kèm 3–5 dòng giải thích.
-  - Hướng dẫn sử dụng đủ để người chưa từng dùng app tự chơi được.
-  - Trước khi nộp, mỗi người đọc lại phần của người kia.
+  - Mọi mục trong checklist đã tick.
+  - Mỗi hình có chú thích "Hình x: ..." và 3–5 dòng giải thích.
+  - Mỗi tên lớp, tên hàm, tên bảng trong báo cáo đều có trong code.
 - **Constraint:**
-  - Tên trạng thái và tên bước trong sơ đồ phải trùng với code (`waiting`/`playing`/`finished`, `onDisconnect`...).
-  - Ảnh chụp từ bản mock chỉ dùng tạm; trước khi nộp phải thay bằng ảnh bản thật.
-  - Không sửa file `.docx` trong repo song song (file nhị phân không merge được). Chỉ soạn trên file online, xong mới xuất ra repo một lần.
+  - Bài cá nhân: tự viết, tự vẽ. Phần chung (lớp thực thể, CSDL) chỉ lấy phần liên quan chức năng của mình.
+  - Ảnh giao diện chụp từ app thật, không dùng ảnh phác thảo.
+
+### [M4-03] Báo cáo cá nhân – Hoàng (Chơi offline, Xem bảng vàng, Cài đặt âm thanh) · @Minahn210
+- **Phụ thuộc:** M1-03, M2-01, M2-02, M2-04, M2-06, M4-01.
+- **Mô tả:** Báo cáo thiết kế cá nhân của Hoàng, đúng khung đề ở mục 0. Mở issue từ đầu; mỗi mục dán vào ngay khi issue nguồn được đóng.
+- **Input:** `REPORT_CONVENTION.md` (khung + checklist trước khi nộp); tài liệu trong `docs/chung/` và `docs/hoang/`; ảnh app thật từ M4-01.
+- **Output:**
+  - Một file báo cáo online của riêng Hoàng; dán link vào issue này.
+  - Bản cuối xuất ra `docs/BaoCao_Hoang.docx`.
+  - Thứ tự mục bắt buộc:
+
+    | Mục | Nội dung | Lấy từ |
+    |---|---|---|
+    | 1 | Mô tả chi tiết 3 chức năng bằng ngôn ngữ tự nhiên | M1-03 |
+    | 2 | Thiết kế CSDL: `tblPlayer`, `tblGameRecord` | M2-02 |
+    | 3 | Thiết kế lớp thực thể: `Player`, `GameRecord`, `MathProblem`, `GameSession` | M2-01 |
+    | 4.1.1 | Chơi offline: thiết kế giao diện | M2-04 + ảnh app thật |
+    | 4.1.2 | Chơi offline: biểu đồ lớp chi tiết | M2-04 |
+    | 4.1.3 | Chơi offline: kịch bản v3 + biểu đồ tuần tự chi tiết | M2-06 |
+    | 4.2.1 | Xem bảng vàng: thiết kế giao diện | M2-04 + ảnh app thật |
+    | 4.2.2 | Xem bảng vàng: biểu đồ lớp chi tiết | M2-04 |
+    | 4.2.3 | Xem bảng vàng: kịch bản v3 + biểu đồ tuần tự chi tiết | M2-06 |
+    | 4.3.1 | Cài đặt âm thanh: thiết kế giao diện | M2-04 + ảnh app thật |
+    | 4.3.2 | Cài đặt âm thanh: biểu đồ lớp chi tiết | M2-04 |
+    | 4.3.3 | Cài đặt âm thanh: kịch bản v3 + biểu đồ tuần tự chi tiết | M2-06 |
+
+- **Requirement:** Giống M4-02.
+- **Constraint:** Giống M4-02. Nếu UC6 bị cắt (mục 8), bỏ các mục 4.3.x.
 
 ---
 
-## 7. Thứ tự & phụ thuộc
+## 8. Thứ tự, lịch & cắt phạm vi
 
 ```
-Hùng :  M1-01 ──────────────────┐
-        M1-02 ─> M1-03 ─────────┴─> M1-04 ─┐
-        M1-05 ─> M1-06 ─> M1-07 ───────────┴─> M1-08 ─> M1-09 ─┐
-                                                               ├─> M3-01 ─> M3-02 ─> M3-03
-Hoàng:  M2-01 + M2-02 ─> M2-09 ────────────────────────────────┤
-        M2-02 ─> M2-08 (sau M1-01) ────────────────────────────┤
-        M2-03 (sau M1-01) ─┬─> M2-05 ──────────────────────────┤
-        M2-04 (sau M1-01) ─┴─> M2-06 ──────────────────────────┤
-        M2-07 (sau M1-01) ─────────────────────────────────────┘
-
-Cả 2:   M3-03 Báo cáo chung: mở từ đầu, mỗi người viết dần sau mỗi task, chốt sau M3-02
+Hùng :  M1-01 ─> M1-02 ─> M1-05 ─> M1-07 ──┐                M3-01 (song song tuần 1)
+                     └─> M1-04 <─ M1-03     │
+Hoàng:  (25/10 review M1-01) M1-03 ─> M1-06 ─> M1-08
+Chung:  M1-04 ─> M2-01 ─> M2-02 ─┬─> M2-03 (Hùng) ─> M2-05 ──┐
+                                 └─> M2-04 (Hoàng) ─> M2-06 ─┤
+                                     M2-03 + M2-04 ─> M2-07 ─┴─> Lập trình
+Hùng :  M2-07 ─> M3-02 ─┐
+        M3-01 ─> M3-03 ─┴─> M3-04 ─> M3-05 ─> M3-06 (cần M3-07) ─┐
+Hoàng:  M2-07 ─> M3-07 ─> M3-08 (cần M3-02) ─> M3-09 ─> M3-10 ───┴─> M4-01 ─> M4-02, M4-03
 ```
 
-### Lịch theo tuần (tổng 4 tuần, 19/10 → 15/11/2026)
+| Tuần | Hùng | Hoàng |
+|---|---|---|
+| **1** · 21/10 – 25/10 | M1-01 (22/10), M1-02 (23/10), M1-05 (24/10), M1-07 (25/10); song song M3-01 | Bận. Tối 25/10: review M1-01, đọc M1-02 làm mẫu |
+| **2** · 26/10 – 01/11 | M1-04 phần UC1–3 (26/10), M2-01 + M2-02 phần mình (27/10), M2-03 (28/10), M2-05 (29–30/10), M2-07 (31/10), M3-02 (31/10–02/11) | M1-03 (26/10), M1-04 phần UC4–6 + M1-06 (27/10), M1-08 (28/10), M2-01 + M2-02 phần mình (29/10), M2-04 (30/10), M2-06 (31/10–01/11), review M2-07 |
+| **3** · 02/11 – 08/11 | M3-03 (02–04/11), M3-04 (04–07/11), M3-05 (07–08/11) | Review M3-02, M3-07 (02–03/11), M3-08 (03–06/11), M3-09 (06–08/11) |
+| **4** · 09/11 – 15/11 | M3-06 (09–10/11) → M4-01 (10–12/11) → M4-02 (13–15/11) | M3-10 (09–10/11) → M4-01 (10–12/11) → M4-03 (13–15/11) |
 
-| Tuần | Hùng | Hoàng | Báo cáo (M3-03) |
-|---|---|---|---|
-| **1** · 19/10 – 25/10 | M1-01 (**merge trước 21/10**), M1-02, M1-03, M1-04, M1-05, M1-06 | Bận. Nếu có thời gian: đọc `CONVENTION.md` + mục 2, làm thử M2-01 | Hùng tạo file online, dựng khung mục lục, dán link vào issue |
-| **2** · 26/10 – 01/11 | M1-07, M1-08, M1-09 → **đóng milestone M1 ngày 01/11** | M2-01 → M2-06 (phần offline) | Hùng: mục 1, 2, 3.1 · Hoàng: mục 3.2 |
-| **3** · 02/11 – 08/11 | Review PR của Hoàng; hỗ trợ khi Hoàng bị kẹt | M2-07, M2-08, M2-09 → **đóng milestone M2 ngày 08/11** | Hùng: mục 3.3 · Hoàng: mục 3.4 (ảnh mock), 3.5 |
-| **4** · 09/11 – 15/11 | M3-01 (09–11/11) → M3-02 (12–13/11) → chốt báo cáo (14–15/11) | Cùng làm với Hùng | Cả 2: mục 4, 6; Hoàng: mục 5, thay ảnh bản thật; đọc chéo → **nộp 15/11** |
-
-**Mốc kiểm tra:** Tối Chủ nhật hằng tuần (25/10, 01/11, 08/11), cả 2 xem board GitHub. Issue nào trễ hơn lịch trên 2 ngày thì quyết định ngay: dồn việc, cắt bớt phạm vi, hoặc chuyển người làm.
+**Mốc kiểm tra:** Tối Chủ nhật hằng tuần (25/10, 01/11, 08/11), cả 2 xem board GitHub. Issue nào trễ hơn lịch trên 2 ngày thì quyết định ngay: dồn việc hoặc cắt bớt phạm vi.
 
 **Nếu phải cắt phạm vi để kịp, bỏ theo thứ tự:**
-1. Màn Cài đặt (giữ âm thanh, luôn bật).
+1. UC6 Cài đặt (M3-10, kèm mục 4.3 trong báo cáo của Hoàng). Âm thanh luôn bật nếu đã kịp làm `SoundManager`.
 2. Level 4 của câu hỏi.
-3. Bảng vàng offline (giữ Lịch sử online).
+3. Chức năng xóa trong UC3 (giữ chức năng xem).
 
-Không cắt M1-09 (xử lý sự cố) và M3-02 (kiểm thử): đây là 2 phần thầy dễ hỏi nhất.
+Không cắt M3-05 (xử lý sự cố) và M4-01 (kiểm thử): đây là 2 phần thầy dễ hỏi nhất.
 
 ---
 
-## 8. Tổng hợp nhanh
+## 9. Tổng hợp nhanh
 
 | Mã | Tiêu đề | Assignee | Label |
 |---|---|---|---|
-| M1-01 | Chốt hợp đồng chung | Hùng | module-1-core |
-| M1-02 | Entity MathProblem + GameSession | Hùng | module-1-core |
-| M1-03 | Câu hỏi tăng độ khó | Hùng | module-1-core |
-| M1-04 | Timer & chấm điểm (offline + online) | Hùng | module-1-core |
-| M1-05 | Khởi tạo Firebase | Hùng | module-1-core |
-| M1-06 | Đăng nhập ẩn danh | Hùng | module-1-core |
-| M1-07 | Matchmaking | Hùng | module-1-core |
-| M1-08 | Realtime gameplay | Hùng | module-1-core |
-| M1-09 | Xử lý sự cố | Hùng | module-1-core |
-| M2-01 | UI màn Chính | Hoàng | module-2-ui |
-| M2-02 | UI Gameplay offline | Hoàng | module-2-ui |
-| M2-03 | DatabaseHelper + match_history CRUD | Hoàng | module-2-ui |
-| M2-04 | Màn Lịch sử + HistoryAdapter | Hoàng | module-2-ui |
-| M2-05 | Đổ SQLite lên Lịch sử | Hoàng | module-2-ui |
-| M2-06 | Bảng vàng offline | Hoàng | module-2-ui |
-| M2-07 | UI Phòng chờ | Hoàng | module-2-ui |
-| M2-08 | UI Gameplay online | Hoàng | module-2-ui |
-| M2-09 | Âm thanh, rung, Cài đặt | Hoàng | module-2-ui |
-| M3-01 | Ghép nối | Cả 2 | module-3-integration |
-| M3-02 | Test chéo + độ trễ | Cả 2 | module-3-integration |
-| M3-03 | Báo cáo chung | Cả 2 | docs |
+| M1-01 | Phạm vi + use case tổng quát | Hùng | ooad, chung |
+| M1-02 | Đặc tả + kịch bản v1 UC1–3 | Hùng | ooad, uc-tim-tran, uc-thi-dau-online, uc-lich-su |
+| M1-03 | Đặc tả + kịch bản v1 UC4–6 | Hoàng | ooad, uc-choi-offline, uc-bang-vang, uc-cai-dat |
+| M1-04 | Lớp thực thể phân tích | Cả 2 | ooad, chung |
+| M1-05 | Lớp phân tích UC1–3 | Hùng | ooad, uc-tim-tran, uc-thi-dau-online, uc-lich-su |
+| M1-06 | Lớp phân tích UC4–6 | Hoàng | ooad, uc-choi-offline, uc-bang-vang, uc-cai-dat |
+| M1-07 | Kịch bản v2 + tuần tự phân tích UC1–3 | Hùng | ooad, uc-tim-tran, uc-thi-dau-online, uc-lich-su |
+| M1-08 | Kịch bản v2 + tuần tự phân tích UC4–6 | Hoàng | ooad, uc-choi-offline, uc-bang-vang, uc-cai-dat |
+| M2-01 | Thiết kế lớp thực thể | Cả 2 | ooad, chung |
+| M2-02 | Thiết kế CSDL | Cả 2 | ooad, chung |
+| M2-03 | Lớp thiết kế + giao diện UC1–3 | Hùng | ooad, uc-tim-tran, uc-thi-dau-online, uc-lich-su |
+| M2-04 | Lớp thiết kế + giao diện UC4–6 | Hoàng | ooad, uc-choi-offline, uc-bang-vang, uc-cai-dat |
+| M2-05 | Kịch bản v3 + tuần tự thiết kế UC1–3 | Hùng | ooad, uc-tim-tran, uc-thi-dau-online, uc-lich-su |
+| M2-06 | Kịch bản v3 + tuần tự thiết kế UC4–6 | Hoàng | ooad, uc-choi-offline, uc-bang-vang, uc-cai-dat |
+| M2-07 | Chốt khung code theo thiết kế | Hùng | chung |
+| M3-01 | Hạ tầng Firebase + đăng nhập ẩn danh | Hùng | uc-tim-tran |
+| M3-02 | Lõi câu hỏi và luật điểm | Hùng | chung |
+| M3-03 | UC Tìm trận | Hùng | uc-tim-tran |
+| M3-04 | UC Thi đấu online | Hùng | uc-thi-dau-online |
+| M3-05 | UC Thi đấu online: sự cố | Hùng | uc-thi-dau-online |
+| M3-06 | UC Quản lý lịch sử đấu | Hùng | uc-lich-su |
+| M3-07 | CSDL SQLite + màn Chính | Hoàng | chung, uc-choi-offline |
+| M3-08 | UC Chơi offline | Hoàng | uc-choi-offline |
+| M3-09 | UC Xem bảng vàng | Hoàng | uc-bang-vang |
+| M3-10 | UC Cài đặt âm thanh | Hoàng | uc-cai-dat |
+| M4-01 | Kiểm thử chéo + độ trễ | Cả 2 | chung |
+| M4-02 | Báo cáo cá nhân Hùng | Hùng | docs |
+| M4-03 | Báo cáo cá nhân Hoàng | Hoàng | docs |
