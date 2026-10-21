@@ -35,10 +35,11 @@
 | D6 | Phần chung | Hùng làm trước (milestone M1), **Hoàng duyệt PR**. Gồm: use case tổng quát, lớp thực thể, CSDL, khung code, màn Chính, `PlayerDAO`, lõi câu hỏi | Hoàng bận đến 25/10; phần chung phải có trước để Hoàng code kịp demo |
 | D7 | Lớp DAO | Lớp cha giữ kết nối dùng chung (`DAO` cho SQLite, `FirebaseDAO` cho Firebase), các DAO con kế thừa | Đúng tài liệu OOAD của môn |
 | D8 | Tên bảng | `tblPlayer`, `tblGameRecord`, `tblMatchHistory`. Khóa ngoại `tblPlayerId` | Đúng bước 1 và 4 thiết kế CSDL |
-| D9 | Thuộc tính dẫn xuất | **Không lưu** `high_score` (= MAX điểm trong `tblGameRecord`), `result` (suy từ 2 điểm), `% chính xác` | Đúng bước 5 thiết kế CSDL |
+| D9 | Thuộc tính dẫn xuất | **Không lưu** `high_score` (= MAX điểm trong `tblGameRecord`), `result` (suy từ 2 điểm và cách kết thúc trận `endReason`), `% chính xác`. `endReason` (bình thường / đối thủ bỏ trận / mình bỏ trận) **phải lưu**, vì đối thủ bỏ trận khi đang dẫn điểm thì mình vẫn thắng, không suy ra được từ điểm | Đúng bước 5 thiết kế CSDL |
 | D10 | Cắt phạm vi khi trễ | Cắt UC6 Cài đặt âm thanh trước. Hoàng demo 2 chức năng vẫn hợp lệ | Thầy cho tối đa 3, không bắt buộc đủ 3 |
 | D11 | Báo cáo | Mỗi người **một file riêng**. Mục CSDL và lớp thực thể lấy từ tài liệu chung, nhưng chỉ đưa phần liên quan chức năng của mình | Đề ghi "bài làm cá nhân" |
 | D12 | Thứ tự OOAD | Phần chung (use case tổng quát, lớp thực thể, CSDL) làm **trước khi code**. Phân tích và thiết kế từng chức năng làm **sau demo**, đối chiếu với code thật | Không đủ thời gian vẽ trước khi demo |
+| D13 | Logic online nằm ở đâu | **Toàn bộ logic chạy trong app** (client): ghép trận, chấm điểm, phân thắng thua, xử lý bỏ trận. Firebase chỉ lưu dữ liệu và báo khi dữ liệu thay đổi; chỉ `AuthDAO`, `RoomDAO` gọi Firebase. Server chỉ kiểm tra bằng **Security Rules** (M2-01). Luật vào phòng và luật thắng thua là **hàm Java thuần có unit test** (M2-02, M2-03) | Thầy cho dùng Firebase nếu giải thích được nó làm gì và logic vẫn thuộc module của mình. Không dùng FirebaseUI, Cloud Functions |
 
 ---
 
@@ -371,7 +372,11 @@ rooms/{roomId}
     - Plugin `com.google.gms.google-services`.
     - Firebase BoM + `firebase-auth` + `firebase-database`.
     - Quyền `INTERNET` và `ACCESS_NETWORK_STATE`.
-  - **Database Rules:** `auth != null`; `.indexOn: "status"` cho `rooms`.
+  - **Security Rules** (`database.rules.json`, lưu vào repo và dán lên Console). Đây là phần kiểm tra duy nhất chạy trên server:
+    - Chỉ user đã đăng nhập (`auth != null`) mới được đọc/ghi; `.indexOn: "status"` cho `rooms`.
+    - Mỗi máy chỉ sửa được `rooms/{roomId}/players/{uid}` của **chính mình** (`auth.uid == $uid`). Riêng lúc tạo phòng và transaction vào phòng thì được ghi `status` và thêm chính mình vào `players`.
+    - `score` phải là số, ≥ 0, **không được giảm**, mỗi lần ghi tăng không quá 200 (trận 60 giây không thể đạt hơn mức này trong một câu).
+    - `status` chỉ nhận 1 trong 3 giá trị `waiting` / `playing` / `finished`.
   - **Code:**
     - `dao/FirebaseDAO.java` theo mục 2.3.
     - `dao/AuthDAO.java extends FirebaseDAO` có `signIn(AuthCallback)` và `getUid()`.
@@ -380,7 +385,11 @@ rooms/{roomId}
   - Logcat in `Firebase OK`.
   - Tắt app mở lại vẫn giữ UID cũ.
   - Mất mạng thì gọi `onError` với thông báo tiếng Việt, app không crash.
-- **Constraint:** Không để rules public. Không dùng Firestore.
+  - Thử trong **Rules Playground** trên Console, chụp màn hình dán vào issue:
+    - Ghi điểm vào `players/{uid}` của uid khác → bị từ chối.
+    - Ghi điểm nhỏ hơn điểm cũ → bị từ chối.
+    - Ghi `status = "abc"` → bị từ chối.
+- **Constraint:** Không để rules public. Không dùng Firestore, FirebaseUI, Cloud Functions (D13).
 
 ### [M2-02] UC Tìm trận: FrmLobbyActivity + RoomDAO + MatchController · @HungNguyenBa1811
 - **Phụ thuộc:** M1-04, M2-01.
@@ -390,7 +399,9 @@ rooms/{roomId}
   - **`RoomDAO extends FirebaseDAO`:**
     - `findWaitingRoom()`: query `orderByChild("status").equalTo("waiting").limitToFirst(1)`, kết quả đóng gói vào `Room`.
     - `createRoom(seed)`.
-    - `joinRoom(roomId)`: dùng `runTransaction`.
+    - `joinRoom(roomId)`: dùng `runTransaction`; bên trong transaction gọi `Room.canJoin(myUid)` để quyết định có vào hay không.
+  - **Luật vào phòng là hàm Java thuần (D13):** `Room.canJoin(String uid): boolean` trả về `true` khi và chỉ khi phòng đang `waiting`, chưa đủ 2 người, và `uid` chưa có trong phòng.
+    - Unit test `RoomTest`: phòng `waiting` 1 người khác → `true`; phòng `playing` → `false`; phòng đủ 2 người → `false`; phòng do chính mình tạo → `false`.
   - **`MatchController` (Singleton):**
     - `findMatch(name, listener)`.
     - `cancelFind()`: nếu mình là chủ phòng thì xóa phòng.
@@ -403,8 +414,10 @@ rooms/{roomId}
   - Máy thứ 3 phải tạo phòng mới.
   - Đủ 2 người thì phòng chuyển sang `playing`.
   - Bấm HỦY hoặc kill app khi đang chờ thì phòng biến mất trên Console.
+  - `gradlew test` pass, có `RoomTest`.
 - **Constraint:**
-  - Join bắt buộc qua transaction, kiểm tra `status == "waiting"` và số người < 2 *bên trong* transaction.
+  - Join bắt buộc qua transaction, kiểm tra bằng `Room.canJoin` *bên trong* transaction.
+  - `Room.canJoin` không import `android.*` hay Firebase, để chạy được unit test thuần.
   - Activity không gọi Firebase trực tiếp, chỉ gọi `MatchController`.
 
 ### [M2-03] UC Thi đấu online: FrmOnlineGameActivity + đồng bộ realtime · @HungNguyenBa1811
@@ -417,13 +430,20 @@ rooms/{roomId}
     - `submitAnswer(value)`: chấm bằng `GameSession`, rồi `setValue` vào `players/{myUid}/score`.
     - `addValueEventListener` trên `players/{opponentUid}/score`.
     - Hết giờ: set `finished = true`. Cả 2 cùng `finished` (hoặc quá 3s sau khi hết giờ) thì gọi `onMatchEnd(MatchHistory)`.
+  - **Luật thắng thua là hàm Java thuần (D13):** `MatchHistory.getResult(): String` trả về `WIN` / `LOSE` / `DRAW` từ `myScore`, `opponentScore` và `endReason`:
+    - `endReason` = đối thủ bỏ trận → `WIN`, bất kể điểm.
+    - `endReason` = mình bỏ trận → `LOSE`, bất kể điểm.
+    - Kết thúc bình thường → so điểm; bằng điểm thì `DRAW`.
+    - Unit test `MatchHistoryTest` cho đủ 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm.
   - **`FrmOnlineGameActivity`** + layout: đồng hồ 60s, phép tính, lưới 2x2 nút đáp án, điểm **MÌNH vs ĐỐI THỦ**, overlay THẮNG / THUA / HÒA có tỉ số và nút "Về menu".
 - **Requirement:**
   - 2 máy thấy cùng một dãy câu.
   - Điểm đối thủ cập nhật dưới 1s.
   - Kết quả 2 máy khớp nhau (A `WIN` thì B `LOSE`, hoặc cả 2 `DRAW`).
+  - `gradlew test` pass, có `MatchHistoryTest`.
 - **Constraint:**
-  - Chỉ ghi vào node của chính mình.
+  - Chỉ ghi vào node của chính mình (Security Rules ở M2-01 cũng chặn).
+  - Không tính điểm, không phân thắng thua trong Activity hay trong callback của Firebase; chỉ gọi `GameSession` và `MatchHistory.getResult()`.
   - `removeEventListener` và hủy timer khi kết thúc.
   - Không tính điểm trong Activity.
 
@@ -433,8 +453,8 @@ rooms/{roomId}
 - **Input:** Phòng hiện tại, uid.
 - **Output:**
   - Khi vào trận: `onDisconnect().setValue(false)` cho `players/{uid}/online`.
-  - Đối thủ `online == false` thì gọi `onOpponentLeft()` và tính mình thắng.
-  - `leaveMatch()` (nút Back + `AlertDialog` "Thoát sẽ bị xử thua?"): set `online = false`, mình bị xử thua.
+  - Đối thủ `online == false` thì gọi `onOpponentLeft()`, tạo `MatchHistory` với `endReason` = đối thủ bỏ trận.
+  - `leaveMatch()` (nút Back + `AlertDialog` "Thoát sẽ bị xử thua?"): set `online = false`, tạo `MatchHistory` với `endReason` = mình bỏ trận.
   - Lắng nghe `.info/connected`; mất kết nối thì gọi `onConnectionLost()`.
 - **Requirement:** Pass cả 4 test case:
   1. Máy A đang chờ thì kill app → phòng biến mất.
@@ -538,6 +558,12 @@ rooms/{roomId}
 - **Input:** `main` đã merge đủ 2 module.
 - **Output:**
   - **Kịch bản demo của mỗi người** (dán vào comment issue): thứ tự thao tác cho 3 chức năng, dữ liệu chuẩn bị sẵn. Ví dụ chơi trước 3 ván để Bảng vàng có dữ liệu; đấu trước 1 trận để Lịch sử có dữ liệu.
+  - **Hùng chuẩn bị phần giải thích Firebase** (D13), mở code ra nói được:
+    1. Firebase chỉ lưu dữ liệu và báo thay đổi, giống SQLite nhưng nằm trên mạng; chỉ `AuthDAO`, `RoomDAO` gọi Firebase.
+    2. Luật vào phòng `Room.canJoin` chạy trong transaction để xử lý 2 người bấm cùng lúc; chạy `RoomTest`.
+    3. Đồng bộ câu hỏi bằng `seed`: Firebase chỉ chuyển 1 con số; chạy test "cùng seed ra 30 câu giống nhau".
+    4. Phân thắng thua bằng `MatchHistory.getResult()`; chạy `MatchHistoryTest`.
+    5. Security Rules chặn ghi điểm của người khác và điểm giảm; giới hạn: muốn chống gian lận triệt để phải chấm điểm trên server, ngoài phạm vi.
   - **Hùng:** chạy UC1–UC3 trên 2 máy ảo, gồm cả 4 test case của M2-04.
   - **Hoàng:** chạy UC4–UC6 trên 1 máy ảo.
   - Lỗi phát hiện được thành issue `bug`, sửa ngay trong tối 27/10.
