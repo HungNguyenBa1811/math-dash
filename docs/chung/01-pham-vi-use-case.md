@@ -23,8 +23,9 @@
 | 12 | Mã đồng bộ câu hỏi (seed) | Một số nguyên do chủ phòng tạo ra; 2 máy dùng cùng mã này để sinh ra cùng một dãy câu hỏi |
 | 13 | Trận đấu | Một lượt thi đấu online 60 giây giữa 2 người chơi trong cùng một phòng |
 | 14 | Kết quả trận | Thắng, thua hoặc hòa, so theo điểm của 2 người khi hết giờ; người bỏ trận bị xử thua |
-| 15 | Lịch sử đấu | Danh sách các trận online đã đấu, lưu trên máy của người chơi |
-| 16 | Đăng nhập ẩn danh | Máy chủ cấp cho mỗi máy một mã định danh cố định mà không cần tài khoản hay mật khẩu |
+| 15 | Cách kết thúc trận | Trận kết thúc bình thường (hết 60 giây), do đối thủ bỏ trận, hoặc do mình bỏ trận |
+| 16 | Lịch sử đấu | Danh sách các trận online đã đấu, lưu trên máy của người chơi |
+| 17 | Đăng nhập ẩn danh | Máy chủ cấp cho mỗi máy một mã định danh cố định mà không cần tài khoản hay mật khẩu |
 
 ---
 
@@ -110,7 +111,7 @@ Người chơi nhấn "Cài đặt" ở màn hình chính → Hệ thống hiể
 - **Kết quả ván:** người chơi, điểm, chuỗi đúng dài nhất, số câu đúng, số câu sai, thời điểm chơi.
 - **Phòng đấu:** trạng thái, mã đồng bộ câu hỏi, thời điểm tạo, danh sách người chơi trong phòng.
 - **Người chơi trong phòng:** mã định danh ẩn danh, tên, điểm, đang trực tuyến hay không, đã xong trận hay chưa.
-- **Kết quả trận (lịch sử đấu):** người chơi, tên đối thủ, điểm của mình, điểm của đối thủ, thời điểm đấu.
+- **Kết quả trận (lịch sử đấu):** người chơi, tên đối thủ, điểm của mình, điểm của đối thủ, cách kết thúc trận, thời điểm đấu.
 
 ### 2.6. Quan hệ giữa các đối tượng
 
@@ -126,7 +127,7 @@ Người chơi nhấn "Cài đặt" ở màn hình chính → Hệ thống hiể
 - Một trận đấu sinh ra câu hỏi từ mã đồng bộ của phòng: hai người chơi trong cùng một phòng nhận cùng một dãy câu hỏi.
 - Một phòng đấu khi kết thúc sinh ra một kết quả trận trên **mỗi** máy (2 máy, mỗi máy một bản ghi theo góc nhìn của người chơi đó).
 - Một người chơi có nhiều kết quả trận; một kết quả trận thuộc về một người chơi (1-n).
-- Kết quả thắng / thua / hòa của một trận được suy ra từ điểm của mình và điểm của đối thủ (quan hệ dẫn xuất, không lưu riêng).
+- Kết quả thắng / thua / hòa của một trận được suy ra từ điểm của mình, điểm của đối thủ và cách kết thúc trận (quan hệ dẫn xuất, không lưu riêng). Riêng cách kết thúc trận phải lưu, vì đối thủ bỏ trận khi đang dẫn điểm thì mình vẫn thắng.
 - Ràng buộc: mỗi phòng đấu chỉ nhận người khi đang ở trạng thái `waiting` và chưa đủ 2 người; một người chơi không tự vào phòng do chính mình tạo.
 
 ---
