@@ -9,7 +9,7 @@
 
 | STT | Thuật ngữ | Định nghĩa / Giải thích |
 |---|---|---|
-| 1 | Người chơi | Người dùng ứng dụng trên một điện thoại Android, được nhận diện bằng tên nhập ở màn hình chính |
+| 1 | Người chơi | Người dùng ứng dụng, được nhận diện bằng tên nhập ở màn hình chính |
 | 2 | Câu hỏi | Một phép tính gồm 2 toán hạng và 1 toán tử (`+`, `−`, `×`), kèm 4 phương án trả lời, trong đó có đúng 1 phương án đúng |
 | 3 | Mức độ khó (level) | Mức 1 đến 4, quyết định toán tử và khoảng số của câu hỏi; tăng 1 mức sau mỗi 5 câu |
 | 4 | Ván chơi | Một lượt chơi offline của một người chơi, kết thúc khi hết mạng |
@@ -25,7 +25,7 @@
 | 14 | Kết quả trận | Thắng, thua hoặc hòa, so theo điểm của 2 người khi hết giờ; người bỏ trận bị xử thua |
 | 15 | Cách kết thúc trận | Trận kết thúc bình thường (hết 60 giây), do đối thủ bỏ trận, hoặc do mình bỏ trận |
 | 16 | Lịch sử đấu | Danh sách các trận online đã đấu, lưu trên máy của người chơi |
-| 17 | Đăng nhập ẩn danh | Máy chủ cấp cho mỗi máy một mã định danh cố định mà không cần tài khoản hay mật khẩu |
+| 17 | Đăng nhập ẩn danh | Hệ thống cấp cho mỗi máy một mã định danh cố định mà không cần tài khoản hay mật khẩu |
 
 ---
 
@@ -33,26 +33,24 @@
 
 ### 2.1. Mục tiêu và phạm vi hệ thống
 
-Math Dash 1v1 là ứng dụng Android giúp người chơi luyện tính nhẩm nhanh bằng các câu hỏi cộng, trừ, nhân có độ khó tăng dần. Ứng dụng giải quyết việc luyện tập đơn điệu bằng 2 hình thức có tính thi đua: chơi một mình để phá kỷ lục, và thi đấu trực tiếp với một người chơi khác qua mạng.
+Math Dash 1v1 là ứng dụng giúp người chơi luyện tính nhẩm nhanh bằng các câu hỏi cộng, trừ, nhân có độ khó tăng dần. Ứng dụng giải quyết việc luyện tập đơn điệu bằng 2 hình thức có tính thi đua: chơi một mình để phá kỷ lục, và thi đấu trực tiếp với một người chơi khác qua mạng.
 
 Phạm vi:
-- Ứng dụng chạy trên điện thoại Android (từ Android 7.0). Mỗi máy có thể có nhiều người chơi, phân biệt bằng tên.
-- **Chơi offline** hoạt động hoàn toàn trên máy, kết quả lưu trong CSDL SQLite của máy.
-- **Chơi online** cần kết nối Internet. Việc ghép trận và đồng bộ điểm giữa 2 máy đi qua Firebase Realtime Database. Mỗi trận chỉ có đúng 2 người.
-- Lịch sử đấu và bảng vàng chỉ lưu trên từng máy, không đồng bộ giữa các máy.
-- Ngoài phạm vi: đăng ký tài khoản bằng email, trận nhiều hơn 2 người, chống gian lận, bảng xếp hạng toàn cầu.
+- Mỗi máy có thể có nhiều người chơi, phân biệt bằng tên.
+- **Chơi offline:** người chơi chơi một mình, kết quả mỗi ván được lưu lại để xếp bảng vàng.
+- **Chơi online:** hai người chơi trên hai máy được ghép vào cùng một phòng đấu và thi đấu với nhau. Mỗi trận chỉ có đúng 2 người.
+- Mỗi máy có lịch sử đấu và bảng vàng riêng.
+- Ngoài phạm vi: đăng ký tài khoản, trận nhiều hơn 2 người, bảng xếp hạng chung giữa các máy.
 
 ### 2.2. Ai có thể sử dụng phần mềm?
 
 Chỉ có một nhóm người dùng là **Người chơi**. Bất kỳ ai cài ứng dụng đều là người chơi, không cần đăng ký. Người chơi tự đặt tên cho mình ở màn hình chính. Trong trận online, đối thủ cũng là một người chơi đang dùng ứng dụng trên một máy khác.
 
-Firebase là hạ tầng lưu trữ và truyền dữ liệu, không phải người dùng nên không được xét là tác nhân.
-
 ### 2.3. Người dùng có những chức năng gì?
 
 Người chơi có thể:
 - **Tìm trận:** tìm một đối thủ đang chờ, hoặc tạo phòng mới để chờ đối thủ. Có thể hủy khi đang chờ.
-- **Thi đấu online:** trả lời cùng một dãy câu hỏi với đối thủ trong 60 giây, thấy điểm của đối thủ thay đổi theo thời gian thực, nhận kết quả thắng / thua / hòa. Có thể thoát trận giữa chừng và bị xử thua.
+- **Thi đấu online:** trả lời cùng một dãy câu hỏi với đối thủ trong 60 giây, thấy điểm của đối thủ mỗi khi đối thủ ghi điểm, nhận kết quả thắng / thua / hòa. Có thể thoát trận giữa chừng và bị xử thua.
 - **Quản lý lịch sử đấu:** xem danh sách các trận online đã đấu, xóa một trận khỏi danh sách.
 - **Chơi offline:** chơi một mình với 3 mạng, mỗi câu có 6 giây, điểm cao được lưu lại.
 - **Xem bảng vàng:** xem các ván offline điểm cao nhất trên máy.
@@ -62,8 +60,8 @@ Người chơi có thể:
 
 Chức năng "Tìm trận":
 ```
-Người chơi nhập tên ở màn hình chính → Người chơi nhấn "Chơi ngay" → Hệ thống đăng nhập ẩn danh (lần đầu thì máy chủ cấp mã định danh mới, các lần sau dùng lại mã cũ) → Hệ thống tìm một phòng đang chờ
-  → Nếu có phòng đang chờ: Hệ thống đưa người chơi vào phòng → Phòng chuyển sang trạng thái đang đấu → Hệ thống hiển thị tên đối thủ → Sau 1,5 giây chuyển sang màn hình thi đấu
+Người chơi nhập tên ở màn hình chính → Người chơi nhấn "Chơi ngay" → Hệ thống đăng nhập ẩn danh (lần đầu thì cấp mã định danh mới, các lần sau dùng lại mã cũ) → Hệ thống tìm một phòng đang chờ
+  → Nếu có phòng đang chờ: Hệ thống đưa người chơi vào phòng → Phòng chuyển sang trạng thái đang đấu → Hệ thống hiển thị tên đối thủ → Chuyển sang màn hình thi đấu
   → Nếu không có: Hệ thống tạo phòng mới kèm mã đồng bộ câu hỏi → Hiển thị "Đang tìm đối thủ..." → Khi có người vào phòng: hiển thị tên đối thủ → chuyển sang màn hình thi đấu
   → Nếu người chơi nhấn "Hủy" khi đang chờ: Hệ thống xóa phòng → Quay về màn hình chính
   → Nếu không có mạng: Hệ thống thông báo "Không có kết nối mạng" → Quay về màn hình chính
@@ -71,7 +69,7 @@ Người chơi nhập tên ở màn hình chính → Người chơi nhấn "Chơ
 
 Chức năng "Thi đấu online":
 ```
-Hệ thống hiển thị màn hình thi đấu: đồng hồ 60 giây, câu hỏi, 4 nút đáp án, điểm của mình và điểm của đối thủ → Người chơi chọn một đáp án → Hệ thống chấm điểm, cập nhật điểm của mình lên máy chủ → Hệ thống hiển thị câu hỏi tiếp theo → (lặp lại đến khi hết giờ) → Mỗi khi đối thủ có điểm mới, hệ thống cập nhật điểm đối thủ trên màn hình → Hết 60 giây: Hệ thống so điểm 2 người → Hiển thị kết quả THẮNG / THUA / HÒA kèm tỉ số → Hệ thống lưu trận vào lịch sử đấu → Người chơi nhấn "Về menu"
+Hệ thống hiển thị màn hình thi đấu: đồng hồ 60 giây, câu hỏi, 4 nút đáp án, điểm của mình và điểm của đối thủ → Người chơi chọn một đáp án → Hệ thống chấm điểm, ghi nhận điểm mới của mình để đối thủ thấy → Hệ thống hiển thị câu hỏi tiếp theo → (lặp lại đến khi hết giờ) → Mỗi khi đối thủ có điểm mới, hệ thống cập nhật điểm đối thủ trên màn hình → Hết 60 giây: Hệ thống so điểm 2 người → Hiển thị kết quả THẮNG / THUA / HÒA kèm tỉ số → Hệ thống lưu trận vào lịch sử đấu → Người chơi nhấn "Về menu"
   → Nếu người chơi nhấn Back: Hệ thống hỏi "Thoát sẽ bị xử thua?" → Đồng ý: người chơi bị xử thua, quay về màn hình chính
   → Nếu đối thủ thoát hoặc mất kết nối: Hệ thống thông báo "Đối thủ đã thoát" → Người chơi được tính thắng
   → Nếu máy của người chơi mất mạng: Hệ thống thông báo "Mất kết nối" → Kết thúc trận
@@ -138,7 +136,7 @@ Người chơi nhấn "Cài đặt" ở màn hình chính → Hệ thống hiể
 
 | STT | Tên Actor | Mô tả |
 |---|---|---|
-| 1 | Người chơi | Người dùng ứng dụng trên một máy Android. Khởi phát mọi chức năng; trong trận online, đối thủ cũng là một Người chơi trên máy khác |
+| 1 | Người chơi | Người dùng ứng dụng. Khởi phát mọi chức năng; trong trận online, đối thủ cũng là một Người chơi trên máy khác |
 
 ### 3.2. Các Use Case cho từng Actor
 
@@ -166,7 +164,7 @@ Mô tả các use case:
 5. "Xem bảng vàng" (UC05): cho phép người chơi xem các kết quả ván offline có điểm cao nhất trên máy.
 6. "Cài đặt âm thanh" (UC06): cho phép người chơi bật / tắt âm thanh và rung.
 7. "Nhập tên người chơi" (UC07): cho phép UC01 và UC04 xác định người chơi theo tên; tên chưa có thì tạo mới.
-8. "Đăng nhập ẩn danh" (UC08): cho phép UC01 lấy mã định danh của máy trên máy chủ mà không cần tài khoản.
+8. "Đăng nhập ẩn danh" (UC08): cho phép UC01 lấy mã định danh của máy mà không cần tài khoản.
 9. "Hủy tìm trận" (UC09): cho phép người chơi dừng việc chờ đối thủ trong UC01; phòng đã tạo bị xóa.
 10. "Trả lời câu hỏi" (UC10): cho phép UC02 và UC04 nhận đáp án người chơi chọn, chấm đúng / sai và tính điểm.
 11. "Thoát trận" (UC11): cho phép người chơi rời trận giữa chừng trong UC02 và bị xử thua.
