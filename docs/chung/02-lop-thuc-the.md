@@ -115,3 +115,88 @@ Mã nguồn PlantUML: [`lop-thuc-the-phan-tich.puml`](lop-thuc-the-phan-tich.pum
 
 - **Báo cáo của Hùng** (UC05, UC06; thêm UC01, UC02 nếu trình bày): `Player`, `MathProblem`, `GameSession`, `Match`, `MatchPlayer`.
 - **Báo cáo của Hoàng** (UC03, UC04): `Player`, `MathProblem`, `GameSession`, `GameRecord`, `GameConfig`.
+
+---
+
+# PHẦN B — PHA THIẾT KẾ
+
+Đầu vào là biểu đồ lớp thực thể pha phân tích (Hình 2). Ngôn ngữ lập trình là Java, dùng chung cho app Android và backend Spring Boot.
+
+## B.1. Bước 1: Bổ sung thuộc tính khóa
+
+Bổ sung thuộc tính `id : int` cho các lớp **cần lưu trữ lâu dài** và **cần phân biệt từng đối tượng**: `Player`, `GameRecord`, `Match`, `MatchPlayer`. Không có lớp nào kế thừa lớp khác.
+
+Không bổ sung `id` cho:
+- `MathProblem`, `GameSession`: chỉ tồn tại trong bộ nhớ khi đang chơi, không được lưu, không lớp nào tham chiếu tới từng đối tượng.
+- `GameConfig`: mỗi máy chỉ có đúng một cấu hình, không cần phân biệt.
+
+`Match` có thêm mã phòng `code` để người chơi nhập khi tìm phòng. Mã phòng chỉ duy nhất trong các trận chưa kết thúc (các trận đã kết thúc có thể trùng mã), nên **không dùng làm khóa** mà vẫn cần `id` riêng.
+
+## B.2. Bước 2: Bổ sung kiểu dữ liệu
+
+Quy ước: chuỗi → `String`; số đếm, điểm, số giây → `int`; mã đồng bộ câu hỏi → `long` (khớp kiểu tham số của `java.util.Random`); thời điểm → `Date`; cờ bật / tắt → `boolean`. Độ khó dùng `int`: 1 = Dễ, 2 = Trung bình, 3 = Khó (cũng chính là mức bắt đầu của ván).
+
+Bổ sung 3 thuộc tính phục vụ thiết kế cho `GameSession`, không có ở pha phân tích:
+- `online : boolean`: cùng một lớp chấm điểm cho cả 2 chế độ, chế độ online không trừ mạng.
+- `questionCount : int`: số câu đã ra, dùng để tính mức hiện tại.
+- `gameOver : boolean`: đổi tên từ `isGameOver` theo quy ước JavaBean (getter là `isGameOver()`).
+
+| Lớp | Thuộc tính |
+|---|---|
+| `Player` | id: int, username: String, password: String, displayName: String, createdAt: Date |
+| `MathProblem` | operand1: int, operand2: int, operator: String, correctAnswer: int, options: List&lt;Integer&gt; |
+| `GameSession` | difficulty: int, online: boolean, questionCount: int, score: int, streak: int, maxStreak: int, lives: int, totalCorrect: int, totalWrong: int, gameOver: boolean |
+| `GameRecord` | id: int, difficulty: int, score: int, maxStreak: int, totalCorrect: int, totalWrong: int, playedAt: Date |
+| `GameConfig` | soundOn: boolean, vibrationOn: boolean, secondsPerQuestion: int |
+| `Match` | id: int, code: String, status: String, seed: long, createdAt: Date, endedAt: Date |
+| `MatchPlayer` | id: int, score: int, left: boolean |
+
+## B.3. Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành
+
+- Quan hệ n-n `Player` – `Match` qua lớp liên kết `MatchPlayer` chuyển thành:
+  - **`Match` chứa `MatchPlayer`** (hợp thành, 1 – 2): người chơi trong trận chỉ có nghĩa khi thuộc về một trận; xóa trận thì 2 dòng người chơi trong trận cũng mất.
+  - **`MatchPlayer` chứa `Player`** (kết tập, n – 1): người chơi tồn tại độc lập với trận, mỗi người chơi trong trận chỉ tham chiếu đúng một người chơi.
+
+  Lí do chọn hướng chứa này: khi xử lí (kết thúc trận, xem lịch sử đấu), hệ thống luôn lấy trận kèm cả 2 người chơi trong trận để so điểm và biết ai bỏ trận.
+- Các quan hệ đã là kết tập / hợp thành từ pha phân tích giữ nguyên:
+  - `GameSession` chứa `MathProblem` (hợp thành).
+  - `GameSession` chứa `Player`, `GameConfig` (kết tập).
+  - `GameRecord` chứa `Player` (kết tập).
+
+Sau bước này không còn đường liên kết trơn nào trên biểu đồ.
+
+## B.4. Bước 4: Bổ sung thuộc tính kiểu đối tượng
+
+Quan hệ 1-n thì lớp chứa khai báo danh sách; quan hệ n-1 hoặc 1-1 thì khai báo một đối tượng:
+
+- `GameSession` chứa 1 `Player`, 1 `GameConfig` → `player : Player`, `config : GameConfig`.
+- `GameSession` chứa n `MathProblem` nhưng chỉ giữ câu đang hiển thị → `currentProblem : MathProblem`. Các câu trước đó không cần giữ lại.
+- `GameRecord` chứa 1 `Player` → `player : Player`.
+- `Match` chứa 2 `MatchPlayer` → `players : List<MatchPlayer>`.
+- `MatchPlayer` chứa 1 `Player` → `player : Player`.
+
+Các thuộc tính dẫn xuất ở pha phân tích không thành thuộc tính lưu trữ mà thành **phương thức nghiệp vụ** của lớp thực thể. Đây là các hàm Java thuần, có unit test:
+
+| Lớp | Phương thức | Ý nghĩa |
+|---|---|---|
+| `GameSession` | `getCurrentLevel() : int` | `min(difficulty + questionCount / 5, 4)` |
+| `GameRecord` | `getAccuracy() : double` | `totalCorrect / (totalCorrect + totalWrong)` |
+| `Match` | `canJoin(playerId : int) : boolean` | Trận đang `waiting`, chưa đủ 2 người, người này chưa có trong trận |
+| `Match` | `getResult(playerId : int) : String` | `WIN` / `LOSE` / `DRAW`: ai bỏ trận thì thua; không ai bỏ thì so điểm |
+
+Kỷ lục không là phương thức của lớp nào vì phải truy vấn nhiều `GameRecord`; nó được tính trong DAO (`SELECT MAX(score)`, xem tài liệu CSDL).
+
+## B.5. Biểu đồ lớp thực thể pha thiết kế
+
+![Hình 3: Biểu đồ lớp thực thể pha thiết kế](lop-thuc-the-thiet-ke.png)
+
+*Hình 3: Biểu đồ lớp thực thể pha thiết kế toàn hệ thống Math Dash 1v1.*
+
+So với pha phân tích:
+- Các lớp cần lưu có thêm `id`; mọi thuộc tính có kiểu Java.
+- Lớp liên kết `MatchPlayer` trở thành thành phần (hình thoi đặc) của `Match` và chứa `Player` (hình thoi rỗng).
+- Mỗi quan hệ chứa được thể hiện bằng một thuộc tính đối tượng ở lớp chứa: `GameSession.player`, `GameSession.config`, `GameSession.currentProblem`, `GameRecord.player`, `Match.players`, `MatchPlayer.player`.
+
+Các lớp `Player`, `Match`, `MatchPlayer` có mặt ở **cả app và backend** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng. Riêng `password` chỉ có giá trị ở backend; app không bao giờ giữ mật khẩu.
+
+Mã nguồn PlantUML: [`lop-thuc-the-thiet-ke.puml`](lop-thuc-the-thiet-ke.puml).

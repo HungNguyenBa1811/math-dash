@@ -1,0 +1,89 @@
+@startuml lop-thuc-the-thiet-ke
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+  FontColor #000000
+  FontSize 11
+  AttributeFontSize 10
+  BorderThickness 1
+}
+left to right direction
+title Biểu đồ lớp thực thể pha thiết kế – Math Dash 1v1
+
+class Player {
+  - id : int
+  - username : String
+  - password : String
+  - displayName : String
+  - createdAt : Date
+}
+class GameConfig {
+  - soundOn : boolean
+  - vibrationOn : boolean
+  - secondsPerQuestion : int
+}
+class MathProblem {
+  - operand1 : int
+  - operand2 : int
+  - operator : String
+  - correctAnswer : int
+  - options : List<Integer>
+}
+class GameSession {
+  - difficulty : int
+  - online : boolean
+  - questionCount : int
+  - score : int
+  - streak : int
+  - maxStreak : int
+  - lives : int
+  - totalCorrect : int
+  - totalWrong : int
+  - gameOver : boolean
+  - player : Player
+  - config : GameConfig
+  - currentProblem : MathProblem
+}
+class GameRecord {
+  - id : int
+  - difficulty : int
+  - score : int
+  - maxStreak : int
+  - totalCorrect : int
+  - totalWrong : int
+  - playedAt : Date
+  - player : Player
+}
+class Match {
+  - id : int
+  - code : String
+  - status : String
+  - seed : long
+  - createdAt : Date
+  - endedAt : Date
+  - players : List<MatchPlayer>
+}
+class MatchPlayer {
+  - id : int
+  - score : int
+  - left : boolean
+  - player : Player
+}
+
+GameSession "n" o-- "1" Player
+GameSession "n" o-- "1" GameConfig
+GameSession "1" *-- "n" MathProblem
+GameRecord "n" o-- "1" Player
+Match "1" *-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
+@enduml
