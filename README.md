@@ -23,7 +23,7 @@ Người chơi sẽ hóa thân vào một thử thách tính nhẩm phản xạ 
   * Điểm cơ bản: `+10 PTS` mỗi câu đúng.
   * Thưởng chuỗi (Streak Combo): Cộng thêm `combo * 2 PTS` (ví dụ chuỗi 5 được `+20 PTS`).
   * Trả lời sai sẽ reset Combo về `x0`.
-* **Bảng vàng (Hall of Fame):** Tự động ghi nhận kỷ lục điểm cao nhất và lịch sử trận đấu vào cơ sở dữ liệu nội bộ SQLite.
+* **Kỷ lục theo độ khó:** Mỗi ván offline được lưu vào SQLite; kỷ lục cao nhất ở từng độ khó hiện ngay ở màn chơi.
 
 ---
 
@@ -203,25 +203,24 @@ math-dash/
 
 ---
 
-## Kế hoạch Mở rộng Realtime 1v1 Multiplayer (Firebase)
+## Kiến trúc Math Dash 1v1 (phạm vi MVP)
 
-Dự án hiện tại mới là **khung stub** (đủ class và chữ ký hàm, phần thân để `// TODO`). Bản nâng cấp đấu trường trực tuyến **1v1 Realtime** dùng **Firebase**, không cần tự dựng server:
+Dự án hiện tại mới là **khung stub** (đủ class và chữ ký hàm, phần thân để `// TODO`). Phạm vi MVP gồm 6 chức năng: Đăng ký, Đăng nhập, Chơi offline, Cài đặt cấu hình game, Chơi online (Tạo phòng / Tìm phòng bằng mã), Xem lịch sử đấu. Chi tiết ở [`docs/chung/01-pham-vi-use-case.md`](docs/chung/01-pham-vi-use-case.md).
 
-* **Firebase Authentication (ẩn danh):** Mỗi máy có một UID cố định để định danh trong phòng đấu.
-* **Firebase Realtime Database:** Lưu phòng đấu, đồng bộ điểm số giữa 2 máy theo thời gian thực.
-* **Matchmaking:** Tìm phòng đang chờ để vào, không có thì tạo phòng mới; dùng transaction để phòng không bao giờ quá 2 người.
-* **Đồng bộ câu hỏi bằng seed:** Chủ phòng ghi một `seed` lên phòng, cả 2 máy sinh cùng một dãy câu bằng `new ProblemDAO(new Random(seed))`.
-* **Xử lý sự cố:** Dùng `onDisconnect()` và `.info/connected` để phát hiện người chơi mất mạng hoặc thoát app giữa trận.
+* **App Android** (`app/`): giao diện, luật chơi, SQLite cho chế độ offline (kỷ lục theo độ khó), SharedPreferences cho cấu hình game và phiên đăng nhập.
+* **Backend Spring Boot + MySQL** (`server/`): tài khoản, lịch sử đấu. Cấu trúc mỏng `RestController → DAO (JDBC) → Entity`. Khi trận online kết thúc, backend làm **trọng tài**: đọc trận từ Firebase, xác định thắng / thua / hòa rồi lưu MySQL.
+* **Firebase Realtime Database:** chỉ giữ trận **đang diễn ra** để 2 máy thấy điểm của nhau. App đăng nhập Firebase bằng custom token do backend cấp.
+* **Đồng bộ câu hỏi bằng seed:** khi tạo phòng sinh một `seed`, cả 2 máy sinh cùng một dãy câu bằng `new ProblemDAO(new Random(seed))`.
 
-Cấu trúc dữ liệu trên Realtime Database:
+Cấu trúc trận đang diễn ra trên Realtime Database:
 
 ```
-rooms/{roomId}
+matches/{code}                      // mã phòng 6 chữ số
     status    : "waiting" | "playing" | "finished"
     seed      : long
     createdAt : ServerValue.TIMESTAMP
     players/
-        {uid} : { name: String, score: int, online: bool, finished: bool }
+        {playerId} : { displayName: String, score: int, online: bool, finished: bool, left: bool }
 ```
 
 Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)** · Quy ước báo cáo OOAD: **[REPORT_CONVENTION.md](REPORT_CONVENTION.md)**
@@ -231,6 +230,6 @@ Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ư�
 ## Tác giả
 * **Lớp:** E23CNPM01
 * **Sinh viên thực hiện:**
-  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Tìm trận, Thi đấu online, Quản lý lịch sử đấu
-  * Hoàng ([@Minahn210](https://github.com/Minahn210)) - Chơi offline, Xem bảng vàng, Cài đặt âm thanh
+  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Đăng ký, Đăng nhập, Chơi online, Xem lịch sử đấu, backend
+  * Hoàng ([@Minahn210](https://github.com/Minahn210)) - Chơi offline, Cài đặt cấu hình game
 * **Học viện Công nghệ Bưu chính Viễn thông (PTIT)**

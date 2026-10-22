@@ -10,6 +10,7 @@ Chạy lại nhiều lần được: issue trùng tiêu đề sẽ bị bỏ qua
 Thêm --relink để ghi đè body mọi issue theo ISSUES_PLAN.md (sẽ mất các ô checklist đã tick).
 Thêm --reuse-from=N để ghi đè lần lượt lên các issue số N, N+1, ... (đổi tiêu đề, body, milestone,
 label, người làm, mở lại nếu đã đóng) thay vì tạo issue mới; thiếu số nào thì mới tạo.
+Thêm --only=M2-01,M2-02 để chỉ ghi lại body của đúng các issue đó (các issue khác giữ nguyên).
 """
 import json
 import re
@@ -32,12 +33,11 @@ PEOPLE = {
 LABELS = {
     "ooad": ("5319E7", "Phân tích / thiết kế OOAD (tài liệu, biểu đồ)"),
     "chung": ("BFD4F2", "Việc chung của cả hệ thống"),
-    "uc-tim-tran": ("1D76DB", "UC1 Tìm trận (Hùng)"),
-    "uc-thi-dau-online": ("0052CC", "UC2 Thi đấu online (Hùng)"),
-    "uc-lich-su": ("006B75", "UC3 Quản lý lịch sử đấu (Hùng)"),
-    "uc-choi-offline": ("0E8A16", "UC4 Chơi offline (Hoàng)"),
-    "uc-bang-vang": ("FBCA04", "UC5 Xem bảng vàng (Hoàng)"),
-    "uc-cai-dat": ("C2E0C6", "UC6 Cài đặt âm thanh (Hoàng)"),
+    "uc-tai-khoan": ("BFDADC", "UC01 Đăng ký, UC02 Đăng nhập (chung)"),
+    "uc-choi-offline": ("0E8A16", "UC03 Chơi offline (Hoàng)"),
+    "uc-cai-dat": ("C2E0C6", "UC04 Cài đặt cấu hình game (Hoàng)"),
+    "uc-choi-online": ("1D76DB", "UC05 Chơi online (Hùng)"),
+    "uc-lich-su": ("006B75", "UC06 Xem lịch sử đấu (Hùng)"),
     "docs": ("C5DEF5", "Báo cáo cá nhân"),
     "bug": ("D73A4A", "Lỗi phát hiện khi kiểm thử"),
     "enhancement": ("A2EEEF", "Ý tưởng tính năng mới, không gắn milestone"),
@@ -76,6 +76,7 @@ OOAD_CHECKLIST = """
 """
 
 DRY_RUN = "--dry-run" in sys.argv
+ONLY = next((a.split("=", 1)[1].split(",") for a in sys.argv if a.startswith("--only=")), None)
 REUSE_FROM = next((int(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--reuse-from=")), None)
 
 
@@ -260,6 +261,10 @@ def main():
         print("\n%d issue, %d milestone. Body đã ghi vào %s" % (len(issues), len(descs), PREVIEW))
         return
 
+    if ONLY is not None:
+        update_only(issues)
+        return
+
     print("Labels:")
     ensure_labels()
     print("Milestones:")
@@ -287,6 +292,17 @@ def main():
     print("Liên kết phụ thuộc:")
     link_dependencies(targets, numbers)
     print("\nXong: https://github.com/%s/issues" % REPO)
+
+
+def update_only(issues):
+    """Ghi lại body (kèm liên kết phụ thuộc) cho các issue có mã trong --only."""
+    titles = existing_issue_numbers()
+    numbers = {i["code"]: titles[i["title"]] for i in issues if i["title"] in titles}
+    targets = [i for i in issues if i["code"] in ONLY]
+    missing = [c for c in ONLY if c not in numbers]
+    assert not missing, "Chưa có issue cho: %s" % missing
+    print("Cập nhật body:")
+    link_dependencies(targets, numbers)
 
 
 def reuse_all(issues, milestone_numbers):

@@ -29,7 +29,7 @@
 | Nộp báo cáo thiết kế cá nhân | **15/11/2026** |
 
 **Hệ quả cho nhóm:**
-- Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Mỗi người đúng 3 chức năng, phân công ở `ISSUES_PLAN.md` mục 2.1.
+- Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Mỗi người tối đa 3 chức năng, phân công ở `ISSUES_PLAN.md` mục 2.1 (Hùng: Chơi online, Xem lịch sử đấu; Hoàng: Chơi offline, Cài đặt cấu hình game).
 - Mỗi người **một file báo cáo riêng**. Không viết chung, không chép nguyên phần của người kia.
 - **Phần chung** gồm use case tổng quát, lớp thực thể, CSDL:
   - Nhóm trưởng làm trước khi code; thành viên còn lại duyệt.
@@ -66,7 +66,7 @@ Làm đúng thứ tự dưới đây. Mỗi bước dùng kết quả của bư�
 
 Vì demo (28/10) đến trước hạn báo cáo (15/11), nhóm làm theo 2 đợt:
 - **Trước demo:** chỉ làm phần chung, vì code cần dùng. Gồm use case tổng quát, A2 lớp thực thể, D1 thiết kế lớp thực thể, D2 CSDL.
-- **Sau demo:** mỗi người làm A1 → A3 → A4 → D3 → D4 cho 3 chức năng của mình, **đối chiếu với code thật**.
+- **Sau demo:** mỗi người làm A1 → A3 → A4 → D3 → D4 cho các chức năng của mình, **đối chiếu với code thật**.
   - Nếu kịch bản phát hiện thiếu lớp thực thể thì bổ sung vào tài liệu chung (qua PR, người kia duyệt).
 
 ```
@@ -196,17 +196,26 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 | Loại | Lớp trong Math Dash |
 |---|---|
-| Boundary (frontend) | `FrmXxxActivity`, Adapter, interface listener |
-| Control (backend) | Controller (`GameController`, `MatchController`), DAO |
-| Entity | Lớp ở D1 |
+| Boundary | App: `FrmXxxActivity`, Adapter. Server: `XxxRestController` |
+| Control | App: Controller (`GameController`, `MatchController`), DAO. Server: DAO |
+| Entity | Lớp ở D1 (cùng tên ở app và server) |
 
-**Quy tắc DAO:** lớp cha giữ kết nối dùng chung (`con`), các DAO con kế thừa.
-- `DAO` (giữ `SQLiteDatabase con`) ← `PlayerDAO`, `GameRecordDAO`, `MatchHistoryDAO`.
-- `FirebaseDAO` (giữ `DatabaseReference con`) ← `AuthDAO`, `RoomDAO`.
+**Quy tắc DAO:** mỗi nơi lưu trữ có một lớp cha giữ kết nối dùng chung, các DAO con kế thừa.
+- App, SQLite: `DAO` (giữ `SQLiteDatabase con`) ← `PlayerDAO`, `GameRecordDAO`.
+- App, REST: `ApiDAO` (giữ địa chỉ server và token) ← `PlayerApiDAO`, `MatchApiDAO`.
+- App, Firebase: `FirebaseDAO` (giữ `DatabaseReference con`) ← `MatchFirebaseDAO`.
+- Server, MySQL: `DAO` (giữ `Connection conn`) ← `PlayerDAO`, `MatchDAO`.
+
+**Chức năng có gọi server (REST)** vẽ thành **2 package** trên cùng một biểu đồ:
+- **"Client (Android)"**: boundary → control (Controller, `XxxApiDAO`) → entity.
+- **"Server (Spring Boot)"**: `XxxRestController` → `XxxDAO extends DAO` → entity. Không có tầng Service.
+- Hai package nối nhau bằng **đúng một mũi tên** từ `XxxApiDAO` tới `XxxRestController`, ghi `HTTP/JSON`.
+- Không vẽ lớp của framework (Spring, Firebase SDK, `HttpURLConnection`); chỉ ghi chúng làm kiểu dữ liệu của thuộc tính.
+
+Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game) vẽ một package như bài mẫu.
 
 **Yêu cầu khác:**
 - Mỗi phương thức ghi đủ tham số và kiểu trả về.
-- Chức năng có phần server (Firebase) thì vẽ cả phía server trên cùng biểu đồ.
 - Dưới biểu đồ mô tả mỗi lớp 1–2 dòng, theo mẫu: "`RoomDAO` có phương thức `findWaitingRoom` để tìm phòng đang chờ…".
 
 **Ánh xạ từ phân tích sang thiết kế:**
@@ -234,6 +243,7 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 - Ngoại lệ chính vẽ bằng khung `alt`.
 
 **Quy ước riêng:**
+- **REST:** mỗi lời gọi API là **một thông điệp** từ `XxxApiDAO` tới `XxxRestController`, ghi phương thức và đường dẫn (ví dụ `POST /api/matches/{code}/finish`). Kết quả trả về là một thông điệp ngược lại, ghi kiểu dữ liệu (ví dụ `Match`). Phía server tiếp tục như bài mẫu: Controller gọi DAO → DAO đóng gói Entity → trả về.
 - **Firebase (bất đồng bộ):** lời gọi DAO là một thông điệp. Kết quả là thông điệp trả về từ callback (`onDataChange`, `onComplete`), ghi tên callback trên mũi tên.
 - **`Thread` + `runOnUiThread`:** vẽ lời gọi DAO từ Activity như bình thường. Ghi chú `{Thread}` cạnh thông điệp.
 - **`CountDownTimer`:** vẽ như một đối tượng điều khiển, có thông điệp `onTick` / `onFinish`.
