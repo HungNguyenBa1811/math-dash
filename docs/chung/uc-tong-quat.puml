@@ -27,24 +27,17 @@ title Biểu đồ use case tổng quát – Math Dash 1v1
 actor "Người chơi" as A1
 
 rectangle "Math Dash 1v1" {
-  rectangle "Chơi online (Hùng)" {
-    usecase "Tìm trận" as UC01
-    usecase "Thi đấu online" as UC02
-    usecase "Quản lý lịch sử đấu" as UC03
-    usecase "Đăng nhập ẩn danh" as UC08
-    usecase "Hủy tìm trận" as UC09
-    usecase "Thoát trận" as UC11
-    usecase "Xem lịch sử đấu" as UC12
-    usecase "Xóa trận đấu" as UC13
+  rectangle "Tài khoản (chung)" {
+    usecase "Đăng ký" as UC01
+    usecase "Đăng nhập" as UC02
   }
   rectangle "Chơi offline (Hoàng)" {
-    usecase "Chơi offline" as UC04
-    usecase "Xem bảng vàng" as UC05
-    usecase "Cài đặt âm thanh" as UC06
+    usecase "Chơi offline" as UC03
+    usecase "Cài đặt cấu hình game" as UC04
   }
-  rectangle "Dùng chung" {
-    usecase "Nhập tên người chơi" as UC07
-    usecase "Trả lời câu hỏi" as UC10
+  rectangle "Chơi online (Hùng)" {
+    usecase "Chơi online" as UC05
+    usecase "Xem lịch sử đấu" as UC06
   }
 }
 
@@ -54,14 +47,4 @@ A1 --> UC03
 A1 --> UC04
 A1 --> UC05
 A1 --> UC06
-
-UC01 ..> UC07 : <<include>>
-UC01 ..> UC08 : <<include>>
-UC09 ..> UC01 : <<extend>>
-UC02 ..> UC10 : <<include>>
-UC11 ..> UC02 : <<extend>>
-UC03 ..> UC12 : <<include>>
-UC13 ..> UC03 : <<extend>>
-UC04 ..> UC07 : <<include>>
-UC04 ..> UC10 : <<include>>
 @enduml
