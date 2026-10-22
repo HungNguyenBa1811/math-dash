@@ -22,7 +22,14 @@ title Biểu đồ lớp thực thể pha phân tích – Math Dash 1v1
 
 class Player {
   - username
+  - password
+  - displayName
   - createdAt
+}
+class GameConfig {
+  - soundOn
+  - vibrationOn
+  - secondsPerQuestion
 }
 class MathProblem {
   - operand1
@@ -32,6 +39,7 @@ class MathProblem {
   - options
 }
 class GameSession {
+  - difficulty
   - score
   - streak
   - maxStreak
@@ -41,39 +49,33 @@ class GameSession {
   - isGameOver
 }
 class GameRecord {
+  - difficulty
   - score
   - maxStreak
   - totalCorrect
   - totalWrong
   - playedAt
 }
-class Room {
+class Match {
+  - code
   - status
   - seed
   - createdAt
+  - endedAt
 }
-class RoomPlayer {
-  - uid
-  - name
+class MatchPlayer {
   - score
-  - online
-  - finished
-}
-class MatchHistory {
-  - opponentName
-  - myScore
-  - opponentScore
-  - endReason
-  - playedAt
+  - left
 }
 
-' Thông tin A nằm trong B: hình thoi đặt ở B
+' Thông tin A nằm trong B: hình thoi rỗng đặt ở B
 GameSession "n" o-- "1" Player
 GameRecord "n" o-- "1" Player
-MatchHistory "n" o-- "1" Player
+GameSession "n" o-- "1" GameConfig
+' Câu hỏi chỉ tồn tại trong ván chơi: hình thoi đặc
 GameSession "1" *-- "n" MathProblem
 
-' Quan hệ n-n Người chơi – Phòng đấu (mỗi phòng tối đa 2 người), lớp liên kết RoomPlayer
-Player "n" -- "2" Room
-(Player, Room) .. RoomPlayer
+' Quan hệ n-n Người chơi – Trận đấu (mỗi trận đúng 2 người), lớp liên kết MatchPlayer
+Player "n" -- "2" Match
+(Player, Match) .. MatchPlayer
 @enduml
