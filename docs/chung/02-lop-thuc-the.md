@@ -36,17 +36,17 @@ Khi chơi online, người chơi tạo một trận đấu: hệ thống sinh m�
   - Tên đăng nhập, mật khẩu, tên hiển thị → thuộc tính của `Player`.
   - Đối thủ, người chơi kia → cũng là một `Player` (có tài khoản trong hệ thống), đóng vai trò người chơi thứ hai của trận → **không đề xuất lớp**.
 - **Các danh từ liên quan đến thông tin của chế độ offline:**
-  - Câu hỏi / phép tính → cùng một khái niệm → lớp `MathProblem`: toán hạng thứ nhất (`operand1`), toán hạng thứ hai (`operand2`), toán tử (`operator`), đáp án đúng (`correctAnswer`), các phương án trả lời (`options`).
-  - Ván chơi → lớp `GameSession`: độ khó (`difficulty`), điểm (`score`), chuỗi đúng (`streak`), chuỗi đúng dài nhất (`maxStreak`), số mạng còn lại (`lives`), số câu đúng (`totalCorrect`), số câu sai (`totalWrong`), đã kết thúc (`isGameOver`). Đây là trạng thái của ván **đang chơi**; trận online cũng dùng lớp này để chấm điểm cho từng người, nhưng không trừ mạng.
+  - Câu hỏi / phép tính → cùng một khái niệm → lớp `MathProblem`: toán hạng thứ nhất (`operand1`), toán hạng thứ hai (`operand2`), toán tử (`operator`), đáp án đúng (`correctAnswer`), các phương án trả lời (`answerOptions`).
+  - Ván chơi → lớp `GameSession`: độ khó (`difficulty`), điểm (`score`), chuỗi đúng (`currentStreak`), chuỗi đúng dài nhất (`maxStreak`), số mạng còn lại (`livesLeft`), số câu đúng (`correctCount`), số câu sai, tính cả câu hết giờ (`wrongCount`), đã kết thúc (`gameOver`). Đây là trạng thái của ván **đang chơi**; trận online cũng dùng lớp này để chấm điểm cho từng người, nhưng không trừ mạng.
   - Độ khó, mạng, điểm, chuỗi đúng, số câu đúng, số câu sai → thuộc tính của `GameSession`.
   - Mức → tính được từ độ khó và số câu đã ra → thuộc tính dẫn xuất, **không đề xuất**.
-  - Kết quả ván → lớp `GameRecord`: độ khó (`difficulty`), điểm (`score`), chuỗi đúng dài nhất (`maxStreak`), số câu đúng (`totalCorrect`), số câu sai (`totalWrong`), thời điểm chơi (`playedAt`). Đây là bản lưu lại khi ván kết thúc.
+  - Kết quả ván → lớp `GameRecord`: độ khó (`difficulty`), điểm (`score`), chuỗi đúng dài nhất (`maxStreak`), số câu đúng (`correctCount`), số câu sai (`wrongCount`), thời điểm chơi (`playedAt`). Đây là bản lưu lại khi ván kết thúc.
   - Kỷ lục → là điểm cao nhất trong các `GameRecord` của một người chơi ở một độ khó → thuộc tính dẫn xuất, **không đề xuất**.
-  - Cấu hình game → lớp `GameConfig`: âm thanh bật (`soundOn`), rung bật (`vibrationOn`), thời gian mỗi câu (`secondsPerQuestion`). Giữ thành lớp vì thời gian mỗi câu là dữ liệu quyết định luật chơi của ván, không chỉ là tùy chọn hiển thị.
+  - Cấu hình game → lớp `GameConfig`: âm thanh bật (`soundEnabled`), rung bật (`vibrationEnabled`), thời gian mỗi câu (`secondsPerQuestion`). Giữ thành lớp vì thời gian mỗi câu là dữ liệu quyết định luật chơi của ván, không chỉ là tùy chọn hiển thị.
   - Âm thanh, rung, thời gian trả lời → thuộc tính của `GameConfig`.
 - **Các danh từ liên quan đến thông tin của chế độ online:**
-  - Trận đấu → lớp `Match`: mã phòng (`code`), trạng thái (`status`: `waiting` / `playing` / `finished`), mã đồng bộ câu hỏi (`seed`), thời điểm tạo (`createdAt`), thời điểm kết thúc (`endedAt`).
-  - Phòng đấu → mỗi phòng chỉ diễn ra đúng một trận và phòng không có thông tin riêng ngoài mã phòng (quan hệ 1-1) → **gộp vào `Match`**, mã phòng là thuộc tính `code`.
+  - Trận đấu → lớp `Match`: mã phòng (`roomCode`), trạng thái (`status`: `waiting` / `playing` / `finished`), mã đồng bộ câu hỏi (`questionSeed`), thời điểm tạo (`createdAt`), thời điểm kết thúc (`endedAt`).
+  - Phòng đấu → mỗi phòng chỉ diễn ra đúng một trận và phòng không có thông tin riêng ngoài mã phòng (quan hệ 1-1) → **gộp vào `Match`**, mã phòng là thuộc tính `roomCode`.
   - Mã phòng, mã đồng bộ câu hỏi, trạng thái, thời điểm tạo, thời điểm kết thúc → thuộc tính của `Match`.
   - Điểm của từng người trong trận, bỏ trận → là thông tin của **một người chơi trong một trận cụ thể**, không thuộc riêng `Player` hay `Match` → quyết định ở bước 4.
   - Kết quả trận (thắng / thua / hòa) → suy ra được từ việc bỏ trận và điểm của 2 người → thuộc tính dẫn xuất, **không lưu**.
@@ -59,7 +59,7 @@ Khi chơi online, người chơi tạo một trận đấu: hệ thống sinh m�
 - Một ván chơi kết thúc sinh ra đúng một kết quả ván, một kết quả ván ứng với một ván chơi → `GameSession` – `GameRecord` là **1-1**. **Giữ 2 lớp riêng** vì vòng đời khác nhau: `GameSession` chỉ tồn tại khi đang chơi, còn `GameRecord` là bản lưu lâu dài. `GameRecord` cũng không giữ những thông tin chỉ có ý nghĩa khi đang chơi (chuỗi đúng hiện tại, số mạng, câu hỏi hiện tại).
 - Một người chơi có nhiều kết quả ván, một kết quả ván thuộc về một người chơi → `Player` – `GameRecord` là **1-n**.
 - Một cấu hình game được dùng cho nhiều ván chơi, mỗi ván chơi dùng một cấu hình → `GameConfig` – `GameSession` là **1-n**.
-- Một người chơi tham gia nhiều trận đấu, một trận đấu có đúng 2 người chơi → `Player` – `Match` là **n-n** → đề xuất lớp trung gian `MatchPlayer` (người chơi trong trận) xác định duy nhất một người chơi trong một trận, kèm điểm (`score`) và bỏ trận (`left`) của người đó.
+- Một người chơi tham gia nhiều trận đấu, một trận đấu có đúng 2 người chơi → `Player` – `Match` là **n-n** → đề xuất lớp trung gian `MatchPlayer` (người chơi trong trận) xác định duy nhất một người chơi trong một trận, kèm điểm (`score`) và bỏ trận (`forfeited`) của người đó.
 - Một trận đấu dùng các câu hỏi sinh từ mã đồng bộ; câu hỏi không được lưu cùng trận (cả 2 máy tự sinh ra cùng một dãy) → `Match` – `MathProblem` **không nối trực tiếp**.
 
 ## A.5. Bước 5: Xác định quan hệ đối tượng giữa các thực thể
@@ -130,26 +130,29 @@ Không bổ sung `id` cho:
 - `MathProblem`, `GameSession`: chỉ tồn tại trong bộ nhớ khi đang chơi, không được lưu, không lớp nào tham chiếu tới từng đối tượng.
 - `GameConfig`: mỗi máy chỉ có đúng một cấu hình, không cần phân biệt.
 
-`Match` có thêm mã phòng `code` để người chơi nhập khi tìm phòng. Mã phòng chỉ duy nhất trong các trận chưa kết thúc (các trận đã kết thúc có thể trùng mã), nên **không dùng làm khóa** mà vẫn cần `id` riêng.
+`Match` có thêm mã phòng `roomCode` để người chơi nhập khi tìm phòng. Mã phòng chỉ duy nhất trong các trận chưa kết thúc (các trận đã kết thúc có thể trùng mã), nên **không dùng làm khóa** mà vẫn cần `id` riêng.
 
 ## B.2. Bước 2: Bổ sung kiểu dữ liệu
 
 Quy ước: chuỗi → `String`; số đếm, điểm, số giây → `int`; mã đồng bộ câu hỏi → `long` (khớp kiểu tham số của `java.util.Random`); thời điểm → `Date`; cờ bật / tắt → `boolean`. Độ khó dùng `int`: 1 = Dễ, 2 = Trung bình, 3 = Khó (cũng chính là mức bắt đầu của ván).
 
-Bổ sung 3 thuộc tính phục vụ thiết kế cho `GameSession`, không có ở pha phân tích:
-- `online : boolean`: cùng một lớp chấm điểm cho cả 2 chế độ, chế độ online không trừ mạng.
-- `questionCount : int`: số câu đã ra, dùng để tính mức hiện tại.
-- `gameOver : boolean`: đổi tên từ `isGameOver` theo quy ước JavaBean (getter là `isGameOver()`).
+Bổ sung 2 thuộc tính phục vụ thiết kế cho `GameSession`, không có ở pha phân tích:
+- `onlineMode : boolean`: cùng một lớp chấm điểm cho cả 2 chế độ; `true` là trận online, không trừ mạng.
+- `questionsAsked : int`: số câu đã ra trong ván, dùng để tính mức hiện tại.
+
+Đổi tên 1 thuộc tính so với pha phân tích: `password` của `Player` thành **`passwordHash`**, vì hệ thống chỉ lưu mật khẩu đã băm (BCrypt), không lưu mật khẩu gốc.
+
+Thuộc tính kiểu `boolean` đặt tên theo trạng thái, không có tiền tố `is` (`gameOver`, `forfeited`, `soundEnabled`…); getter tương ứng là `isGameOver()`, `isForfeited()`, `isSoundEnabled()` theo quy ước JavaBean. Nếu đặt tên trường là `isForfeited` thì getter thành `isIsForfeited()`, và thư viện chuyển JSON (Jackson ở server, Firebase SDK ở app) sẽ đọc sai tên trường.
 
 | Lớp | Thuộc tính |
 |---|---|
-| `Player` | id: int, username: String, password: String, displayName: String, createdAt: Date |
-| `MathProblem` | operand1: int, operand2: int, operator: String, correctAnswer: int, options: List&lt;Integer&gt; |
-| `GameSession` | difficulty: int, online: boolean, questionCount: int, score: int, streak: int, maxStreak: int, lives: int, totalCorrect: int, totalWrong: int, gameOver: boolean |
-| `GameRecord` | id: int, difficulty: int, score: int, maxStreak: int, totalCorrect: int, totalWrong: int, playedAt: Date |
-| `GameConfig` | soundOn: boolean, vibrationOn: boolean, secondsPerQuestion: int |
-| `Match` | id: int, code: String, status: String, seed: long, createdAt: Date, endedAt: Date |
-| `MatchPlayer` | id: int, score: int, left: boolean |
+| `Player` | id: int, username: String, passwordHash: String, displayName: String, createdAt: Date |
+| `MathProblem` | operand1: int, operand2: int, operator: String, correctAnswer: int, answerOptions: List&lt;Integer&gt; |
+| `GameSession` | difficulty: int, onlineMode: boolean, questionsAsked: int, score: int, currentStreak: int, maxStreak: int, livesLeft: int, correctCount: int, wrongCount: int, gameOver: boolean |
+| `GameRecord` | id: int, difficulty: int, score: int, maxStreak: int, correctCount: int, wrongCount: int, playedAt: Date |
+| `GameConfig` | soundEnabled: boolean, vibrationEnabled: boolean, secondsPerQuestion: int |
+| `Match` | id: int, roomCode: String, status: String, questionSeed: long, createdAt: Date, endedAt: Date |
+| `MatchPlayer` | id: int, score: int, forfeited: boolean |
 
 ## B.3. Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành
 
@@ -179,8 +182,8 @@ Các thuộc tính dẫn xuất ở pha phân tích không thành thuộc tính 
 
 | Lớp | Phương thức | Ý nghĩa |
 |---|---|---|
-| `GameSession` | `getCurrentLevel() : int` | `min(difficulty + questionCount / 5, 4)` |
-| `GameRecord` | `getAccuracy() : double` | `totalCorrect / (totalCorrect + totalWrong)` |
+| `GameSession` | `getCurrentLevel() : int` | `min(difficulty + questionsAsked / 5, 4)` |
+| `GameRecord` | `getAccuracy() : double` | `correctCount / (correctCount + wrongCount)` |
 | `Match` | `canJoin(playerId : int) : boolean` | Trận đang `waiting`, chưa đủ 2 người, người này chưa có trong trận |
 | `Match` | `getResult(playerId : int) : String` | `WIN` / `LOSE` / `DRAW`: ai bỏ trận thì thua; không ai bỏ thì so điểm |
 
@@ -197,6 +200,42 @@ So với pha phân tích:
 - Lớp liên kết `MatchPlayer` trở thành thành phần (hình thoi đặc) của `Match` và chứa `Player` (hình thoi rỗng).
 - Mỗi quan hệ chứa được thể hiện bằng một thuộc tính đối tượng ở lớp chứa: `GameSession.player`, `GameSession.config`, `GameSession.currentProblem`, `GameRecord.player`, `Match.players`, `MatchPlayer.player`.
 
-Các lớp `Player`, `Match`, `MatchPlayer` có mặt ở **cả app và backend** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng. Riêng `password` chỉ có giá trị ở backend; app không bao giờ giữ mật khẩu.
+Các lớp `Player`, `Match`, `MatchPlayer` có mặt ở **cả app và backend** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng. Riêng `passwordHash` chỉ có giá trị ở backend; app không bao giờ giữ mật khẩu.
 
 Mã nguồn PlantUML: [`lop-thuc-the-thiet-ke.puml`](lop-thuc-the-thiet-ke.puml).
+
+## B.6. Ý nghĩa các thuộc tính
+
+| Lớp | Thuộc tính | Ý nghĩa | Giá trị |
+|---|---|---|---|
+| `Player` | `username` | Tên đăng nhập, dùng khi đăng nhập | Duy nhất trong hệ thống |
+| `Player` | `passwordHash` | Mật khẩu đã băm | Chuỗi BCrypt, không bao giờ là mật khẩu gốc |
+| `Player` | `displayName` | Tên hiển thị cho đối thủ và ở màn Chính | |
+| `Player` | `createdAt` | Thời điểm đăng ký tài khoản | |
+| `MathProblem` | `operand1`, `operand2` | Toán hạng bên trái, bên phải của phép tính | Số nguyên ≥ 1 |
+| `MathProblem` | `operator` | Toán tử | `"+"`, `"-"`, `"×"` |
+| `MathProblem` | `correctAnswer` | Kết quả đúng của phép tính | ≥ 0 |
+| `MathProblem` | `answerOptions` | 4 phương án hiển thị trên 4 nút, đã xáo trộn, có chứa `correctAnswer` | 4 số khác nhau, ≥ 0 |
+| `GameSession` | `difficulty` | Độ khó người chơi chọn, cũng là mức bắt đầu | 1 = Dễ, 2 = Trung bình, 3 = Khó; trận online luôn là 1 |
+| `GameSession` | `onlineMode` | Ván này là trận online hay không | `true`: không trừ mạng |
+| `GameSession` | `questionsAsked` | Số câu đã ra trong ván | ≥ 0 |
+| `GameSession` | `score` | Tổng điểm hiện tại | ≥ 0 |
+| `GameSession` | `currentStreak` | Số câu đúng liên tiếp tính đến hiện tại | Về 0 khi sai hoặc hết giờ |
+| `GameSession`, `GameRecord` | `maxStreak` | Chuỗi đúng liên tiếp dài nhất trong ván | ≥ 0 |
+| `GameSession` | `livesLeft` | Số mạng còn lại | 3 → 0 (chế độ offline) |
+| `GameSession`, `GameRecord` | `correctCount` | Số câu trả lời đúng trong ván | ≥ 0 |
+| `GameSession`, `GameRecord` | `wrongCount` | Số câu trả lời sai trong ván, **tính cả câu hết giờ** | ≥ 0 |
+| `GameSession` | `gameOver` | Ván đã kết thúc hay chưa | `true` khi hết mạng (offline) hoặc hết 60 giây (online) |
+| `GameRecord` | `difficulty` | Độ khó của ván đã chơi | 1, 2, 3 |
+| `GameRecord` | `score` | Điểm cuối cùng của ván | ≥ 0 |
+| `GameRecord` | `playedAt` | Thời điểm ván kết thúc | |
+| `GameConfig` | `soundEnabled` | Có phát âm thanh khi trả lời và khi hết giờ không | Mặc định `true` |
+| `GameConfig` | `vibrationEnabled` | Có rung khi trả lời sai và khi hết giờ không | Mặc định `true` |
+| `GameConfig` | `secondsPerQuestion` | Thời gian trả lời mỗi câu ở chế độ offline | 4, 6, 8, 10 giây; mặc định 6 |
+| `Match` | `roomCode` | Mã phòng người tạo gửi cho bạn để vào trận | 6 chữ số, duy nhất trong các trận chưa kết thúc |
+| `Match` | `status` | Trạng thái trận | `waiting` (chờ người thứ hai), `playing` (đang đấu), `finished` (đã xong) |
+| `Match` | `questionSeed` | Hạt giống sinh dãy câu hỏi; 2 máy dùng cùng giá trị nên có cùng dãy câu | Số nguyên `long` ngẫu nhiên |
+| `Match` | `createdAt` | Thời điểm tạo phòng | |
+| `Match` | `endedAt` | Thời điểm trận kết thúc | Chỉ có khi `status = finished` |
+| `MatchPlayer` | `score` | Điểm của người chơi này trong trận | ≥ 0 |
+| `MatchPlayer` | `forfeited` | Người chơi này đã bỏ trận (bấm thoát hoặc mất kết nối) và bị xử thua | Mặc định `false` |
