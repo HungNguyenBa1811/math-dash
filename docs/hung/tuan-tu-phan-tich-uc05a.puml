@@ -1,0 +1,34 @@
+@startuml tuan-tu-phan-tich-uc05a
+!include _seq.iuml
+title Tuần tự pha phân tích – Chơi online, đoạn A: Tạo phòng
+
+actor "Hùng (máy 1)" as U
+boundary MainView as MV
+boundary OnlineView as OV
+boundary LobbyView as LV
+boundary OnlineGameView as GV
+entity Match as M
+
+U -> MV : nhấn Chơi online
+MV -> OV : gọi
+OV --> U : hiển thị
+U -> OV : nhấn Tạo phòng
+OV -> M : createMatch()
+M --> OV : trận 482915 (waiting, người chơi HUNG)
+OV -> LV : gọi
+LV --> U : hiển thị mã 482915, "Đang chờ đối thủ..."
+LV -> M : watchMatch()
+alt Hùng nhấn Hủy trước khi có đối thủ
+  autonumber stop
+  U -> LV : 9a.1. nhấn Hủy
+  LV -> M : 9a.2. deleteMatch()
+  M --> LV : 9a.3. đã xóa phòng
+  LV -> MV : 9a.4. gọi
+  MV --> U : 9a.5. hiển thị
+  autonumber resume
+else Hoàng vào phòng (đoạn B)
+  M --> LV : trận playing, đối thủ HOANG
+  LV --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HOANG
+  LV -> GV : gọi (sang đoạn C)
+end
+@enduml
