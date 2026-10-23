@@ -210,17 +210,17 @@ Dự án hiện tại mới là **khung stub** (đủ class và chữ ký hàm, 
 * **App Android** (`app/`): giao diện, luật chơi, SQLite cho chế độ offline (kỷ lục theo độ khó), SharedPreferences cho cấu hình game và phiên đăng nhập.
 * **Backend Spring Boot + MySQL** (`server/`): tài khoản, lịch sử đấu. Cấu trúc mỏng `RestController → DAO (JDBC) → Entity`. Khi trận online kết thúc, backend làm **trọng tài**: đọc trận từ Firebase, xác định thắng / thua / hòa rồi lưu MySQL.
 * **Firebase Realtime Database:** chỉ giữ trận **đang diễn ra** để 2 máy thấy điểm của nhau. App đăng nhập Firebase bằng custom token do backend cấp.
-* **Đồng bộ câu hỏi bằng seed:** khi tạo phòng sinh một `seed`, cả 2 máy sinh cùng một dãy câu bằng `new ProblemDAO(new Random(seed))`.
+* **Đồng bộ câu hỏi bằng seed:** khi tạo phòng sinh một `questionSeed`, cả 2 máy sinh cùng một dãy câu bằng `new ProblemDAO(new Random(questionSeed))`.
 
 Cấu trúc trận đang diễn ra trên Realtime Database:
 
 ```
-matches/{code}                      // mã phòng 6 chữ số
-    status    : "waiting" | "playing" | "finished"
-    seed      : long
-    createdAt : ServerValue.TIMESTAMP
+matches/{roomCode}                  // mã phòng 6 chữ số
+    status       : "waiting" | "playing" | "finished"
+    questionSeed : long
+    createdAt    : ServerValue.TIMESTAMP
     players/
-        {playerId} : { displayName: String, score: int, online: bool, finished: bool, left: bool }
+        {playerId} : { displayName: String, score: int, forfeited: bool, connected: bool, timeUp: bool }
 ```
 
 Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)** · Quy ước báo cáo OOAD: **[REPORT_CONVENTION.md](REPORT_CONVENTION.md)**
