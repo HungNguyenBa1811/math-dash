@@ -1,6 +1,6 @@
 # Backend Math Dash 1v1
 
-Spring Boot (Java 17, Maven), JDBC thuần tới MySQL, đăng nhập bằng BCrypt + JWT, đọc Firebase qua REST API.
+Spring Boot (Java 17, Maven), JDBC thuần tới MySQL, đăng nhập bằng tên đăng nhập + mật khẩu (băm BCrypt), đọc Firebase qua REST API.
 
 ## 1. Tạo CSDL
 
@@ -10,7 +10,7 @@ mysql -u root -p < db/schema.sql
 
 ## 2. Cấu hình
 
-Sao chép `src/main/resources/application-local.properties.example` thành `application-local.properties`, điền mật khẩu MySQL và khóa ký JWT (`jwt.secret`, tối thiểu 32 ký tự). File này có trong `.gitignore`, không commit.
+Sao chép `src/main/resources/application-local.properties.example` thành `application-local.properties`, điền mật khẩu MySQL. File này có trong `.gitignore`, không commit.
 
 Địa chỉ Realtime Database (`firebase.databaseUrl`) nằm sẵn trong `application.properties`; server đọc và ghi trận qua REST API của Firebase, không cần service account.
 
@@ -38,8 +38,6 @@ mvn test
 | Phương thức | Đường dẫn | Kết quả |
 |---|---|---|
 | POST | /api/auth/register | 201, hoặc 409 nếu trùng tên đăng nhập |
-| POST | /api/auth/login | { player, token } (token là JWT, hết hạn sau 24 giờ), hoặc 401 |
+| POST | /api/auth/login | Player, hoặc 401 nếu sai tên đăng nhập / mật khẩu |
 | POST | /api/matches/{roomCode}/finish | Trận đã lưu; 409 nếu trận chưa kết thúc |
 | GET | /api/matches?playerId={id} | Các trận đã kết thúc của người chơi, mới nhất trước |
-
-Hai API trận đấu cần header `Authorization: Bearer <token>`.

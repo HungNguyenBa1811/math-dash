@@ -21,14 +21,12 @@ public class PlayerApiDAO extends ApiDAO {
         post("/auth/register", body);
     }
 
-    // POST /api/auth/login: giữ token JWT cho các lần gọi sau
+    // POST /api/auth/login: sai tên đăng nhập hoặc mật khẩu thì ném IOException "Sai tên đăng nhập hoặc mật khẩu"
     public Player login(String username, String password) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("username", username);
         body.put("password", password);
-        JSONObject result = post("/auth/login", body);
-        token = result.getString("token");
-        JSONObject json = result.getJSONObject("player");
+        JSONObject json = post("/auth/login", body);
         return new Player(json.getInt("id"), json.getString("username"), json.getString("displayName"));
     }
 }

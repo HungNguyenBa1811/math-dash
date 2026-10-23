@@ -16,9 +16,8 @@ public class SessionDAO {
     }
 
     // Ghi nhớ người chơi vừa đăng nhập
-    public void save(String token, Player player) {
+    public void save(Player player) {
         prefs.edit()
-                .putString("token", token)
                 .putInt("playerId", player.getId())
                 .putString("displayName", player.getDisplayName())
                 .apply();
@@ -30,10 +29,6 @@ public class SessionDAO {
             return null;
         }
         return new Player(prefs.getInt("playerId", 0), null, prefs.getString("displayName", ""));
-    }
-
-    public String getToken() {
-        return prefs.getString("token", null);
     }
 
     // Đăng xuất: xóa toàn bộ phiên

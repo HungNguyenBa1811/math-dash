@@ -398,7 +398,7 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
   - createMatch, joinMatch dùng transaction. joinMatch gọi Match.canJoin bên trong transaction, nên 2 người vào cùng lúc vẫn không vượt quá 2 người.
   - watchMatch báo mọi thay đổi qua MatchCallback.
   - toMatch đóng gói node thành Match.
-- MatchApiDAO kế thừa ApiDAO (giữ BASE_URL, token). finishMatch gửi POST /api/matches/{roomCode}/finish.
+- MatchApiDAO kế thừa ApiDAO (giữ BASE_URL). finishMatch gửi POST /api/matches/{roomCode}/finish.
 - SessionDAO.getPlayer() đọc người chơi đang đăng nhập từ SharedPreferences.
 - ProblemDAO.generateProblem(level) sinh câu hỏi.
 

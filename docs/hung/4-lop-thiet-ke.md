@@ -41,7 +41,7 @@ Mỗi nơi lưu trữ có một lớp DAO cha giữ kết nối dùng chung; cá
 | Nơi lưu trữ | DAO cha | Giữ | DAO con dùng ở đây |
 |---|---|---|---|
 | App → Firebase | FirebaseDAO | con : DatabaseReference | MatchFirebaseDAO |
-| App → REST | ApiDAO | BASE_URL, token; gửi / nhận JSON | MatchApiDAO |
+| App → REST | ApiDAO | BASE_URL; gửi / nhận JSON | MatchApiDAO |
 | Server → MySQL | DAO | conn : Connection | MatchDAO |
 
 Hai lớp không có lớp cha:
@@ -115,7 +115,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 | Control | SessionDAO | getPlayer() đọc playerId, displayName từ SharedPreferences "session" và đóng gói thành Player (lớp chung) |
 | Control | FirebaseDAO ← MatchFirebaseDAO | FirebaseDAO giữ con (gốc Realtime Database). MatchFirebaseDAO đọc / ghi node matches/{roomCode}:<br>- createMatch dùng transaction; mã đã có trận chưa finished thì báo trùng.<br>- joinMatch dùng transaction và gọi Match.canJoin bên trong.<br>- watchMatch / stopWatching thêm / gỡ ValueEventListener.<br>- updateScore, setTimeUp, forfeit ghi node của chính mình.<br>- registerDisconnect đặt onDisconnect ghi connected = false, forfeited = true.<br>- toMatch đóng gói dữ liệu node thành Match + 2 MatchPlayer |
 | — | MatchCallback | Interface trả kết quả bất đồng bộ của MatchFirebaseDAO (onSuccess(Match), onFail(String)) |
-| Control | ApiDAO ← MatchApiDAO | ApiDAO giữ BASE_URL, token và 2 hàm gửi / nhận JSON bằng HttpURLConnection. MatchApiDAO.finishMatch gửi POST /api/matches/{roomCode}/finish, đóng gói JSON trả về thành Match bằng toMatch. Hàm chạy đồng bộ nên phải gọi trong Thread |
+| Control | ApiDAO ← MatchApiDAO | ApiDAO giữ BASE_URL và 2 hàm gửi / nhận JSON bằng HttpURLConnection. MatchApiDAO.finishMatch gửi POST /api/matches/{roomCode}/finish, đóng gói JSON trả về thành Match bằng toMatch. Hàm chạy đồng bộ nên phải gọi trong Thread |
 | Control | ProblemDAO | Sinh câu hỏi theo mức (bảng ở M1-07). Mọi số ngẫu nhiên đi qua random, nên 2 máy cùng questionSeed sinh ra cùng dãy câu |
 | Entity | Match, MatchPlayer, Player | Như thiết kế lớp thực thể. 3 phương thức nghiệp vụ của Match là hàm Java thuần, có unit test:<br>- canJoin: luật vào phòng.<br>- isOver: trận đã xong chưa.<br>- getResult: thắng / thua / hòa |
 | Entity | GameSession, MathProblem | Lõi chấm điểm dùng chung với Chơi offline. onlineMode = true nên trả lời sai không trừ mạng |

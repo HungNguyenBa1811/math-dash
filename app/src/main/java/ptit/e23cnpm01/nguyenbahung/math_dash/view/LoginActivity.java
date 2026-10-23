@@ -14,7 +14,6 @@ import org.json.JSONException;
 import java.io.IOException;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
@@ -35,7 +34,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         sessionDAO = new SessionDAO(this);
         if (sessionDAO.getPlayer() != null) {
-            ApiDAO.setToken(sessionDAO.getToken());
             openMain();
             return;
         }
@@ -71,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void run() {
                 try {
                     Player player = new PlayerApiDAO().login(username, password);
-                    sessionDAO.save(ApiDAO.getToken(), player);
+                    sessionDAO.save(player);
                     new PlayerDAO(LoginActivity.this).saveOrUpdate(player);
                     runOnUiThread(new Runnable() {
                         @Override

@@ -1,3 +1,2 @@
 # Sao chép thành application-local.properties rồi điền giá trị thật
 db.password=matkhau_mysql
-jwt.secret=chuoi-ngau-nhien-dai-it-nhat-32-ky-tu

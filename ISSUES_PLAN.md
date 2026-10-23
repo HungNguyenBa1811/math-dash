@@ -32,7 +32,7 @@
 | D1 | Phạm vi | MVP 6 UC như trên. Ngoài phạm vi ghi ở `docs/chung/01-pham-vi-use-case.md` mục 2.1 | Kịp demo 28/10, mỗi chức năng làm trọn vẹn |
 | D2 | Kiến trúc | **App Android** + **Backend Spring Boot** (REST, MySQL) + **Firebase Realtime Database** (chỉ trận đang diễn ra) | Backend giữ dữ liệu lâu dài và làm trọng tài; Firebase lo phần thời gian thực |
 | D3 | Backend mỏng | `RestController` → `DAO` (JDBC, lớp cha giữ `#conn: Connection`) → Entity. **Không có tầng Service, không dùng JPA** | Giữ đúng khuôn MVC của bài mẫu OOAD; biểu đồ lớp và tuần tự không phình ra |
-| D4 | Đăng nhập | Backend kiểm tra mật khẩu (BCrypt), trả **JWT** do server ký (hết hạn sau 24 giờ), dùng cho REST. App không đăng nhập Firebase (không dùng Firebase Authentication). App ghi nhớ phiên trong SharedPreferences | Auth đơn giản, nằm hết ở server; mất mạng vẫn vào được Chơi offline |
+| D4 | Đăng nhập | Đăng nhập đơn giản bằng tên đăng nhập và mật khẩu: backend so mật khẩu với bản băm BCrypt và trả Player, không cấp token. App không dùng Firebase Authentication. App ghi nhớ người chơi trong SharedPreferences | Đơn giản, đủ cho demo; mất mạng vẫn vào được Chơi offline |
 | D5 | Luật trận online | 60 giây, 2 người, cùng một dãy câu. Đúng: +10 + combo×2. Sai: 0 điểm, reset combo, **không mất mạng**. Người bỏ trận thua; nếu không ai bỏ thì so điểm, bằng điểm thì hòa | Đơn giản, dùng lại `GameSession` |
 | D6 | Đồng bộ câu hỏi | Khi tạo phòng sinh `questionSeed` (long); 2 máy cùng tạo `new ProblemDAO(new Random(questionSeed))` | Không phải đẩy từng câu qua mạng |
 | D7 | Trọng tài | Mỗi máy hết 60 giây thì ghi `timeUp`. Khi `Match.isOver()` đúng (cả 2 hết giờ hoặc có người bỏ trận), app gọi `POST /api/matches/{roomCode}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, **kiểm tra lại `isOver()`**, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`, trả `Match` đã lưu; app hiện kết quả bằng `getResult` trên bản đó. `Match.canJoin(...)`, `Match.isOver()`, `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
@@ -71,7 +71,7 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-offline` (UC03), `uc-cai-da
 | Entity | `Player`, `MathProblem`, `GameSession`, `GameRecord`, `GameConfig`, `Match`, `MatchPlayer` | **Chung** |
 | DAO SQLite | `DAO` (cha), `DatabaseHelper`, `PlayerDAO` (bản sao người chơi) | **Chung** |
 | DAO SQLite / SharedPreferences | `GameRecordDAO`, `GameConfigDAO` | Hoàng |
-| DAO HTTP | `ApiDAO` (cha: địa chỉ server, token, gửi/nhận JSON), `PlayerApiDAO` (đăng ký, đăng nhập), `SessionDAO` (lưu phiên) | **Chung** |
+| DAO HTTP | `ApiDAO` (cha: địa chỉ server, gửi/nhận JSON), `PlayerApiDAO` (đăng ký, đăng nhập), `SessionDAO` (lưu phiên) | **Chung** |
 | DAO HTTP | `MatchApiDAO` (kết thúc trận, lịch sử đấu) | Hùng |
 | DAO Firebase | `FirebaseDAO` (cha), `MatchFirebaseDAO` (tạo / tìm / theo dõi trận đang diễn ra) | Hùng |
 | Sinh câu hỏi | `ProblemDAO` (không truy cập CSDL) | **Chung** |
@@ -110,7 +110,6 @@ public abstract class DAO {
 // App: dao/ApiDAO.java — cha của mọi DAO gọi REST (HttpURLConnection, gọi trong Thread)
 public abstract class ApiDAO {
     protected static final String BASE_URL = "http://10.0.2.2:8080/api"; // máy ảo gọi về máy tính
-    protected static String token;
     protected JSONObject post(String path, JSONObject body) throws IOException, JSONException { /* ... */ }
     protected JSONArray getArray(String path) throws IOException, JSONException { /* ... */ }
 }
@@ -145,12 +144,12 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 - **Chữ ký hàm chi tiết** của UC05, UC06 (app + server) chốt ở `docs/hung/4-lop-thiet-ke.md`; code M2-02 → M2-05 theo đúng tài liệu này.
 
-- **REST API** (JSON, header `Authorization: Bearer <token>` trừ 2 API đầu):
+- **REST API** (JSON, không cần token):
 
 | Phương thức | Đường dẫn | Dùng cho | Kết quả |
 |---|---|---|---|
 | `POST` | `/api/auth/register` | UC01 | 201, hoặc 409 nếu trùng tên đăng nhập |
-| `POST` | `/api/auth/login` | UC02 | `{ player, token }` (token là JWT), hoặc 401 |
+| `POST` | `/api/auth/login` | UC02 | `Player`, hoặc 401 |
 | `POST` | `/api/matches/{roomCode}/finish` | UC05 | Kết quả trận đã lưu |
 | `GET` | `/api/matches?playerId={id}` | UC06 | Danh sách trận đã kết thúc của người chơi, mới nhất trước |
 
@@ -298,7 +297,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - **Output:**
   - **7 entity** theo M1-02.
   - **SQLite:** `DatabaseHelper` tạo `tblPlayer`, `tblGameRecord`; `DAO` cha; `PlayerDAO.saveOrUpdate(Player)` (lưu bản sao khi đăng nhập).
-  - **HTTP:** `ApiDAO` cha (gửi/nhận JSON bằng `HttpURLConnection` + `org.json`, gắn token); `SessionDAO` (lưu / đọc / xóa phiên trong SharedPreferences `"session"`; `getPlayer(): Player` trả người chơi đang đăng nhập).
+  - **HTTP:** `ApiDAO` cha (gửi/nhận JSON bằng `HttpURLConnection` + `org.json`); `SessionDAO` (lưu / đọc / xóa phiên trong SharedPreferences `"session"`; `getPlayer(): Player` trả người chơi đang đăng nhập).
   - **`MainActivity`:** tên hiển thị; 5 nút: Chơi offline → `DifficultyActivity`, Chơi online → `OnlineActivity`, Lịch sử đấu → `HistoryActivity`, Cài đặt → `SettingsActivity`, Đăng xuất.
   - **Đổi tên lớp giao diện cũ:** package `frm` → `view`, bỏ tiền tố `Frm` (`FrmMainActivity` → `MainActivity`, layout `activity_frm_main.xml` → `activity_main.xml`); xóa `FrmLeaderboardActivity` (bảng vàng ngoài phạm vi).
   - **Vỏ Activity** cho các màn còn lại, khai báo trong Manifest; quyền `INTERNET`; `usesCleartextTraffic`.
@@ -315,7 +314,6 @@ matches/{roomCode}                  // mã phòng 6 chữ số
     - `AuthRestController`: `register`, `login`.
     - `PlayerDAO`: `findByUsername`, `insert`.
     - Mật khẩu băm BCrypt.
-    - Token đăng nhập: chuỗi ngẫu nhiên lưu trong bộ nhớ server (Map token → playerId) là đủ cho MVP.
   - **App:**
     - `LoginActivity` (màn mở đầu): ô tên đăng nhập, ô mật khẩu, nút Đăng nhập, nút Đăng ký.
     - `RegisterActivity`: tên đăng nhập, mật khẩu, nhập lại mật khẩu, tên hiển thị.
@@ -327,7 +325,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
   - Sai mật khẩu → "Sai tên đăng nhập hoặc mật khẩu".
   - Mật khẩu nhập lại không khớp → báo lỗi, không gọi server.
   - Mất mạng → thông báo tiếng Việt, app không crash.
-- **Constraint:** Không lưu mật khẩu ở app; chỉ lưu token và thông tin người chơi.
+- **Constraint:** Không lưu mật khẩu ở app; chỉ lưu thông tin người chơi.
 
 ### [M1-07] Lõi câu hỏi và luật điểm: MathProblem, ProblemDAO, GameSession · @HungNguyenBa1811
 - **Phụ thuộc:** M1-02.
@@ -393,7 +391,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 ### [M2-01] Hạ tầng Firebase: Realtime Database + Security Rules · @HungNguyenBa1811
 - **Phụ thuộc:** M1-06.
-- **Mô tả:** Nối app và server với Firebase Realtime Database. Phục vụ UC05. Không dùng Firebase Authentication; đăng nhập là JWT của backend (D4).
+- **Mô tả:** Nối app và server với Firebase Realtime Database. Phục vụ UC05. Không dùng Firebase Authentication; đăng nhập là đăng nhập đơn giản của backend (D4).
 - **Input:** applicationId `ptit.e23cnpm01.nguyenbahung.math_dash`; D4; mục 2.3, 2.4.
 - **Output:**
   - **Firebase Console:** tạo project, bật Realtime Database.

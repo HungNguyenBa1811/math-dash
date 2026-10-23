@@ -238,7 +238,6 @@ Firebase vì vậy **không giữ dữ liệu lâu dài**; lịch sử đấu n�
 | config | soundEnabled | boolean | true | Âm thanh bật / tắt (GameConfig) |
 | config | vibrationEnabled | boolean | true | Rung bật / tắt (GameConfig) |
 | config | secondsPerQuestion | int | 6 | Thời gian mỗi câu, một trong 4 / 6 / 8 / 10 (GameConfig) |
-| session | token | String | — | Token đăng nhập (JWT do backend ký) gửi kèm mỗi lời gọi REST |
 | session | playerId | int | — | id người chơi đang đăng nhập |
 | session | displayName | String | — | Tên hiển thị ở màn Chính |
 
