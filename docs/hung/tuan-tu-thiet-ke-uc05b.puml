@@ -2,7 +2,7 @@
 !include _seq.iuml
 title Tuần tự thiết kế – Chơi online, đoạn B: Tìm phòng
 
-actor "Hoàng (máy 2)" as U
+actor "Người chơi" as U
 boundary MainActivity as MA
 boundary OnlineActivity as OA
 boundary LobbyActivity as LA
@@ -16,24 +16,24 @@ entity Match as M
 U -> MA : nhấn Chơi online
 MA -> OA : onClick(): startActivity()
 OA -> SD : onCreate(): getPlayer()
-SD -> P : new Player()
-P --> SD : Player (id 2, HOANG)
+SD -> P : đóng gói Player
+P --> SD : Player
 SD --> OA : Player
-OA --> U : hiển thị nút Tạo phòng, ô mã phòng, nút Vào phòng
-U -> OA : nhập 482915, nhấn Vào phòng
-OA -> MC : onClick(): findRoom("482915", me, this)
-MC -> MFD : joinMatch("482915", me, callback)
-MFD -> MFD : runTransaction → doTransaction(): toMatch("482915", data)
-MFD -> M : new Match(...) (waiting, HUNG)
+OA --> U : hiển thị giao diện chơi online
+U -> OA : nhập mã phòng, nhấn Vào phòng
+OA -> MC : onClick(): findRoom()
+MC -> MFD : joinMatch()
+MFD -> MFD : doTransaction(): toMatch()
+MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> M : canJoin(2)
+MFD -> M : canJoin()
 M --> MFD : true
-MFD -> MFD : ghi players/2 (HOANG), status = "playing"
-MFD -> MC : onComplete → onSuccess(match)
-MC -> OA : onRoomReady(match)
-OA -> LA : startActivity(roomCode)
-LA -> MC : onCreate(): waitForOpponent(this)
-MC -> LA : trận đã playing: onRoomReady(match)
-LA --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HUNG
-LA -> GA : sau 2 giây: startActivity() (sang đoạn C)
+MFD -> MFD : thêm người chơi, chuyển trận sang đang chơi
+MFD -> MC : onComplete(): onSuccess()
+MC -> OA : onRoomReady()
+OA -> LA : startActivity()
+LA -> MC : onCreate(): waitForOpponent()
+MC -> LA : onRoomReady()
+LA --> U : hiển thị trận đấu bắt đầu, tên đối thủ
+LA -> GA : startActivity()
 @enduml

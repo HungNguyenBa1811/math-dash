@@ -2,21 +2,21 @@
 !include _seq.iuml
 title Tuần tự pha phân tích – Xem lịch sử đấu
 
-actor "Hùng" as U
+actor "Người chơi" as U
 boundary MainView as MV
 boundary HistoryView as HV
 entity Match as M
 
 U -> MV : nhấn Lịch sử đấu
 MV -> HV : gọi
-HV -> M : getHistory(HUNG)
-M --> HV : danh sách 4 trận
+HV -> M : getHistory()
+M --> HV : danh sách trận
 loop mỗi trận
-  HV -> M : getResult(HUNG)
-  M --> HV : WIN / DRAW / LOSE
+  HV -> M : getResult()
+  M --> HV : kết quả
 end
 HV --> U : hiển thị danh sách trận
-U -> HV : nhấn Back
+U -> HV : nhấn quay lại
 HV -> MV : gọi
 MV --> U : hiển thị
 @enduml

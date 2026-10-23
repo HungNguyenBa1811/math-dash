@@ -2,7 +2,7 @@
 !include _seq.iuml
 title Tuần tự pha phân tích – Chơi online, đoạn A: Tạo phòng
 
-actor "Hùng (máy 1)" as U
+actor "Người chơi" as U
 boundary MainView as MV
 boundary OnlineView as OV
 boundary LobbyView as LV
@@ -14,11 +14,11 @@ MV -> OV : gọi
 OV --> U : hiển thị
 U -> OV : nhấn Tạo phòng
 OV -> M : createMatch()
-M --> OV : trận 482915 (waiting, người chơi HUNG)
+M --> OV : trận mới đang chờ
 OV -> LV : gọi
-LV --> U : hiển thị mã 482915, "Đang chờ đối thủ..."
+LV --> U : hiển thị mã phòng, trạng thái chờ đối thủ
 LV -> M : watchMatch()
-M --> LV : trận playing, đối thủ HOANG (khi Hoàng vào phòng)
-LV --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HOANG
-LV -> GV : gọi (sang đoạn C)
+M --> LV : trận đã bắt đầu
+LV --> U : hiển thị trận đấu bắt đầu, tên đối thủ
+LV -> GV : gọi
 @enduml

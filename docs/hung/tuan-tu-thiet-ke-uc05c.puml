@@ -2,7 +2,7 @@
 !include _seq.iuml
 title Tuần tự thiết kế – Chơi online, đoạn C: Thi đấu và kết thúc trận
 
-actor "Hùng (máy 1)" as U
+actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
 boundary MainActivity as MA
 boundary OnlineGameActivity as GA
@@ -22,84 +22,84 @@ control MatchDAO as MD
 entity "Match" as SM
 end box
 
-GA -> MC : onCreate(): startGame(this)
-MC -> MFD : registerDisconnect("482915", 1)
-MC -> PD : new ProblemDAO(new Random(questionSeed))
-MC -> GS : new GameSession(1, true)
-MC -> MFD : watchMatch("482915", callback)
-MC -> T : start() (60 giây)
+GA -> MC : onCreate(): startGame()
+MC -> MFD : registerDisconnect()
+MC -> PD : tạo ProblemDAO
+MC -> GS : tạo GameSession
+MC -> MFD : watchMatch()
+MC -> T : start()
 MC -> GS : getCurrentLevel()
-GS --> MC : 1
-MC -> PD : generateProblem(1)
-PD -> MP : new MathProblem(12, 7, "+")
+GS --> MC : mức hiện tại
+MC -> PD : generateProblem()
+PD -> MP : đóng gói MathProblem
 MP --> PD : MathProblem
 PD --> MC : MathProblem
-MC --> GA : MathProblem (12 + 7)
-GA --> U : hiển thị 0 VS 0, 60, 12 + 7 = ?, bàn phím số
+MC --> GA : MathProblem
+GA --> U : hiển thị điểm, đồng hồ, câu hỏi, bàn phím số
 
 loop đến khi CountDownTimer hết giờ
-  T -> MC : onTick(42000)
-  MC -> GA : onTick(42)
-  GA --> U : hiển thị 00:42
-  U -> GA : bấm 1, 9 (appendDigit), nhấn OK
-  GA -> MC : onClick(OK): submitAnswer(19)
-  MC -> MP : isCorrect(19)
+  T -> MC : onTick()
+  MC -> GA : onTick()
+  GA --> U : hiển thị thời gian còn lại
+  U -> GA : nhập đáp án, nhấn OK
+  GA -> MC : onClick(): submitAnswer()
+  MC -> MP : isCorrect()
   MP --> MC : true
   MC -> GS : recordCorrectAnswer()
-  GS --> MC : 12 (điểm mới 12)
-  MC -> MFD : updateScore("482915", 1, 12)
-  MC --> GA : 12
+  GS --> MC : điểm được cộng
+  MC -> MFD : updateScore()
+  MC --> GA : điểm được cộng
   GA -> MC : nextProblem()
   MC -> GS : getCurrentLevel()
-  GS --> MC : 1
-  MC -> PD : generateProblem(1)
-  PD -> MP : new MathProblem(9, 4, "-")
+  GS --> MC : mức hiện tại
+  MC -> PD : generateProblem()
+  PD -> MP : đóng gói MathProblem
   MP --> PD : MathProblem
   PD --> MC : MathProblem
-  MC --> GA : MathProblem (9 − 4)
-  GA --> U : showScorePopup(12): "+12" bay lên, điểm 12, 9 − 4 = ?
-  MFD -> MFD : onDataChange → toMatch("482915", data)
-  MFD -> M : new Match(...)
+  MC --> GA : MathProblem
+  GA --> U : showScorePopup(): điểm mới, câu hỏi mới
+  MFD -> MFD : onDataChange(): toMatch()
+  MFD -> M : đóng gói Match
   M --> MFD : Match
-  MFD -> MC : onSuccess(match)
+  MFD -> MC : onSuccess()
   MC -> M : isOver()
   M --> MC : false
-  MC -> GA : onMatchChanged(match)
-  GA --> U : hiển thị điểm HOANG 12
+  MC -> GA : onMatchChanged()
+  GA --> U : hiển thị điểm đối thủ
 end
 
 T -> MC : onFinish()
-MC -> MFD : setTimeUp("482915", 1)
+MC -> MFD : setTimeUp()
 MC -> GA : onTimeUp()
-GA --> U : khóa bàn phím, hiển thị "Hết giờ! Đang chờ kết quả..."
-MFD -> MFD : onDataChange → toMatch("482915", data)
-MFD -> M : new Match(...)
+GA --> U : khóa bàn phím, hiển thị thông báo chờ kết quả
+MFD -> MFD : onDataChange(): toMatch()
+MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> MC : onSuccess(match)
+MFD -> MC : onSuccess()
 MC -> M : isOver()
-M --> MC : true (cả 2 đã timeUp)
+M --> MC : true
 MC -> MC : finishMatch() {Thread}
-MC -> MAD : finishMatch("482915")
-MAD -> MRC : POST /api/matches/482915/finish → finish("482915")
-MRC -> FAD : readMatch("482915")
-FAD -> SM : new Match(...)
+MC -> MAD : finishMatch()
+MAD -> MRC : POST /api/matches/{roomCode}/finish → finish()
+MRC -> FAD : readMatch()
+FAD -> SM : đóng gói Match
 SM --> FAD : Match
-FAD --> MRC : Match (playing, 120 – 96)
+FAD --> MRC : Match
 MRC -> SM : isOver()
 SM --> MRC : true
-MRC -> MD : insert(match) (endedAt = now)
-MD -> MD : INSERT tblMatch + 2 tblMatchPlayer (1 transaction)
+MRC -> MD : insert()
+MD -> MD : lưu trận trong một transaction
 MD --> MRC : true
-MRC -> FAD : updateStatus("482915", "finished")
-MRC --> MAD : 200 OK, Match (JSON)
-MAD -> M : toMatch(json): new Match(...)
+MRC -> FAD : updateStatus()
+MRC --> MAD : Match (JSON)
+MAD -> M : toMatch()
 M --> MAD : Match
 MAD --> MC : Match
-MC -> MFD : stopWatching("482915")
-MC -> GA : runOnUiThread: onMatchEnd(match)
-GA -> M : showResult(): getResult(1)
-M --> GA : "WIN"
-GA --> U : hiển thị THẮNG!, 120 - 96
+MC -> MFD : stopWatching()
+MC -> GA : runOnUiThread(): onMatchEnd()
+GA -> M : showResult(): getResult()
+M --> GA : kết quả
+GA --> U : hiển thị kết quả, tỉ số
 U -> GA : nhấn Về menu
 GA -> MA : onClick(): finish()
 MA --> U : hiển thị

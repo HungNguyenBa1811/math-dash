@@ -144,8 +144,8 @@ Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activit
 ### A4. Thiết kế động phân tích: kịch bản v2 + tuần tự
 
 - **Kịch bản v2:** viết lại kịch bản chuẩn v1, mỗi bước là **đúng một thông điệp**. Ví dụ:
-  > 7. `GameView` gọi phương thức `generateProblem()` của lớp `MathProblem`.
-  > 8. `MathProblem` trả về câu hỏi cho `GameView`.
+  > 7. GameView gọi hàm generateProblem() của lớp MathProblem.
+  > 8. Lớp MathProblem trả về câu hỏi cho GameView.
 - **Biểu đồ tuần tự:**
   - Chỉ có 3 loại đối tượng: **tác nhân – View – thực thể**.
   - Số thông điệp và thứ tự **giống hệt** kịch bản chuẩn của v2.
@@ -245,15 +245,15 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 
 **Kịch bản v3:** đánh số, mỗi bước một thông điệp, dùng **tên lớp và tên hàm thật trong code**. Mẫu:
 
-> 1. Người chơi nhập tên `HUNG` và nhấn nút Chơi offline trên `MainActivity`.
-> 2. Phương thức `onClick` của `MainActivity` được gọi.
-> 3. `onClick` gọi `GameActivity`.
-> 4. Phương thức `onCreate` của `GameActivity` được gọi.
-> 5. `onCreate` gọi phương thức `findOrCreateByUsername` của `PlayerDAO`.
-> 6. `findOrCreateByUsername` truy vấn bảng `tblPlayer`.
-> 7. `findOrCreateByUsername` gọi lớp `Player` để đóng gói kết quả.
-> 8. Lớp `Player` trả về đối tượng `Player` cho `findOrCreateByUsername`.
-> 9. `findOrCreateByUsername` trả về cho `onCreate`.
+> 1. Người chơi nhập tên và nhấn nút Chơi offline trên MainActivity.
+> 2. Hàm onClick() của MainActivity được gọi.
+> 3. Hàm onClick() gọi GameActivity.
+> 4. Hàm onCreate() của GameActivity được gọi.
+> 5. Hàm onCreate() gọi hàm findOrCreateByUsername() của PlayerDAO.
+> 6. Hàm findOrCreateByUsername() truy vấn bảng tblPlayer.
+> 7. Hàm findOrCreateByUsername() gọi lớp Player để đóng gói kết quả.
+> 8. Lớp Player trả về đối tượng Player cho hàm findOrCreateByUsername().
+> 9. Hàm findOrCreateByUsername() trả về cho hàm onCreate().
 > 10. …
 
 **Biểu đồ tuần tự chi tiết:**
@@ -309,7 +309,13 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 - **Tài liệu chỉ chứa nội dung báo cáo.** Không ghi quy ước, luật, trạng thái, số issue, người làm / người duyệt vào tiêu đề hay nội dung tài liệu. Những thứ đó ghi ở file này (mục 6, 7).
 - **Tiêu đề và chú thích hình không có ghi chú trong ngoặc.** Viết `## 1. Chức năng "Chơi online"`, không viết `## 1. Chức năng "Chơi online" (UC05)`; viết `*Hình 13: Biểu đồ lớp chi tiết chức năng Chơi online.*`, không thêm `(client + server)` hay `(phác thảo…)`. Tiêu đề trong ảnh PlantUML cũng vậy.
 - **Ngoại lệ trong kịch bản v2** viết ở mức chung: "hiển thị thông báo không vào được phòng", không ghi `Toast`, `AlertDialog`.
-- **Dữ liệu mẫu** dùng chung cho kịch bản v1, v2, v3 của một người (ví dụ của Hùng: HUNG máy 1 tạo phòng, HOANG máy 2 tìm phòng, MINH máy 3 vào khi phòng đã đầy; phòng `482915`; câu đầu `12 + 7`; tỉ số `120 – 96`).
+- **Dữ liệu mẫu** chỉ dùng ở kịch bản v1 (ví dụ của Hùng: HUNG máy 1 tạo phòng, HOANG máy 2 tìm phòng, MINH máy 3 vào khi phòng đã đầy; phòng `482915`; câu đầu `12 + 7`; tỉ số `120 – 96`).
+- **Kịch bản v2, v3 viết ở mức chung:**
+  - Tác nhân gọi là "người chơi" (hoặc "người dùng"), bên kia là "đối thủ". Không ghi tên người, không ghi "hiển thị cho Hùng".
+  - Không nêu dữ liệu cụ thể: mã phòng, câu hỏi, điểm của ai bao nhiêu, kết quả WIN/LOSE. Viết "hiển thị điểm", "trả về kết quả trận".
+  - Hàm ghi đầy đủ dạng "hàm onFinish()", không ghi tham số truyền vào.
+  - Không dùng định dạng backtick trong kịch bản v2, v3 và phần giải thích dưới hình.
+  - Biểu đồ tuần tự đi kèm cũng vậy: tác nhân "Người chơi", thông điệp ghi hàm không tham số, không có dữ liệu cụ thể.
 - **Kịch bản v1** chỉ có Người chơi và Hệ thống, không có tên lớp, tên hàm, thuật ngữ kỹ thuật.
 
 ---
