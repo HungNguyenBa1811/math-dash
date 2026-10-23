@@ -34,10 +34,10 @@
 | D3 | Backend mỏng | `RestController` → `DAO` (JDBC, lớp cha giữ `#conn: Connection`) → Entity. **Không có tầng Service, không dùng JPA** | Giữ đúng khuôn MVC của bài mẫu OOAD; biểu đồ lớp và tuần tự không phình ra |
 | D4 | Đăng nhập | Backend kiểm tra tài khoản, trả **token** (dùng cho REST) và **Firebase custom token** (Admin SDK). App đăng nhập Firebase bằng custom token nên `auth.uid` = `playerId`. App ghi nhớ phiên trong SharedPreferences | Một định danh dùng chung cho backend và Firebase; mất mạng vẫn vào được Chơi offline |
 | D5 | Luật trận online | 60 giây, 2 người, cùng một dãy câu. Đúng: +10 + combo×2. Sai: 0 điểm, reset combo, **không mất mạng**. Người bỏ trận thua; nếu không ai bỏ thì so điểm, bằng điểm thì hòa | Đơn giản, dùng lại `GameSession` |
-| D6 | Đồng bộ câu hỏi | Khi tạo phòng sinh `seed` (long); 2 máy cùng tạo `new ProblemDAO(new Random(seed))` | Không phải đẩy từng câu qua mạng |
-| D7 | Trọng tài | Hết trận, app gọi `POST /api/matches/{code}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, gọi `Match.getResult(...)`, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`. `Match.canJoin(...)` và `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
+| D6 | Đồng bộ câu hỏi | Khi tạo phòng sinh `questionSeed` (long); 2 máy cùng tạo `new ProblemDAO(new Random(questionSeed))` | Không phải đẩy từng câu qua mạng |
+| D7 | Trọng tài | Hết trận, app gọi `POST /api/matches/{roomCode}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, gọi `Match.getResult(...)`, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`. `Match.canJoin(...)` và `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
 | D8 | Độ khó offline | Dễ / Trung bình / Khó: bắt đầu ở mức 1 / 2 / 3, tăng 1 mức sau mỗi 5 câu, tối đa mức 4 | Có ý nghĩa với kỷ lục theo từng độ khó |
-| D9 | Thuộc tính dẫn xuất | **Không lưu:** kỷ lục (= MAX điểm theo người chơi + độ khó), kết quả trận (suy từ `left` và điểm), mức, % chính xác | Đúng bước 5 thiết kế CSDL |
+| D9 | Thuộc tính dẫn xuất | **Không lưu:** kỷ lục (= MAX điểm theo người chơi + độ khó), kết quả trận (suy từ `forfeited` và điểm), mức, % chính xác | Đúng bước 5 thiết kế CSDL |
 | D10 | Lưu trữ phía app | SQLite: `tblPlayer` (bản sao người chơi lưu khi đăng nhập), `tblGameRecord`. SharedPreferences: cấu hình game, phiên đăng nhập | Chơi offline chạy được khi mất mạng; kết quả ván có khóa ngoại thật trong SQLite |
 | D11 | Lớp DAO | Mỗi nơi lưu trữ có **một lớp cha giữ kết nối**: app `DAO` (SQLite), `ApiDAO` (HTTP), `FirebaseDAO` (Firebase); server `DAO` (JDBC). Các DAO con kế thừa | Đúng tài liệu OOAD của môn |
 | D12 | Tên bảng | Tiền tố `tbl` + tên lớp; khóa ngoại `tbl<Bảng>Id` | Đúng bước 1 và 4 thiết kế CSDL |
@@ -136,12 +136,12 @@ public abstract class DAO {
 - **Firebase Realtime Database:**
 
 ```
-matches/{code}                      // code: mã phòng 6 chữ số
-    status    : "waiting" | "playing" | "finished"
-    seed      : long
-    createdAt : ServerValue.TIMESTAMP
+matches/{roomCode}                  // mã phòng 6 chữ số
+    status       : "waiting" | "playing" | "finished"
+    questionSeed : long
+    createdAt    : ServerValue.TIMESTAMP
     players/
-        {playerId} : { displayName: String, score: int, online: bool, finished: bool, left: bool }
+        {playerId} : { displayName: String, score: int, forfeited: bool, connected: bool, timeUp: bool }
 ```
 
 - **REST API** (JSON, header `Authorization: Bearer <token>` trừ 2 API đầu):
@@ -150,7 +150,7 @@ matches/{code}                      // code: mã phòng 6 chữ số
 |---|---|---|---|
 | `POST` | `/api/auth/register` | UC01 | 201, hoặc 409 nếu trùng tên đăng nhập |
 | `POST` | `/api/auth/login` | UC02 | `{ player, token, firebaseToken }`, hoặc 401 |
-| `POST` | `/api/matches/{code}/finish` | UC05 | Kết quả trận đã lưu |
+| `POST` | `/api/matches/{roomCode}/finish` | UC05 | Kết quả trận đã lưu |
 | `GET` | `/api/matches?playerId={id}` | UC06 | Danh sách trận đã kết thúc của người chơi, mới nhất trước |
 
 ### 2.5. Ba phiên bản kịch bản
@@ -268,7 +268,7 @@ matches/{code}                      // code: mã phòng 6 chữ số
   - **MySQL, đủ 5 bước:** `tblPlayer`, `tblMatch`, `tblMatchPlayer` (khóa ngoại `tblMatchId`, `tblPlayerId`).
   - **SQLite:** `tblPlayer` (bản sao, giải thích vì sao cần), `tblGameRecord` (khóa ngoại `tblPlayerId`).
   - **Câu lệnh `CREATE TABLE`** cho cả 2 CSDL: `server/db/schema.sql` và đoạn tương ứng cho `DatabaseHelper`.
-  - **Firebase:** ánh xạ `Match` / `MatchPlayer` sang cây `matches/{code}`; giải thích thuộc tính nào chỉ có trên Firebase (`online`, `finished`) và vì sao không lưu vào MySQL.
+  - **Firebase:** ánh xạ `Match` / `MatchPlayer` sang cây `matches/{roomCode}`; giải thích thuộc tính nào chỉ có trên Firebase (`connected`, `timeUp`) và vì sao không lưu vào MySQL.
   - Giải thích vì sao `MathProblem`, `GameSession` không lưu và `GameConfig` lưu bằng SharedPreferences.
 - **Requirement:** Mỗi bảng có khóa chính; khóa ngoại đúng chiều 1-n; không có cột dẫn xuất (D9). Hoàng đã approve.
 - **Constraint:** Mật khẩu lưu dạng băm (BCrypt), không lưu bản rõ.
@@ -401,7 +401,7 @@ matches/{code}                      // code: mã phòng 6 chữ số
     - API login trả thêm `firebaseToken`.
   - **Security Rules** (`database.rules.json` trong repo):
     - Chỉ user đã đăng nhập được đọc/ghi; `.indexOn` không cần (tìm theo mã phòng).
-    - Mỗi người chỉ sửa được `matches/{code}/players/{auth.uid}`; riêng lúc tạo / vào phòng được ghi `status` và thêm chính mình.
+    - Mỗi người chỉ sửa được `matches/{roomCode}/players/{auth.uid}`; riêng lúc tạo / vào phòng được ghi `status` và thêm chính mình.
     - `score` là số, ≥ 0, không giảm, mỗi lần tăng không quá 200.
     - `status` chỉ nhận `waiting` / `playing` / `finished`.
 - **Requirement:**
@@ -415,11 +415,11 @@ matches/{code}                      // code: mã phòng 6 chữ số
 - **Input:** Luồng "Chơi online" trong `docs/chung/01-pham-vi-use-case.md`; schema mục 2.4.
 - **Output:**
   - **`MatchFirebaseDAO extends FirebaseDAO`:**
-    - `createMatch(code, seed, me)`: dùng transaction để mã phòng không trùng; tạo được thì `onDisconnect().removeValue()`.
+    - `createMatch(roomCode, questionSeed, me)`: dùng transaction để mã phòng không trùng; tạo được thì `onDisconnect().removeValue()`.
     - `joinMatch(code, me)`: dùng `runTransaction`, bên trong gọi `Match.canJoin(myId)`.
     - `watchMatch(code, listener)`: lắng nghe trận.
     - `deleteMatch(code)`.
-  - **Luật vào phòng là hàm Java thuần (D7):** `Match.canJoin(long playerId): boolean`, đúng khi trận `waiting`, chưa đủ 2 người, và người này chưa có trong trận. Unit test `MatchTest` cho 4 trường hợp: phòng chờ 1 người khác → `true`; đang đấu → `false`; đủ 2 người → `false`; phòng của chính mình → `false`.
+  - **Luật vào phòng là hàm Java thuần (D7):** `Match.canJoin(int playerId): boolean`, đúng khi trận `waiting`, chưa đủ 2 người, và người này chưa có trong trận. Unit test `MatchTest` cho 4 trường hợp: phòng chờ 1 người khác → `true`; đang đấu → `false`; đủ 2 người → `false`; phòng của chính mình → `false`.
   - **`MatchController` (Singleton):** `createRoom(listener)`, `findRoom(code, listener)`, `cancel()`.
   - **Giao diện:**
     - `FrmOnlineActivity`: nút Tạo phòng; ô nhập mã + nút Vào phòng.
@@ -435,10 +435,10 @@ matches/{code}                      // code: mã phòng 6 chữ số
 ### [M2-03] UC05 Chơi online: Thi đấu realtime + backend trọng tài · @HungNguyenBa1811
 - **Phụ thuộc:** M1-07, M2-02.
 - **Mô tả:** 2 máy chơi cùng dãy câu theo seed, thấy điểm nhau; hết giờ backend xác định kết quả và lưu trận (D7).
-- **Input:** Trận đang `playing`; `seed`; id đối thủ; API mục 2.4.
+- **Input:** Trận đang `playing`; `questionSeed`; id đối thủ; API mục 2.4.
 - **Output:**
   - **App – `MatchController`:**
-    - `startGame(listener)`: `ProblemDAO(new Random(seed))`, `GameSession` chế độ online, `CountDownTimer` 60s.
+    - `startGame(listener)`: `ProblemDAO(new Random(questionSeed))`, `GameSession` chế độ online, `CountDownTimer` 60s.
     - `submitAnswer(value)`: chấm bằng `GameSession`, ghi `players/{myId}/score`.
     - Lắng nghe điểm đối thủ.
     - Hết giờ: ghi `finished = true` rồi gọi `MatchApiDAO.finishMatch(code)`, nhận kết quả, gọi `onMatchEnd(Match)`.
@@ -446,7 +446,7 @@ matches/{code}                      // code: mã phòng 6 chữ số
     - `MatchRestController.finish(code)`: `FirebaseAdminDAO.readMatch(code)`.
     - Nếu trận đã được lưu thì trả lại bản đã lưu (máy thứ hai gọi sau).
     - Nếu chưa: `MatchDAO.insert(match)` (1 dòng `tblMatch` + 2 dòng `tblMatchPlayer`), set `status = finished` trên Firebase.
-  - **Luật thắng thua là hàm Java thuần (D7):** `Match.getResult(long playerId): String` trả `WIN` / `LOSE` / `DRAW`: ai `left` thì thua; không ai bỏ thì so điểm. Unit test `MatchResultTest` (phía server) cho 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm.
+  - **Luật thắng thua là hàm Java thuần (D7):** `Match.getResult(int playerId): String` trả `WIN` / `LOSE` / `DRAW`: ai `forfeited` thì thua; không ai bỏ thì so điểm. Unit test `MatchResultTest` (phía server) cho 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm.
   - **`FrmOnlineGameActivity`:** đồng hồ 60s, phép tính, lưới 2x2 nút đáp án, điểm MÌNH vs ĐỐI THỦ, overlay THẮNG / THUA / HÒA có tỉ số và nút "Về menu".
 - **Requirement:**
   - 2 máy thấy cùng dãy câu.
@@ -461,15 +461,15 @@ matches/{code}                      // code: mã phòng 6 chữ số
 - **Mô tả:** Các ngoại lệ của UC05, để không bao giờ để trận bị treo.
 - **Input:** Trận hiện tại, id người chơi.
 - **Output:**
-  - Khi vào trận: `onDisconnect()` cho `players/{myId}` set `online = false`, `left = true`.
-  - `leaveMatch()` (nút Back + `AlertDialog` "Thoát sẽ bị xử thua?"): set `left = true`, gọi `finishMatch`.
-  - Thấy đối thủ `left == true` thì thông báo "Đối thủ đã thoát" và gọi `finishMatch`.
+  - Khi vào trận: `onDisconnect()` cho `players/{myId}` set `connected = false`, `forfeited = true`.
+  - `leaveMatch()` (nút Back + `AlertDialog` "Thoát sẽ bị xử thua?"): set `forfeited = true`, gọi `finishMatch`.
+  - Thấy đối thủ `forfeited == true` thì thông báo "Đối thủ đã thoát" và gọi `finishMatch`.
   - Lắng nghe `.info/connected`; mất kết nối thì thông báo, app không crash.
 - **Requirement:** Pass cả 3 test case:
   1. Đang chơi, B bấm Back → A thắng ngay, MySQL lưu A thắng.
   2. Đang chơi, B tắt mạng → A nhận "Đối thủ đã thoát" (có thể mất vài chục giây).
   3. A mất mạng → A thấy thông báo, app không crash.
-- **Constraint:** Kết quả vẫn do server tính bằng `Match.getResult` (dựa vào `left`).
+- **Constraint:** Kết quả vẫn do server tính bằng `Match.getResult` (dựa vào `forfeited`).
 
 ### [M2-05] UC06 Xem lịch sử đấu · @HungNguyenBa1811
 - **Phụ thuộc:** M2-03.
@@ -540,7 +540,7 @@ matches/{code}                      // code: mã phòng 6 chữ số
   - **Hùng** chạy UC05, UC06 trên 2 máy ảo, gồm 3 test case của M2-04. Chuẩn bị phần giải thích, mở code ra nói được:
     1. Firebase chỉ giữ trận đang diễn ra và báo thay đổi; chỉ `MatchFirebaseDAO`, `FirebaseAdminDAO` gọi Firebase.
     2. `Match.canJoin` trong transaction xử lý 2 người vào cùng lúc; chạy `MatchTest`.
-    3. Đồng bộ câu hỏi bằng `seed`; chạy test cùng seed.
+    3. Đồng bộ câu hỏi bằng `questionSeed`; chạy test cùng seed.
     4. Server làm trọng tài bằng `Match.getResult`; chạy `MatchResultTest`.
     5. Security Rules chặn ghi điểm của người khác và điểm giảm.
   - **Hoàng** chạy UC03, UC04 trên 1 máy ảo, gồm cả lúc tắt mạng.
@@ -700,7 +700,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 - **Mô tả:** Bước D4 trong `REPORT_CONVENTION.md`. Mục 4.x.3 trong báo cáo của Hùng.
 - **Input:** Kịch bản v2 (M3-05); biểu đồ lớp chi tiết (M4-01); code thật.
 - **Output:** `docs/hung/5-kich-ban-v3.md` + PNG. Với mỗi UC:
-  - Kịch bản v3 đánh số, tên hàm thật (`onClick`, `createRoom`, `joinMatch`, `onDataChange`, `finishMatch`, `POST /api/matches/{code}/finish`…).
+  - Kịch bản v3 đánh số, tên hàm thật (`onClick`, `createRoom`, `joinMatch`, `onDataChange`, `finishMatch`, `POST /api/matches/{roomCode}/finish`…).
   - Biểu đồ tuần tự đủ boundary – control – entity ở cả client và server, khớp 1-1 với kịch bản.
   - Ngoại lệ thoát trận, mất kết nối vẽ bằng khung `alt`.
 - **Requirement:** Số bước bằng số thông điệp, cùng thứ tự.
