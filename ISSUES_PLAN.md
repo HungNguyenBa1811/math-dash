@@ -167,6 +167,10 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 - **Branch:** tài liệu `docs/M3-01-kich-ban-v1`; code `feat/M2-02-tao-tim-phong`. Tạo nhanh bằng `gh issue develop <số> --checkout`.
 - **PR:** mô tả ghi `Closes #<số>`. PR phần chung (M1) phải được **Hoàng approve**. PR module riêng: người kia review nếu kịp; trước demo, ưu tiên merge cho kịp.
+- **Trạng thái issue:** không đóng issue bằng tay.
+  1. Làm xong thì mở PR có `Closes #<số>`, gắn nhãn `need-review` cho cả issue và PR, request review người còn lại.
+  2. Tick các mục checklist đã đạt; mục không áp dụng thì gạch ngang và ghi lý do.
+  3. Người review approve → merge → issue tự đóng.
 - **Thư mục:**
   ```
   app/      ứng dụng Android

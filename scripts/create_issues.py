@@ -39,6 +39,7 @@ LABELS = {
     "uc-choi-online": ("1D76DB", "UC05 Chơi online (Hùng)"),
     "uc-lich-su": ("006B75", "UC06 Xem lịch sử đấu (Hùng)"),
     "docs": ("C5DEF5", "Báo cáo cá nhân"),
+    "need-review": ("FBCA04", "Đã làm xong, chờ người còn lại review / approve PR"),
     "bug": ("D73A4A", "Lỗi phát hiện khi kiểm thử"),
     "enhancement": ("A2EEEF", "Ý tưởng tính năng mới, không gắn milestone"),
 }
