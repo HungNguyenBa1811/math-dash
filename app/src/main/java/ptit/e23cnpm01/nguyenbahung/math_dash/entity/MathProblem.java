@@ -1,32 +1,52 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
- * Entity một câu hỏi toán: 2 toán hạng, toán tử, đáp án đúng và 4 lựa chọn.
+ * Một câu hỏi: 2 toán hạng, toán tử, đáp án đúng và 4 phương án (chỉ chế độ offline hiển thị).
  */
-public class MathProblem implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class MathProblem {
     private int operand1;
     private int operand2;
-    private String operator; // "+", "-", "×"
+    private String operator;
     private int correctAnswer;
-    private List<Integer> options;
+    private List<Integer> answerOptions;
 
-    // TODO: constructor rỗng + constructor đầy đủ tham số
-    // TODO: getter / setter
-
-    // Trả về chuỗi hiển thị, ví dụ "12 + 7"
-    public String getExpression() {
-        // TODO
-        return "";
+    public MathProblem(int operand1, int operand2, String operator, int correctAnswer, List<Integer> answerOptions) {
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+        this.operator = operator;
+        this.correctAnswer = correctAnswer;
+        this.answerOptions = answerOptions;
     }
 
-    // Kiểm tra đáp án người chơi chọn có đúng không
-    public boolean isCorrect(int candidate) {
-        // TODO
-        return false;
+    // Chuỗi hiển thị, ví dụ "12 + 7"
+    public String getExpression() {
+        return operand1 + " " + operator + " " + operand2;
+    }
+
+    // Đáp án người chơi nhập / chọn có đúng không
+    public boolean isCorrect(int answer) {
+        return answer == correctAnswer;
+    }
+
+    public int getOperand1() {
+        return operand1;
+    }
+
+    public int getOperand2() {
+        return operand2;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public int getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public List<Integer> getAnswerOptions() {
+        return answerOptions;
     }
 }

@@ -7,13 +7,13 @@
     android:background="@color/arcade_bg"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".frm.FrmLeaderboardActivity">
+    tools:context=".view.GameActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:text="FrmLeaderboardActivity"
+        android:text="GameActivity"
         android:textColor="@color/arcade_text_bright" />
 
 </LinearLayout>

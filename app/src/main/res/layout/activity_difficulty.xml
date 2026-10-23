@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO: thiết kế giao diện -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/arcade_bg"
+    android:fitsSystemWindows="true"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".frm.FrmMainActivity">
+    android:padding="24dp"
+    tools:context=".view.DifficultyActivity">
 
     <TextView
+        style="@style/RetroText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="monospace"
-        android:text="FrmMainActivity"
-        android:textColor="@color/arcade_text_bright" />
+        android:text="DifficultyActivity" />
 
 </LinearLayout>

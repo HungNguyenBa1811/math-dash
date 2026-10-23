@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">Math Dash</string>
+
+    <!-- Tài khoản -->
+    <string name="title_login">ĐĂNG NHẬP</string>
+    <string name="title_register">ĐĂNG KÝ</string>
+    <string name="hint_username">Tên đăng nhập</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="hint_confirm_password">Nhập lại mật khẩu</string>
+    <string name="hint_display_name">Tên hiển thị</string>
+    <string name="btn_login">ĐĂNG NHẬP</string>
+    <string name="btn_register">ĐĂNG KÝ</string>
+
+    <!-- Màn chính -->
+    <string name="btn_play_offline">CHƠI OFFLINE</string>
+    <string name="btn_play_online">CHƠI ONLINE</string>
+    <string name="btn_history">LỊCH SỬ ĐẤU</string>
+    <string name="btn_settings">CÀI ĐẶT</string>
+    <string name="btn_logout">ĐĂNG XUẤT</string>
+
+    <!-- Chơi online -->
+    <string name="title_online">CHƠI ONLINE</string>
+    <string name="btn_create_room">TẠO PHÒNG</string>
+    <string name="label_or">hoặc</string>
+    <string name="hint_room_code">Nhập mã 6 chữ số</string>
+    <string name="btn_join_room">VÀO PHÒNG</string>
+    <string name="label_room_code">MÃ PHÒNG</string>
+    <string name="label_share_code">Gửi mã này cho bạn để vào phòng</string>
+    <string name="status_waiting">Đang chờ đối thủ...</string>
+    <string name="label_no_opponent">Đối thủ: —</string>
+    <string name="btn_cancel">HỦY</string>
+    <string name="label_vs">VS</string>
+    <string name="btn_ok">OK</string>
+    <string name="desc_backspace">Xóa</string>
+    <string name="btn_back_to_menu">VỀ MENU</string>
+
+    <!-- Lịch sử đấu -->
+    <string name="title_history">LỊCH SỬ ĐẤU</string>
+    <string name="label_empty_history">Chưa có trận nào</string>
 </resources>

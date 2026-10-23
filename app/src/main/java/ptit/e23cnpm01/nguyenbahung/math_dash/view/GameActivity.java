@@ -1,4 +1,4 @@
-package ptit.e23cnpm01.nguyenbahung.math_dash.frm;
+package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
 import android.os.Bundle;
 
@@ -12,12 +12,12 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 /**
  * Màn hình chơi offline.
  */
-public class FrmGameActivity extends AppCompatActivity implements GameController.GameControllerListener {
+public class GameActivity extends AppCompatActivity implements GameController.GameControllerListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_frm_game);
+        setContentView(R.layout.activity_game);
         // TODO
     }
 

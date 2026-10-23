@@ -1,4 +1,4 @@
-package ptit.e23cnpm01.nguyenbahung.math_dash.frm;
+package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
 import android.os.Bundle;
 
@@ -7,14 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
 /**
- * Màn hình Chính (menu).
+ * Màn Cài đặt cấu hình game.
  */
-public class FrmMainActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_frm_main);
+        setContentView(R.layout.activity_settings);
         // TODO
     }
 }

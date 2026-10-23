@@ -1,45 +1,128 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
-import java.io.Serializable;
-
 /**
- * Trạng thái của một ván đang chơi: điểm, combo, mạng, câu hỏi hiện tại.
- * Luật điểm: đúng được BASE_POINTS + streak * COMBO_BONUS, sai thì reset combo và mất 1 mạng.
+ * Ván đang chơi, dùng chung cho chơi offline và chơi online.
+ * Đúng: cộng 10 + chuỗi đúng × 2. Sai: chuỗi đúng về 0; chỉ chế độ offline mới mất mạng.
  */
-public class GameSession implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    public static final int DEFAULT_MAX_LIVES = 3;
+public class GameSession {
+    public static final int MAX_LIVES = 3;
+    public static final int MAX_LEVEL = 4;
     private static final int BASE_POINTS = 10;
-    private static final int COMBO_BONUS = 2;
+    private static final int STREAK_BONUS = 2;
+    private static final int QUESTIONS_PER_LEVEL = 5;
 
-    private Player player;
+    private int difficulty;
+    private boolean onlineMode;
+    private int questionsAsked;
     private int score;
-    private int streak;
+    private int currentStreak;
     private int maxStreak;
-    private int lives;
-    private int maxLives;
-    private int totalCorrect;
-    private int totalWrong;
+    private int livesLeft = MAX_LIVES;
+    private int correctCount;
+    private int wrongCount;
+    private boolean gameOver;
+    private Player player;
+    private GameConfig config;
     private MathProblem currentProblem;
-    private boolean isGameOver;
 
-    // TODO: constructor
-    // TODO: getter / setter
-
-    // Đưa ván về trạng thái ban đầu
-    public void reset() {
-        // TODO
+    // difficulty: 1 = Dễ, 2 = Trung bình, 3 = Khó (trận online luôn là 1)
+    public GameSession(Player player, int difficulty, boolean onlineMode) {
+        this.player = player;
+        this.difficulty = difficulty;
+        this.onlineMode = onlineMode;
     }
 
-    // Ghi nhận trả lời đúng, trả về số điểm vừa cộng
+    // Trả lời đúng: tăng chuỗi đúng, cộng điểm, trả về số điểm vừa cộng
     public int recordCorrectAnswer() {
-        // TODO
-        return 0;
+        questionsAsked++;
+        correctCount++;
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
+        int points = BASE_POINTS + currentStreak * STREAK_BONUS;
+        score += points;
+        return points;
     }
 
-    // Ghi nhận trả lời sai (hoặc hết giờ)
+    // Trả lời sai (hoặc hết giờ của câu): chuỗi đúng về 0; offline thì mất 1 mạng, hết mạng thì kết thúc
     public void recordWrongAnswer() {
-        // TODO
+        questionsAsked++;
+        wrongCount++;
+        currentStreak = 0;
+        if (onlineMode) {
+            return;
+        }
+        livesLeft--;
+        if (livesLeft <= 0) {
+            gameOver = true;
+        }
+    }
+
+    // Mức hiện tại: bắt đầu từ độ khó, cứ 5 câu tăng 1 mức, tối đa mức 4
+    public int getCurrentLevel() {
+        return Math.min(difficulty + questionsAsked / QUESTIONS_PER_LEVEL, MAX_LEVEL);
+    }
+
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public boolean isOnlineMode() {
+        return onlineMode;
+    }
+
+    public int getQuestionsAsked() {
+        return questionsAsked;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getCurrentStreak() {
+        return currentStreak;
+    }
+
+    public int getMaxStreak() {
+        return maxStreak;
+    }
+
+    public int getLivesLeft() {
+        return livesLeft;
+    }
+
+    public int getCorrectCount() {
+        return correctCount;
+    }
+
+    public int getWrongCount() {
+        return wrongCount;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public GameConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(GameConfig config) {
+        this.config = config;
+    }
+
+    public MathProblem getCurrentProblem() {
+        return currentProblem;
+    }
+
+    public void setCurrentProblem(MathProblem currentProblem) {
+        this.currentProblem = currentProblem;
     }
 }

@@ -1,33 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- usesCleartextTraffic: server chạy local qua HTTP (10.0.2.2) -->
+    <!-- enableOnBackInvokedCallback = false: để onBackPressed của Activity được gọi khi nhấn Back -->
     <application
         android:allowBackup="true"
+        android:enableOnBackInvokedCallback="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Mathdash">
+        android:theme="@style/Theme.Mathdash"
+        android:usesCleartextTraffic="true">
 
-        <!-- Launcher Activity: FrmMainActivity -->
+        <!-- Màn mở đầu: Đăng nhập -->
         <activity
-            android:name=".frm.FrmMainActivity"
-            android:exported="true">
+            android:name=".view.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Active Game Screen: FrmGameActivity -->
         <activity
-            android:name=".frm.FrmGameActivity"
-            android:exported="false" />
+            android:name=".view.RegisterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
-        <!-- Leaderboard Screen: FrmLeaderboardActivity -->
+        <!-- Chơi offline, Cài đặt cấu hình game -->
         <activity
-            android:name=".frm.FrmLeaderboardActivity"
-            android:exported="false" />
+            android:name=".view.DifficultyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.GameActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Chơi online, Xem lịch sử đấu -->
+        <activity
+            android:name=".view.OnlineActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.LobbyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.OnlineGameActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.HistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
     </application>
 
