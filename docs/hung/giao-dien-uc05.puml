@@ -31,15 +31,17 @@ title Phác thảo giao diện – Chơi online
   } | . | {+
   <b>OnlineGameActivity
   ==
-  { HUNG | .   | <b>00:42 | .   | HOANG }
-  { <b>36 | .  | .        | .   | <b>24 }
+  {  <color:green>+12</color> | . | . }
+  { HUNG <size:18><b><color:blue>36</color></b></size> | VS | 24 HOANG }
   .
-  <size:20><b>   12 + 7 = ?</b></size>
+  <b>         00:42
   .
-  { [  17  ] | [  19  ] }
-  { [  21  ] | [  18  ] }
+  <size:20><b> 12 + 7 = 19</b></size>
   .
-  +12 PTS!
+  { [  1  ] | [  2  ] | [  3  ] }
+  { [  4  ] | [  5  ] | [  6  ] }
+  { [  7  ] | [  8  ] | [  9  ] }
+  { [  ⌫  ] | [  0  ] | [ <b>OK</b> ] }
   } | . | {+
   <b>layoutResult (overlay)
   ==

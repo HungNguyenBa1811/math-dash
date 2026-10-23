@@ -47,10 +47,11 @@ Người chơi đang ở giao diện chính → Giao diện chính có: dòng "X
       → Mã không đủ 6 chữ số: "Mã phòng gồm 6 chữ số"
       → Không có phòng mang mã này: "Không tìm thấy phòng"
       → Phòng đã đủ 2 người hoặc đã bắt đầu: "Phòng đã đầy"
-Thi đấu: Giao diện thi đấu hiện lên với: tên và điểm của mình, đồng hồ 60 giây, tên và điểm của đối thủ, câu hỏi, 4 nút đáp án, dòng phản hồi → Hai máy nhận cùng một dãy câu hỏi → Người chơi chọn một đáp án
-  → Đúng: cộng 10 + chuỗi đúng × 2 điểm, hiển thị "+12 PTS!" → điểm mới được gửi để máy đối thủ thấy → câu tiếp theo
-  → Sai: không cộng điểm, chuỗi đúng về 0, hiển thị "MISS!", không mất mạng → câu tiếp theo
-→ (lặp đến khi hết giờ; cứ 5 câu khó lên 1 mức) → Mỗi khi đối thủ ghi điểm, điểm đối thủ trên màn hình được cập nhật → Hết 60 giây: ẩn nút đáp án, hiện "Hết giờ! Đang chờ kết quả..." → Khi cả 2 máy hết giờ: Hệ thống xác định kết quả và lưu trận vào lịch sử đấu của cả 2 người → Giao diện kết quả hiện: THẮNG! / THUA! / HÒA!, tỉ số, nút Về menu → Người chơi nhấn Về menu → Quay về giao diện chính
+Thi đấu: Giao diện thi đấu hiện lên với: hàng điểm (tên và điểm của mình được làm nổi bật, chữ VS, điểm và tên của đối thủ), đồng hồ đếm ngược 60 giây ở giữa, câu hỏi kèm số đang nhập, bàn phím số 0–9 cùng nút xóa (biểu tượng ⌫) và nút OK → Hai máy nhận cùng một dãy câu hỏi → Người chơi bấm số để nhập đáp án (⌫ xóa số cuối, tối đa 3 chữ số) và nhấn OK
+  → Đúng: cộng 10 + chuỗi đúng × 2 điểm, chữ "+12" xanh bay lên từ điểm của mình rồi mờ dần → điểm mới được gửi để máy đối thủ thấy → xóa ô nhập, câu tiếp theo
+  → Sai: không cộng điểm, chuỗi đúng về 0, chữ "MISS" đỏ bay lên, không mất mạng → xóa ô nhập, câu tiếp theo
+  → Nhấn OK khi chưa nhập số: không làm gì
+→ (lặp đến khi hết giờ; cứ 5 câu khó lên 1 mức) → Mỗi khi đối thủ ghi điểm, điểm đối thủ trên màn hình được cập nhật → Hết 60 giây: khóa bàn phím số, đồng hồ đổi thành "Hết giờ! Đang chờ kết quả..." → Khi cả 2 máy hết giờ: Hệ thống xác định kết quả và lưu trận vào lịch sử đấu của cả 2 người → Giao diện kết quả hiện: THẮNG! / THUA! / HÒA!, tỉ số, nút Về menu → Người chơi nhấn Về menu → Quay về giao diện chính
   → Nhấn Back khi đang thi đấu: hỏi "Thoát sẽ bị xử thua?" (Ở lại / Thoát) → Thoát: bị xử thua, lưu trận, về giao diện chính
   → Đối thủ thoát hoặc mất kết nối: "Đối thủ đã thoát" → được xử thắng, hiện giao diện kết quả
   → Máy mình mất kết nối: "Mất kết nối, trận đấu đã kết thúc" → về giao diện chính, bị xử thua
@@ -90,13 +91,14 @@ Thi đấu: Giao diện thi đấu hiện lên với: tên và điểm của mì
 *C. Thi đấu (máy 1)*
 
 11. Sau 2 giây, giao diện thi đấu hiện lên trên cả 2 máy:
-    - HUNG `0` | đồng hồ `60` | HOANG `0`.
+    - Hàng điểm: `HUNG` **0** (nổi bật) `VS` 0 `HOANG`.
+    - Đồng hồ `60` ở giữa.
     - Câu hỏi `12 + 7 = ?`.
-    - 4 nút đáp án `17` · `19` · `21` · `18`.
-12. Hùng nhấn **19**.
-13. Hệ thống chấm đúng, cộng `12` điểm, hiện "+12 PTS!" và điểm mới `12`. Hệ thống gửi điểm cho máy đối thủ, rồi hiện câu `9 − 4 = ?`.
+    - Bàn phím số `0`–`9`, nút ⌫, nút **OK**.
+12. Hùng bấm `1`, `9` (câu hỏi hiện `12 + 7 = 19`) rồi nhấn **OK**.
+13. Hệ thống chấm đúng, cộng `12` điểm. Chữ "+12" bay lên từ điểm của mình rồi mờ dần, điểm thành `12`. Hệ thống gửi điểm cho máy đối thủ, xóa số đã nhập, rồi hiện câu `9 − 4 = ?`.
 14. Hoàng trả lời đúng; trên máy 1, điểm HOANG thành `12`. *(Lặp 12–14 đến hết 60 giây.)*
-15. Đồng hồ về `0`. Hệ thống ẩn đáp án, hiện "Hết giờ! Đang chờ kết quả...". Điểm cuối: HUNG `120`, HOANG `96`.
+15. Đồng hồ về `0`. Hệ thống khóa bàn phím số, hiện "Hết giờ! Đang chờ kết quả...". Điểm cuối: HUNG `120`, HOANG `96`.
 16. Máy 2 cũng hết giờ. Hệ thống xác định Hùng thắng và lưu trận.
 17. Giao diện kết quả hiện lên:
     - Máy 1: **THẮNG!**, `HUNG 120 - 96 HOANG`, nút **Về menu**.
@@ -357,7 +359,13 @@ Thuộc tính dẫn xuất được viết thành **phương thức nghiệp v�
 
 *Hình 4: Giao diện chức năng Chơi online: màn Chơi online, Phòng chờ, Thi đấu và overlay kết quả.*
 
-Người tạo phòng đi qua đủ 4 màn. Người tìm phòng nhập mã ở màn đầu; màn phòng chờ hiện ngay "Trận đấu bắt đầu!". Lưới 2x2 nút đáp án cao tối thiểu 72dp, chữ monospace 26sp. Thông báo lỗi dùng `Toast`; xác nhận thoát trận dùng `AlertDialog`.
+Người tạo phòng đi qua đủ 4 màn. Người tìm phòng nhập mã ở màn đầu; màn phòng chờ hiện ngay "Trận đấu bắt đầu!". Màn thi đấu chia 4 tầng:
+1. Hàng điểm `HUNG 36 VS 24 HOANG`, điểm của mình nổi bật. Chữ "+12" (xanh) hoặc "MISS" (đỏ) bay lên từ điểm của mình rồi mờ dần.
+2. Đồng hồ ở giữa.
+3. Câu hỏi kèm số đang nhập.
+4. Bàn phím số 3x4 `1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 OK`: nút xóa chỉ có biểu tượng, tối đa 3 chữ số.
+
+Online dùng bàn phím số thay cho 4 phương án để người chơi phải tính thật, không đoán được. Thông báo lỗi dùng `Toast`; xác nhận thoát trận dùng `AlertDialog`.
 
 | Màn | `id` | Loại View | Chức năng | Tên pha phân tích |
 |---|---|---|---|---|
@@ -369,11 +377,14 @@ Người tạo phòng đi qua đủ 4 màn. Người tìm phòng nhập mã ở 
 | | `txtOpponentName` | `TextView` | Tên đối thủ | `outOpponentName` |
 | | `btnCancel` | `Button` | Hủy phòng | `subCancel` |
 | `OnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình | `outMyName`, `outMyScore` |
-| | `txtTimer` | `TextView` | Đồng hồ | `outTimer` |
+| | `txtTimer` | `TextView` | Đồng hồ; hết giờ hiện "Hết giờ! Đang chờ kết quả..." | `outTimer` |
 | | `txtOpponentName`, `txtOpponentScore` | `TextView` | Tên, điểm đối thủ | `outOpponentName`, `outOpponentScore` |
 | | `txtProblem` | `TextView` | Câu hỏi | `outProblem` |
-| | `btnAnswer1`…`btnAnswer4` | `Button` | 4 phương án | `outsubAnswers` |
-| | `txtFeedback` | `TextView` | "+12 PTS!" / "MISS!" / "Hết giờ!..." | `outFeedback` |
+| | `txtScorePopup` | `TextView` (hiệu ứng bay lên + mờ dần) | "+12" / "MISS" trên điểm của mình | `outScorePopup` |
+| | `txtAnswer` | `TextView` | Số đang nhập | `inAnswer` |
+| | `btnDigit0`…`btnDigit9` | `Button` | Nhập chữ số | `subDigits` |
+| | `btnBackspace` | `ImageButton` (icon ⌫) | Xóa chữ số cuối | `subBackspace` |
+| | `btnSubmit` | `Button` | OK: nộp đáp án | `subSubmit` |
 | Overlay `layoutResult` | `txtResult` | `TextView` | THẮNG! / THUA! / HÒA! | `outResult` |
 | | `txtFinalScore` | `TextView` | Tỉ số | `outScoreLine` |
 | | `btnBackToMenu` | `Button` | Về menu | `subBackToMenu` |

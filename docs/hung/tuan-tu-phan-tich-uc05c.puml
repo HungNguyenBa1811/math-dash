@@ -14,17 +14,17 @@ entity MathProblem as MPr
 GV -> M : watchMatch()
 GV -> MPr : generateProblem()
 MPr --> GV : câu hỏi 12 + 7
-GV --> U : hiển thị HUNG 0 | 60 | HOANG 0, câu hỏi, 4 đáp án
+GV --> U : hiển thị HUNG 0 VS 0 HOANG, 60, câu hỏi, bàn phím số
 loop đến khi hết 60 giây
-  alt Hùng chọn đáp án
-    U -> GV : nhấn 19
+  alt Hùng nhập đáp án
+    U -> GV : nhập 19, nhấn OK
     GV -> GS : submitAnswer(19)
     GS --> GV : đúng, +12, điểm 12
     GV -> MP : updateScore(12)
     MP --> GV : đã gửi điểm
     GV -> MPr : generateProblem()
     MPr --> GV : câu hỏi 9 − 4
-    GV --> U : hiển thị "+12 PTS!", điểm 12, câu mới
+    GV --> U : "+12" bay lên, điểm 12, câu mới
   else Hùng nhấn Back, chọn Thoát
     autonumber stop
     U -> GV : 5a.1. nhấn Back, chọn Thoát
@@ -46,7 +46,7 @@ loop đến khi hết 60 giây
     autonumber resume
   end
 end
-GV --> U : hết giờ: ẩn đáp án, hiển thị "Hết giờ! Đang chờ kết quả..."
+GV --> U : hết giờ: khóa bàn phím, hiển thị "Hết giờ! Đang chờ kết quả..."
 GV -> M : finishMatch()
 M --> GV : trận đã lưu, HUNG 120 – HOANG 96
 GV -> M : getResult(HUNG)

@@ -11,7 +11,7 @@
 | STT | Thuật ngữ | Định nghĩa / Giải thích |
 |---|---|---|
 | 1 | Người chơi | Người có tài khoản (tên đăng nhập, mật khẩu, tên hiển thị) và đã đăng nhập vào ứng dụng |
-| 2 | Câu hỏi | Một phép tính gồm 2 toán hạng và 1 toán tử (`+`, `−`, `×`), kèm 4 phương án trả lời, trong đó có đúng 1 phương án đúng |
+| 2 | Câu hỏi | Một phép tính gồm 2 toán hạng và 1 toán tử (`+`, `−`, `×`), kèm 4 phương án trả lời, trong đó có đúng 1 phương án đúng. Chơi offline thì chọn 1 trong 4 phương án; chơi online thì người chơi tự nhập đáp án bằng bàn phím số |
 | 3 | Mức (level) | Mức 1 đến 4, quyết định toán tử và khoảng số của câu hỏi; tăng 1 mức sau mỗi 5 câu, tối đa mức 4 |
 | 4 | Độ khó | Dễ, Trung bình hoặc Khó; người chơi chọn trước khi chơi offline. Ván bắt đầu ở mức 1, 2 hoặc 3 tương ứng |
 | 5 | Ván chơi | Một lượt chơi offline của một người chơi, kết thúc khi hết mạng |
@@ -96,7 +96,7 @@ Người chơi nhấn "Chơi online" ở màn hình chính → Hệ thống hi�
   → Tìm phòng: Người chơi nhấn "Tìm phòng" → Hệ thống hiển thị ô nhập mã phòng và nút Vào phòng → Người chơi nhập mã và nhấn Vào phòng → Hệ thống kiểm tra phòng → Đưa người chơi vào phòng → Hiển thị tên chủ phòng → Chuyển sang màn hình thi đấu
       → Nếu mã phòng không tồn tại: Hệ thống thông báo "Không tìm thấy phòng"
       → Nếu phòng đã đủ 2 người hoặc đã bắt đầu: Hệ thống thông báo "Phòng đã đầy"
-Thi đấu: Hệ thống hiển thị đồng hồ 60 giây, câu hỏi, 4 nút đáp án, điểm của mình và điểm của đối thủ → Người chơi chọn một đáp án → Hệ thống chấm điểm, ghi nhận điểm mới để đối thủ thấy → Hiển thị câu hỏi tiếp theo → (lặp lại đến khi hết giờ) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên màn hình → Hết 60 giây: Hệ thống xác định kết quả → Lưu trận vào lịch sử đấu → Hiển thị THẮNG / THUA / HÒA kèm tỉ số → Người chơi nhấn "Về menu"
+Thi đấu: Hệ thống hiển thị điểm của mình (nổi bật) VS điểm của đối thủ, đồng hồ 60 giây, câu hỏi, bàn phím số 0–9 kèm nút xóa và nút OK → Người chơi nhập đáp án và nhấn OK → Hệ thống chấm điểm, ghi nhận điểm mới để đối thủ thấy → Hiển thị câu hỏi tiếp theo → (lặp lại đến khi hết giờ) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên màn hình → Hết 60 giây: Hệ thống xác định kết quả → Lưu trận vào lịch sử đấu → Hiển thị THẮNG / THUA / HÒA kèm tỉ số → Người chơi nhấn "Về menu"
   → Nếu người chơi nhấn Back: Hệ thống hỏi "Thoát sẽ bị xử thua?" → Đồng ý: người chơi bị xử thua, quay về màn hình chính
   → Nếu đối thủ thoát hoặc mất kết nối: Hệ thống thông báo "Đối thủ đã thoát" → Người chơi được tính thắng
 ```

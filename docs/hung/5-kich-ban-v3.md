@@ -127,16 +127,16 @@ Quy ước:
 7. `startGame` gọi `getCurrentLevel()` của `GameSession`.
 8. `GameSession` trả về mức `1`.
 9. `startGame` gọi `generateProblem(1)` của `ProblemDAO`.
-10. `generateProblem` gọi lớp `MathProblem` để đóng gói câu hỏi `12 + 7` với 4 phương án.
+10. `generateProblem` gọi lớp `MathProblem` để đóng gói câu hỏi `12 + 7`.
 11. Lớp `MathProblem` trả đối tượng cho `generateProblem`.
 12. `generateProblem` trả `MathProblem` cho `startGame`; `startGame` lưu nó làm câu hiện tại của `GameSession`.
 13. `startGame` trả `MathProblem` cho `onCreate`.
-14. `OnlineGameActivity` (hàm `showProblem`) hiển thị cho Hùng: HUNG `0`, đồng hồ `60`, HOANG `0`, `12 + 7 = ?` và 4 nút đáp án.
+14. `OnlineGameActivity` (hàm `showProblem`) hiển thị cho Hùng: hàng điểm HUNG `0` VS `0` HOANG, đồng hồ `60`, `12 + 7 = ?` và bàn phím số.
 15. Mỗi giây, `CountDownTimer` gọi `onTick(42000)` của `MatchController`.
 16. `MatchController` gọi `onTick(42)` của `OnlineGameActivity`.
 17. `OnlineGameActivity` hiển thị đồng hồ `00:42`.
-18. Hùng nhấn nút `19`.
-19. `onClick` của `OnlineGameActivity` gọi `submitAnswer(19)` của `MatchController`.
+18. Hùng bấm `1`, `9` rồi nhấn OK. Mỗi lần bấm số, `onClick` gọi `appendDigit` của chính Activity để cập nhật `txtAnswer` (`12 + 7 = 19`); thao tác này chỉ nằm trong giao diện nên gộp vào bước này.
+19. `onClick` của nút OK đọc số `19` từ `txtAnswer` và gọi `submitAnswer(19)` của `MatchController`.
 20. `submitAnswer` gọi `isCorrect(19)` của câu hiện tại (`MathProblem`).
 21. `MathProblem` trả về `true`.
 22. `submitAnswer` gọi `recordCorrectAnswer()` của `GameSession`.
@@ -151,7 +151,7 @@ Quy ước:
 31. Lớp `MathProblem` trả đối tượng cho `generateProblem`.
 32. `generateProblem` trả `MathProblem` cho `nextProblem`.
 33. `nextProblem` trả `MathProblem` cho `onClick`.
-34. `OnlineGameActivity` hiển thị cho Hùng "+12 PTS!", điểm `12` và `9 − 4 = ?`.
+34. `OnlineGameActivity` gọi `showScorePopup(12)` cho chữ "+12" bay lên từ điểm của mình, hiển thị điểm `12`, xóa `txtAnswer` và hiện `9 − 4 = ?`.
 35. Khi Hoàng ghi điểm, node thay đổi. Callback `onDataChange` của `MatchFirebaseDAO` gọi `toMatch("482915", data)`.
 36. `toMatch` gọi lớp `Match` để đóng gói trận mới nhất.
 37. Lớp `Match` trả đối tượng cho `toMatch`.
@@ -161,11 +161,11 @@ Quy ước:
 41. `MatchController` gọi `onMatchChanged(match)` của `OnlineGameActivity`.
 42. `OnlineGameActivity` hiển thị điểm HOANG `12`.
 
-    *(Các bước 15–42 lặp lại đến khi `CountDownTimer` hết giờ. Trả lời sai thì bước 22 là `recordWrongAnswer()`, không có bước 24, và dòng phản hồi là "MISS!".)*
+    *(Các bước 15–42 lặp lại đến khi `CountDownTimer` hết giờ. Trả lời sai thì bước 22 là `recordWrongAnswer()`, không có bước 24, và `showScorePopup(0)` hiện chữ "MISS" màu đỏ.)*
 43. Hết 60 giây, `CountDownTimer` gọi `onFinish()` của `MatchController`.
 44. `onFinish` gọi `setTimeUp("482915", 1)` của `MatchFirebaseDAO`.
 45. `onFinish` gọi `onTimeUp()` của `OnlineGameActivity`.
-46. `OnlineGameActivity` ẩn 4 nút đáp án, hiển thị "Hết giờ! Đang chờ kết quả...".
+46. `OnlineGameActivity` khóa bàn phím số, `txtTimer` hiển thị "Hết giờ! Đang chờ kết quả...".
 47. Khi máy 2 cũng ghi `timeUp`, callback `onDataChange` gọi `toMatch("482915", data)`.
 48. `toMatch` gọi lớp `Match` để đóng gói trận.
 49. Lớp `Match` trả đối tượng cho `toMatch`.

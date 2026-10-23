@@ -38,7 +38,8 @@ Tên lớp giao diện theo chuẩn Android: hậu tố `Activity`, đặt trong
   - `txt`: `TextView`.
   - `rv`: `RecyclerView`.
   - `layout`: `LinearLayout`.
-- **Thành phần `outsub`** (vừa hiện vừa bấm) tách thành một mảng nút. Ví dụ `outsubAnswers` → `btnAnswers : Button[4]`.
+- **Nhóm nút cùng loại** gom thành một mảng. Ví dụ `subDigits` → `btnDigits : Button[10]`.
+- **Nút chỉ có biểu tượng** dùng `ImageButton` và đặt `contentDescription` để trình đọc màn hình đọc được. Ví dụ `subBackspace` → `btnBackspace : ImageButton`.
 - **Thuộc tính ẩn kiểu thực thể** giữ dữ liệu cần dùng giữa các bước, ví dụ `me : Player` là người chơi đang đăng nhập.
 
 ### 0.3. Phương thức của thực thể → Controller hoặc DAO
@@ -97,7 +98,12 @@ Lớp của framework (`CountDownTimer`, `DatabaseReference`, `Connection`…) c
 Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → `LobbyActivity` → `OnlineGameActivity` → overlay `layoutResult`.
 - **Người tạo phòng** đi đủ 4 bước.
 - **Người tìm phòng** nhập mã ở màn đầu tiên. Màn phòng chờ hiện ngay "Trận đấu bắt đầu!" rồi tự sang màn thi đấu sau 2 giây.
-- Lưới 2x2 nút đáp án cao tối thiểu 72dp, chữ monospace 26sp, giống màn chơi offline để 2 chế độ có cùng cảm giác.
+- **Màn thi đấu chia 4 tầng** từ trên xuống:
+  1. Hàng điểm: `HUNG` **36** `VS` 24 `HOANG`. Điểm của mình to hơn và có màu nhấn. Khi trả lời, chữ `+12` (xanh) hoặc `MISS` (đỏ) hiện ngay trên điểm của mình, bay lên khoảng 40dp và mờ dần trong 0,6 giây.
+  2. Đồng hồ ở giữa. Hết giờ thì đổi thành "Hết giờ! Đang chờ kết quả...".
+  3. Câu hỏi, chữ monospace lớn. Số đang nhập hiện ngay sau dấu `=` thay cho `?`.
+  4. Bàn phím số 3x4: `1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 OK`. Nút cao tối thiểu 64dp. Nút xóa chỉ có biểu tượng ⌫. Số nhập tối đa 3 chữ số (đáp án lớn nhất là 200). Nút OK chỉ bấm được khi đã nhập ít nhất 1 số.
+- **Vì sao online dùng bàn phím số thay cho 4 phương án:** trận online là thi đấu tốc độ, nên tự nhập số buộc người chơi phải tính thật, không đoán được trong 4 phương án. Chơi offline (Hoàng) vẫn giữ 4 phương án.
 
 **Bảng thành phần:**
 
@@ -112,12 +118,15 @@ Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → 
 | | `txtStatus` | `TextView` | "Đang chờ đối thủ..." / "Trận đấu bắt đầu!" | `outStatus` |
 | | `txtOpponentName` | `TextView` | "Đối thủ: HOANG" | `outOpponentName` |
 | | `btnCancel` | `Button` | Hủy phòng, ẩn khi đã có đối thủ | `subCancel` |
-| `OnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình | `outMyName`, `outMyScore` |
-| | `txtTimer` | `TextView` | Đồng hồ đếm ngược `00:42` | `outTimer` |
+| `OnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình (cỡ chữ lớn hơn, màu nhấn) | `outMyName`, `outMyScore` |
+| | `txtTimer` | `TextView` | Đồng hồ đếm ngược `00:42`; hết giờ thì hiện "Hết giờ! Đang chờ kết quả..." | `outTimer` |
 | | `txtOpponentName`, `txtOpponentScore` | `TextView` | Tên, điểm đối thủ | `outOpponentName`, `outOpponentScore` |
 | | `txtProblem` | `TextView` | Câu hỏi `12 + 7 = ?` | `outProblem` |
-| | `btnAnswer1` … `btnAnswer4` (mảng `btnAnswers`) | `Button` | 4 phương án; bấm để trả lời | `outsubAnswers` |
-| | `txtFeedback` | `TextView` | "+12 PTS!" / "MISS!" / "Hết giờ! Đang chờ kết quả..." | `outFeedback` |
+| | `txtScorePopup` | `TextView` (ẩn, chạy hiệu ứng bay lên + mờ dần) | "+12" xanh / "MISS" đỏ trên điểm của mình | `outScorePopup` |
+| | `txtAnswer` | `TextView` | Số đang nhập, hiện sau dấu `=` | `inAnswer` |
+| | `btnDigit0` … `btnDigit9` (mảng `btnDigits`) | `Button` | Thêm 1 chữ số vào cuối số đang nhập | `subDigits` |
+| | `btnBackspace` | `ImageButton` (icon ⌫, `contentDescription="Xóa"`) | Xóa chữ số cuối | `subBackspace` |
+| | `btnSubmit` | `Button` | OK: nộp đáp án | `subSubmit` |
 | Overlay `layoutResult` | `txtResult` | `TextView` | THẮNG! (xanh) / THUA! (đỏ) / HÒA! (vàng) | `outResult` |
 | | `txtFinalScore` | `TextView` | `HUNG 120 - 96 HOANG` | `outScoreLine` |
 | | `btnBackToMenu` | `Button` | Về màn chính | `subBackToMenu` |
@@ -137,7 +146,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 | Boundary | `MainActivity` | Màn chính (lớp chung); `onClick` của nút Chơi online mở `OnlineActivity` |
 | Boundary | `OnlineActivity` | Có `onClick` cho 2 nút:<br>- Tạo phòng gọi `MatchController.createRoom`.<br>- Vào phòng kiểm tra mã đủ 6 chữ số rồi gọi `MatchController.findRoom`.<br>Cài đặt `RoomListener`: vào được phòng thì `onRoomReady` mở `LobbyActivity`; không vào được thì `onError` hiện `Toast` |
 | Boundary | `LobbyActivity` | `onCreate` hiện mã phòng và gọi `MatchController.waitForOpponent`. `onRoomReady` hiện tên đối thủ, sau 2 giây mở `OnlineGameActivity`. `onClick` của nút Hủy gọi `cancelRoom` |
-| Boundary | `OnlineGameActivity` | Màn thi đấu, cài đặt `GameListener`.<br>- `onCreate` gọi `startGame`.<br>- `onClick` của nút đáp án gọi `submitAnswer` rồi `nextProblem`.<br>- `onTick` vẽ đồng hồ; `onMatchChanged` vẽ điểm đối thủ; `onMatchEnd` gọi `showResult` để hiện overlay.<br>- `onBackPressed` hỏi xác nhận rồi gọi `leaveMatch`.<br>Activity không tự chấm điểm, không tự phân thắng thua |
+| Boundary | `OnlineGameActivity` | Màn thi đấu, cài đặt `GameListener`.<br>- `onCreate` gọi `startGame`.<br>- `onClick` của nút số gọi `appendDigit`, nút xóa gọi `deleteDigit` (chỉ đổi `txtAnswer`, không gọi Controller). Nút OK gọi `submitAnswer` rồi `nextProblem`; `showScorePopup` chạy hiệu ứng "+12" / "MISS".<br>- `onTick` vẽ đồng hồ; `onMatchChanged` vẽ điểm đối thủ; `onMatchEnd` gọi `showResult` để hiện overlay.<br>- `onBackPressed` hỏi xác nhận rồi gọi `leaveMatch`.<br>Activity không tự chấm điểm, không tự phân thắng thua |
 | — | `RoomListener`, `GameListener` | 2 interface để `MatchController` báo kết quả bất đồng bộ về Activity; không dùng lambda (CONVENTION) |
 | Control | `MatchController` | Singleton, điều phối cả trận online, giữ trận (`match`), ván chấm điểm (`session`), người chơi (`me`) và đồng hồ 60 giây (`timer`).<br>- `createRoom` sinh mã phòng bằng `generateRoomCode` và `questionSeed` ngẫu nhiên rồi nhờ `MatchFirebaseDAO` tạo trận.<br>- `startGame` tạo `ProblemDAO(new Random(questionSeed))` và `GameSession` chế độ online, đăng ký `onDisconnect`, bật đồng hồ.<br>- `submitAnswer` chấm bằng `MathProblem.isCorrect` + `GameSession`, đúng thì ghi điểm lên Firebase.<br>- Hết giờ thì ghi `timeUp`. Khi `Match.isOver()` đúng thì `finishMatch` gọi backend trong `Thread` (cờ `finishing` đảm bảo chỉ gọi một lần) |
 | Control | `SessionDAO` | `getPlayer()` đọc `playerId`, `displayName` từ SharedPreferences `"session"` và đóng gói thành `Player` (lớp chung) |

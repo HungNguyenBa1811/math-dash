@@ -20,12 +20,15 @@ class LobbyView <<boundary>> {
 class OnlineGameView <<boundary>> {
   - outMyName
   - outMyScore
-  - outTimer
   - outOpponentName
   - outOpponentScore
+  - outScorePopup
+  - outTimer
   - outProblem
-  - outsubAnswers
-  - outFeedback
+  - inAnswer
+  - subDigits
+  - subBackspace
+  - subSubmit
 }
 class MatchResultView <<boundary>> {
   - outResult

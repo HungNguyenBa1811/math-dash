@@ -32,12 +32,15 @@ package "Client (Android)" {
   class OnlineGameActivity <<boundary>> {
     - txtMyName : TextView
     - txtMyScore : TextView
-    - txtTimer : TextView
     - txtOpponentName : TextView
     - txtOpponentScore : TextView
+    - txtScorePopup : TextView
+    - txtTimer : TextView
     - txtProblem : TextView
-    - btnAnswers : Button[4]
-    - txtFeedback : TextView
+    - txtAnswer : TextView
+    - btnDigits : Button[10]
+    - btnBackspace : ImageButton
+    - btnSubmit : Button
     - layoutResult : LinearLayout
     - txtResult : TextView
     - txtFinalScore : TextView
@@ -51,6 +54,9 @@ package "Client (Android)" {
     + onTimeUp() : void
     + onMatchEnd(match : Match) : void
     + onError(message : String) : void
+    - appendDigit(digit : int) : void
+    - deleteDigit() : void
+    - showScorePopup(points : int) : void
     - showProblem(problem : MathProblem) : void
     - showResult(match : Match) : void
   }

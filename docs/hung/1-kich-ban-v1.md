@@ -55,10 +55,11 @@ Người chơi đã đăng nhập, đang ở giao diện chính → Giao diện 
       → Nếu mã phòng không đủ 6 chữ số: Hệ thống thông báo "Mã phòng gồm 6 chữ số"
       → Nếu không có phòng nào mang mã này: Hệ thống thông báo "Không tìm thấy phòng"
       → Nếu phòng đã đủ 2 người hoặc trận đã bắt đầu: Hệ thống thông báo "Phòng đã đầy"
-Thi đấu: Giao diện thi đấu hiện lên với: tên và điểm của mình, đồng hồ đếm ngược 60 giây, tên và điểm của đối thủ, câu hỏi, 4 nút đáp án, dòng phản hồi → Hai máy nhận cùng một dãy câu hỏi → Người chơi chọn một đáp án
-  → Nếu đúng: Hệ thống cộng 10 + chuỗi đúng × 2 điểm, hiển thị "+12 PTS!" → Điểm mới được gửi để máy đối thủ thấy → Hiển thị câu tiếp theo
-  → Nếu sai: Hệ thống không cộng điểm, đưa chuỗi đúng về 0, hiển thị "MISS!" (không mất mạng) → Hiển thị câu tiếp theo
-→ (lặp lại đến khi hết giờ, cứ 5 câu thì câu hỏi khó lên 1 mức) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên giao diện → Hết 60 giây: Hệ thống ẩn các nút đáp án, hiển thị "Hết giờ! Đang chờ kết quả..." → Khi cả 2 máy đều hết giờ: Hệ thống xác định kết quả và lưu trận vào lịch sử đấu của cả 2 người → Giao diện kết quả hiện lên với: dòng kết quả THẮNG! / THUA! / HÒA!, tỉ số "<mình> <điểm> - <điểm> <đối thủ>", nút Về menu → Người chơi nhấn Về menu → Quay về giao diện chính
+Thi đấu: Giao diện thi đấu hiện lên với: hàng điểm (tên và điểm của mình được làm nổi bật, chữ VS, điểm và tên của đối thủ), đồng hồ đếm ngược 60 giây ở giữa, câu hỏi kèm số đang nhập, bàn phím số 0–9 cùng nút xóa (biểu tượng ⌫) và nút OK → Hai máy nhận cùng một dãy câu hỏi → Người chơi bấm các số để nhập đáp án (nút xóa bỏ số cuối, tối đa 3 chữ số) và nhấn OK
+  → Nếu đúng: Hệ thống cộng 10 + chuỗi đúng × 2 điểm, chữ "+12" màu xanh bay lên từ điểm của mình rồi mờ dần → Điểm mới được gửi để máy đối thủ thấy → Xóa ô nhập, hiển thị câu tiếp theo
+  → Nếu sai: Hệ thống không cộng điểm, đưa chuỗi đúng về 0, chữ "MISS" màu đỏ bay lên tương tự (không mất mạng) → Xóa ô nhập, hiển thị câu tiếp theo
+  → Nếu nhấn OK khi chưa nhập số nào: Hệ thống không làm gì
+→ (lặp lại đến khi hết giờ, cứ 5 câu thì câu hỏi khó lên 1 mức) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên giao diện → Hết 60 giây: Hệ thống khóa bàn phím số, đồng hồ đổi thành "Hết giờ! Đang chờ kết quả..." → Khi cả 2 máy đều hết giờ: Hệ thống xác định kết quả và lưu trận vào lịch sử đấu của cả 2 người → Giao diện kết quả hiện lên với: dòng kết quả THẮNG! / THUA! / HÒA!, tỉ số "<mình> <điểm> - <điểm> <đối thủ>", nút Về menu → Người chơi nhấn Về menu → Quay về giao diện chính
   → Nếu người chơi nhấn Back khi đang thi đấu: Hệ thống hỏi "Thoát sẽ bị xử thua?" với 2 nút Ở lại, Thoát → Thoát: người chơi bị xử thua, hệ thống lưu trận, quay về giao diện chính → Ở lại: tiếp tục thi đấu
   → Nếu đối thủ thoát hoặc mất kết nối: Hệ thống thông báo "Đối thủ đã thoát" → Người chơi được xử thắng, hiện giao diện kết quả
   → Nếu máy của người chơi mất kết nối: Hệ thống thông báo "Mất kết nối, trận đấu đã kết thúc" → Quay về giao diện chính; người chơi bị xử thua
@@ -118,20 +119,18 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
 
     | Thành phần | Giá trị |
     |---|---|
-    | Mình | `HUNG` – điểm `0` |
-    | Đồng hồ | `60` |
-    | Đối thủ | `HOANG` – điểm `0` |
-    | Câu hỏi | `12 + 7 = ?` |
-    | 4 nút đáp án | `17` · `19` · `21` · `18` |
-    | Dòng phản hồi | (trống) |
+    | Hàng điểm (trên cùng) | `HUNG` **0** (nổi bật) · `VS` · 0 `HOANG` |
+    | Đồng hồ (giữa) | `60` |
+    | Câu hỏi | `12 + 7 = ?` (số đang nhập hiện thay cho dấu `?`) |
+    | Bàn phím số | `1` `2` `3` / `4` `5` `6` / `7` `8` `9` / `⌫` `0` **OK** |
 
-    Máy 2 hiện cùng câu hỏi `12 + 7` với cùng 4 đáp án.
-12. Hùng nhấn nút **19**.
-13. Hệ thống chấm đúng: chuỗi đúng thành 1, cộng `10 + 1 × 2 = 12` điểm. Dòng phản hồi hiện "+12 PTS!", điểm của mình thành `12`. Hệ thống gửi điểm mới để máy đối thủ thấy, rồi hiện câu tiếp theo `9 − 4 = ?` với 4 đáp án `5` · `3` · `6` · `13`.
+    Máy 2 hiện cùng câu hỏi `12 + 7`.
+12. Hùng bấm `1`, `9` (câu hỏi hiện `12 + 7 = 19`) rồi nhấn **OK**.
+13. Hệ thống chấm đúng: chuỗi đúng thành 1, cộng `10 + 1 × 2 = 12` điểm. Chữ "+12" màu xanh bay lên từ điểm của mình rồi mờ dần, điểm của mình thành `12`. Hệ thống gửi điểm mới để máy đối thủ thấy, xóa số đã nhập và hiện câu tiếp theo `9 − 4 = ?`.
 14. Hoàng trả lời đúng câu đầu tiên trên máy 2. Trên máy 1, điểm đối thủ cập nhật thành `12`.
 
-    *(Lặp lại các bước 12–14 cho đến khi đồng hồ về 0. Trả lời sai thì hiện "MISS!", không cộng điểm, chuỗi đúng về 0, không mất mạng. Cứ 5 câu thì câu hỏi khó lên 1 mức.)*
-15. Đồng hồ về `0`. Hệ thống ẩn 4 nút đáp án và hiện "Hết giờ! Đang chờ kết quả...". Điểm cuối trên máy 1: HUNG `120`, HOANG `96`.
+    *(Lặp lại các bước 12–14 cho đến khi đồng hồ về 0. Trả lời sai thì chữ "MISS" màu đỏ bay lên, không cộng điểm, chuỗi đúng về 0, không mất mạng. Nhấn ⌫ thì xóa số cuối; nhấn OK khi chưa nhập gì thì không có gì xảy ra. Cứ 5 câu thì câu hỏi khó lên 1 mức.)*
+15. Đồng hồ về `0`. Hệ thống khóa bàn phím số, đồng hồ đổi thành "Hết giờ! Đang chờ kết quả...". Điểm cuối trên máy 1: HUNG `120`, HOANG `96`.
 16. Máy 2 cũng hết giờ. Hệ thống xác định kết quả: không ai bỏ trận, `120 > 96` nên Hùng thắng. Hệ thống lưu trận vào lịch sử đấu của cả 2 người.
 17. Giao diện kết quả hiện lên trên máy 1 gồm: dòng **THẮNG!** (màu xanh), tỉ số `HUNG 120 - 96 HOANG`, nút **Về menu**. Trên máy 2 hiện **THUA!** với tỉ số `HOANG 96 - 120 HUNG`.
 18. Hùng nhấn nút **Về menu**.

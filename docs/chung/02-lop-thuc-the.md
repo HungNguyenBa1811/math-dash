@@ -219,7 +219,7 @@ Mã nguồn PlantUML: [`lop-thuc-the-thiet-ke.puml`](lop-thuc-the-thiet-ke.puml)
 | `MathProblem` | `operand1`, `operand2` | Toán hạng bên trái, bên phải của phép tính | Số nguyên ≥ 1 |
 | `MathProblem` | `operator` | Toán tử | `"+"`, `"-"`, `"×"` |
 | `MathProblem` | `correctAnswer` | Kết quả đúng của phép tính | ≥ 0 |
-| `MathProblem` | `answerOptions` | 4 phương án hiển thị trên 4 nút, đã xáo trộn, có chứa `correctAnswer` | 4 số khác nhau, ≥ 0 |
+| `MathProblem` | `answerOptions` | 4 phương án hiển thị trên 4 nút ở chế độ offline, đã xáo trộn, có chứa `correctAnswer`. Chế độ online không hiển thị (người chơi tự nhập số) nhưng vẫn được sinh để 2 máy dùng chung một dãy số ngẫu nhiên | 4 số khác nhau, ≥ 0 |
 | `GameSession` | `difficulty` | Độ khó người chơi chọn, cũng là mức bắt đầu | 1 = Dễ, 2 = Trung bình, 3 = Khó; trận online luôn là 1 |
 | `GameSession` | `onlineMode` | Ván này là trận online hay không | `true`: không trừ mạng |
 | `GameSession` | `questionsAsked` | Số câu đã ra trong ván | ≥ 0 |

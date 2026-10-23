@@ -35,15 +35,15 @@ PD -> MP : new MathProblem(12, 7, "+")
 MP --> PD : MathProblem
 PD --> MC : MathProblem
 MC --> GA : MathProblem (12 + 7)
-GA --> U : hiển thị HUNG 0 | 60 | HOANG 0, 12 + 7 = ?, 4 đáp án
+GA --> U : hiển thị HUNG 0 VS 0 HOANG, 60, 12 + 7 = ?, bàn phím số
 
 loop đến khi CountDownTimer hết giờ
   T -> MC : onTick(42000)
   MC -> GA : onTick(42)
   GA --> U : hiển thị 00:42
-  alt Hùng chọn đáp án
-    U -> GA : nhấn 19
-    GA -> MC : onClick(): submitAnswer(19)
+  alt Hùng nhập đáp án
+    U -> GA : bấm 1, 9 (appendDigit), nhấn OK
+    GA -> MC : onClick(OK): submitAnswer(19)
     MC -> MP : isCorrect(19)
     MP --> MC : true
     MC -> GS : recordCorrectAnswer()
@@ -58,7 +58,7 @@ loop đến khi CountDownTimer hết giờ
     MP --> PD : MathProblem
     PD --> MC : MathProblem
     MC --> GA : MathProblem (9 − 4)
-    GA --> U : hiển thị "+12 PTS!", điểm 12, 9 − 4 = ?
+    GA --> U : showScorePopup(12): "+12" bay lên, điểm 12, 9 − 4 = ?
   else Hùng nhấn Back, chọn Thoát
     autonumber stop
     U -> GA : 18a.1. nhấn Back, chọn Thoát
@@ -92,7 +92,7 @@ end
 T -> MC : onFinish()
 MC -> MFD : setTimeUp("482915", 1)
 MC -> GA : onTimeUp()
-GA --> U : ẩn đáp án, hiển thị "Hết giờ! Đang chờ kết quả..."
+GA --> U : khóa bàn phím, hiển thị "Hết giờ! Đang chờ kết quả..."
 MFD -> MFD : onDataChange → toMatch("482915", data)
 MFD -> M : new Match(...)
 M --> MFD : Match

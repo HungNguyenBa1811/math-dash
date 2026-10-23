@@ -76,21 +76,21 @@ Quy ước:
 
 1. `OnlineGameView` gọi phương thức `watchMatch()` của lớp `Match` để theo dõi điểm đối thủ.
 2. `OnlineGameView` gọi phương thức `generateProblem()` của lớp `MathProblem`, dùng mã đồng bộ câu hỏi của trận và mức 1.
-3. Lớp `MathProblem` trả về câu hỏi `12 + 7` với 4 phương án `17`, `19`, `21`, `18`.
-4. `OnlineGameView` hiển thị cho Hùng: HUNG `0`, đồng hồ `60`, HOANG `0`, câu hỏi và 4 nút đáp án.
-5. Hùng nhấn nút `19` trên `OnlineGameView`.
+3. Lớp `MathProblem` trả về câu hỏi `12 + 7`.
+4. `OnlineGameView` hiển thị cho Hùng: hàng điểm HUNG `0` VS `0` HOANG, đồng hồ `60`, câu hỏi `12 + 7 = ?` và bàn phím số.
+5. Hùng bấm `1`, `9` rồi nhấn OK trên `OnlineGameView`. Việc bấm số và nút xóa chỉ thay đổi số đang nhập trên giao diện, không gọi thực thể nên không tách thành bước riêng.
 6. `OnlineGameView` gọi phương thức `submitAnswer()` của lớp `GameSession` với đáp án `19`.
 7. Lớp `GameSession` chấm đúng, cộng `12` điểm, trả về điểm mới `12` cho `OnlineGameView`.
 8. `OnlineGameView` gọi phương thức `updateScore()` của lớp `MatchPlayer` với điểm `12`.
 9. Lớp `MatchPlayer` ghi điểm mới để máy đối thủ thấy, rồi trả về cho `OnlineGameView`.
 10. `OnlineGameView` gọi phương thức `generateProblem()` của lớp `MathProblem`.
 11. Lớp `MathProblem` trả về câu hỏi tiếp theo `9 − 4`.
-12. `OnlineGameView` hiển thị cho Hùng "+12 PTS!", điểm `12` và câu hỏi mới.
+12. `OnlineGameView` cho chữ "+12" bay lên từ điểm của mình, hiển thị điểm `12`, xóa số đã nhập và hiện câu hỏi mới.
 13. Khi Hoàng trả lời đúng, lớp `Match` trả về cho `OnlineGameView` trận mới với điểm HOANG = `12` (từ lời theo dõi ở bước 1).
 14. `OnlineGameView` hiển thị cho Hùng điểm đối thủ `12`.
 
     *(Lặp lại các bước 5–14 cho đến khi hết 60 giây.)*
-15. Hết 60 giây, `OnlineGameView` ẩn 4 nút đáp án và hiển thị cho Hùng "Hết giờ! Đang chờ kết quả...".
+15. Hết 60 giây, `OnlineGameView` khóa bàn phím số và hiển thị cho Hùng "Hết giờ! Đang chờ kết quả..." ở chỗ đồng hồ.
 16. `OnlineGameView` gọi phương thức `finishMatch()` của lớp `Match`.
 17. Khi cả 2 máy đã hết giờ, lớp `Match` xác định trận đã xong, lưu trận vào lịch sử đấu, rồi trả về trận HUNG `120` – HOANG `96` cho `OnlineGameView`.
 18. `OnlineGameView` gọi phương thức `getResult()` của lớp `Match` cho HUNG.
