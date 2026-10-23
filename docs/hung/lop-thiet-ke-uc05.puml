@@ -103,7 +103,6 @@ package "Client (Android)" {
   }
   abstract class FirebaseDAO <<control>> {
     # {static} con : DatabaseReference
-    # {static} auth : FirebaseAuth
     + FirebaseDAO()
   }
   class MatchFirebaseDAO <<control>> {
@@ -204,7 +203,7 @@ package "Server (Spring Boot)" {
     + findByRoomCode(roomCode : String, createdAt : Date) : Match
   }
   class FirebaseAdminDAO <<control>> {
-    - db : FirebaseDatabase
+    - dbUrl : String
     + readMatch(roomCode : String) : Match
     + updateStatus(roomCode : String, status : String) : void
   }

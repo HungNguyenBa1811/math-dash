@@ -20,7 +20,6 @@ public class SessionDAO {
         prefs.edit()
                 .putString("token", token)
                 .putInt("playerId", player.getId())
-                .putString("username", player.getUsername())
                 .putString("displayName", player.getDisplayName())
                 .apply();
     }
@@ -30,8 +29,7 @@ public class SessionDAO {
         if (!prefs.contains("playerId")) {
             return null;
         }
-        return new Player(prefs.getInt("playerId", 0), prefs.getString("username", ""),
-                prefs.getString("displayName", ""));
+        return new Player(prefs.getInt("playerId", 0), null, prefs.getString("displayName", ""));
     }
 
     public String getToken() {

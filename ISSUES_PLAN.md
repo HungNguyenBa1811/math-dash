@@ -32,7 +32,7 @@
 | D1 | Phạm vi | MVP 6 UC như trên. Ngoài phạm vi ghi ở `docs/chung/01-pham-vi-use-case.md` mục 2.1 | Kịp demo 28/10, mỗi chức năng làm trọn vẹn |
 | D2 | Kiến trúc | **App Android** + **Backend Spring Boot** (REST, MySQL) + **Firebase Realtime Database** (chỉ trận đang diễn ra) | Backend giữ dữ liệu lâu dài và làm trọng tài; Firebase lo phần thời gian thực |
 | D3 | Backend mỏng | `RestController` → `DAO` (JDBC, lớp cha giữ `#conn: Connection`) → Entity. **Không có tầng Service, không dùng JPA** | Giữ đúng khuôn MVC của bài mẫu OOAD; biểu đồ lớp và tuần tự không phình ra |
-| D4 | Đăng nhập | Backend kiểm tra tài khoản, trả **token** (dùng cho REST) và **Firebase custom token** (Admin SDK). App đăng nhập Firebase bằng custom token nên `auth.uid` = `playerId`. App ghi nhớ phiên trong SharedPreferences | Một định danh dùng chung cho backend và Firebase; mất mạng vẫn vào được Chơi offline |
+| D4 | Đăng nhập | Backend kiểm tra mật khẩu (BCrypt), trả **JWT** do server ký (hết hạn sau 24 giờ), dùng cho REST. App không đăng nhập Firebase (không dùng Firebase Authentication). App ghi nhớ phiên trong SharedPreferences | Auth đơn giản, nằm hết ở server; mất mạng vẫn vào được Chơi offline |
 | D5 | Luật trận online | 60 giây, 2 người, cùng một dãy câu. Đúng: +10 + combo×2. Sai: 0 điểm, reset combo, **không mất mạng**. Người bỏ trận thua; nếu không ai bỏ thì so điểm, bằng điểm thì hòa | Đơn giản, dùng lại `GameSession` |
 | D6 | Đồng bộ câu hỏi | Khi tạo phòng sinh `questionSeed` (long); 2 máy cùng tạo `new ProblemDAO(new Random(questionSeed))` | Không phải đẩy từng câu qua mạng |
 | D7 | Trọng tài | Mỗi máy hết 60 giây thì ghi `timeUp`. Khi `Match.isOver()` đúng (cả 2 hết giờ hoặc có người bỏ trận), app gọi `POST /api/matches/{roomCode}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, **kiểm tra lại `isOver()`**, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`, trả `Match` đã lưu; app hiện kết quả bằng `getResult` trên bản đó. `Match.canJoin(...)`, `Match.isOver()`, `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
@@ -91,7 +91,7 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-offline` (UC03), `uc-cai-da
 | Controller (REST) | `MatchRestController` (`/api/matches/*`) | Hùng |
 | DAO JDBC | `DAO` (cha, `#conn: Connection`), `PlayerDAO` | **Chung** |
 | DAO JDBC | `MatchDAO` | Hùng |
-| Firebase Admin | `FirebaseAdminDAO` (tạo custom token, đọc trận đang diễn ra) | Hùng |
+| Firebase REST | `FirebaseAdminDAO` (đọc trận đang diễn ra, ghi trạng thái qua REST API của Firebase) | Hùng |
 
 - Lớp **Chung**: Hùng viết, Hoàng duyệt. Sau khi merge, muốn sửa thì mở PR riêng và người kia duyệt.
 - Lớp của ai thì người đó viết thân hàm, demo và giải thích.
@@ -118,7 +118,6 @@ public abstract class ApiDAO {
 // App: dao/FirebaseDAO.java — cha của mọi DAO Firebase
 public abstract class FirebaseDAO {
     protected static DatabaseReference con;
-    protected static FirebaseAuth auth;
 }
 
 // Server: dao/DAO.java — cha của mọi DAO JDBC (giống bài mẫu khách sạn)
@@ -151,7 +150,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 | Phương thức | Đường dẫn | Dùng cho | Kết quả |
 |---|---|---|---|
 | `POST` | `/api/auth/register` | UC01 | 201, hoặc 409 nếu trùng tên đăng nhập |
-| `POST` | `/api/auth/login` | UC02 | `{ player, token, firebaseToken }`, hoặc 401 |
+| `POST` | `/api/auth/login` | UC02 | `{ player, token }` (token là JWT), hoặc 401 |
 | `POST` | `/api/matches/{roomCode}/finish` | UC05 | Kết quả trận đã lưu |
 | `GET` | `/api/matches?playerId={id}` | UC06 | Danh sách trận đã kết thúc của người chơi, mới nhất trước |
 
@@ -392,29 +391,23 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - Khi mất mạng đột ngột, Firebase có thể mất vài chục giây mới báo `onDisconnect`. Lúc demo nên dùng cách bấm Back để minh họa việc thoát trận.
 - `VibrationEffect` chỉ có từ API 26, trong khi minSdk là 24. Phải rẽ nhánh theo `Build.VERSION.SDK_INT`.
 
-### [M2-01] Hạ tầng Firebase: custom token + Security Rules · @HungNguyenBa1811
+### [M2-01] Hạ tầng Firebase: Realtime Database + Security Rules · @HungNguyenBa1811
 - **Phụ thuộc:** M1-06.
-- **Mô tả:** Nối app và server với Firebase. Phục vụ UC05.
+- **Mô tả:** Nối app và server với Firebase Realtime Database. Phục vụ UC05. Không dùng Firebase Authentication; đăng nhập là JWT của backend (D4).
 - **Input:** applicationId `ptit.e23cnpm01.nguyenbahung.math_dash`; D4; mục 2.3, 2.4.
 - **Output:**
-  - **Firebase Console:** tạo project, bật Realtime Database, tải service account cho server (không commit).
+  - **Firebase Console:** tạo project, bật Realtime Database.
   - **App:**
-    - `google-services.json`, plugin `com.google.gms.google-services`, `firebase-auth` + `firebase-database`.
+    - `google-services.json`, plugin `com.google.gms.google-services`, `firebase-database`.
     - `FirebaseDAO` cha.
-    - Sau khi đăng nhập thì gọi `signInWithCustomToken(firebaseToken)`.
-  - **Server:**
-    - Thư viện `firebase-admin`.
-    - `FirebaseAdminDAO.createCustomToken(playerId)`.
-    - API login trả thêm `firebaseToken`.
+  - **Server:** `FirebaseAdminDAO` đọc / ghi node trận qua REST API (`GET matches/{roomCode}.json`, `PUT matches/{roomCode}/status.json`), địa chỉ database đặt trong `application.properties`.
   - **Security Rules** (`database.rules.json` trong repo):
-    - Chỉ user đã đăng nhập được đọc/ghi; `.indexOn` không cần (tìm theo mã phòng).
-    - Mỗi người chỉ sửa được `matches/{roomCode}/players/{auth.uid}`; riêng lúc tạo / vào phòng được ghi `status` và thêm chính mình.
+    - Chỉ tạo, vào, hủy phòng đúng vòng đời trận: tạo khi mã trống hoặc trận cũ đã `finished`; vào khi `waiting` → `playing`; hủy khi đang `waiting`; server chuyển `playing` → `finished`.
+    - Chỉ sửa được node `players/{playerId}` đã có trong trận.
     - `score` là số, ≥ 0, không giảm, mỗi lần tăng không quá 200.
     - `status` chỉ nhận `waiting` / `playing` / `finished`.
-- **Requirement:**
-  - Đăng nhập xong, Logcat in `Firebase uid = <playerId>`.
-  - Thử trong **Rules Playground**, chụp màn hình dán vào issue: ghi điểm của người khác → bị từ chối; ghi điểm giảm → bị từ chối.
-- **Constraint:** Không để rules public. Không dùng Firestore, FirebaseUI, Cloud Functions.
+- **Requirement:** Thử trong **Rules Playground**, chụp màn hình dán vào issue: ghi điểm giảm → bị từ chối; ghi `status` sai giá trị → bị từ chối.
+- **Constraint:** Không dùng Firestore, FirebaseUI, Cloud Functions, Firebase Authentication.
 
 ### [M2-02] UC05 Chơi online: Tạo phòng và Tìm phòng bằng mã · @HungNguyenBa1811
 - **Phụ thuộc:** M1-05, M2-01.

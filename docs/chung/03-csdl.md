@@ -198,7 +198,7 @@ Firebase là CSDL dạng cây JSON, không có bảng. Ánh xạ từ lớp th�
 | Lớp | Node | Khóa |
 |---|---|---|
 | Match | matches/{roomCode} | Mã phòng 6 chữ số. Duy nhất vì trên Firebase chỉ có các trận chưa kết thúc |
-| MatchPlayer (thành phần của Match) | matches/{roomCode}/players/{playerId} | id người chơi trên MySQL, cũng là auth.uid trên Firebase (custom token) |
+| MatchPlayer (thành phần của Match) | matches/{roomCode}/players/{playerId} | id người chơi trên MySQL |
 
 ```
 matches/{roomCode}
@@ -238,7 +238,7 @@ Firebase vì vậy **không giữ dữ liệu lâu dài**; lịch sử đấu n�
 | config | soundEnabled | boolean | true | Âm thanh bật / tắt (GameConfig) |
 | config | vibrationEnabled | boolean | true | Rung bật / tắt (GameConfig) |
 | config | secondsPerQuestion | int | 6 | Thời gian mỗi câu, một trong 4 / 6 / 8 / 10 (GameConfig) |
-| session | token | String | — | Token đăng nhập gửi kèm mỗi lời gọi REST |
+| session | token | String | — | Token đăng nhập (JWT do backend ký) gửi kèm mỗi lời gọi REST |
 | session | playerId | int | — | id người chơi đang đăng nhập |
 | session | displayName | String | — | Tên hiển thị ở màn Chính |
 

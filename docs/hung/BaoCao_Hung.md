@@ -245,7 +245,7 @@ CREATE TABLE tblMatchPlayer (
 Firebase là cây JSON. Ánh xạ từ lớp thực thể theo cùng tinh thần 5 bước:
 - Match thành node matches/{roomCode}. Mã phòng duy nhất trong các trận chưa kết thúc.
 - MatchPlayer là thành phần của Match (hợp thành), nên thành node con players/{playerId}.
-- Khóa playerId là id trên MySQL, cũng là auth.uid khi đăng nhập Firebase bằng custom token do backend cấp.
+- Khóa playerId là id người chơi trên MySQL.
 
 ```
 matches/{roomCode}
@@ -262,7 +262,7 @@ matches/{roomCode}
 - displayName: chép từ Player để máy đối thủ hiện được tên mà không cần gọi backend.
 
 **Security Rules** bảo vệ dữ liệu:
-- Mỗi người chỉ ghi được node players/{auth.uid} của mình.
+- Chỉ ghi được node players/{playerId} đã có trong trận; tạo, vào, hủy phòng chỉ được đúng theo vòng đời trận.
 - score không được giảm, mỗi lần tăng tối đa 200.
 - status chỉ nhận 3 giá trị hợp lệ.
 
@@ -394,7 +394,7 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
   - startGame tạo ProblemDAO(new Random(questionSeed)) (2 máy cùng dãy câu), GameSession online, đăng ký onDisconnect và bật đồng hồ 60 giây.
   - submitAnswer chấm điểm và gửi điểm lên Firebase.
   - Khi Match.isOver() đúng, finishMatch gọi backend trong Thread.
-- MatchFirebaseDAO kế thừa FirebaseDAO (giữ con, auth), đọc và ghi node matches/{roomCode}.
+- MatchFirebaseDAO kế thừa FirebaseDAO (giữ con), đọc và ghi node matches/{roomCode}.
   - createMatch, joinMatch dùng transaction. joinMatch gọi Match.canJoin bên trong transaction, nên 2 người vào cùng lúc vẫn không vượt quá 2 người.
   - watchMatch báo mọi thay đổi qua MatchCallback.
   - toMatch đóng gói node thành Match.
@@ -409,7 +409,7 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
   3. isOver() sai thì trả 409.
   4. Ngược lại thì MatchDAO.insert và FirebaseAdminDAO.updateStatus(..., "finished").
 - MatchDAO kế thừa DAO (giữ conn : Connection). insert ghi 1 dòng tblMatch + 2 dòng tblMatchPlayer trong một transaction.
-- FirebaseAdminDAO dùng Admin SDK đọc node trận và ghi trạng thái.
+- FirebaseAdminDAO gọi REST API của Firebase để đọc node trận và ghi trạng thái.
 
 #### 4.1.3. Biểu đồ tuần tự chi tiết
 

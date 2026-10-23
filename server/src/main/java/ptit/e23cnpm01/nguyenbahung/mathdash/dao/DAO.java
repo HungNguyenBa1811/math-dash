@@ -27,7 +27,7 @@ public abstract class DAO {
     }
 
     // Đọc application.properties, rồi ghi đè bằng application-local.properties nếu có (mật khẩu thật)
-    static Properties loadConfig() {
+    public static Properties loadConfig() {
         Properties config = new Properties();
         try {
             for (String name : new String[]{"/application.properties", "/application-local.properties"}) {

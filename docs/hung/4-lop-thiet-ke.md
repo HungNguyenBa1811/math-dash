@@ -40,13 +40,13 @@ Mỗi nơi lưu trữ có một lớp DAO cha giữ kết nối dùng chung; cá
 
 | Nơi lưu trữ | DAO cha | Giữ | DAO con dùng ở đây |
 |---|---|---|---|
-| App → Firebase | FirebaseDAO | con : DatabaseReference, auth : FirebaseAuth | MatchFirebaseDAO |
+| App → Firebase | FirebaseDAO | con : DatabaseReference | MatchFirebaseDAO |
 | App → REST | ApiDAO | BASE_URL, token; gửi / nhận JSON | MatchApiDAO |
 | Server → MySQL | DAO | conn : Connection | MatchDAO |
 
 Hai lớp không có lớp cha:
 - SessionDAO chỉ đọc SharedPreferences.
-- FirebaseAdminDAO dùng Firebase Admin SDK, không dùng JDBC nên không kế thừa DAO của server.
+- FirebaseAdminDAO gọi REST API của Firebase Realtime Database, không dùng JDBC nên không kế thừa DAO của server.
 
 ---
 
@@ -113,7 +113,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 | — | RoomListener, GameListener | 2 interface để MatchController báo kết quả bất đồng bộ về Activity |
 | Control | MatchController | Singleton, điều phối cả trận online, giữ trận (match), ván chấm điểm (session), người chơi (me) và đồng hồ 60 giây (timer).<br>- createRoom sinh mã phòng bằng generateRoomCode và questionSeed ngẫu nhiên rồi nhờ MatchFirebaseDAO tạo trận.<br>- startGame tạo ProblemDAO(new Random(questionSeed)) và GameSession chế độ online, đăng ký onDisconnect, bật đồng hồ.<br>- submitAnswer chấm bằng MathProblem.isCorrect + GameSession, đúng thì ghi điểm lên Firebase.<br>- Hết giờ thì ghi timeUp. Khi Match.isOver() đúng thì finishMatch gọi backend trong Thread (cờ finishing đảm bảo chỉ gọi một lần) |
 | Control | SessionDAO | getPlayer() đọc playerId, displayName từ SharedPreferences "session" và đóng gói thành Player (lớp chung) |
-| Control | FirebaseDAO ← MatchFirebaseDAO | FirebaseDAO giữ con (gốc Realtime Database) và auth. MatchFirebaseDAO đọc / ghi node matches/{roomCode}:<br>- createMatch dùng transaction; mã đã có trận chưa finished thì báo trùng.<br>- joinMatch dùng transaction và gọi Match.canJoin bên trong.<br>- watchMatch / stopWatching thêm / gỡ ValueEventListener.<br>- updateScore, setTimeUp, forfeit ghi node của chính mình.<br>- registerDisconnect đặt onDisconnect ghi connected = false, forfeited = true.<br>- toMatch đóng gói dữ liệu node thành Match + 2 MatchPlayer |
+| Control | FirebaseDAO ← MatchFirebaseDAO | FirebaseDAO giữ con (gốc Realtime Database). MatchFirebaseDAO đọc / ghi node matches/{roomCode}:<br>- createMatch dùng transaction; mã đã có trận chưa finished thì báo trùng.<br>- joinMatch dùng transaction và gọi Match.canJoin bên trong.<br>- watchMatch / stopWatching thêm / gỡ ValueEventListener.<br>- updateScore, setTimeUp, forfeit ghi node của chính mình.<br>- registerDisconnect đặt onDisconnect ghi connected = false, forfeited = true.<br>- toMatch đóng gói dữ liệu node thành Match + 2 MatchPlayer |
 | — | MatchCallback | Interface trả kết quả bất đồng bộ của MatchFirebaseDAO (onSuccess(Match), onFail(String)) |
 | Control | ApiDAO ← MatchApiDAO | ApiDAO giữ BASE_URL, token và 2 hàm gửi / nhận JSON bằng HttpURLConnection. MatchApiDAO.finishMatch gửi POST /api/matches/{roomCode}/finish, đóng gói JSON trả về thành Match bằng toMatch. Hàm chạy đồng bộ nên phải gọi trong Thread |
 | Control | ProblemDAO | Sinh câu hỏi theo mức (bảng ở M1-07). Mọi số ngẫu nhiên đi qua random, nên 2 máy cùng questionSeed sinh ra cùng dãy câu |
@@ -126,7 +126,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 |---|---|---|
 | Boundary | MatchRestController | finish(roomCode) nhận POST /api/matches/{roomCode}/finish:<br>1. Đọc trận từ Firebase bằng FirebaseAdminDAO.readMatch.<br>2. Nếu trận đã finished thì trả lại bản đã lưu (MatchDAO.findByRoomCode).<br>3. Nếu Match.isOver() sai thì trả 409 "Trận chưa kết thúc".<br>4. Ngược lại: ghi endedAt, MatchDAO.insert, FirebaseAdminDAO.updateStatus(..., "finished"), trả Match |
 | Control | DAO ← MatchDAO | DAO giữ conn : Connection (JDBC).<br>- insert ghi 1 dòng tblMatch + 2 dòng tblMatchPlayer trong một transaction, gán id vừa sinh vào match.<br>- findByRoomCode tìm theo khóa duy nhất (roomCode, createdAt) |
-| Control | FirebaseAdminDAO | Dùng Firebase Admin SDK (quyền server, không bị Security Rules chặn).<br>- readMatch đọc node matches/{roomCode} và đóng gói thành Match.<br>- updateStatus ghi trạng thái. |
+| Control | FirebaseAdminDAO | Giữ dbUrl (địa chỉ Realtime Database), gọi REST API của Firebase.<br>- readMatch gửi GET matches/{roomCode}.json và đóng gói thành Match.<br>- updateStatus gửi PUT matches/{roomCode}/status.json. |
 | Entity | Match, MatchPlayer, Player | Cùng tên, cùng thuộc tính với phía app, để Jackson chuyển JSON thẳng vào đối tượng. Player ở server có thêm passwordHash, không bao giờ trả ra JSON |
 
 **Quan hệ giữa các lớp giao diện:**

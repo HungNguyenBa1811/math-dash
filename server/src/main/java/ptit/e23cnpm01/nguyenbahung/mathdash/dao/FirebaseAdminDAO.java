@@ -1,104 +1,97 @@
 package ptit.e23cnpm01.nguyenbahung.mathdash.dao;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Date;
-import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.Iterator;
+import java.util.Map;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 /**
- * Đọc / ghi trận đang diễn ra trên Firebase bằng Admin SDK (quyền server, không bị Security Rules chặn).
+ * Đọc / ghi trận đang diễn ra trên Firebase qua REST API của Realtime Database.
  * Không dùng JDBC nên không kế thừa DAO.
  */
 public class FirebaseAdminDAO {
-    private FirebaseDatabase db;
+    private String dbUrl;
+    private HttpClient client = HttpClient.newHttpClient();
+    private ObjectMapper mapper = new ObjectMapper();
 
     public FirebaseAdminDAO() {
-        if (FirebaseApp.getApps().isEmpty()) {
-            FirebaseApp.initializeApp(loadOptions());
+        dbUrl = DAO.loadConfig().getProperty("firebase.databaseUrl");
+    }
+
+    // GET matches/{roomCode}.json và đóng gói thành Match; không có trận thì trả null
+    public Match readMatch(String roomCode) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(nodeUri(roomCode, "")).GET().build();
+        JsonNode node = mapper.readTree(send(request));
+        return node.isNull() ? null : toMatch(roomCode, node);
+    }
+
+    // PUT matches/{roomCode}/status.json
+    public void updateStatus(String roomCode, String status) throws IOException, InterruptedException {
+        String body = mapper.writeValueAsString(status);
+        HttpRequest request = HttpRequest.newBuilder(nodeUri(roomCode, "/status"))
+                .PUT(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        send(request);
+    }
+
+    private String send(HttpRequest request) throws IOException, InterruptedException {
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new IOException("Firebase trả lỗi " + response.statusCode() + ": " + response.body());
         }
-        db = FirebaseDatabase.getInstance();
+        return response.body();
     }
 
-    // Tạo custom token để app đăng nhập Firebase, khi đó auth.uid = playerId
-    public String createCustomToken(int playerId) throws FirebaseAuthException {
-        return FirebaseAuth.getInstance().createCustomToken(String.valueOf(playerId));
+    private URI nodeUri(String roomCode, String child) {
+        return URI.create(dbUrl + "/matches/" + roomCode + child + ".json");
     }
 
-    // Đọc node matches/{roomCode} và đóng gói thành Match; không có trận thì trả null
-    public Match readMatch(String roomCode) throws InterruptedException, ExecutionException {
-        final CompletableFuture<DataSnapshot> result = new CompletableFuture<>();
-        db.getReference("matches/" + roomCode).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                result.complete(snapshot);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                result.completeExceptionally(error.toException());
-            }
-        });
-        DataSnapshot snapshot = result.get();
-        return snapshot.exists() ? toMatch(roomCode, snapshot) : null;
-    }
-
-    // Ghi trạng thái trận, chờ Firebase xác nhận
-    public void updateStatus(String roomCode, String status) throws InterruptedException, ExecutionException {
-        db.getReference("matches/" + roomCode + "/status").setValueAsync(status).get();
-    }
-
-    private Match toMatch(String roomCode, DataSnapshot snapshot) {
+    private Match toMatch(String roomCode, JsonNode node) {
         Match match = new Match();
         match.setRoomCode(roomCode);
-        match.setStatus(snapshot.child("status").getValue(String.class));
-        match.setQuestionSeed(snapshot.child("questionSeed").getValue(Long.class));
-        match.setCreatedAt(new Date(snapshot.child("createdAt").getValue(Long.class)));
-        for (DataSnapshot child : snapshot.child("players").getChildren()) {
-            match.getPlayers().add(toMatchPlayer(child));
-        }
+        match.setStatus(node.path("status").asText());
+        match.setQuestionSeed(node.path("questionSeed").asLong());
+        match.setCreatedAt(new Date(node.path("createdAt").asLong()));
+        addPlayers(match, node.path("players"));
         return match;
     }
 
-    private MatchPlayer toMatchPlayer(DataSnapshot child) {
-        Player player = new Player();
-        player.setId(Integer.parseInt(child.getKey()));
-        player.setDisplayName(child.child("displayName").getValue(String.class));
-        MatchPlayer mp = new MatchPlayer(player);
-        mp.setScore(child.child("score").getValue(Integer.class));
-        mp.setForfeited(Boolean.TRUE.equals(child.child("forfeited").getValue(Boolean.class)));
-        mp.setTimeUp(Boolean.TRUE.equals(child.child("timeUp").getValue(Boolean.class)));
-        return mp;
+    // Firebase đổi node có khóa là số (id người chơi) thành mảng, nên đọc được cả 2 dạng
+    private void addPlayers(Match match, JsonNode players) {
+        if (players.isArray()) {
+            for (int id = 0; id < players.size(); id++) {
+                if (!players.get(id).isNull()) {
+                    match.getPlayers().add(toMatchPlayer(id, players.get(id)));
+                }
+            }
+            return;
+        }
+        Iterator<Map.Entry<String, JsonNode>> fields = players.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> field = fields.next();
+            match.getPlayers().add(toMatchPlayer(Integer.parseInt(field.getKey()), field.getValue()));
+        }
     }
 
-    // Service account để ở resources (không commit), địa chỉ database ở application-local.properties
-    private FirebaseOptions loadOptions() {
-        Properties config = DAO.loadConfig();
-        try (InputStream serviceAccount = FirebaseAdminDAO.class.getResourceAsStream(config.getProperty("firebase.credentials"))) {
-            if (serviceAccount == null) {
-                throw new IllegalStateException("Thiếu file " + config.getProperty("firebase.credentials"));
-            }
-            return FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl(config.getProperty("firebase.databaseUrl"))
-                    .build();
-        } catch (IOException e) {
-            throw new IllegalStateException("Không đọc được service account Firebase", e);
-        }
+    private MatchPlayer toMatchPlayer(int playerId, JsonNode node) {
+        Player player = new Player();
+        player.setId(playerId);
+        player.setDisplayName(node.path("displayName").asText());
+        MatchPlayer mp = new MatchPlayer(player);
+        mp.setScore(node.path("score").asInt());
+        mp.setForfeited(node.path("forfeited").asBoolean());
+        mp.setTimeUp(node.path("timeUp").asBoolean());
+        return mp;
     }
 }

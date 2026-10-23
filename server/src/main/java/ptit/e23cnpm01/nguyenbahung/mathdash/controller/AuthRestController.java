@@ -1,7 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.mathdash.controller;
 
-import com.google.firebase.auth.FirebaseAuthException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,32 +9,46 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-import ptit.e23cnpm01.nguyenbahung.mathdash.dao.FirebaseAdminDAO;
+import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import ptit.e23cnpm01.nguyenbahung.mathdash.dao.DAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 /**
- * API tài khoản: đăng ký, đăng nhập.
+ * API tài khoản: đăng ký, đăng nhập. Mật khẩu băm BCrypt, token đăng nhập là JWT.
  */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthRestController {
-    // Token đăng nhập giữ trong bộ nhớ server: token -> playerId
-    private static final Map<String, Integer> TOKENS = new ConcurrentHashMap<>();
+    private static final long TOKEN_MILLIS = 24L * 60 * 60 * 1000;
+    // Khóa ký JWT lấy từ jwt.secret trong cấu hình
+    private static final SecretKey KEY = Keys.hmacShaKeyFor(
+            DAO.loadConfig().getProperty("jwt.secret").getBytes(StandardCharsets.UTF_8));
 
     private PlayerDAO playerDAO = new PlayerDAO();
-    private FirebaseAdminDAO firebaseAdminDAO = new FirebaseAdminDAO();
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    // Token có do server cấp không
+    // Token hợp lệ: đúng chữ ký của server và chưa hết hạn
     public static boolean isValidToken(String token) {
-        return token != null && TOKENS.containsKey(token);
+        if (token == null) {
+            return false;
+        }
+        try {
+            Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     // POST /api/auth/register: 201, hoặc 409 nếu trùng tên đăng nhập
@@ -50,19 +62,27 @@ public class AuthRestController {
         }
     }
 
-    // POST /api/auth/login: { player, token, firebaseToken }, hoặc 401
+    // POST /api/auth/login: { player, token }, hoặc 401
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) throws SQLException, FirebaseAuthException {
+    public Map<String, Object> login(@RequestBody Map<String, String> body) throws SQLException {
         Player player = playerDAO.findByUsername(body.get("username"));
         if (player == null || !encoder.matches(body.get("password"), player.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai tên đăng nhập hoặc mật khẩu");
         }
-        String token = UUID.randomUUID().toString();
-        TOKENS.put(token, player.getId());
         Map<String, Object> result = new HashMap<>();
         result.put("player", player);
-        result.put("token", token);
-        result.put("firebaseToken", firebaseAdminDAO.createCustomToken(player.getId()));
+        result.put("token", createToken(player));
         return result;
+    }
+
+    // JWT mang id người chơi, hết hạn sau 24 giờ
+    private String createToken(Player player) {
+        Date now = new Date();
+        return Jwts.builder()
+                .subject(String.valueOf(player.getId()))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + TOKEN_MILLIS))
+                .signWith(KEY)
+                .compact();
     }
 }

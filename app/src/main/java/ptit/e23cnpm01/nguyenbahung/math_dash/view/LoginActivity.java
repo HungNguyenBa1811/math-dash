@@ -9,11 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ApiDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.FirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
@@ -63,15 +64,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login(username, password);
     }
 
-    // Gọi server trong Thread: kiểm tra tài khoản, đăng nhập Firebase, ghi nhớ phiên, lưu bản sao người chơi
+    // Gọi server trong Thread: kiểm tra tài khoản, ghi nhớ phiên, lưu bản sao người chơi
     private void login(final String username, final String password) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    PlayerApiDAO playerApiDAO = new PlayerApiDAO();
-                    Player player = playerApiDAO.login(username, password);
-                    FirebaseDAO.signIn(playerApiDAO.getFirebaseToken());
+                    Player player = new PlayerApiDAO().login(username, password);
                     sessionDAO.save(ApiDAO.getToken(), player);
                     new PlayerDAO(LoginActivity.this).saveOrUpdate(player);
                     runOnUiThread(new Runnable() {
@@ -82,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
                 } catch (IOException e) {
                     showError(e.getMessage());
-                } catch (Exception e) {
+                } catch (JSONException e) {
                     showError("Đăng nhập thất bại, hãy thử lại");
                 }
             }

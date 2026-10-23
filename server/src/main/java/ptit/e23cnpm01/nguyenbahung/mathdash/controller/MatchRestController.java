@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.FirebaseAdminDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.MatchDAO;
@@ -31,7 +31,7 @@ public class MatchRestController {
     // synchronized: 2 máy gọi cùng lúc thì máy gọi sau nhận lại đúng bản đã lưu
     @PostMapping("/{roomCode}/finish")
     public synchronized Match finish(@PathVariable String roomCode)
-            throws SQLException, InterruptedException, ExecutionException {
+            throws SQLException, IOException, InterruptedException {
         Match match = firebaseAdminDAO.readMatch(roomCode);
         if (match == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy trận");

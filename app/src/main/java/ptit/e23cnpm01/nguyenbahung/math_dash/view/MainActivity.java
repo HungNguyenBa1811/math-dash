@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ApiDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.FirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
@@ -61,11 +60,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    // Đăng xuất: xóa phiên, thoát Firebase, quay về màn Đăng nhập
+    // Đăng xuất: xóa phiên, quay về màn Đăng nhập
     private void logout() {
         sessionDAO.clear();
         ApiDAO.setToken(null);
-        FirebaseDAO.signOut();
         startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
