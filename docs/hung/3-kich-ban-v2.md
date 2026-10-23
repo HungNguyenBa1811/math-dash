@@ -7,7 +7,7 @@
 Quy ước:
 - Kịch bản v2 viết lại kịch bản chuẩn v1. **Mỗi bước là đúng một thông điệp** giữa Người chơi, lớp View và lớp thực thể.
 - Biểu đồ tuần tự chỉ có 3 loại đối tượng: tác nhân, View (biên), thực thể. Số thứ tự trên mũi tên **trùng với số bước** của kịch bản.
-- Ngoại lệ chính vẽ trong khung `alt`, đánh số theo bước rẽ nhánh (`9a.1`, `9a.2`…).
+- Ngoại lệ viết ngay dưới kịch bản chuẩn, đánh số theo bước rẽ nhánh (`9a.1`, `9a.2`…). Biểu đồ tuần tự **chỉ vẽ kịch bản chuẩn**, không vẽ ngoại lệ.
 - Mọi phương thức trên biểu đồ đều có ở biểu đồ lớp phân tích (Hình 6, Hình 7).
 - Chức năng "Chơi online" chia 3 đoạn như kịch bản v1: A. Tạo phòng, B. Tìm phòng, C. Thi đấu. Mỗi đoạn một biểu đồ và đánh số lại từ 1.
 
@@ -42,9 +42,9 @@ Quy ước:
 
 *Hình 8: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn A: Tạo phòng.*
 
-- Biểu đồ có 12 thông điệp chính, khớp với 12 bước ở trên.
+- Biểu đồ có 12 thông điệp, khớp với 12 bước của kịch bản chuẩn.
 - `watchMatch()` (bước 9) là lời đăng ký theo dõi: kết quả không trả về ngay mà trả về ở bước 10, khi trận thay đổi.
-- Trong lúc chờ, Hùng có thể nhấn Hủy. Khung `alt` thể hiện 2 khả năng loại trừ nhau: Hùng hủy phòng, hoặc Hoàng vào phòng.
+- Bước 10 xảy ra khi Hoàng vào phòng ở đoạn B, nên giữa bước 9 và bước 10 có thể là một khoảng chờ.
 
 ### 1.2. Đoạn B: Tìm phòng (Hoàng, máy 2)
 
@@ -59,18 +59,17 @@ Quy ước:
 9. `LobbyView` hiển thị cho Hoàng "Trận đấu bắt đầu!" và đối thủ HUNG.
 10. `LobbyView` gọi `OnlineGameView` (sang đoạn C, diễn ra trên máy 2 giống máy 1).
 
-**Ngoại lệ 7a: không có phòng `482915`, hoặc `canJoin()` sai (phòng đã đủ người, trận đã bắt đầu).**
+**Ngoại lệ 7a: không có phòng `482915`, hoặc phòng không cho vào (đã đủ người, trận đã bắt đầu).**
 
 - 7a.1. Lớp `Match` trả về cho `OnlineView`: không vào được.
-- 7a.2. `OnlineView` hiển thị cho Hoàng thông báo "Không tìm thấy phòng" hoặc "Phòng đã đầy".
+- 7a.2. `OnlineView` hiển thị cho Hoàng thông báo không vào được phòng (không tìm thấy phòng, hoặc phòng đã đầy).
 
 ![Hình 9: Tuần tự pha phân tích Chơi online – Tìm phòng](tuan-tu-phan-tich-uc05b.png)
 
 *Hình 9: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn B: Tìm phòng.*
 
-- Biểu đồ có 10 thông điệp chính.
+- Biểu đồ có 10 thông điệp, khớp với kịch bản chuẩn.
 - Luật vào phòng nằm trong lớp thực thể `Match` (bước 6, thông điệp gọi chính nó), không nằm ở giao diện.
-- Ngoại lệ "Mã phòng gồm 6 chữ số" xảy ra ngay trên `OnlineView` trước bước 5, không gọi thực thể nào nên không vẽ.
 
 ### 1.3. Đoạn C: Thi đấu (Hùng, máy 1)
 
@@ -103,7 +102,7 @@ Quy ước:
 
 **Ngoại lệ 5a: Hùng thoát trận.**
 
-- 5a.1. Hùng nhấn Back, hộp thoại "Thoát sẽ bị xử thua?" hiện lên, Hùng chọn Thoát.
+- 5a.1. Hùng bấm quay lại. `OnlineGameView` hỏi Hùng có chắc muốn thoát không, vì thoát sẽ bị xử thua; Hùng chọn Thoát.
 - 5a.2. `OnlineGameView` gọi phương thức `forfeit()` của lớp `MatchPlayer`.
 - 5a.3. Lớp `MatchPlayer` ghi HUNG đã bỏ trận, rồi trả về cho `OnlineGameView`.
 - 5a.4. `OnlineGameView` gọi phương thức `finishMatch()` của lớp `Match`.
@@ -114,16 +113,14 @@ Quy ước:
 **Ngoại lệ 13a: đối thủ bỏ trận.**
 
 - 13a.1. Lớp `Match` trả về cho `OnlineGameView` trận mới, trong đó HOANG đã bỏ trận.
-- 13a.2. `OnlineGameView` hiển thị cho Hùng "Đối thủ đã thoát" rồi đi tiếp từ bước 16. Ở bước 19, `getResult()` trả về `WIN` dù điểm của Hùng thấp hơn.
+- 13a.2. `OnlineGameView` hiển thị cho Hùng thông báo đối thủ đã thoát, rồi đi tiếp từ bước 16. Ở bước 19, Hùng được tính thắng dù điểm thấp hơn.
 
 ![Hình 10: Tuần tự pha phân tích Chơi online – Thi đấu](tuan-tu-phan-tich-uc05c.png)
 
 *Hình 10: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn C: Thi đấu.*
 
-- Biểu đồ có 24 thông điệp chính.
-- Khung `loop` bao các bước 5–14, lặp đến khi hết 60 giây. Trong vòng lặp có 2 khung `alt`:
-  - Hùng chọn đáp án, hoặc thoát trận.
-  - Đối thủ ghi điểm, hoặc đối thủ bỏ trận.
+- Biểu đồ có 24 thông điệp, khớp với kịch bản chuẩn.
+- Khung `loop` bao các bước 5–14, lặp đến khi hết 60 giây.
 - Chấm điểm thuộc `GameSession` (bước 6–7). Thắng thua thuộc `Match` (bước 18–19). Giao diện chỉ hiển thị.
 - Hai máy chạy giống nhau; biểu đồ vẽ từ phía máy 1.
 
@@ -145,12 +142,12 @@ Quy ước:
 **Ngoại lệ 4a: Hùng chưa đấu trận nào.**
 
 - 4a.1. Lớp `Match` trả về danh sách rỗng cho `HistoryView`.
-- 4a.2. `HistoryView` hiển thị cho Hùng "Chưa có trận nào". Kịch bản đi tiếp từ bước 8.
+- 4a.2. `HistoryView` hiển thị cho Hùng thông báo chưa có trận nào. Kịch bản đi tiếp từ bước 8.
 
 ![Hình 11: Tuần tự pha phân tích Xem lịch sử đấu](tuan-tu-phan-tich-uc06.png)
 
 *Hình 11: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu.*
 
-- Biểu đồ có 10 thông điệp chính.
+- Biểu đồ có 10 thông điệp, khớp với kịch bản chuẩn.
 - Bước 5–6 nằm trong khung `loop`, vì mỗi dòng của danh sách cần một kết quả.
 - Kết quả không được lưu sẵn mà tính lại bằng `getResult()` (thuộc tính dẫn xuất D9).

@@ -36,18 +36,12 @@ MRC --> MAD : 200 OK, List<Match> (JSON)
 MAD -> M : toMatch(json): new Match(...) (mỗi phần tử)
 M --> MAD : Match
 MAD --> HA : List<Match>
-alt danh sách có trận
-  HA -> AD : runOnUiThread: new HistoryAdapter(list, 1)
-  loop mỗi dòng
-    AD -> M : onBindViewHolder(): getResult(1)
-    M --> AD : "WIN" / "DRAW" / "LOSE"
-  end
-  HA --> U : hiển thị 4 trận: thời gian, đối thủ, tỉ số, kết quả có màu
-else danh sách rỗng
-  autonumber stop
-  HA --> U : 19a.1. runOnUiThread: ẩn rvHistory, hiển thị txtEmpty "Chưa có trận nào"
-  autonumber resume
+HA -> AD : runOnUiThread: new HistoryAdapter(list, 1)
+loop mỗi dòng
+  AD -> M : onBindViewHolder(): getResult(1)
+  M --> AD : "WIN" / "DRAW" / "LOSE"
 end
+HA --> U : hiển thị 4 trận: thời gian, đối thủ, tỉ số, kết quả có màu
 U -> HA : nhấn Back
 HA -> MA : finish()
 MA --> U : hiển thị

@@ -336,6 +336,10 @@ Thuộc tính dẫn xuất được viết thành **phương thức nghiệp v�
 - **DAO cha giữ kết nối, DAO con kế thừa:**
   - App: `FirebaseDAO` ← `MatchFirebaseDAO`; `ApiDAO` ← `MatchApiDAO`.
   - Server: `DAO` (`conn : Connection`) ← `MatchDAO`.
+- **Quan hệ của lớp giao diện (app):**
+  - Boundary nối boundary bằng liên kết (association).
+  - Mỗi Activity nối với một lớp layout rỗng cùng tên file (`activity_main.xml`…).
+  - Activity giữ thực thể làm thuộc tính thì nối bằng kết tập, hình thoi ở phía Activity (như Hóa đơn chứa thông tin Khách hàng).
 - **Biểu đồ lớp có 2 package** "Client (Android)" và "Server (Spring Boot)", nối nhau bằng **một** mũi tên `HTTP/JSON` từ `MatchApiDAO` tới `MatchRestController`. Server không có tầng Service.
 
 | Phương thức pha phân tích | Phương thức pha thiết kế | Lớp |
@@ -396,6 +400,7 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
 *Hình 5: Biểu đồ lớp chi tiết chức năng Chơi online (client + server).*
 
 **Client (Android):**
+- 4 Activity nối nhau bằng liên kết, mỗi Activity nối với layout của nó. `OnlineActivity`, `OnlineGameActivity` giữ `me : Player` nên có kết tập với `Player`, hình thoi ở phía Activity.
 - `OnlineActivity`, `LobbyActivity` cài đặt `RoomListener`; `OnlineGameActivity` cài đặt `GameListener`. Activity chỉ gọi `MatchController` và hiển thị, không gọi Firebase hay REST trực tiếp, không tự chấm điểm hay phân thắng thua.
 - `MatchController` (Singleton) điều phối cả trận, giữ `match`, `session`, `me`, `timer`.
   - `createRoom` sinh mã phòng và `questionSeed`.
@@ -430,7 +435,6 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 4. `runTransaction` ghi node; `onComplete` báo về `onSuccess`, rồi `onRoomReady` mở `LobbyActivity` (bước 13–16).
 5. `LobbyActivity` gọi `waitForOpponent` → `watchMatch` (bước 17–18).
 6. Khi Hoàng vào, `onDataChange` → `toMatch` → `onSuccess` → `onRoomReady`. Lobby hiện đối thủ và mở `OnlineGameActivity` (bước 20–26).
-7. Ngoại lệ 19a: Hủy phòng → `cancelRoom` → `stopWatching`, `deleteMatch`.
 
 ![Hình 6](tuan-tu-thiet-ke-uc05a.png)
 
@@ -439,8 +443,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 **Đoạn B: Tìm phòng (23 bước).**
 1. Hoàng nhập mã. `onClick` gọi `findRoom` → `MatchFirebaseDAO.joinMatch` (bước 9–10).
 2. Trong `doTransaction`, `toMatch` đóng gói trận hiện tại, rồi gọi `Match.canJoin(2)` (bước 11–15).
-3. Nếu đúng thì ghi `players/2` và `status = "playing"`. `onComplete` → `onSuccess` → `onRoomReady` → `LobbyActivity` → `OnlineGameActivity` (bước 16–23).
-4. Ngoại lệ 15a: `canJoin` sai hoặc không có phòng → `Transaction.abort()` → `onFail` → `onError` → `Toast`.
+3. `canJoin` đúng nên ghi `players/2` và `status = "playing"`. `onComplete` → `onSuccess` → `onRoomReady` → `LobbyActivity` → `OnlineGameActivity` (bước 16–23).
 
 ![Hình 7](tuan-tu-thiet-ke-uc05b.png)
 
@@ -456,10 +459,6 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 4. Khi máy kia cũng hết giờ, `isOver()` đúng → `finishMatch` trong `Thread` → `MatchApiDAO.finishMatch` → **`POST /api/matches/482915/finish`** (bước 47–55).
 5. Server: `readMatch` → `isOver()` → `insert` (1 transaction) → `updateStatus("finished")` → trả `Match` (bước 56–66).
 6. App: `toMatch(json)` → `stopWatching` → `onMatchEnd` → `getResult(1)` = `WIN` → overlay THẮNG! (bước 67–74).
-7. Ngoại lệ:
-   - 18a: thoát trận → `leaveMatch` → `forfeit` → `finishMatch`.
-   - 40a: đối thủ bỏ trận → `isOver()` đúng ngay → kết thúc trận.
-   - 60a: máy kia đã gọi trước → `findByRoomCode` trả bản đã lưu, nên 2 máy cùng một kết quả và MySQL chỉ có một dòng `tblMatch`.
 
 ![Hình 8](tuan-tu-thiet-ke-uc05c.png)
 
@@ -494,6 +493,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 *Hình 10: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu (client + server).*
 
 **Client (Android):**
+- `MainActivity` – `HistoryActivity` – `HistoryAdapter` – `HistoryViewHolder` nối nhau bằng liên kết; layout `activity_main.xml`, `activity_history.xml`, `item_history.xml`. `HistoryAdapter` giữ danh sách `Match` nên có kết tập với `Match`, hình thoi ở phía `HistoryAdapter`.
 - `HistoryActivity.onCreate` lấy người chơi bằng `SessionDAO`.
 - `loadHistory(playerId)` gọi `MatchApiDAO.getHistory` trong `Thread`, rồi gắn `HistoryAdapter` trong `runOnUiThread`.
 - `HistoryAdapter` giữ danh sách `Match` và `playerId`. `onBindViewHolder` gọi `Match.getResult(playerId)` để chọn chữ và màu.
@@ -511,9 +511,6 @@ Kịch bản v3 đầy đủ ở `docs/hung/5-kich-ban-v3.md`, mục 2 (25 bư�
 4. `toMatch(json)` đóng gói `Match` phía app → trả `List<Match>` (bước 16–18).
 5. Trong `runOnUiThread`, tạo `HistoryAdapter`. Mỗi dòng gọi `getResult(1)` để chọn chữ và màu, rồi hiển thị danh sách (bước 19–22).
 6. Back → `finish()` → màn Chính (bước 23–25).
-7. Ngoại lệ:
-   - 19a: danh sách rỗng → "Chưa có trận nào".
-   - 9a: mất mạng → `Toast` báo lỗi.
 
 ![Hình 11](tuan-tu-thiet-ke-uc06.png)
 

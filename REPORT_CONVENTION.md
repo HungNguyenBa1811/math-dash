@@ -135,7 +135,7 @@ Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
    4. Gán cho lớp nào?
       - Đầu ra là lớp thực thể nào thì gán vào lớp đó.
       - Nếu không, xét đầu vào: chỉ thuộc một lớp thực thể thì gán vào lớp đó; thuộc nhiều lớp thì gán vào lớp chứa được tất cả đầu vào.
-4. **Vẽ biểu đồ lớp** cho chức năng.
+4. **Vẽ biểu đồ lớp** cho chức năng. Hai lớp View nối nhau bằng **liên kết (association)**.
 
 ### A4. Thiết kế động phân tích: kịch bản v2 + tuần tự
 
@@ -144,8 +144,8 @@ Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
   > 8. `MathProblem` trả về câu hỏi cho `GameView`.
 - **Biểu đồ tuần tự:**
   - Chỉ có 3 loại đối tượng: **tác nhân – View – thực thể**.
-  - Số thông điệp và thứ tự **giống hệt** kịch bản v2.
-- **Ngoại lệ quan trọng nhất** vẽ bằng khung `alt`.
+  - Số thông điệp và thứ tự **giống hệt** kịch bản chuẩn của v2.
+- Kịch bản v2 **vẫn viết ngoại lệ** (đánh số theo bước rẽ nhánh, ví dụ `9a.1`). Ngoại lệ mô tả ở mức chung ("hiển thị thông báo không tìm thấy phòng"), không ghi chi tiết kỹ thuật như `Toast`, `AlertDialog`. Biểu đồ tuần tự **chỉ vẽ kịch bản chuẩn**, không vẽ khung `alt`.
 
 ### D1. Thiết kế lớp thực thể (mục 3 của báo cáo)
 
@@ -202,6 +202,11 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `OnlineGameActivity`), layout tương ứng `activity_main.xml`, `activity_online_game.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 
+**Quan hệ của lớp giao diện (phần app):**
+- Boundary nối boundary bằng **liên kết (association)**: Activity – Activity, Activity – Adapter, Adapter – ViewHolder.
+- **Mỗi Activity nối với một lớp layout** đặt tên đúng tên file, ví dụ `activity_main.xml`. Lớp này để **rỗng**.
+- Activity **giữ thực thể làm thuộc tính** (ví dụ `me : Player`) thì nối bằng **kết tập (aggregation)**, hình thoi ở phía Activity: `Player --<> OnlineGameActivity`. Cách đọc giống `KhachHang --<> HoaDon`: hóa đơn chứa thông tin khách hàng nên hình thoi ở phía hóa đơn.
+
 **Quy tắc DAO:** mỗi nơi lưu trữ có một lớp cha giữ kết nối dùng chung, các DAO con kế thừa.
 - App, SQLite: `DAO` (giữ `SQLiteDatabase con`) ← `PlayerDAO`, `GameRecordDAO`.
 - App, REST: `ApiDAO` (giữ địa chỉ server và token) ← `PlayerApiDAO`, `MatchApiDAO`.
@@ -242,7 +247,7 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 **Biểu đồ tuần tự chi tiết:**
 - Đủ boundary – control – entity.
 - Đánh số **khớp 1-1** với kịch bản v3.
-- Ngoại lệ chính vẽ bằng khung `alt`.
+- Kịch bản v3 và biểu đồ **chỉ gồm kịch bản chuẩn**, không có ngoại lệ.
 
 **Quy ước riêng:**
 - **REST:** mỗi lời gọi API là **một thông điệp** từ `XxxApiDAO` tới `XxxRestController`, ghi phương thức và đường dẫn (ví dụ `POST /api/matches/{code}/finish`). Kết quả trả về là một thông điệp ngược lại, ghi kiểu dữ liệu (ví dụ `Match`). Phía server tiếp tục như bài mẫu: Controller gọi DAO → DAO đóng gói Entity → trả về.

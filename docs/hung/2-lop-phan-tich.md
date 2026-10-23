@@ -14,7 +14,7 @@ Mỗi chức năng làm theo 4 bước:
 3. Mỗi xử lý hệ thống phải làm, trả lời 4 câu hỏi: tên phương thức, đầu vào, đầu ra, gán cho lớp thực thể nào.
    - Đầu ra là lớp thực thể nào thì gán vào lớp đó.
    - Nếu không, xét đầu vào: gán vào lớp nhỏ nhất chứa được nhiều đầu vào nhất.
-4. Vẽ biểu đồ lớp gồm các lớp View và lớp thực thể liên quan. Quan hệ giữa các lớp thực thể giữ đúng như Hình 2.
+4. Vẽ biểu đồ lớp gồm các lớp View và lớp thực thể liên quan. Hai lớp View nối nhau bằng quan hệ liên kết (association). Quan hệ giữa các lớp thực thể giữ đúng như Hình 2.
 
 Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activity, REST.
 
@@ -58,7 +58,7 @@ Không đề xuất lớp View cho:
 
 *Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online (UC05).*
 
-- **5 lớp View** nối nhau theo luồng màn hình: `MainView` → `OnlineView` → `LobbyView` → `OnlineGameView` → `MatchResultView` → quay về `MainView`.
+- **5 lớp View** nối nhau bằng quan hệ liên kết (association, đường thẳng không mũi tên) theo luồng màn hình: `MainView` – `OnlineView` – `LobbyView` – `OnlineGameView` – `MatchResultView` – quay về `MainView`.
 - **Mũi tên nét đứt** từ View tới lớp thực thể cho biết View đó gọi phương thức nào. `OnlineGameView` dùng nhiều thực thể nhất:
   - `MathProblem`: sinh câu hỏi.
   - `GameSession`: chấm điểm.
@@ -96,7 +96,7 @@ Danh sách chỉ để xem, bấm vào một dòng không làm gì. Vì vậy th
 
 *Hình 7: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu (UC06).*
 
-- Chức năng chỉ có 2 lớp View:
+- Chức năng chỉ có 2 lớp View, nối nhau bằng quan hệ liên kết (association):
   - `MainView` giữ người chơi đang đăng nhập.
   - `HistoryView` gọi `getHistory()` và `getResult()` của `Match`.
 - Tên đối thủ và tỉ số có sẵn trong 2 `MatchPlayer` của mỗi trận (lớp liên kết giữa `Player` và `Match`), nên không cần thêm phương thức nào khác.

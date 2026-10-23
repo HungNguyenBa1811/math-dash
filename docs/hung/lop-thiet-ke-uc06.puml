@@ -32,6 +32,9 @@ package "Client (Android)" {
     - txtResult : TextView
     + HistoryViewHolder(itemView : View)
   }
+  class "activity_main.xml" as xmlMain
+  class "activity_history.xml" as xmlHistory
+  class "item_history.xml" as xmlItemHistory
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
     + SessionDAO(context : Context)
@@ -108,13 +111,16 @@ package "Server (Spring Boot)" {
   }
 }
 
-MainActivity --> HistoryActivity
+MainActivity -- HistoryActivity
+MainActivity -- xmlMain
+HistoryActivity -- xmlHistory
 MainActivity --> SessionDAO
 HistoryActivity --> SessionDAO
 HistoryActivity --> MatchApiDAO
-HistoryActivity *-- HistoryAdapter
-HistoryAdapter *-- HistoryViewHolder
-HistoryAdapter ..> Match
+HistoryActivity -- HistoryAdapter
+HistoryAdapter -- HistoryViewHolder
+HistoryViewHolder -- xmlItemHistory
+HistoryAdapter o-- "n" Match
 MatchApiDAO --|> ApiDAO
 MatchApiDAO ..> Match
 SessionDAO ..> Player

@@ -85,6 +85,14 @@ Chức năng có gọi server được vẽ thành 2 package trên cùng một b
 
 Lớp của framework (`CountDownTimer`, `DatabaseReference`, `Connection`…) chỉ xuất hiện làm kiểu của thuộc tính.
 
+### 0.6. Quan hệ của lớp giao diện (phần app)
+
+- **Boundary – boundary** nối bằng quan hệ liên kết (association), đường thẳng không mũi tên. Ví dụ `MainActivity` – `OnlineActivity`, `HistoryActivity` – `HistoryAdapter`.
+- **Mỗi Activity nối với một lớp layout** cùng tên file, ví dụ `MainActivity` – `activity_main.xml`. Lớp layout để rỗng, không ghi thuộc tính hay phương thức; các thành phần của nó đã liệt kê ở bảng thành phần (mục x.1). `HistoryViewHolder` cũng nối với `item_history.xml`, vì mỗi dòng của danh sách dùng layout này.
+- **Activity giữ thực thể làm thuộc tính** thì nối bằng kết tập (aggregation), **hình thoi đặt ở phía Activity** vì Activity chứa thông tin của thực thể. Cách đọc giống cặp Khách hàng – Hóa đơn: hóa đơn chứa thông tin khách hàng nên vẽ `KhachHang --<> HoaDon`.
+  - `OnlineActivity`, `OnlineGameActivity` giữ `me : Player` → `Player --<> OnlineActivity`, `Player --<> OnlineGameActivity`.
+  - `HistoryAdapter` giữ `listMatch : List<Match>` → `Match --<> HistoryAdapter`, phía `Match` là n.
+
 ---
 
 ## 1. Chức năng "Chơi online" (UC05)
@@ -166,6 +174,10 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 | Control | `FirebaseAdminDAO` | Dùng Firebase Admin SDK (quyền server, không bị Security Rules chặn).<br>- `readMatch` đọc node `matches/{roomCode}` và đóng gói thành `Match`.<br>- `updateStatus` ghi trạng thái.<br>(Hàm `createCustomToken` của lớp này thuộc UC02, không vẽ ở đây) |
 | Entity | `Match`, `MatchPlayer`, `Player` | Cùng tên, cùng thuộc tính với phía app, để Jackson chuyển JSON thẳng vào đối tượng. `Player` ở server có thêm `passwordHash`, không bao giờ trả ra JSON |
 
+**Quan hệ của lớp giao diện** theo mục 0.6:
+- 4 Activity nối nhau bằng liên kết và mỗi Activity nối với layout của nó (`activity_main.xml`, `activity_online.xml`, `activity_lobby.xml`, `activity_online_game.xml`). Overlay kết quả nằm trong `activity_online_game.xml` nên không có layout riêng.
+- `OnlineActivity` và `OnlineGameActivity` giữ `me : Player` nên có kết tập với `Player`, hình thoi ở phía Activity.
+
 **Mũi tên `HTTP/JSON`** từ `MatchApiDAO` tới `MatchRestController` là đường nối duy nhất giữa 2 package. Mọi lời gọi giữa app và server đều đi qua cặp lớp này.
 
 ---
@@ -217,5 +229,10 @@ Màn Lịch sử đấu là một danh sách cuộn, mỗi dòng là một `item
 | Boundary | `MatchRestController` | `getByPlayer(playerId)` nhận `GET /api/matches?playerId={id}`, gọi `MatchDAO.findByPlayer` và trả danh sách `Match` dạng JSON |
 | Control | `DAO` ← `MatchDAO` | `findByPlayer` chạy truy vấn `tblMatch` JOIN 2 lần `tblMatchPlayer` (mình và đối thủ) JOIN `tblPlayer` (tên đối thủ), sắp `endedAt DESC`, rồi đóng gói mỗi dòng thành 1 `Match` + 2 `MatchPlayer` + 2 `Player` |
 | Entity | `Match`, `MatchPlayer`, `Player` | Như ở UC05 |
+
+**Quan hệ của lớp giao diện** theo mục 0.6:
+- `MainActivity` – `HistoryActivity` – `HistoryAdapter` – `HistoryViewHolder` nối nhau bằng liên kết.
+- Layout: `MainActivity` – `activity_main.xml`, `HistoryActivity` – `activity_history.xml`, `HistoryViewHolder` – `item_history.xml`.
+- `HistoryAdapter` giữ danh sách `Match` nên có kết tập với `Match` (phía `Match` là n), hình thoi ở phía `HistoryAdapter`.
 
 UC06 dùng lại cùng các lớp `MatchApiDAO`, `MatchRestController`, `MatchDAO` với UC05. Biểu đồ chỉ vẽ các phương thức chức năng này dùng.

@@ -16,35 +16,16 @@ GV -> MPr : generateProblem()
 MPr --> GV : câu hỏi 12 + 7
 GV --> U : hiển thị 0 VS 0, 60, câu hỏi, bàn phím số
 loop đến khi hết 60 giây
-  alt Hùng nhập đáp án
-    U -> GV : nhập 19, nhấn OK
-    GV -> GS : submitAnswer(19)
-    GS --> GV : đúng, +12, điểm 12
-    GV -> MP : updateScore(12)
-    MP --> GV : đã gửi điểm
-    GV -> MPr : generateProblem()
-    MPr --> GV : câu hỏi 9 − 4
-    GV --> U : "+12" bay lên, điểm 12, câu mới
-  else Hùng nhấn Back, chọn Thoát
-    autonumber stop
-    U -> GV : 5a.1. nhấn Back, chọn Thoát
-    GV -> MP : 5a.2. forfeit()
-    MP --> GV : 5a.3. đã ghi bỏ trận
-    GV -> M : 5a.4. finishMatch()
-    M --> GV : 5a.5. trận đã lưu (HUNG thua)
-    GV -> MV : 5a.6. gọi
-    MV --> U : 5a.7. hiển thị
-    autonumber resume
-  end
-  alt đối thủ ghi điểm
-    M --> GV : trận mới: điểm HOANG = 12
-    GV --> U : hiển thị điểm đối thủ 12
-  else đối thủ bỏ trận
-    autonumber stop
-    M --> GV : 13a.1. trận mới: HOANG đã bỏ trận
-    GV --> U : 13a.2. thông báo "Đối thủ đã thoát", sang bước 16
-    autonumber resume
-  end
+  U -> GV : nhập 19, nhấn OK
+  GV -> GS : submitAnswer(19)
+  GS --> GV : đúng, +12, điểm 12
+  GV -> MP : updateScore(12)
+  MP --> GV : đã gửi điểm
+  GV -> MPr : generateProblem()
+  MPr --> GV : câu hỏi 9 − 4
+  GV --> U : "+12" bay lên, điểm 12, câu mới
+  M --> GV : trận mới: điểm HOANG = 12
+  GV --> U : hiển thị điểm đối thủ 12
 end
 GV --> U : hết giờ: khóa bàn phím, hiển thị "Hết giờ! Đang chờ kết quả..."
 GV -> M : finishMatch()

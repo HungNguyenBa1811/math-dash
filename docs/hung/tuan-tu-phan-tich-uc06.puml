@@ -10,19 +10,12 @@ entity Match as M
 U -> MV : nhấn Lịch sử đấu
 MV -> HV : gọi
 HV -> M : getHistory(HUNG)
-alt có trận
-  M --> HV : danh sách 4 trận
-  loop mỗi trận
-    HV -> M : getResult(HUNG)
-    M --> HV : WIN / DRAW / LOSE
-  end
-  HV --> U : hiển thị danh sách trận
-else chưa có trận nào
-  autonumber stop
-  M --> HV : 4a.1. danh sách rỗng
-  HV --> U : 4a.2. hiển thị "Chưa có trận nào"
-  autonumber resume
+M --> HV : danh sách 4 trận
+loop mỗi trận
+  HV -> M : getResult(HUNG)
+  M --> HV : WIN / DRAW / LOSE
 end
+HV --> U : hiển thị danh sách trận
 U -> HV : nhấn Back
 HV -> MV : gọi
 MV --> U : hiển thị

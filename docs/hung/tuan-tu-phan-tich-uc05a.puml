@@ -18,17 +18,7 @@ M --> OV : trận 482915 (waiting, người chơi HUNG)
 OV -> LV : gọi
 LV --> U : hiển thị mã 482915, "Đang chờ đối thủ..."
 LV -> M : watchMatch()
-alt Hùng nhấn Hủy trước khi có đối thủ
-  autonumber stop
-  U -> LV : 9a.1. nhấn Hủy
-  LV -> M : 9a.2. deleteMatch()
-  M --> LV : 9a.3. đã xóa phòng
-  LV -> MV : 9a.4. gọi
-  MV --> U : 9a.5. hiển thị
-  autonumber resume
-else Hoàng vào phòng (đoạn B)
-  M --> LV : trận playing, đối thủ HOANG
-  LV --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HOANG
-  LV -> GV : gọi (sang đoạn C)
-end
+M --> LV : trận playing, đối thủ HOANG (khi Hoàng vào phòng)
+LV --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HOANG
+LV -> GV : gọi (sang đoạn C)
 @enduml

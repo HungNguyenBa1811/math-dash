@@ -79,11 +79,11 @@ class MathProblem <<entity>> {
   + generateProblem()
 }
 
-MainView --> OnlineView
-OnlineView --> LobbyView
-LobbyView --> OnlineGameView
-OnlineGameView --> MatchResultView
-MatchResultView --> MainView
+MainView -- OnlineView
+OnlineView -- LobbyView
+LobbyView -- OnlineGameView
+OnlineGameView -- MatchResultView
+MatchResultView -- MainView
 
 OnlineView ..> Match
 LobbyView ..> Match

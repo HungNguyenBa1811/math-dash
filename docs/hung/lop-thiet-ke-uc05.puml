@@ -58,6 +58,10 @@ package "Client (Android)" {
     - showProblem(problem : MathProblem) : void
     - showResult(match : Match) : void
   }
+  class "activity_main.xml" as xmlMain
+  class "activity_online.xml" as xmlOnline
+  class "activity_lobby.xml" as xmlLobby
+  class "activity_online_game.xml" as xmlOnlineGame
   interface RoomListener {
     + onRoomReady(match : Match) : void
     + onError(message : String) : void
@@ -231,9 +235,15 @@ package "Server (Spring Boot)" {
   }
 }
 
-MainActivity --> OnlineActivity
-OnlineActivity --> LobbyActivity
-LobbyActivity --> OnlineGameActivity
+MainActivity -- OnlineActivity
+OnlineActivity -- LobbyActivity
+LobbyActivity -- OnlineGameActivity
+MainActivity -- xmlMain
+OnlineActivity -- xmlOnline
+LobbyActivity -- xmlLobby
+OnlineGameActivity -- xmlOnlineGame
+OnlineActivity o-- "1" Player
+OnlineGameActivity o-- "1" Player
 OnlineActivity ..|> RoomListener
 LobbyActivity ..|> RoomListener
 OnlineGameActivity ..|> GameListener

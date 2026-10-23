@@ -16,7 +16,7 @@ Quy ước:
 - **`Thread` + `runOnUiThread`:** ghi chú `{Thread}` / `runOnUiThread` cạnh thông điệp.
 - **`CountDownTimer`:** vẽ như một đối tượng điều khiển, gửi `onTick` / `onFinish`.
 - **Đóng gói thực thể con được lược bỏ cho gọn** (giống bài mẫu). Ví dụ: khi đóng gói `Match` thì 2 `MatchPlayer` và 2 `Player` bên trong cũng được tạo, nhưng không vẽ thành thông điệp riêng.
-- Ngoại lệ đánh số theo bước rẽ nhánh (`19a.1`…).
+- **Chỉ gồm kịch bản chuẩn**, không có ngoại lệ. Ngoại lệ đã mô tả ở kịch bản v1.
 
 ---
 
@@ -51,21 +51,11 @@ Quy ước:
 25. `LobbyActivity` ẩn nút Hủy, hiển thị cho Hùng "Trận đấu bắt đầu!" và đối thủ HOANG.
 26. Sau 2 giây, `LobbyActivity` gọi `startActivity` mở `OnlineGameActivity` (sang đoạn C).
 
-**Ngoại lệ 19a: Hùng nhấn Hủy khi chưa có đối thủ.**
-
-- 19a.1. Hùng nhấn nút Hủy trên `LobbyActivity`.
-- 19a.2. `onClick` của `LobbyActivity` gọi phương thức `cancelRoom` của `MatchController`.
-- 19a.3. `cancelRoom` gọi `stopWatching("482915")` của `MatchFirebaseDAO` để gỡ listener.
-- 19a.4. `cancelRoom` gọi `deleteMatch("482915")` của `MatchFirebaseDAO` để xóa node.
-- 19a.5. `cancelRoom` trả về cho `onClick`.
-- 19a.6. `onClick` gọi `finish()`, quay về `MainActivity`.
-- 19a.7. `MainActivity` hiển thị cho Hùng.
-
 ![Hình 16: Tuần tự thiết kế Chơi online – Tạo phòng](tuan-tu-thiet-ke-uc05a.png)
 
 *Hình 16: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Tạo phòng.*
 
-- Biểu đồ có 26 thông điệp chính, khớp 26 bước ở trên.
+- Biểu đồ có 26 thông điệp, khớp 26 bước ở trên.
 - Activity không gọi Firebase trực tiếp. Mọi thao tác đi qua `MatchController` rồi tới `MatchFirebaseDAO`.
 - Kết quả bất đồng bộ đi ngược lại qua callback: `onComplete` / `onDataChange` → `onSuccess` → `onRoomReady`.
 - Bước 13 dùng transaction nên 2 người không thể tạo trùng một mã phòng.
@@ -96,24 +86,14 @@ Quy ước:
 22. `LobbyActivity` hiển thị cho Hoàng "Trận đấu bắt đầu!" và đối thủ HUNG.
 23. Sau 2 giây, `LobbyActivity` gọi `startActivity` mở `OnlineGameActivity` (sang đoạn C, máy 2 chạy giống máy 1).
 
-**Ngoại lệ 15a: không có phòng `482915` (`toMatch` trả `null`), hoặc `canJoin` trả `false`.**
-
-- 15a.1. `canJoin` trả `false` cho `doTransaction`.
-- 15a.2. `doTransaction` trả `Transaction.abort()`, không ghi gì.
-- 15a.3. Callback `onComplete` gọi `onFail("Phòng đã đầy")` của `MatchController`. Nếu node không tồn tại thì thông báo là "Không tìm thấy phòng".
-- 15a.4. `MatchController` gọi `onError(message)` của `OnlineActivity`.
-- 15a.5. `OnlineActivity` hiện `Toast` thông báo cho Hoàng.
-
-**Ngoại lệ 9a:** mã không đủ 6 chữ số. `onClick` hiện `Toast` "Mã phòng gồm 6 chữ số" và dừng ở bước 9, không gọi `MatchController`.
-
 ![Hình 17: Tuần tự thiết kế Chơi online – Tìm phòng](tuan-tu-thiet-ke-uc05b.png)
 
 *Hình 17: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Tìm phòng.*
 
-- Biểu đồ có 23 thông điệp chính.
+- Biểu đồ có 23 thông điệp.
 - **Bước 14–16** là trọng tâm:
   - Luật vào phòng `Match.canJoin` chạy **bên trong transaction** của Firebase.
-  - Nếu 2 người cùng nhập mã một lúc, Firebase chạy lại transaction cho người đến sau. Lần chạy lại đó `canJoin` trả `false`, nên phòng không bao giờ có 3 người.
+  - Nếu 2 người cùng nhập mã một lúc, Firebase chạy lại transaction cho người đến sau, nên phòng không bao giờ có 3 người.
 - `canJoin` là hàm Java thuần nên kiểm thử được bằng `MatchTest` mà không cần Firebase.
 
 ### 1.3. Đoạn C: Thi đấu và kết thúc trận (Hùng, máy 1)
@@ -198,40 +178,11 @@ Quy ước:
 76. `onClick` gọi `finish()`, quay về `MainActivity`.
 77. `MainActivity` hiển thị cho Hùng.
 
-**Ngoại lệ 18a: Hùng thoát trận.**
-
-- 18a.1. Hùng nhấn Back. `AlertDialog` "Thoát sẽ bị xử thua?" hiện lên, Hùng chọn Thoát.
-- 18a.2. `onBackPressed` của `OnlineGameActivity` gọi `leaveMatch()` của `MatchController`.
-- 18a.3. `leaveMatch` gọi `forfeit("482915", 1)` của `MatchFirebaseDAO`, ghi `forfeited = true` cho HUNG.
-- 18a.4. `leaveMatch` hủy đồng hồ, gỡ listener, rồi gọi `finishMatch("482915")` của `MatchApiDAO` trong `Thread`. Server xử lý như bước 55–65: `isOver()` đúng vì HUNG đã bỏ trận, trận được lưu với HUNG thua.
-- 18a.5. `leaveMatch` trả về cho `onBackPressed`.
-- 18a.6. `onBackPressed` gọi `finish()`, quay về `MainActivity`.
-- 18a.7. `MainActivity` hiển thị cho Hùng.
-
-**Ngoại lệ 40a: đối thủ bỏ trận** (Hoàng bấm Thoát, hoặc máy 2 mất kết nối và `onDisconnect` ghi `forfeited = true`).
-
-- 40a.1. `isOver()` trả `true` vì HOANG đã `forfeited`.
-- 40a.2. `MatchController` gọi `onMatchChanged(match)` của `OnlineGameActivity`.
-- 40a.3. `OnlineGameActivity` hiện `Toast` "Đối thủ đã thoát".
-- 40a.4. `MatchController` hủy đồng hồ và gọi `finishMatch()` trong `Thread`, đi tiếp từ bước 54. Ở bước 73, `getResult(1)` trả `"WIN"` dù điểm của Hùng thấp hơn.
-
-**Ngoại lệ 60a: máy 2 đã gọi kết thúc trận trước** (trận trên Firebase đã `finished`).
-
-- 60a.1. `finish` gọi `findByRoomCode("482915", createdAt)` của `MatchDAO`.
-- 60a.2. `findByRoomCode` đọc `tblMatch`, `tblMatchPlayer` và gọi lớp `Match` để đóng gói.
-- 60a.3. Lớp `Match` trả đối tượng cho `findByRoomCode`.
-- 60a.4. `findByRoomCode` trả `Match` đã lưu cho `finish`, đi tiếp từ bước 66. Hai máy vì vậy luôn nhận cùng một kết quả, và MySQL chỉ có một dòng `tblMatch` cho trận này.
-
-**Các ngoại lệ khác (không vẽ):**
-- Bước 60 trả `false` (trận chưa xong): `finish` trả `409 Conflict`, `MatchApiDAO` ném lỗi, `MatchController` gọi `onError("Trận chưa kết thúc")`.
-- Mất mạng ở bước 55: `MatchApiDAO` ném `IOException`, `MatchController` gọi `onError("Không lưu được kết quả trận, kiểm tra kết nối mạng")`. Trận vẫn được lưu khi máy đối thủ gọi.
-- Máy 1 mất kết nối: listener `.info/connected` báo `false`, `MatchController` gọi `onError("Mất kết nối, trận đấu đã kết thúc")` và `OnlineGameActivity` quay về màn chính. Việc xử thua do `onDisconnect` (bước 2) ghi lên Firebase.
-
 ![Hình 18: Tuần tự thiết kế Chơi online – Thi đấu và kết thúc trận](tuan-tu-thiet-ke-uc05c.png)
 
 *Hình 18: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu và kết thúc trận (client + server).*
 
-- Biểu đồ có 77 thông điệp chính và 3 khung ngoại lệ.
+- Biểu đồ có 77 thông điệp.
 - Ba lớp nghiệp vụ là hàm Java thuần, nằm trong code của nhóm:
   - **Chấm điểm** (`MathProblem.isCorrect`, `GameSession.recordCorrectAnswer`) chạy trên app.
   - **Điều kiện kết thúc** (`Match.isOver`) chạy ở cả app (để biết lúc gọi server) và server (để từ chối yêu cầu sớm).
@@ -269,20 +220,11 @@ Quy ước:
 24. `HistoryActivity` gọi `finish()`, quay về `MainActivity`.
 25. `MainActivity` hiển thị cho Hùng.
 
-**Ngoại lệ 19a: danh sách rỗng.**
-
-- 19a.1. Trong `runOnUiThread`, `loadHistory` ẩn `rvHistory`, hiện `txtEmpty` "Chưa có trận nào". Đi tiếp từ bước 23.
-
-**Ngoại lệ 9a: mất mạng.**
-
-- 9a.1. `getHistory` ném `IOException`.
-- 9a.2. `loadHistory` bắt lỗi và trong `runOnUiThread` hiện `Toast` "Không tải được lịch sử đấu, kiểm tra kết nối mạng". Đi tiếp từ bước 23.
-
 ![Hình 19: Tuần tự thiết kế Xem lịch sử đấu](tuan-tu-thiet-ke-uc06.png)
 
 *Hình 19: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu (client + server).*
 
-- Biểu đồ có 25 thông điệp chính.
+- Biểu đồ có 25 thông điệp.
 - **Lời gọi REST** duy nhất là bước 9. Server đi theo khuôn `MatchRestController` → `MatchDAO` → `Match`.
 - **Lời gọi mạng** chạy trong `Thread` (bước 8). Phần vẽ giao diện chạy trong `runOnUiThread` (bước 19).
 - **Kết quả không lưu trong CSDL** mà tính lại ở bước 20–21 bằng `Match.getResult`. Dữ liệu lấy từ MySQL nên kết quả trùng với lúc trận kết thúc.

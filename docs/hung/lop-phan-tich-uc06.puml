@@ -30,7 +30,7 @@ class MatchPlayer <<entity>> {
   - forfeited
 }
 
-MainView --> HistoryView
+MainView -- HistoryView
 MainView ..> Player
 HistoryView ..> Match
 Player "n" -- "2" Match
