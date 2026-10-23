@@ -1,0 +1,131 @@
+@startuml lop-thiet-ke-uc06
+!include _theme.iuml
+title Biểu đồ lớp chi tiết – Xem lịch sử đấu (UC06)
+
+package "Client (Android)" {
+  class FrmMainActivity <<boundary>> {
+    - txtDisplayName : TextView
+    - btnHistory : Button
+    + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
+  class FrmHistoryActivity <<boundary>> {
+    - rvHistory : RecyclerView
+    - txtEmpty : TextView
+    - adapter : HistoryAdapter
+    - matchApiDAO : MatchApiDAO
+    + onCreate(savedInstanceState : Bundle) : void
+    - loadHistory(playerId : int) : void
+  }
+  class HistoryAdapter <<boundary>> {
+    - listMatch : List<Match>
+    - playerId : int
+    + HistoryAdapter(listMatch : List<Match>, playerId : int)
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : HistoryViewHolder
+    + onBindViewHolder(holder : HistoryViewHolder, position : int) : void
+    + getItemCount() : int
+  }
+  class HistoryViewHolder <<boundary>> {
+    - txtPlayedAt : TextView
+    - txtOpponent : TextView
+    - txtScore : TextView
+    - txtResult : TextView
+    + HistoryViewHolder(itemView : View)
+  }
+  class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
+    + getPlayer() : Player
+  }
+  abstract class ApiDAO <<control>> {
+    # {static} BASE_URL : String
+    # {static} token : String
+    # post(path : String, body : JSONObject) : JSONObject
+    # getArray(path : String) : JSONArray
+  }
+  class MatchApiDAO <<control>> {
+    + getHistory(playerId : int) : List<Match>
+    - toMatch(json : JSONObject) : Match
+  }
+  class Player <<entity>> {
+    - id : int
+    - username : String
+    - displayName : String
+  }
+  class Match <<entity>> {
+    - id : int
+    - roomCode : String
+    - status : String
+    - questionSeed : long
+    - createdAt : Date
+    - endedAt : Date
+    - players : List<MatchPlayer>
+    + getResult(playerId : int) : String
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - score : int
+    - forfeited : boolean
+    - timeUp : boolean
+    - player : Player
+  }
+}
+
+package "Server (Spring Boot)" {
+  class MatchRestController <<boundary>> {
+    - matchDAO : MatchDAO
+    + getByPlayer(playerId : int) : List<Match>
+  }
+  abstract class "DAO" as SDAO <<control>> {
+    # {static} conn : Connection
+    + DAO()
+  }
+  class MatchDAO <<control>> {
+    + findByPlayer(playerId : int) : List<Match>
+  }
+  class "Match" as SMatch <<entity>> {
+    - id : int
+    - roomCode : String
+    - status : String
+    - questionSeed : long
+    - createdAt : Date
+    - endedAt : Date
+    - players : List<MatchPlayer>
+  }
+  class "MatchPlayer" as SMatchPlayer <<entity>> {
+    - id : int
+    - score : int
+    - forfeited : boolean
+    - timeUp : boolean
+    - player : Player
+  }
+  class "Player" as SPlayer <<entity>> {
+    - id : int
+    - username : String
+    - passwordHash : String
+    - displayName : String
+    - createdAt : Date
+  }
+}
+
+FrmMainActivity --> FrmHistoryActivity
+FrmMainActivity --> SessionDAO
+FrmHistoryActivity --> SessionDAO
+FrmHistoryActivity --> MatchApiDAO
+FrmHistoryActivity *-- HistoryAdapter
+HistoryAdapter *-- HistoryViewHolder
+HistoryAdapter ..> Match
+MatchApiDAO --|> ApiDAO
+MatchApiDAO ..> Match
+SessionDAO ..> Player
+Match "1" *-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
+
+MatchRestController --> MatchDAO
+MatchDAO --|> SDAO
+MatchDAO ..> SMatch
+SMatch "1" *-- "2" SMatchPlayer
+SMatchPlayer "n" o-- "1" SPlayer
+
+MatchApiDAO ..> MatchRestController : HTTP/JSON
+@enduml

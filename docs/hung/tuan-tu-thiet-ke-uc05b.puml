@@ -1,0 +1,49 @@
+@startuml tuan-tu-thiet-ke-uc05b
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn B: Tìm phòng
+
+actor "Hoàng (máy 2)" as U
+boundary FrmMainActivity as MA
+boundary FrmOnlineActivity as OA
+boundary FrmLobbyActivity as LA
+boundary FrmOnlineGameActivity as GA
+control MatchController as MC
+control SessionDAO as SD
+control MatchFirebaseDAO as MFD
+entity Player as P
+entity Match as M
+
+U -> MA : nhấn Chơi online
+MA -> OA : onClick(): startActivity()
+OA -> SD : onCreate(): getPlayer()
+SD -> P : new Player()
+P --> SD : Player (id 2, HOANG)
+SD --> OA : Player
+OA --> U : hiển thị nút Tạo phòng, ô mã phòng, nút Vào phòng
+U -> OA : nhập 482915, nhấn Vào phòng
+OA -> MC : onClick(): findRoom("482915", me, this)
+MC -> MFD : joinMatch("482915", me, callback)
+MFD -> MFD : runTransaction → doTransaction(): toMatch("482915", data)
+MFD -> M : new Match(...) (waiting, HUNG)
+M --> MFD : Match
+MFD -> M : canJoin(2)
+alt canJoin() đúng
+  M --> MFD : true
+  MFD -> MFD : ghi players/2 (HOANG), status = "playing"
+  MFD -> MC : onComplete → onSuccess(match)
+  MC -> OA : onRoomReady(match)
+  OA -> LA : startActivity(roomCode)
+  LA -> MC : onCreate(): waitForOpponent(this)
+  MC -> LA : trận đã playing: onRoomReady(match)
+  LA --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HUNG
+  LA -> GA : sau 2 giây: startActivity() (sang đoạn C)
+else không có phòng (toMatch trả null), hoặc canJoin() sai
+  autonumber stop
+  M --> MFD : 15a.1. false
+  MFD -> MFD : 15a.2. Transaction.abort()
+  MFD -> MC : 15a.3. onComplete → onFail("Phòng đã đầy" / "Không tìm thấy phòng")
+  MC -> OA : 15a.4. onError(message)
+  OA --> U : 15a.5. Toast "Phòng đã đầy" / "Không tìm thấy phòng"
+  autonumber resume
+end
+@enduml
