@@ -137,7 +137,7 @@ Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
    4. Gán cho lớp nào?
       - Đầu ra là lớp thực thể nào thì gán vào lớp đó.
       - Nếu không, xét đầu vào: chỉ thuộc một lớp thực thể thì gán vào lớp đó; thuộc nhiều lớp thì gán vào lớp chứa được tất cả đầu vào.
-4. **Vẽ biểu đồ lớp** cho chức năng. Hai lớp View nối nhau bằng **liên kết (association)**.
+4. **Vẽ biểu đồ lớp** cho chức năng. View – View và View – thực thể đều nối bằng **liên kết (association)**, không vẽ mũi tên.
 
 Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activity, REST.
 
@@ -215,6 +215,7 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 **Quan hệ của lớp giao diện (phần app):**
 - Boundary nối boundary bằng **liên kết (association)**: Activity – Activity, Activity – Adapter, Adapter – ViewHolder.
+- Boundary – control (Activity – Controller, Activity – DAO), control – control và control – entity cũng nối bằng **liên kết**, không vẽ mũi tên phụ thuộc. Chỉ giữ ký hiệu riêng cho kế thừa, thực thi interface, kết tập và hợp thành.
 - **Mỗi Activity nối với một lớp layout** đặt tên đúng tên file, ví dụ `activity_main.xml`. Lớp này để **rỗng**.
 - Activity **giữ thực thể làm thuộc tính** (ví dụ `me : Player`) thì nối bằng **kết tập (aggregation)**, hình thoi ở phía Activity: `Player --<> OnlineGameActivity`. Cách đọc giống `KhachHang --<> HoaDon`: hóa đơn chứa thông tin khách hàng nên hình thoi ở phía hóa đơn.
 
@@ -225,9 +226,9 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 - Server, MySQL: `DAO` (giữ `Connection conn`) ← `PlayerDAO`, `MatchDAO`.
 
 **Chức năng có gọi server (REST)** vẽ thành **2 package** trên cùng một biểu đồ:
-- **"Client (Android)"**: boundary → control (Controller, `XxxApiDAO`) → entity.
-- **"Server (Spring Boot)"**: `XxxRestController` → `XxxDAO extends DAO` → entity. Không có tầng Service.
-- Hai package nối nhau bằng **đúng một mũi tên** từ `XxxApiDAO` tới `XxxRestController`, ghi `HTTP/JSON`.
+- **"Client (Android)"**: boundary – control (Controller, `XxxApiDAO`) – entity.
+- **"Server (Spring Boot)"**: `XxxRestController` – `XxxDAO extends DAO` – entity. Không có tầng Service.
+- Hai package nối nhau bằng **đúng một đường liên kết** giữa `XxxApiDAO` và `XxxRestController`, ghi `HTTP/JSON`.
 - Không vẽ lớp của framework (Spring, Firebase SDK, `HttpURLConnection`); chỉ ghi chúng làm kiểu dữ liệu của thuộc tính.
 
 Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game) vẽ một package như bài mẫu.

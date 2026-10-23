@@ -31,8 +31,8 @@ class MatchPlayer <<entity>> {
 }
 
 MainView -- HistoryView
-MainView ..> Player
-HistoryView ..> Match
+MainView -- Player
+HistoryView -- Match
 Player "n" -- "2" Match
 (Player, Match) .. MatchPlayer
 @enduml

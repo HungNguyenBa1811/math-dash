@@ -41,7 +41,7 @@ Không đề xuất lớp View cho:
 *Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online.*
 
 - **5 lớp View** nối nhau bằng quan hệ liên kết theo luồng màn hình: `MainView` – `OnlineView` – `LobbyView` – `OnlineGameView` – `MatchResultView` – quay về `MainView`.
-- **Mũi tên nét đứt** từ View tới lớp thực thể cho biết View đó gọi phương thức nào. `OnlineGameView` dùng nhiều thực thể nhất:
+- Mỗi View nối với lớp thực thể nó gọi phương thức bằng **quan hệ liên kết**. `OnlineGameView` dùng nhiều thực thể nhất:
   - `MathProblem`: sinh câu hỏi.
   - `GameSession`: chấm điểm.
   - `MatchPlayer`: gửi điểm, thoát trận.

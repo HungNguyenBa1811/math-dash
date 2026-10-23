@@ -247,35 +247,35 @@ OnlineGameActivity o-- "1" Player
 OnlineActivity ..|> RoomListener
 LobbyActivity ..|> RoomListener
 OnlineGameActivity ..|> GameListener
-OnlineActivity --> MatchController
-LobbyActivity --> MatchController
-OnlineGameActivity --> MatchController
-OnlineActivity --> SessionDAO
-OnlineGameActivity --> SessionDAO
-MatchController --> MatchFirebaseDAO
-MatchController --> MatchApiDAO
-MatchController --> ProblemDAO
-MatchController ..> MatchCallback
+OnlineActivity -- MatchController
+LobbyActivity -- MatchController
+OnlineGameActivity -- MatchController
+OnlineActivity -- SessionDAO
+OnlineGameActivity -- SessionDAO
+MatchController -- MatchFirebaseDAO
+MatchController -- MatchApiDAO
+MatchController -- ProblemDAO
+MatchController -- MatchCallback
 MatchFirebaseDAO --|> FirebaseDAO
 MatchApiDAO --|> ApiDAO
-MatchFirebaseDAO ..> Match
-MatchApiDAO ..> Match
-ProblemDAO ..> MathProblem
-SessionDAO ..> Player
-MatchController --> GameSession
-MatchController --> Match
+MatchFirebaseDAO -- Match
+MatchApiDAO -- Match
+ProblemDAO -- MathProblem
+SessionDAO -- Player
+MatchController -- GameSession
+MatchController -- Match
 Match "1" *-- "2" MatchPlayer
 MatchPlayer "n" o-- "1" Player
 GameSession "n" o-- "1" Player
 GameSession "1" *-- "n" MathProblem
 
-MatchRestController --> MatchDAO
-MatchRestController --> FirebaseAdminDAO
+MatchRestController -- MatchDAO
+MatchRestController -- FirebaseAdminDAO
 MatchDAO --|> SDAO
-MatchDAO ..> SMatch
-FirebaseAdminDAO ..> SMatch
+MatchDAO -- SMatch
+FirebaseAdminDAO -- SMatch
 SMatch "1" *-- "2" SMatchPlayer
 SMatchPlayer "n" o-- "1" SPlayer
 
-MatchApiDAO ..> MatchRestController : HTTP/JSON
+MatchApiDAO -- MatchRestController : HTTP/JSON
 @enduml

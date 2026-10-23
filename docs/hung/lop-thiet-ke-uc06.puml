@@ -114,24 +114,24 @@ package "Server (Spring Boot)" {
 MainActivity -- HistoryActivity
 MainActivity -- xmlMain
 HistoryActivity -- xmlHistory
-MainActivity --> SessionDAO
-HistoryActivity --> SessionDAO
-HistoryActivity --> MatchApiDAO
+MainActivity -- SessionDAO
+HistoryActivity -- SessionDAO
+HistoryActivity -- MatchApiDAO
 HistoryActivity -- HistoryAdapter
 HistoryAdapter -- HistoryViewHolder
 HistoryViewHolder -- xmlItemHistory
 HistoryAdapter o-- "n" Match
 MatchApiDAO --|> ApiDAO
-MatchApiDAO ..> Match
-SessionDAO ..> Player
+MatchApiDAO -- Match
+SessionDAO -- Player
 Match "1" *-- "2" MatchPlayer
 MatchPlayer "n" o-- "1" Player
 
-MatchRestController --> MatchDAO
+MatchRestController -- MatchDAO
 MatchDAO --|> SDAO
-MatchDAO ..> SMatch
+MatchDAO -- SMatch
 SMatch "1" *-- "2" SMatchPlayer
 SMatchPlayer "n" o-- "1" SPlayer
 
-MatchApiDAO ..> MatchRestController : HTTP/JSON
+MatchApiDAO -- MatchRestController : HTTP/JSON
 @enduml

@@ -688,7 +688,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
       - Boundary: `MatchRestController`.
       - Control: `DAO` ← `MatchDAO`; `FirebaseAdminDAO`.
       - Entity: `Match`, `MatchPlayer`, `Player`.
-    - Nối 2 package bằng một mũi tên `HTTP/JSON` từ `MatchApiDAO` tới `MatchRestController`.
+    - Nối 2 package bằng một đường liên kết `HTTP/JSON` giữa `MatchApiDAO` và `MatchRestController`.
   - **Mô tả từng lớp 1–2 dòng.**
 - **Requirement:** Mỗi View ở M3-03 ánh xạ sang đúng một Activity hoặc overlay; tên lớp, hàm, API trùng với code.
 - **Constraint:** Không vẽ lớp của framework (Spring, Firebase SDK) ngoài kiểu dữ liệu của thuộc tính.

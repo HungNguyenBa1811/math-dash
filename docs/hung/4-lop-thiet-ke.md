@@ -133,7 +133,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 - 4 Activity nối nhau bằng quan hệ liên kết. Mỗi Activity nối với layout của nó: `activity_main.xml`, `activity_online.xml`, `activity_lobby.xml`, `activity_online_game.xml`. Overlay kết quả nằm trong `activity_online_game.xml`.
 - `OnlineActivity` và `OnlineGameActivity` chứa thông tin người chơi trong thuộc tính `me`, nên `Player` kết tập vào 2 Activity này.
 
-**Mũi tên `HTTP/JSON`** từ `MatchApiDAO` tới `MatchRestController` là đường nối duy nhất giữa 2 package. Mọi lời gọi giữa app và server đều đi qua cặp lớp này.
+**Quan hệ liên kết `HTTP/JSON`** giữa `MatchApiDAO` và `MatchRestController` là đường nối duy nhất giữa 2 package. Mọi lời gọi giữa app và server đều đi qua cặp lớp này.
 
 ---
 
