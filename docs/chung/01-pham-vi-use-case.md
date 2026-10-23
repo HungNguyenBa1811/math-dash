@@ -1,9 +1,5 @@
 # PHẠM VI HỆ THỐNG VÀ BIỂU ĐỒ USE CASE TỔNG QUÁT — MATH DASH 1v1
 
-> Issue: #22 [M1-01] · Người làm: Hùng · Người duyệt: Hoàng
-> Tài liệu dùng chung cho cả 2 báo cáo cá nhân. Tên use case (UC) và mã UC ở đây được dùng **nguyên văn** trong code, tài liệu phân tích – thiết kế và báo cáo.
-> Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28/10.
-
 ---
 
 ## 1. Bảng thuật ngữ

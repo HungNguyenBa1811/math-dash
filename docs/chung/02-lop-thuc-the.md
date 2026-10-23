@@ -1,14 +1,5 @@
 # LỚP THỰC THỂ TOÀN HỆ THỐNG — MATH DASH 1v1
 
-> Issue: #23 [M1-02] · Người làm: Hùng · Người duyệt: Hoàng
-> Nguồn cho **mục 3 "Thiết kế lớp thực thể"** trong báo cáo của cả 2 người. Mỗi người chỉ lấy các lớp liên quan đến chức năng của mình (bảng ở mục A.8).
->
-> **Quy ước đặt tên:**
-> - Tên lớp tiếng Anh, viết PascalCase, **trùng tên lớp trong code**.
-> - Tên thuộc tính viết camelCase.
-> - Pha phân tích **chưa có kiểu dữ liệu, chưa có `id`, chưa cần đủ thuộc tính**. Biểu đồ chỉ có tên lớp, thuộc tính chính và quan hệ.
-> - Quan hệ "thông tin của A nằm trong B" vẽ là kết tập `A --<> B`, hình thoi đặt ở phía B.
-
 ---
 
 # PHẦN A — PHA PHÂN TÍCH
@@ -113,9 +104,6 @@ Mã nguồn PlantUML: [`lop-thuc-the-phan-tich.puml`](lop-thuc-the-phan-tich.pum
 | `Match` | | | | | ✓ | ✓ |
 | `MatchPlayer` | | | | | ✓ | ✓ |
 
-- **Báo cáo của Hùng** (UC05, UC06; thêm UC01, UC02 nếu trình bày): `Player`, `MathProblem`, `GameSession`, `Match`, `MatchPlayer`.
-- **Báo cáo của Hoàng** (UC03, UC04): `Player`, `MathProblem`, `GameSession`, `GameRecord`, `GameConfig`.
-
 ---
 
 # PHẦN B — PHA THIẾT KẾ
@@ -134,7 +122,7 @@ Không bổ sung `id` cho:
 
 ## B.2. Bước 2: Bổ sung kiểu dữ liệu
 
-Quy ước: chuỗi → `String`; số đếm, điểm, số giây → `int`; mã đồng bộ câu hỏi → `long` (khớp kiểu tham số của `java.util.Random`); thời điểm → `Date`; cờ bật / tắt → `boolean`. Độ khó dùng `int`: 1 = Dễ, 2 = Trung bình, 3 = Khó (cũng chính là mức bắt đầu của ván).
+Kiểu dữ liệu được chọn như sau: chuỗi → `String`; số đếm, điểm, số giây → `int`; mã đồng bộ câu hỏi → `long` (khớp kiểu tham số của `java.util.Random`); thời điểm → `Date`; cờ bật / tắt → `boolean`. Độ khó dùng `int`: 1 = Dễ, 2 = Trung bình, 3 = Khó (cũng chính là mức bắt đầu của ván).
 
 Bổ sung 2 thuộc tính phục vụ thiết kế cho `GameSession`, không có ở pha phân tích:
 - `onlineMode : boolean`: cùng một lớp chấm điểm cho cả 2 chế độ; `true` là trận online, không trừ mạng.

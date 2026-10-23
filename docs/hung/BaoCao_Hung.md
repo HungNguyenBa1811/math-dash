@@ -3,15 +3,6 @@
 **Sinh viên:** Nguyễn Bá Hùng (@HungNguyenBa1811) · **Lớp:** E23CNPM01
 **Chức năng trình bày:** Chơi online (UC05), Xem lịch sử đấu (UC06)
 
-> Issue: #47 [M4-05]. Bản nháp Markdown, ghép từ `docs/chung/` và `docs/hung/`. Bản nộp cuối viết trên file online riêng, xuất một lần ra `docs/BaoCao_Hung.docx`.
->
-> **Việc còn lại trước khi nộp:**
-> 1. Thay 2 hình phác thảo giao diện (Hình 6, Hình 9) bằng ảnh chụp app thật.
-> 2. Đối chiếu tên lớp, hàm, API với code trên `main`.
-> 3. Hoàng đọc lại.
-
-Hình trong báo cáo đánh số liên tục từ 1. Số hình trong tài liệu nguồn ở `docs/` khác với số ở đây.
-
 **Phạm vi hệ thống:**
 - Math Dash 1v1 là ứng dụng Android luyện tính nhẩm, chơi một mình hoặc thi đấu 1v1.
 - Kiến trúc có 3 phần:
@@ -315,7 +306,7 @@ Thuộc tính dẫn xuất được viết thành **phương thức nghiệp v�
 
 ![Hình 3](lop-thuc-the-hung.png)
 
-*Hình 3: Biểu đồ lớp thực thể pha thiết kế (các lớp dùng cho Chơi online, Xem lịch sử đấu).*
+*Hình 3: Biểu đồ lớp thực thể pha thiết kế cho Chơi online và Xem lịch sử đấu.*
 
 - Không còn đường liên kết trơn nào trên biểu đồ.
 - `Player`, `Match`, `MatchPlayer` có ở **cả app và backend** với cùng tên và cùng thuộc tính, để JSON đi qua REST ánh xạ thẳng vào đối tượng.
@@ -326,21 +317,13 @@ Thuộc tính dẫn xuất được viết thành **phương thức nghiệp v�
 
 ## 4. Thiết kế chi tiết từng chức năng
 
-**Quy ước chung:**
-- **Lớp View → Activity.** Mỗi lớp View ở pha phân tích thành một Activity; riêng `MatchResultView` thành overlay trong màn thi đấu.
-- **Thành phần giao diện:** bỏ tiền tố `in` / `out` / `sub`, đặt theo loại View (`btn`, `edt`, `txt`, `rv`).
-- **Phương thức của thực thể:**
-  - Phương thức truy cập dữ liệu chuyển sang DAO.
-  - Phương thức điều phối chuyển sang `MatchController`.
-  - Luật nghiệp vụ giữ lại ở thực thể.
-- **DAO cha giữ kết nối, DAO con kế thừa:**
+**Ánh xạ từ pha phân tích sang pha thiết kế:**
+- Mỗi lớp View ở pha phân tích thành một Activity; riêng `MatchResultView` thành overlay trong màn thi đấu.
+- Phương thức truy cập dữ liệu chuyển sang DAO, phương thức điều phối chuyển sang `MatchController`, luật nghiệp vụ giữ lại ở thực thể.
+- DAO cha giữ kết nối, DAO con kế thừa:
   - App: `FirebaseDAO` ← `MatchFirebaseDAO`; `ApiDAO` ← `MatchApiDAO`.
-  - Server: `DAO` (`conn : Connection`) ← `MatchDAO`.
-- **Quan hệ của lớp giao diện (app):**
-  - Boundary nối boundary bằng liên kết (association).
-  - Mỗi Activity nối với một lớp layout rỗng cùng tên file (`activity_main.xml`…).
-  - Activity giữ thực thể làm thuộc tính thì nối bằng kết tập, hình thoi ở phía Activity (như Hóa đơn chứa thông tin Khách hàng).
-- **Biểu đồ lớp có 2 package** "Client (Android)" và "Server (Spring Boot)", nối nhau bằng **một** mũi tên `HTTP/JSON` từ `MatchApiDAO` tới `MatchRestController`. Server không có tầng Service.
+  - Server: `DAO` ← `MatchDAO`.
+- Biểu đồ lớp chi tiết có 2 package "Client (Android)" và "Server (Spring Boot)", nối nhau qua `MatchApiDAO` và `MatchRestController`.
 
 | Phương thức pha phân tích | Phương thức pha thiết kế | Lớp |
 |---|---|---|
@@ -397,10 +380,10 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
 
 ![Hình 5](lop-thiet-ke-uc05.png)
 
-*Hình 5: Biểu đồ lớp chi tiết chức năng Chơi online (client + server).*
+*Hình 5: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
 **Client (Android):**
-- 4 Activity nối nhau bằng liên kết, mỗi Activity nối với layout của nó. `OnlineActivity`, `OnlineGameActivity` giữ `me : Player` nên có kết tập với `Player`, hình thoi ở phía Activity.
+- 4 Activity nối nhau bằng quan hệ liên kết, mỗi Activity nối với layout của nó. `OnlineActivity`, `OnlineGameActivity` chứa thông tin người chơi trong thuộc tính `me`, nên `Player` kết tập vào 2 Activity này.
 - `OnlineActivity`, `LobbyActivity` cài đặt `RoomListener`; `OnlineGameActivity` cài đặt `GameListener`. Activity chỉ gọi `MatchController` và hiển thị, không gọi Firebase hay REST trực tiếp, không tự chấm điểm hay phân thắng thua.
 - `MatchController` (Singleton) điều phối cả trận, giữ `match`, `session`, `me`, `timer`.
   - `createRoom` sinh mã phòng và `questionSeed`.
@@ -426,9 +409,9 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
 
 #### 4.1.3. Biểu đồ tuần tự chi tiết
 
-Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 đầy đủ (từng bước khớp với từng thông điệp) ở `docs/hung/5-kich-ban-v3.md`, mục 1. Tóm tắt các bước chính:
+Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Các bước chính của kịch bản v3:
 
-**Đoạn A: Tạo phòng (26 bước).**
+**Đoạn A: Tạo phòng.**
 1. `MainActivity.onClick` mở `OnlineActivity`.
 2. `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` (bước 3–6).
 3. Hùng nhấn Tạo phòng. `onClick` gọi `MatchController.createRoom`, hàm này tạo `Match` và gọi `MatchFirebaseDAO.createMatch` (bước 9–12).
@@ -440,7 +423,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 *Hình 6: Biểu đồ tuần tự chi tiết Chơi online, đoạn A: Tạo phòng.*
 
-**Đoạn B: Tìm phòng (23 bước).**
+**Đoạn B: Tìm phòng.**
 1. Hoàng nhập mã. `onClick` gọi `findRoom` → `MatchFirebaseDAO.joinMatch` (bước 9–10).
 2. Trong `doTransaction`, `toMatch` đóng gói trận hiện tại, rồi gọi `Match.canJoin(2)` (bước 11–15).
 3. `canJoin` đúng nên ghi `players/2` và `status = "playing"`. `onComplete` → `onSuccess` → `onRoomReady` → `LobbyActivity` → `OnlineGameActivity` (bước 16–23).
@@ -449,7 +432,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 *Hình 7: Biểu đồ tuần tự chi tiết Chơi online, đoạn B: Tìm phòng.*
 
-**Đoạn C: Thi đấu và kết thúc trận (77 bước).**
+**Đoạn C: Thi đấu và kết thúc trận.**
 1. `startGame` đăng ký `onDisconnect`, tạo `ProblemDAO` theo seed, tạo `GameSession(1, true)`, theo dõi trận, bật `CountDownTimer`, sinh câu đầu tiên (bước 1–14).
 2. Vòng lặp:
    - `onTick` vẽ đồng hồ (bước 15–17).
@@ -462,7 +445,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 ![Hình 8](tuan-tu-thiet-ke-uc05c.png)
 
-*Hình 8: Biểu đồ tuần tự chi tiết Chơi online, đoạn C: Thi đấu và kết thúc trận (client + server).*
+*Hình 8: Biểu đồ tuần tự chi tiết Chơi online, đoạn C: Thi đấu và kết thúc trận.*
 
 - Logic của chức năng nằm trong code của nhóm:
   - Chấm điểm: `GameSession`, `MathProblem`.
@@ -477,7 +460,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 ![Hình 9](giao-dien-uc06.png)
 
-*Hình 9: Giao diện chức năng Xem lịch sử đấu: màn Chính, Lịch sử đấu (có dữ liệu và rỗng).*
+*Hình 9: Giao diện chức năng Xem lịch sử đấu: màn Chính, màn Lịch sử đấu khi có dữ liệu và khi rỗng.*
 
 | Màn | `id` | Loại View | Chức năng | Tên pha phân tích |
 |---|---|---|---|---|
@@ -490,10 +473,10 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 ![Hình 10](lop-thiet-ke-uc06.png)
 
-*Hình 10: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu (client + server).*
+*Hình 10: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
 **Client (Android):**
-- `MainActivity` – `HistoryActivity` – `HistoryAdapter` – `HistoryViewHolder` nối nhau bằng liên kết; layout `activity_main.xml`, `activity_history.xml`, `item_history.xml`. `HistoryAdapter` giữ danh sách `Match` nên có kết tập với `Match`, hình thoi ở phía `HistoryAdapter`.
+- `MainActivity` – `HistoryActivity` – `HistoryAdapter` – `HistoryViewHolder` nối nhau bằng quan hệ liên kết; layout `activity_main.xml`, `activity_history.xml`, `item_history.xml`. `HistoryAdapter` chứa danh sách trận, nên `Match` kết tập vào `HistoryAdapter`.
 - `HistoryActivity.onCreate` lấy người chơi bằng `SessionDAO`.
 - `loadHistory(playerId)` gọi `MatchApiDAO.getHistory` trong `Thread`, rồi gắn `HistoryAdapter` trong `runOnUiThread`.
 - `HistoryAdapter` giữ danh sách `Match` và `playerId`. `onBindViewHolder` gọi `Match.getResult(playerId)` để chọn chữ và màu.
@@ -504,7 +487,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 #### 4.2.3. Biểu đồ tuần tự chi tiết
 
-Kịch bản v3 đầy đủ ở `docs/hung/5-kich-ban-v3.md`, mục 2 (25 bước):
+Các bước chính của kịch bản v3:
 1. `MainActivity.onClick` mở `HistoryActivity` (bước 1–2).
 2. `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` (bước 3–6).
 3. `loadHistory(1)` → `MatchApiDAO.getHistory(1)` trong `Thread` → **`GET /api/matches?playerId=1`** → `MatchRestController.getByPlayer` → `MatchDAO.findByPlayer` truy vấn và đóng gói `Match` → trả JSON (bước 7–15).
@@ -514,7 +497,7 @@ Kịch bản v3 đầy đủ ở `docs/hung/5-kich-ban-v3.md`, mục 2 (25 bư�
 
 ![Hình 11](tuan-tu-thiet-ke-uc06.png)
 
-*Hình 11: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu (client + server).*
+*Hình 11: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu.*
 
 - Server đi đúng khuôn Controller → DAO → Entity, không có tầng Service.
 - Kết quả thắng / thua / hòa không lưu trong CSDL mà tính lại bằng `Match.getResult`. Dữ liệu lấy từ MySQL nên kết quả trùng với lúc trận kết thúc.

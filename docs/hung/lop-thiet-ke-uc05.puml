@@ -1,6 +1,6 @@
 @startuml lop-thiet-ke-uc05
 !include _theme.iuml
-title Biểu đồ lớp chi tiết – Chơi online (UC05)
+title Biểu đồ lớp chi tiết – Chơi online
 
 package "Client (Android)" {
   class MainActivity <<boundary>> {

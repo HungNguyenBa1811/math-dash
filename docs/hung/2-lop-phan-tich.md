@@ -1,26 +1,8 @@
 # BIỂU ĐỒ LỚP PHA PHÂN TÍCH — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU
 
-> Issue: #39 [M3-03] · Người làm: Hùng · Người duyệt: Hoàng
-> Bước A3 trong `REPORT_CONVENTION.md`. Đầu vào: kịch bản v1 (`1-kich-ban-v1.md`) và biểu đồ lớp thực thể pha phân tích (`docs/chung/02-lop-thuc-the.md`, Hình 2).
-> Trong báo cáo, phần này đặt ở **Phụ lục**.
-
-Mỗi chức năng làm theo 4 bước:
-1. Mỗi giao diện xuất hiện trong kịch bản v1 đề xuất thành một lớp biên `XxxView`. Thông báo và hộp thoại xác nhận không tính là giao diện.
-2. Mỗi thành phần của giao diện thành một thuộc tính, đặt tiền tố theo vai trò:
-   - `in`: nhận dữ liệu vào.
-   - `out`: hiện dữ liệu lên.
-   - `sub`: nút bấm.
-   - Ghép được, ví dụ `outsub` là thành phần vừa hiện dữ liệu vừa bấm được.
-3. Mỗi xử lý hệ thống phải làm, trả lời 4 câu hỏi: tên phương thức, đầu vào, đầu ra, gán cho lớp thực thể nào.
-   - Đầu ra là lớp thực thể nào thì gán vào lớp đó.
-   - Nếu không, xét đầu vào: gán vào lớp nhỏ nhất chứa được nhiều đầu vào nhất.
-4. Vẽ biểu đồ lớp gồm các lớp View và lớp thực thể liên quan. Hai lớp View nối nhau bằng quan hệ liên kết (association). Quan hệ giữa các lớp thực thể giữ đúng như Hình 2.
-
-Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activity, REST.
-
 ---
 
-## 1. Phân tích tĩnh chức năng "Chơi online" (UC05)
+## 1. Phân tích tĩnh chức năng "Chơi online"
 
 ### Bước 1 + 2: Lớp View và thành phần
 
@@ -56,9 +38,9 @@ Không đề xuất lớp View cho:
 
 ![Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online](lop-phan-tich-uc05.png)
 
-*Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online (UC05).*
+*Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online.*
 
-- **5 lớp View** nối nhau bằng quan hệ liên kết (association, đường thẳng không mũi tên) theo luồng màn hình: `MainView` – `OnlineView` – `LobbyView` – `OnlineGameView` – `MatchResultView` – quay về `MainView`.
+- **5 lớp View** nối nhau bằng quan hệ liên kết theo luồng màn hình: `MainView` – `OnlineView` – `LobbyView` – `OnlineGameView` – `MatchResultView` – quay về `MainView`.
 - **Mũi tên nét đứt** từ View tới lớp thực thể cho biết View đó gọi phương thức nào. `OnlineGameView` dùng nhiều thực thể nhất:
   - `MathProblem`: sinh câu hỏi.
   - `GameSession`: chấm điểm.
@@ -72,7 +54,7 @@ Không đề xuất lớp View cho:
 
 ---
 
-## 2. Phân tích tĩnh chức năng "Xem lịch sử đấu" (UC06)
+## 2. Phân tích tĩnh chức năng "Xem lịch sử đấu"
 
 ### Bước 1 + 2: Lớp View và thành phần
 
@@ -94,13 +76,13 @@ Danh sách chỉ để xem, bấm vào một dòng không làm gì. Vì vậy th
 
 ![Hình 7: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu](lop-phan-tich-uc06.png)
 
-*Hình 7: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu (UC06).*
+*Hình 7: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu.*
 
-- Chức năng chỉ có 2 lớp View, nối nhau bằng quan hệ liên kết (association):
+- Chức năng chỉ có 2 lớp View, nối nhau bằng quan hệ liên kết:
   - `MainView` giữ người chơi đang đăng nhập.
   - `HistoryView` gọi `getHistory()` và `getResult()` của `Match`.
 - Tên đối thủ và tỉ số có sẵn trong 2 `MatchPlayer` của mỗi trận (lớp liên kết giữa `Player` và `Match`), nên không cần thêm phương thức nào khác.
-- Kết quả thắng / thua / hòa là thuộc tính dẫn xuất (D9), được tính bằng `getResult()` chứ không lưu.
+- Kết quả thắng / thua / hòa là thuộc tính dẫn xuất, được tính bằng `getResult()` chứ không lưu.
 
 ---
 

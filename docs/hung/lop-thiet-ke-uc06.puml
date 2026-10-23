@@ -1,6 +1,6 @@
 @startuml lop-thiet-ke-uc06
 !include _theme.iuml
-title Biểu đồ lớp chi tiết – Xem lịch sử đấu (UC06)
+title Biểu đồ lớp chi tiết – Xem lịch sử đấu
 
 package "Client (Android)" {
   class MainActivity <<boundary>> {

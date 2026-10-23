@@ -1,6 +1,6 @@
 @startuml lop-phan-tich-uc05
 !include _theme.iuml
-title Biểu đồ lớp pha phân tích – Chơi online (UC05)
+title Biểu đồ lớp pha phân tích – Chơi online
 
 class MainView <<boundary>> {
   - outDisplayName

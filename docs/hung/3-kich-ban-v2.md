@@ -1,21 +1,10 @@
 # KỊCH BẢN v2 VÀ BIỂU ĐỒ TUẦN TỰ PHA PHÂN TÍCH — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU
 
-> Issue: #41 [M3-05] · Người làm: Hùng · Người duyệt: Hoàng
-> Bước A4 trong `REPORT_CONVENTION.md`. Đầu vào: kịch bản v1 (`1-kich-ban-v1.md`), biểu đồ lớp phân tích (`2-lop-phan-tich.md`).
-> Trong báo cáo, phần này đặt ở **Phụ lục**.
-
-Quy ước:
-- Kịch bản v2 viết lại kịch bản chuẩn v1. **Mỗi bước là đúng một thông điệp** giữa Người chơi, lớp View và lớp thực thể.
-- Biểu đồ tuần tự chỉ có 3 loại đối tượng: tác nhân, View (biên), thực thể. Số thứ tự trên mũi tên **trùng với số bước** của kịch bản.
-- Ngoại lệ viết ngay dưới kịch bản chuẩn, đánh số theo bước rẽ nhánh (`9a.1`, `9a.2`…). Biểu đồ tuần tự **chỉ vẽ kịch bản chuẩn**, không vẽ ngoại lệ.
-- Mọi phương thức trên biểu đồ đều có ở biểu đồ lớp phân tích (Hình 6, Hình 7).
-- Chức năng "Chơi online" chia 3 đoạn như kịch bản v1: A. Tạo phòng, B. Tìm phòng, C. Thi đấu. Mỗi đoạn một biểu đồ và đánh số lại từ 1.
-
 ---
 
-## 1. Chức năng "Chơi online" (UC05)
+## 1. Chức năng "Chơi online"
 
-### 1.1. Đoạn A: Tạo phòng (Hùng, máy 1)
+### 1.1. Đoạn A: Tạo phòng
 
 1. Hùng nhấn nút Chơi online trên `MainView`.
 2. `MainView` gọi `OnlineView`.
@@ -46,7 +35,7 @@ Quy ước:
 - `watchMatch()` (bước 9) là lời đăng ký theo dõi: kết quả không trả về ngay mà trả về ở bước 10, khi trận thay đổi.
 - Bước 10 xảy ra khi Hoàng vào phòng ở đoạn B, nên giữa bước 9 và bước 10 có thể là một khoảng chờ.
 
-### 1.2. Đoạn B: Tìm phòng (Hoàng, máy 2)
+### 1.2. Đoạn B: Tìm phòng
 
 1. Hoàng nhấn nút Chơi online trên `MainView`.
 2. `MainView` gọi `OnlineView`.
@@ -59,9 +48,9 @@ Quy ước:
 9. `LobbyView` hiển thị cho Hoàng "Trận đấu bắt đầu!" và đối thủ HUNG.
 10. `LobbyView` gọi `OnlineGameView` (sang đoạn C, diễn ra trên máy 2 giống máy 1).
 
-**Ngoại lệ 7a: không có phòng `482915`, hoặc phòng không cho vào (đã đủ người, trận đã bắt đầu).**
+**Ngoại lệ 7a: Hoàng không vào được phòng `482915`.**
 
-- 7a.1. Lớp `Match` trả về cho `OnlineView`: không vào được.
+- 7a.1. Lớp `Match` trả về cho `OnlineView`: không có phòng `482915`, hoặc phòng đã đủ người, trận đã bắt đầu.
 - 7a.2. `OnlineView` hiển thị cho Hoàng thông báo không vào được phòng (không tìm thấy phòng, hoặc phòng đã đầy).
 
 ![Hình 9: Tuần tự pha phân tích Chơi online – Tìm phòng](tuan-tu-phan-tich-uc05b.png)
@@ -71,7 +60,7 @@ Quy ước:
 - Biểu đồ có 10 thông điệp, khớp với kịch bản chuẩn.
 - Luật vào phòng nằm trong lớp thực thể `Match` (bước 6, thông điệp gọi chính nó), không nằm ở giao diện.
 
-### 1.3. Đoạn C: Thi đấu (Hùng, máy 1)
+### 1.3. Đoạn C: Thi đấu
 
 1. `OnlineGameView` gọi phương thức `watchMatch()` của lớp `Match` để theo dõi điểm đối thủ.
 2. `OnlineGameView` gọi phương thức `generateProblem()` của lớp `MathProblem`, dùng mã đồng bộ câu hỏi của trận và mức 1.
@@ -126,7 +115,7 @@ Quy ước:
 
 ---
 
-## 2. Chức năng "Xem lịch sử đấu" (UC06)
+## 2. Chức năng "Xem lịch sử đấu"
 
 1. Hùng nhấn nút Lịch sử đấu trên `MainView`.
 2. `MainView` gọi `HistoryView`.

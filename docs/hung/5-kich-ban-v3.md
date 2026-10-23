@@ -1,28 +1,10 @@
 # KỊCH BẢN v3 VÀ BIỂU ĐỒ TUẦN TỰ CHI TIẾT — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU
 
-> Issue: #45 [M4-03] · Người làm: Hùng · Người duyệt: Hoàng
-> Bước D4 trong `REPORT_CONVENTION.md`. Đây là **mục 4.x.3** trong báo cáo của Hùng.
-> Đầu vào: kịch bản v2 (`3-kich-ban-v2.md`), biểu đồ lớp chi tiết (`4-lop-thiet-ke.md`).
-
-> **Trạng thái:** viết trước khi code. Tên lớp và tên hàm theo `4-lop-thiet-ke.md`; lệch với code thật thì sửa tài liệu theo code trước khi nộp.
-
-Quy ước:
-- **Mỗi bước là đúng một thông điệp**, dùng tên lớp và tên hàm thật. Số bước trùng với số trên biểu đồ.
-- Biểu đồ có đủ boundary – control – entity; chức năng gọi server có thêm 2 khung "Client (Android)" và "Server (Spring Boot)".
-- **REST:** mỗi lời gọi API là **một** thông điệp từ `MatchApiDAO` tới `MatchRestController`, ghi phương thức + đường dẫn. Kết quả là một thông điệp trả về, ghi kiểu dữ liệu.
-- **Firebase (bất đồng bộ):**
-  - Lời gọi DAO là một thông điệp.
-  - Kết quả là thông điệp từ callback (`onComplete`, `onDataChange`), ghi tên callback trên mũi tên.
-- **`Thread` + `runOnUiThread`:** ghi chú `{Thread}` / `runOnUiThread` cạnh thông điệp.
-- **`CountDownTimer`:** vẽ như một đối tượng điều khiển, gửi `onTick` / `onFinish`.
-- **Đóng gói thực thể con được lược bỏ cho gọn** (giống bài mẫu). Ví dụ: khi đóng gói `Match` thì 2 `MatchPlayer` và 2 `Player` bên trong cũng được tạo, nhưng không vẽ thành thông điệp riêng.
-- **Chỉ gồm kịch bản chuẩn**, không có ngoại lệ. Ngoại lệ đã mô tả ở kịch bản v1.
-
 ---
 
-## 1. Chức năng "Chơi online" (UC05)
+## 1. Chức năng "Chơi online"
 
-### 1.1. Đoạn A: Tạo phòng (Hùng, máy 1)
+### 1.1. Đoạn A: Tạo phòng
 
 1. Hùng nhấn nút Chơi online trên `MainActivity`.
 2. Phương thức `onClick` của `MainActivity` gọi `startActivity` mở `OnlineActivity`.
@@ -60,7 +42,7 @@ Quy ước:
 - Kết quả bất đồng bộ đi ngược lại qua callback: `onComplete` / `onDataChange` → `onSuccess` → `onRoomReady`.
 - Bước 13 dùng transaction nên 2 người không thể tạo trùng một mã phòng.
 
-### 1.2. Đoạn B: Tìm phòng (Hoàng, máy 2)
+### 1.2. Đoạn B: Tìm phòng
 
 1. Hoàng nhấn nút Chơi online trên `MainActivity`.
 2. `onClick` của `MainActivity` gọi `startActivity` mở `OnlineActivity`.
@@ -96,7 +78,7 @@ Quy ước:
   - Nếu 2 người cùng nhập mã một lúc, Firebase chạy lại transaction cho người đến sau, nên phòng không bao giờ có 3 người.
 - `canJoin` là hàm Java thuần nên kiểm thử được bằng `MatchTest` mà không cần Firebase.
 
-### 1.3. Đoạn C: Thi đấu và kết thúc trận (Hùng, máy 1)
+### 1.3. Đoạn C: Thi đấu và kết thúc trận
 
 1. `onCreate` của `OnlineGameActivity` gọi `startGame(this)` của `MatchController`.
 2. `startGame` gọi `registerDisconnect("482915", 1)` của `MatchFirebaseDAO`: nếu máy 1 mất kết nối, máy chủ Firebase tự ghi `connected = false`, `forfeited = true` cho HUNG.
@@ -180,7 +162,7 @@ Quy ước:
 
 ![Hình 18: Tuần tự thiết kế Chơi online – Thi đấu và kết thúc trận](tuan-tu-thiet-ke-uc05c.png)
 
-*Hình 18: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu và kết thúc trận (client + server).*
+*Hình 18: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu và kết thúc trận.*
 
 - Biểu đồ có 77 thông điệp.
 - Ba lớp nghiệp vụ là hàm Java thuần, nằm trong code của nhóm:
@@ -192,7 +174,7 @@ Quy ước:
 
 ---
 
-## 2. Chức năng "Xem lịch sử đấu" (UC06)
+## 2. Chức năng "Xem lịch sử đấu"
 
 1. Hùng nhấn nút Lịch sử đấu trên `MainActivity`.
 2. `onClick` của `MainActivity` gọi `startActivity` mở `HistoryActivity`.
@@ -222,7 +204,7 @@ Quy ước:
 
 ![Hình 19: Tuần tự thiết kế Xem lịch sử đấu](tuan-tu-thiet-ke-uc06.png)
 
-*Hình 19: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu (client + server).*
+*Hình 19: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu.*
 
 - Biểu đồ có 25 thông điệp.
 - **Lời gọi REST** duy nhất là bước 9. Server đi theo khuôn `MatchRestController` → `MatchDAO` → `Match`.

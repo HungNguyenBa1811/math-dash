@@ -1,11 +1,6 @@
 # THIẾT KẾ CƠ SỞ DỮ LIỆU — MATH DASH 1v1
 
-> Issue: #24 [M1-03] · Người làm: Hùng · Người duyệt: Hoàng
-> Nguồn cho **mục 2 "Thiết kế CSDL"** trong báo cáo của cả 2 người:
-> - **Hoàng:** phần SQLite (`tblPlayer` bản sao, `tblGameRecord`) và cấu hình trong SharedPreferences.
-> - **Hùng:** phần MySQL (`tblPlayer`, `tblMatch`, `tblMatchPlayer`) và cây `matches` trên Firebase.
-
-Đầu vào là biểu đồ lớp thực thể pha thiết kế (Hình 3, `02-lop-thuc-the.md` phần B). Hệ thống có 3 nơi lưu dữ liệu, mỗi nơi giữ một loại dữ liệu:
+Hệ thống có 3 nơi lưu dữ liệu, mỗi nơi giữ một loại dữ liệu:
 
 | Nơi lưu | Giữ gì | Vì sao |
 |---|---|---|
@@ -15,7 +10,7 @@
 
 ---
 
-## 1. Thiết kế CSDL quan hệ (MySQL và SQLite)
+## 1. Thiết kế CSDL quan hệ MySQL và SQLite
 
 ### Bước 1: Mỗi lớp thực thể cần lưu đề xuất một bảng
 
@@ -236,7 +231,7 @@ Firebase vì vậy **không giữ dữ liệu lâu dài**; lịch sử đấu n�
 
 ---
 
-## 3. Dữ liệu lưu bằng SharedPreferences (app)
+## 3. Dữ liệu lưu bằng SharedPreferences trên app
 
 | Tệp | Khóa | Kiểu | Mặc định | Ý nghĩa |
 |---|---|---|---|---|

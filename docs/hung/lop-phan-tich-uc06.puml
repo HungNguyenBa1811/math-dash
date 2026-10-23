@@ -1,7 +1,7 @@
 @startuml lop-phan-tich-uc06
 !include _theme.iuml
 left to right direction
-title Biểu đồ lớp pha phân tích – Xem lịch sử đấu (UC06)
+title Biểu đồ lớp pha phân tích – Xem lịch sử đấu
 
 class MainView <<boundary>> {
   - outDisplayName

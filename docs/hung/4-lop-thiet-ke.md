@@ -1,27 +1,14 @@
 # THIẾT KẾ GIAO DIỆN VÀ BIỂU ĐỒ LỚP CHI TIẾT — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU
 
-> Issue: #43 [M4-01] · Người làm: Hùng · Người duyệt: Hoàng
-> Bước D3 trong `REPORT_CONVENTION.md`. Đây là **mục 4.x.1 và 4.x.2** trong báo cáo của Hùng.
-> Đầu vào:
-> - Biểu đồ lớp phân tích (`2-lop-phan-tich.md`).
-> - Lớp thực thể thiết kế (`docs/chung/02-lop-thuc-the.md`).
-> - CSDL (`docs/chung/03-csdl.md`).
-
-> **Trạng thái:** viết trước khi code (thiết kế dẫn code).
-> - Ảnh giao diện hiện là **phác thảo**; khi nộp thay bằng ảnh chụp app thật (M2-08).
-> - Tên lớp, hàm ở đây là **chữ ký mà code M2-02 → M2-05 phải theo**. Nếu code buộc phải khác thì sửa tài liệu theo code trước khi nộp.
-
 ---
 
-## 0. Quy ước chung khi chuyển từ phân tích sang thiết kế
+## 0. Ánh xạ từ pha phân tích sang pha thiết kế
 
-### 0.1. Lớp View → Activity hoặc overlay
-
-Tên lớp giao diện theo chuẩn Android: hậu tố `Activity`, đặt trong package `view`, layout `activity_<tên>.xml`. Không dùng tiền tố `Frm` của Java Swing.
+### 0.1. Lớp View sang Activity
 
 | Lớp phân tích | Lớp thiết kế | Layout |
 |---|---|---|
-| `MainView` | `MainActivity` (chung) | `activity_main.xml` |
+| `MainView` | `MainActivity` | `activity_main.xml` |
 | `OnlineView` | `OnlineActivity` | `activity_online.xml` |
 | `LobbyView` | `LobbyActivity` | `activity_lobby.xml` |
 | `OnlineGameView` | `OnlineGameActivity` | `activity_online_game.xml` |
@@ -30,28 +17,13 @@ Tên lớp giao diện theo chuẩn Android: hậu tố `Activity`, đặt trong
 
 `MatchResultView` là overlay chứ không phải Activity riêng, vì kết quả hiện đè lên màn thi đấu ngay khi trận xong, không cần chuyển dữ liệu qua `Intent`.
 
-### 0.2. Thuộc tính View → thành phần Android
-
-- **Bỏ tiền tố** `in` / `out` / `sub` của pha phân tích, thay bằng tiền tố theo loại View:
-  - `btn`: `Button`.
-  - `edt`: `EditText`.
-  - `txt`: `TextView`.
-  - `rv`: `RecyclerView`.
-  - `layout`: `LinearLayout`.
-- **Nhóm nút cùng loại** gom thành một mảng. Ví dụ `subDigits` → `btnDigits : Button[10]`.
-- **Nút chỉ có biểu tượng** dùng `ImageButton` và đặt `contentDescription` để trình đọc màn hình đọc được. Ví dụ `subBackspace` → `btnBackspace : ImageButton`.
-- **Thuộc tính ẩn kiểu thực thể** giữ dữ liệu cần dùng giữa các bước, ví dụ `me : Player` là người chơi đang đăng nhập.
-
-### 0.3. Phương thức của thực thể → Controller hoặc DAO
-
-- Phương thức truy cập dữ liệu (Firebase, REST, MySQL) chuyển sang **DAO**. Phương thức điều phối nhiều bước chuyển sang **`MatchController`**.
-- Phương thức là luật nghiệp vụ thuần thì **giữ lại ở lớp thực thể**, có unit test: `canJoin`, `isOver`, `getResult`, `recordCorrectAnswer`.
+### 0.2. Phương thức của thực thể sang Controller hoặc DAO
 
 | Phương thức pha phân tích | Lớp phân tích | Phương thức pha thiết kế | Lớp thiết kế |
 |---|---|---|---|
 | `createMatch()` | `Match` | `createRoom(me : Player, listener : RoomListener) : void`<br>`createMatch(match : Match, callback : MatchCallback) : void` | `MatchController`<br>`MatchFirebaseDAO` |
 | `joinMatch()` | `Match` | `findRoom(roomCode : String, me : Player, listener : RoomListener) : void`<br>`joinMatch(roomCode : String, me : Player, callback : MatchCallback) : void` | `MatchController`<br>`MatchFirebaseDAO` |
-| `canJoin()` | `Match` | `canJoin(playerId : int) : boolean` | `Match` (giữ nguyên) |
+| `canJoin()` | `Match` | `canJoin(playerId : int) : boolean` | `Match` |
 | `watchMatch()` | `Match` | `waitForOpponent(listener : RoomListener) : void`, `startGame(listener : GameListener) : MathProblem`<br>`watchMatch(roomCode : String, callback : MatchCallback) : void` | `MatchController`<br>`MatchFirebaseDAO` |
 | `deleteMatch()` | `Match` | `cancelRoom() : void`<br>`deleteMatch(roomCode : String) : void` | `MatchController`<br>`MatchFirebaseDAO` |
 | `generateProblem()` | `MathProblem` | `nextProblem() : MathProblem`<br>`generateProblem(level : int) : MathProblem` | `MatchController`<br>`ProblemDAO` |
@@ -59,12 +31,12 @@ Tên lớp giao diện theo chuẩn Android: hậu tố `Activity`, đặt trong
 | `updateScore()` | `MatchPlayer` | `updateScore(roomCode : String, playerId : int, score : int) : void` | `MatchFirebaseDAO` |
 | `forfeit()` | `MatchPlayer` | `leaveMatch() : void`<br>`forfeit(roomCode : String, playerId : int) : void` | `MatchController`<br>`MatchFirebaseDAO` |
 | `finishMatch()` | `Match` | `setTimeUp(roomCode : String, playerId : int) : void`<br>`isOver() : boolean`<br>`finishMatch(roomCode : String) : Match` → `finish(roomCode : String) : Match`<br>`readMatch(roomCode : String) : Match`, `updateStatus(roomCode : String, status : String) : void`<br>`insert(match : Match) : boolean`, `findByRoomCode(roomCode : String, createdAt : Date) : Match` | `MatchFirebaseDAO`<br>`Match`<br>`MatchApiDAO` → `MatchRestController`<br>`FirebaseAdminDAO`<br>`MatchDAO` |
-| `getResult()` | `Match` | `getResult(playerId : int) : String` | `Match` (giữ nguyên) |
+| `getResult()` | `Match` | `getResult(playerId : int) : String` | `Match` |
 | `getHistory()` | `Match` | `getHistory(playerId : int) : List<Match>` → `getByPlayer(playerId : int) : List<Match>`<br>`findByPlayer(playerId : int) : List<Match>` | `MatchApiDAO` → `MatchRestController`<br>`MatchDAO` |
 
-### 0.4. Lớp DAO cha
+### 0.3. Lớp DAO cha
 
-Mỗi nơi lưu trữ có một lớp DAO cha giữ kết nối dùng chung; các DAO con kế thừa (D11):
+Mỗi nơi lưu trữ có một lớp DAO cha giữ kết nối dùng chung; các DAO con kế thừa.
 
 | Nơi lưu trữ | DAO cha | Giữ | DAO con dùng ở đây |
 |---|---|---|---|
@@ -76,32 +48,15 @@ Hai lớp không có lớp cha:
 - `SessionDAO` chỉ đọc SharedPreferences.
 - `FirebaseAdminDAO` dùng Firebase Admin SDK, không dùng JDBC nên không kế thừa `DAO` của server.
 
-### 0.5. Hai package nối bằng một mũi tên
-
-Chức năng có gọi server được vẽ thành 2 package trên cùng một biểu đồ:
-- **"Client (Android)":** boundary → control → entity.
-- **"Server (Spring Boot)":** `MatchRestController` → `MatchDAO` / `FirebaseAdminDAO` → entity. Không có tầng Service.
-- Hai package nối nhau bằng **đúng một mũi tên `HTTP/JSON`** từ `MatchApiDAO` tới `MatchRestController`.
-
-Lớp của framework (`CountDownTimer`, `DatabaseReference`, `Connection`…) chỉ xuất hiện làm kiểu của thuộc tính.
-
-### 0.6. Quan hệ của lớp giao diện (phần app)
-
-- **Boundary – boundary** nối bằng quan hệ liên kết (association), đường thẳng không mũi tên. Ví dụ `MainActivity` – `OnlineActivity`, `HistoryActivity` – `HistoryAdapter`.
-- **Mỗi Activity nối với một lớp layout** cùng tên file, ví dụ `MainActivity` – `activity_main.xml`. Lớp layout để rỗng, không ghi thuộc tính hay phương thức; các thành phần của nó đã liệt kê ở bảng thành phần (mục x.1). `HistoryViewHolder` cũng nối với `item_history.xml`, vì mỗi dòng của danh sách dùng layout này.
-- **Activity giữ thực thể làm thuộc tính** thì nối bằng kết tập (aggregation), **hình thoi đặt ở phía Activity** vì Activity chứa thông tin của thực thể. Cách đọc giống cặp Khách hàng – Hóa đơn: hóa đơn chứa thông tin khách hàng nên vẽ `KhachHang --<> HoaDon`.
-  - `OnlineActivity`, `OnlineGameActivity` giữ `me : Player` → `Player --<> OnlineActivity`, `Player --<> OnlineGameActivity`.
-  - `HistoryAdapter` giữ `listMatch : List<Match>` → `Match --<> HistoryAdapter`, phía `Match` là n.
-
 ---
 
-## 1. Chức năng "Chơi online" (UC05)
+## 1. Chức năng "Chơi online"
 
 ### 1.1. Thiết kế giao diện
 
 ![Hình 12: Thiết kế giao diện chức năng Chơi online](giao-dien-uc05.png)
 
-*Hình 12: Thiết kế giao diện chức năng Chơi online (phác thảo, thay bằng ảnh app thật khi nộp).*
+*Hình 12: Thiết kế giao diện chức năng Chơi online.*
 
 Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → `LobbyActivity` → `OnlineGameActivity` → overlay `layoutResult`.
 - **Người tạo phòng** đi đủ 4 bước.
@@ -145,7 +100,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 
 ![Hình 13: Biểu đồ lớp chi tiết chức năng Chơi online](lop-thiet-ke-uc05.png)
 
-*Hình 13: Biểu đồ lớp chi tiết chức năng Chơi online (client + server).*
+*Hình 13: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
 **Package "Client (Android)".**
 
@@ -155,7 +110,7 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 | Boundary | `OnlineActivity` | Có `onClick` cho 2 nút:<br>- Tạo phòng gọi `MatchController.createRoom`.<br>- Vào phòng kiểm tra mã đủ 6 chữ số rồi gọi `MatchController.findRoom`.<br>Cài đặt `RoomListener`: vào được phòng thì `onRoomReady` mở `LobbyActivity`; không vào được thì `onError` hiện `Toast` |
 | Boundary | `LobbyActivity` | `onCreate` hiện mã phòng và gọi `MatchController.waitForOpponent`. `onRoomReady` hiện tên đối thủ, sau 2 giây mở `OnlineGameActivity`. `onClick` của nút Hủy gọi `cancelRoom` |
 | Boundary | `OnlineGameActivity` | Màn thi đấu, cài đặt `GameListener`.<br>- `onCreate` gọi `startGame`.<br>- `onClick` của nút số gọi `appendDigit`, nút xóa gọi `deleteDigit` (chỉ đổi `txtAnswer`, không gọi Controller). Nút OK gọi `submitAnswer` rồi `nextProblem`; `showScorePopup` chạy hiệu ứng "+12" / "MISS".<br>- `onTick` vẽ đồng hồ; `onMatchChanged` vẽ điểm đối thủ; `onMatchEnd` gọi `showResult` để hiện overlay.<br>- `onBackPressed` hỏi xác nhận rồi gọi `leaveMatch`.<br>Activity không tự chấm điểm, không tự phân thắng thua |
-| — | `RoomListener`, `GameListener` | 2 interface để `MatchController` báo kết quả bất đồng bộ về Activity; không dùng lambda (CONVENTION) |
+| — | `RoomListener`, `GameListener` | 2 interface để `MatchController` báo kết quả bất đồng bộ về Activity |
 | Control | `MatchController` | Singleton, điều phối cả trận online, giữ trận (`match`), ván chấm điểm (`session`), người chơi (`me`) và đồng hồ 60 giây (`timer`).<br>- `createRoom` sinh mã phòng bằng `generateRoomCode` và `questionSeed` ngẫu nhiên rồi nhờ `MatchFirebaseDAO` tạo trận.<br>- `startGame` tạo `ProblemDAO(new Random(questionSeed))` và `GameSession` chế độ online, đăng ký `onDisconnect`, bật đồng hồ.<br>- `submitAnswer` chấm bằng `MathProblem.isCorrect` + `GameSession`, đúng thì ghi điểm lên Firebase.<br>- Hết giờ thì ghi `timeUp`. Khi `Match.isOver()` đúng thì `finishMatch` gọi backend trong `Thread` (cờ `finishing` đảm bảo chỉ gọi một lần) |
 | Control | `SessionDAO` | `getPlayer()` đọc `playerId`, `displayName` từ SharedPreferences `"session"` và đóng gói thành `Player` (lớp chung) |
 | Control | `FirebaseDAO` ← `MatchFirebaseDAO` | `FirebaseDAO` giữ `con` (gốc Realtime Database) và `auth`. `MatchFirebaseDAO` đọc / ghi node `matches/{roomCode}`:<br>- `createMatch` dùng transaction; mã đã có trận chưa `finished` thì báo trùng.<br>- `joinMatch` dùng transaction và gọi `Match.canJoin` bên trong.<br>- `watchMatch` / `stopWatching` thêm / gỡ `ValueEventListener`.<br>- `updateScore`, `setTimeUp`, `forfeit` ghi node của chính mình.<br>- `registerDisconnect` đặt `onDisconnect` ghi `connected = false`, `forfeited = true`.<br>- `toMatch` đóng gói dữ liệu node thành `Match` + 2 `MatchPlayer` |
@@ -171,24 +126,24 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 |---|---|---|
 | Boundary | `MatchRestController` | `finish(roomCode)` nhận `POST /api/matches/{roomCode}/finish`:<br>1. Đọc trận từ Firebase bằng `FirebaseAdminDAO.readMatch`.<br>2. Nếu trận đã `finished` thì trả lại bản đã lưu (`MatchDAO.findByRoomCode`).<br>3. Nếu `Match.isOver()` sai thì trả 409 "Trận chưa kết thúc".<br>4. Ngược lại: ghi `endedAt`, `MatchDAO.insert`, `FirebaseAdminDAO.updateStatus(..., "finished")`, trả `Match` |
 | Control | `DAO` ← `MatchDAO` | `DAO` giữ `conn : Connection` (JDBC).<br>- `insert` ghi 1 dòng `tblMatch` + 2 dòng `tblMatchPlayer` trong một transaction, gán `id` vừa sinh vào `match`.<br>- `findByRoomCode` tìm theo khóa duy nhất `(roomCode, createdAt)` |
-| Control | `FirebaseAdminDAO` | Dùng Firebase Admin SDK (quyền server, không bị Security Rules chặn).<br>- `readMatch` đọc node `matches/{roomCode}` và đóng gói thành `Match`.<br>- `updateStatus` ghi trạng thái.<br>(Hàm `createCustomToken` của lớp này thuộc UC02, không vẽ ở đây) |
+| Control | `FirebaseAdminDAO` | Dùng Firebase Admin SDK (quyền server, không bị Security Rules chặn).<br>- `readMatch` đọc node `matches/{roomCode}` và đóng gói thành `Match`.<br>- `updateStatus` ghi trạng thái. |
 | Entity | `Match`, `MatchPlayer`, `Player` | Cùng tên, cùng thuộc tính với phía app, để Jackson chuyển JSON thẳng vào đối tượng. `Player` ở server có thêm `passwordHash`, không bao giờ trả ra JSON |
 
-**Quan hệ của lớp giao diện** theo mục 0.6:
-- 4 Activity nối nhau bằng liên kết và mỗi Activity nối với layout của nó (`activity_main.xml`, `activity_online.xml`, `activity_lobby.xml`, `activity_online_game.xml`). Overlay kết quả nằm trong `activity_online_game.xml` nên không có layout riêng.
-- `OnlineActivity` và `OnlineGameActivity` giữ `me : Player` nên có kết tập với `Player`, hình thoi ở phía Activity.
+**Quan hệ giữa các lớp giao diện:**
+- 4 Activity nối nhau bằng quan hệ liên kết. Mỗi Activity nối với layout của nó: `activity_main.xml`, `activity_online.xml`, `activity_lobby.xml`, `activity_online_game.xml`. Overlay kết quả nằm trong `activity_online_game.xml`.
+- `OnlineActivity` và `OnlineGameActivity` chứa thông tin người chơi trong thuộc tính `me`, nên `Player` kết tập vào 2 Activity này.
 
 **Mũi tên `HTTP/JSON`** từ `MatchApiDAO` tới `MatchRestController` là đường nối duy nhất giữa 2 package. Mọi lời gọi giữa app và server đều đi qua cặp lớp này.
 
 ---
 
-## 2. Chức năng "Xem lịch sử đấu" (UC06)
+## 2. Chức năng "Xem lịch sử đấu"
 
 ### 2.1. Thiết kế giao diện
 
 ![Hình 14: Thiết kế giao diện chức năng Xem lịch sử đấu](giao-dien-uc06.png)
 
-*Hình 14: Thiết kế giao diện chức năng Xem lịch sử đấu (phác thảo, thay bằng ảnh app thật khi nộp).*
+*Hình 14: Thiết kế giao diện chức năng Xem lịch sử đấu.*
 
 Màn Lịch sử đấu là một danh sách cuộn, mỗi dòng là một `item_history.xml`. Khi danh sách rỗng, `RecyclerView` ẩn đi và `txtEmpty` hiện "Chưa có trận nào".
 
@@ -209,7 +164,7 @@ Màn Lịch sử đấu là một danh sách cuộn, mỗi dòng là một `item
 
 ![Hình 15: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu](lop-thiet-ke-uc06.png)
 
-*Hình 15: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu (client + server).*
+*Hình 15: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
 **Package "Client (Android)".**
 
@@ -230,9 +185,9 @@ Màn Lịch sử đấu là một danh sách cuộn, mỗi dòng là một `item
 | Control | `DAO` ← `MatchDAO` | `findByPlayer` chạy truy vấn `tblMatch` JOIN 2 lần `tblMatchPlayer` (mình và đối thủ) JOIN `tblPlayer` (tên đối thủ), sắp `endedAt DESC`, rồi đóng gói mỗi dòng thành 1 `Match` + 2 `MatchPlayer` + 2 `Player` |
 | Entity | `Match`, `MatchPlayer`, `Player` | Như ở UC05 |
 
-**Quan hệ của lớp giao diện** theo mục 0.6:
-- `MainActivity` – `HistoryActivity` – `HistoryAdapter` – `HistoryViewHolder` nối nhau bằng liên kết.
+**Quan hệ giữa các lớp giao diện:**
+- `MainActivity` – `HistoryActivity` – `HistoryAdapter` – `HistoryViewHolder` nối nhau bằng quan hệ liên kết.
 - Layout: `MainActivity` – `activity_main.xml`, `HistoryActivity` – `activity_history.xml`, `HistoryViewHolder` – `item_history.xml`.
-- `HistoryAdapter` giữ danh sách `Match` nên có kết tập với `Match` (phía `Match` là n), hình thoi ở phía `HistoryAdapter`.
+- `HistoryAdapter` chứa danh sách trận trong thuộc tính `listMatch`, nên `Match` kết tập vào `HistoryAdapter`, bội số n ở phía `Match`.
 
 UC06 dùng lại cùng các lớp `MatchApiDAO`, `MatchRestController`, `MatchDAO` với UC05. Biểu đồ chỉ vẽ các phương thức chức năng này dùng.

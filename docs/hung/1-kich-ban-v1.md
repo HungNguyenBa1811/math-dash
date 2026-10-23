@@ -1,16 +1,12 @@
 # USE CASE CHI TIẾT VÀ KỊCH BẢN v1 — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU
 
-> Issue: #37 [M3-01] · Người làm: Hùng · Người duyệt: Hoàng
-> Bước A1 trong `REPORT_CONVENTION.md`. Mục 2 là **mục 1 "Mô tả chi tiết các chức năng"** trong báo cáo của Hùng.
-> Kịch bản v1 chỉ có Người chơi và Hệ thống: không có tên lớp, tên hàm hay thuật ngữ kỹ thuật.
-
-**Dữ liệu mẫu dùng trong mọi kịch bản của Hùng (v1, v2, v3):**
+**Dữ liệu mẫu:**
 
 | Người chơi | Tên đăng nhập | Tên hiển thị | Máy |
 |---|---|---|---|
-| Hùng | `hung` | `HUNG` | Máy 1 (người tạo phòng) |
-| Hoàng | `hoang` | `HOANG` | Máy 2 (người tìm phòng) |
-| Minh | `minh` | `MINH` | Máy 3 (chỉ xuất hiện ở ngoại lệ "Phòng đã đầy") |
+| Hùng | `hung` | `HUNG` | Máy 1, người tạo phòng |
+| Hoàng | `hoang` | `HOANG` | Máy 2, người tìm phòng |
+| Minh | `minh` | `MINH` | Máy 3, vào phòng khi phòng đã đầy |
 
 Mã phòng `482915`, tạo lúc 20:15 ngày 23/10/2026. Câu hỏi đầu tiên `12 + 7`, tỉ số cuối `120 – 96`.
 
@@ -43,7 +39,7 @@ Người chơi khởi phát trực tiếp 2 use case của module: "Chơi online
 
 ---
 
-## 2. Mô tả chi tiết các chức năng (specification)
+## 2. Mô tả chi tiết các chức năng
 
 ### 2.1. Chức năng "Chơi online"
 
@@ -88,7 +84,7 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
 
 ### 3.1. Kịch bản chuẩn
 
-**A. Tạo phòng (Hùng, máy 1)**
+**A. Tạo phòng**
 
 1. Ở giao diện chính (dòng "Xin chào, HUNG"; các nút Chơi offline, Chơi online, Lịch sử đấu, Cài đặt, Đăng xuất), Hùng nhấn nút **Chơi online**.
 2. Giao diện chơi online hiện lên gồm: nút **Tạo phòng**; ô nhập mã phòng (gợi ý "Nhập mã 6 chữ số") và nút **Vào phòng**.
@@ -105,7 +101,7 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
 
 5. Hùng đọc mã `482915` cho Hoàng.
 
-**B. Tìm phòng (Hoàng, máy 2)**
+**B. Tìm phòng**
 
 6. Ở giao diện chính của máy 2 ("Xin chào, HOANG"), Hoàng nhấn nút **Chơi online**.
 7. Giao diện chơi online hiện lên như bước 2.
@@ -113,7 +109,7 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
 9. Hệ thống kiểm tra phòng `482915`: có tồn tại, đang chờ, mới có 1 người (HUNG) và người đó không phải Hoàng. Hệ thống đưa Hoàng vào phòng và chuyển trận sang trạng thái đang đấu. Giao diện phòng chờ hiện lên trên máy 2 gồm: mã phòng `482915`; trạng thái "Trận đấu bắt đầu!"; đối thủ `HUNG`; nút Hủy bị ẩn.
 10. Cùng lúc, giao diện phòng chờ trên máy 1 cập nhật: trạng thái "Trận đấu bắt đầu!", đối thủ `HOANG`, nút Hủy bị ẩn.
 
-**C. Thi đấu (Hùng, máy 1)**
+**C. Thi đấu**
 
 11. Sau 2 giây, giao diện thi đấu hiện lên trên cả 2 máy. Trên máy 1 gồm:
 
