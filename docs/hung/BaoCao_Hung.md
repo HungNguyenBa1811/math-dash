@@ -412,47 +412,47 @@ Online dùng bàn phím số thay cho 4 phương án để người chơi phải
 Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Các bước chính của kịch bản v3:
 
 **Đoạn A: Tạo phòng.**
-1. `MainActivity.onClick` mở `OnlineActivity`.
-2. `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` (bước 3–6).
-3. Hùng nhấn Tạo phòng. `onClick` gọi `MatchController.createRoom`, hàm này tạo `Match` và gọi `MatchFirebaseDAO.createMatch` (bước 9–12).
-4. `runTransaction` ghi node; `onComplete` báo về `onSuccess`, rồi `onRoomReady` mở `LobbyActivity` (bước 13–16).
-5. `LobbyActivity` gọi `waitForOpponent` → `watchMatch` (bước 17–18).
-6. Khi Hoàng vào, `onDataChange` → `toMatch` → `onSuccess` → `onRoomReady`. Lobby hiện đối thủ và mở `OnlineGameActivity` (bước 20–26).
+1. Hàm onClick() của MainActivity mở OnlineActivity.
+2. Hàm onCreate() lấy người chơi bằng hàm getPlayer() của SessionDAO (bước 3–6).
+3. Người chơi nhấn Tạo phòng. Hàm onClick() gọi hàm createRoom() của MatchController, hàm này tạo Match và gọi hàm createMatch() của MatchFirebaseDAO (bước 9–12).
+4. Hàm runTransaction() ghi trận lên Firebase; hàm onComplete() báo về hàm onSuccess(), rồi hàm onRoomReady() mở LobbyActivity (bước 13–16).
+5. LobbyActivity gọi hàm waitForOpponent(), hàm này gọi hàm watchMatch() (bước 17–18).
+6. Khi có đối thủ vào phòng, hàm onDataChange() gọi hàm toMatch(), rồi hàm onSuccess() và hàm onRoomReady(). LobbyActivity hiển thị đối thủ và mở OnlineGameActivity (bước 20–26).
 
 ![Hình 6](tuan-tu-thiet-ke-uc05a.png)
 
 *Hình 6: Biểu đồ tuần tự chi tiết Chơi online, đoạn A: Tạo phòng.*
 
 **Đoạn B: Tìm phòng.**
-1. Hoàng nhập mã. `onClick` gọi `findRoom` → `MatchFirebaseDAO.joinMatch` (bước 9–10).
-2. Trong `doTransaction`, `toMatch` đóng gói trận hiện tại, rồi gọi `Match.canJoin(2)` (bước 11–15).
-3. `canJoin` đúng nên ghi `players/2` và `status = "playing"`. `onComplete` → `onSuccess` → `onRoomReady` → `LobbyActivity` → `OnlineGameActivity` (bước 16–23).
+1. Người chơi nhập mã phòng. Hàm onClick() gọi hàm findRoom(), hàm này gọi hàm joinMatch() của MatchFirebaseDAO (bước 9–10).
+2. Trong hàm doTransaction(), hàm toMatch() đóng gói trận hiện tại, rồi gọi hàm canJoin() của Match (bước 11–15).
+3. Hàm canJoin() trả về đúng nên người chơi được thêm vào trận và trận chuyển sang trạng thái đang chơi. Hàm onComplete() gọi hàm onSuccess(), rồi hàm onRoomReady() mở LobbyActivity và OnlineGameActivity (bước 16–23).
 
 ![Hình 7](tuan-tu-thiet-ke-uc05b.png)
 
 *Hình 7: Biểu đồ tuần tự chi tiết Chơi online, đoạn B: Tìm phòng.*
 
 **Đoạn C: Thi đấu và kết thúc trận.**
-1. `startGame` đăng ký `onDisconnect`, tạo `ProblemDAO` theo seed, tạo `GameSession(1, true)`, theo dõi trận, bật `CountDownTimer`, sinh câu đầu tiên (bước 1–14).
+1. Hàm startGame() đăng ký xử lý mất kết nối, tạo ProblemDAO theo mã đồng bộ câu hỏi, tạo GameSession, theo dõi trận, bật CountDownTimer và sinh câu hỏi đầu tiên (bước 1–14).
 2. Vòng lặp:
-   - `onTick` vẽ đồng hồ (bước 15–17).
-   - Chọn đáp án: `submitAnswer` → `isCorrect` → `recordCorrectAnswer` → `updateScore`; `nextProblem` → `generateProblem` (bước 18–34).
-   - Đối thủ ghi điểm: `onDataChange` → `toMatch` → `onSuccess` → `isOver()` sai → `onMatchChanged` (bước 35–42).
-3. `onFinish` → `setTimeUp` → `onTimeUp` (bước 43–46).
-4. Khi máy kia cũng hết giờ, `isOver()` đúng → `finishMatch` trong `Thread` → `MatchApiDAO.finishMatch` → **`POST /api/matches/482915/finish`** (bước 47–55).
-5. Server: `readMatch` → `isOver()` → `insert` (1 transaction) → `updateStatus("finished")` → trả `Match` (bước 56–66).
-6. App: `toMatch(json)` → `stopWatching` → `onMatchEnd` → `getResult(1)` = `WIN` → overlay THẮNG! (bước 67–74).
+   - Hàm onTick() cập nhật đồng hồ (bước 15–17).
+   - Người chơi trả lời: hàm submitAnswer() gọi hàm isCorrect(), hàm recordCorrectAnswer() và hàm updateScore(); hàm nextProblem() gọi hàm generateProblem() (bước 18–34).
+   - Đối thủ ghi điểm: hàm onDataChange() gọi hàm toMatch(), rồi hàm onSuccess(); hàm isOver() trả về sai nên gọi hàm onMatchChanged() (bước 35–42).
+3. Hết giờ: hàm onFinish() gọi hàm setTimeUp() và hàm onTimeUp() (bước 43–46).
+4. Khi máy đối thủ cũng hết giờ, hàm isOver() trả về đúng. Hàm finishMatch() chạy trong Thread, gọi hàm finishMatch() của MatchApiDAO để gửi yêu cầu kết thúc trận lên server (bước 47–55).
+5. Server: hàm readMatch(), hàm isOver(), hàm insert() trong một transaction, hàm updateStatus(), rồi trả trận đã lưu (bước 56–66).
+6. App: hàm toMatch(), hàm stopWatching(), hàm onMatchEnd(), hàm getResult(), rồi hiển thị kết quả trận (bước 67–74).
 
 ![Hình 8](tuan-tu-thiet-ke-uc05c.png)
 
 *Hình 8: Biểu đồ tuần tự chi tiết Chơi online, đoạn C: Thi đấu và kết thúc trận.*
 
 - Logic của chức năng nằm trong code của nhóm:
-  - Chấm điểm: `GameSession`, `MathProblem`.
-  - Luật vào phòng: `Match.canJoin`.
-  - Điều kiện kết thúc: `Match.isOver`, kiểm tra ở cả app và server.
-  - Thắng thua: `Match.getResult`, trên bản trận server đã lưu.
-- Firebase chỉ chuyển điểm giữa 2 máy và báo khi trận thay đổi.
+  - Chấm điểm: GameSession, MathProblem.
+  - Luật vào phòng: hàm canJoin() của Match.
+  - Điều kiện kết thúc: hàm isOver() của Match, kiểm tra ở cả app và server.
+  - Thắng thua: hàm getResult() của Match, trên bản trận server đã lưu.
+- Firebase chỉ chuyển điểm giữa hai máy và báo khi trận thay đổi.
 
 ### 4.2. Chức năng "Xem lịch sử đấu"
 
@@ -488,19 +488,19 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Các bước chí
 #### 4.2.3. Biểu đồ tuần tự chi tiết
 
 Các bước chính của kịch bản v3:
-1. `MainActivity.onClick` mở `HistoryActivity` (bước 1–2).
-2. `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` (bước 3–6).
-3. `loadHistory(1)` → `MatchApiDAO.getHistory(1)` trong `Thread` → **`GET /api/matches?playerId=1`** → `MatchRestController.getByPlayer` → `MatchDAO.findByPlayer` truy vấn và đóng gói `Match` → trả JSON (bước 7–15).
-4. `toMatch(json)` đóng gói `Match` phía app → trả `List<Match>` (bước 16–18).
-5. Trong `runOnUiThread`, tạo `HistoryAdapter`. Mỗi dòng gọi `getResult(1)` để chọn chữ và màu, rồi hiển thị danh sách (bước 19–22).
-6. Back → `finish()` → màn Chính (bước 23–25).
+1. Hàm onClick() của MainActivity mở HistoryActivity (bước 1–2).
+2. Hàm onCreate() lấy người chơi bằng hàm getPlayer() của SessionDAO (bước 3–6).
+3. Hàm loadHistory() gọi hàm getHistory() của MatchApiDAO trong Thread. MatchApiDAO gửi yêu cầu tới hàm getByPlayer() của MatchRestController; hàm này gọi hàm findByPlayer() của MatchDAO để truy vấn và đóng gói Match, rồi trả JSON (bước 7–15).
+4. Hàm toMatch() đóng gói Match phía app và trả danh sách trận (bước 16–18).
+5. Trong hàm runOnUiThread(), hàm loadHistory() tạo HistoryAdapter. Mỗi dòng gọi hàm getResult() để chọn chữ và màu, rồi hiển thị danh sách (bước 19–22).
+6. Người chơi nhấn quay lại, hàm finish() đưa về giao diện chính (bước 23–25).
 
 ![Hình 11](tuan-tu-thiet-ke-uc06.png)
 
 *Hình 11: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu.*
 
 - Server đi đúng khuôn Controller → DAO → Entity, không có tầng Service.
-- Kết quả thắng / thua / hòa không lưu trong CSDL mà tính lại bằng `Match.getResult`. Dữ liệu lấy từ MySQL nên kết quả trùng với lúc trận kết thúc.
+- Kết quả thắng / thua / hòa không lưu trong CSDL mà tính lại bằng hàm getResult() của Match. Dữ liệu lấy từ MySQL nên kết quả trùng với lúc trận kết thúc.
 
 ---
 
