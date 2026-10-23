@@ -27,8 +27,8 @@ class Player {
   - createdAt
 }
 class GameConfig {
-  - soundOn
-  - vibrationOn
+  - soundEnabled
+  - vibrationEnabled
   - secondsPerQuestion
 }
 class MathProblem {
@@ -36,36 +36,36 @@ class MathProblem {
   - operand2
   - operator
   - correctAnswer
-  - options
+  - answerOptions
 }
 class GameSession {
   - difficulty
   - score
-  - streak
+  - currentStreak
   - maxStreak
-  - lives
-  - totalCorrect
-  - totalWrong
-  - isGameOver
+  - livesLeft
+  - correctCount
+  - wrongCount
+  - gameOver
 }
 class GameRecord {
   - difficulty
   - score
   - maxStreak
-  - totalCorrect
-  - totalWrong
+  - correctCount
+  - wrongCount
   - playedAt
 }
 class Match {
-  - code
+  - roomCode
   - status
-  - seed
+  - questionSeed
   - createdAt
   - endedAt
 }
 class MatchPlayer {
   - score
-  - left
+  - forfeited
 }
 
 ' Thông tin A nằm trong B: hình thoi rỗng đặt ở B

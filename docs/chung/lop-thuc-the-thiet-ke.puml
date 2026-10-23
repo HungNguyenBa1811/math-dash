@@ -23,13 +23,13 @@ title Biểu đồ lớp thực thể pha thiết kế – Math Dash 1v1
 class Player {
   - id : int
   - username : String
-  - password : String
+  - passwordHash : String
   - displayName : String
   - createdAt : Date
 }
 class GameConfig {
-  - soundOn : boolean
-  - vibrationOn : boolean
+  - soundEnabled : boolean
+  - vibrationEnabled : boolean
   - secondsPerQuestion : int
 }
 class MathProblem {
@@ -37,18 +37,18 @@ class MathProblem {
   - operand2 : int
   - operator : String
   - correctAnswer : int
-  - options : List<Integer>
+  - answerOptions : List<Integer>
 }
 class GameSession {
   - difficulty : int
-  - online : boolean
-  - questionCount : int
+  - onlineMode : boolean
+  - questionsAsked : int
   - score : int
-  - streak : int
+  - currentStreak : int
   - maxStreak : int
-  - lives : int
-  - totalCorrect : int
-  - totalWrong : int
+  - livesLeft : int
+  - correctCount : int
+  - wrongCount : int
   - gameOver : boolean
   - player : Player
   - config : GameConfig
@@ -59,16 +59,16 @@ class GameRecord {
   - difficulty : int
   - score : int
   - maxStreak : int
-  - totalCorrect : int
-  - totalWrong : int
+  - correctCount : int
+  - wrongCount : int
   - playedAt : Date
   - player : Player
 }
 class Match {
   - id : int
-  - code : String
+  - roomCode : String
   - status : String
-  - seed : long
+  - questionSeed : long
   - createdAt : Date
   - endedAt : Date
   - players : List<MatchPlayer>
@@ -76,7 +76,7 @@ class Match {
 class MatchPlayer {
   - id : int
   - score : int
-  - left : boolean
+  - forfeited : boolean
   - player : Player
 }
 
