@@ -47,17 +47,15 @@ Chuyển kiểu:
 | `Date` | `datetime` | `text` (dạng `yyyy-MM-dd HH:mm:ss`) |
 | `boolean` | `tinyint(1)` | `integer` (0 / 1) |
 
-Thuộc tính `left` của `MatchPlayer` trùng từ khóa SQL `LEFT` (trong `LEFT JOIN`) nên cột tương ứng đặt tên là `hasLeft`.
-
 | Bảng | Cột |
 |---|---|
-| `tblPlayer` (MySQL) | id, username, password, displayName, createdAt |
-| `tblMatch` | id, code, status, seed, createdAt, endedAt |
-| `tblMatchPlayer` | id, score, hasLeft |
-| `tblGameRecord` | id, difficulty, score, maxStreak, totalCorrect, totalWrong, playedAt |
+| `tblPlayer` (MySQL) | id, username, passwordHash, displayName, createdAt |
+| `tblMatch` | id, roomCode, status, questionSeed, createdAt, endedAt |
+| `tblMatchPlayer` | id, score, forfeited |
+| `tblGameRecord` | id, difficulty, score, maxStreak, correctCount, wrongCount, playedAt |
 | `tblPlayer` (SQLite) | id, username, displayName |
 
-Bảng `tblPlayer` bản sao trên SQLite **chỉ lấy các cột app cần hiển thị**. Không có `password` vì app không bao giờ giữ mật khẩu, không có `createdAt` vì app không dùng.
+Bảng `tblPlayer` bản sao trên SQLite **chỉ lấy các cột app cần hiển thị**. Không có `passwordHash` vì app không bao giờ giữ mật khẩu, không có `createdAt` vì app không dùng.
 
 ### Bước 3: Quan hệ số lượng giữa các bảng
 
@@ -81,21 +79,21 @@ Không còn quan hệ n-n: quan hệ n-n `tblPlayer` – `tblMatch` đã đượ
 **Ràng buộc duy nhất:**
 - `tblPlayer.username`: không có 2 tài khoản trùng tên đăng nhập.
 - `tblMatchPlayer (tblMatchId, tblPlayerId)`: một người chơi chỉ có một dòng trong một trận.
-- `tblMatch (code, createdAt)`: mã phòng có thể dùng lại sau khi trận cũ kết thúc, nhưng cặp mã phòng + thời điểm tạo xác định duy nhất một trận. Backend dùng cặp này để biết trận đã được lưu hay chưa khi máy thứ hai cũng gọi API kết thúc trận.
+- `tblMatch (roomCode, createdAt)`: mã phòng có thể dùng lại sau khi trận cũ kết thúc, nhưng cặp mã phòng + thời điểm tạo xác định duy nhất một trận. Backend dùng cặp này để biết trận đã được lưu hay chưa khi máy thứ hai cũng gọi API kết thúc trận.
 
 ### Bước 5: Loại bỏ thuộc tính gây dư thừa
 
 **Thuộc tính dẫn xuất bị loại bỏ** (không có cột, tính khi cần):
-- Kết quả thắng / thua / hòa: suy ra từ `hasLeft` và `score` của 2 dòng `tblMatchPlayer` → `Match.getResult(playerId)`.
+- Kết quả thắng / thua / hòa: suy ra từ `forfeited` và `score` của 2 dòng `tblMatchPlayer` → `Match.getResult(playerId)`.
 - Kỷ lục: `SELECT MAX(score) FROM tblGameRecord WHERE tblPlayerId = ? AND difficulty = ?`.
-- Tỉ lệ trả lời đúng: `totalCorrect / (totalCorrect + totalWrong)` → `GameRecord.getAccuracy()`.
+- Tỉ lệ trả lời đúng: `correctCount / (correctCount + wrongCount)` → `GameRecord.getAccuracy()`.
 - Mức hiện tại: chỉ có trong `GameSession`, không lưu.
 
 **Cột bị loại vì luôn mang một giá trị:** `status` của `tblMatch`. MySQL chỉ lưu trận **đã kết thúc**, nên cột này luôn là `finished`. Trạng thái `waiting` / `playing` chỉ có ý nghĩa khi trận đang diễn ra và được giữ trên Firebase (mục 2).
 
 **Các thuộc tính trông giống trùng lặp nhưng được giữ lại:**
 - `username`, `displayName` trong `tblPlayer` của SQLite so với `tblPlayer` của MySQL: đây là bản sao có chủ đích để chơi offline khi mất mạng (bước 1). Bản sao được ghi đè mỗi lần đăng nhập nên luôn khớp bản chính.
-- `seed` trong `tblMatch`: không suy ra được từ cột khác; giữ lại để có thể sinh lại đúng dãy câu hỏi của trận khi cần kiểm tra.
+- `questionSeed` trong `tblMatch`: không suy ra được từ cột khác; giữ lại để có thể sinh lại đúng dãy câu hỏi của trận khi cần kiểm tra.
 
 ### Ràng buộc NULL
 
@@ -123,29 +121,29 @@ CREATE DATABASE IF NOT EXISTS mathdash CHARACTER SET utf8mb4 COLLATE utf8mb4_uni
 USE mathdash;
 
 CREATE TABLE tblPlayer (
-    id          INT(10)      NOT NULL AUTO_INCREMENT,
-    username    VARCHAR(255) NOT NULL,
-    password    VARCHAR(255) NOT NULL,          -- mật khẩu đã băm BCrypt
-    displayName VARCHAR(255) NOT NULL,
-    createdAt   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id           INT(10)      NOT NULL AUTO_INCREMENT,
+    username     VARCHAR(255) NOT NULL,
+    passwordHash VARCHAR(255) NOT NULL,          -- mật khẩu đã băm BCrypt
+    displayName  VARCHAR(255) NOT NULL,
+    createdAt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_player_username (username)
 );
 
 CREATE TABLE tblMatch (
-    id        INT(10)    NOT NULL AUTO_INCREMENT,
-    code      VARCHAR(6) NOT NULL,
-    seed      BIGINT(20) NOT NULL,
-    createdAt DATETIME   NOT NULL,
-    endedAt   DATETIME   NOT NULL,
+    id           INT(10)    NOT NULL AUTO_INCREMENT,
+    roomCode     VARCHAR(6) NOT NULL,
+    questionSeed BIGINT(20) NOT NULL,
+    createdAt    DATETIME   NOT NULL,
+    endedAt      DATETIME   NOT NULL,
     PRIMARY KEY (id),
-    UNIQUE KEY uq_match_code_created (code, createdAt)
+    UNIQUE KEY uq_match_room_created (roomCode, createdAt)
 );
 
 CREATE TABLE tblMatchPlayer (
     id          INT(10)    NOT NULL AUTO_INCREMENT,
     score       INT(10)    NOT NULL DEFAULT 0,
-    hasLeft     TINYINT(1) NOT NULL DEFAULT 0,
+    forfeited   TINYINT(1) NOT NULL DEFAULT 0,
     tblMatchId  INT(10)    NOT NULL,
     tblPlayerId INT(10)    NOT NULL,
     PRIMARY KEY (id),
@@ -169,8 +167,8 @@ CREATE TABLE tblGameRecord (
     difficulty   INTEGER NOT NULL CHECK (difficulty BETWEEN 1 AND 3),
     score        INTEGER NOT NULL,
     maxStreak    INTEGER NOT NULL,
-    totalCorrect INTEGER NOT NULL,
-    totalWrong   INTEGER NOT NULL,
+    correctCount INTEGER NOT NULL,
+    wrongCount   INTEGER NOT NULL,
     playedAt     TEXT    NOT NULL,
     tblPlayerId  INTEGER NOT NULL REFERENCES tblPlayer(id)
 );
@@ -200,33 +198,33 @@ Firebase là CSDL dạng cây JSON, không có bảng. Ánh xạ từ lớp th�
 
 | Lớp | Node | Khóa |
 |---|---|---|
-| `Match` | `matches/{code}` | Mã phòng 6 chữ số. Duy nhất vì trên Firebase chỉ có các trận chưa kết thúc |
-| `MatchPlayer` (thành phần của `Match`) | `matches/{code}/players/{playerId}` | `id` người chơi trên MySQL, cũng là `auth.uid` trên Firebase (custom token) |
+| `Match` | `matches/{roomCode}` | Mã phòng 6 chữ số. Duy nhất vì trên Firebase chỉ có các trận chưa kết thúc |
+| `MatchPlayer` (thành phần của `Match`) | `matches/{roomCode}/players/{playerId}` | `id` người chơi trên MySQL, cũng là `auth.uid` trên Firebase (custom token) |
 
 ```
-matches/{code}
-    status    : "waiting" | "playing" | "finished"
-    seed      : long
-    createdAt : ServerValue.TIMESTAMP
+matches/{roomCode}
+    status       : "waiting" | "playing" | "finished"
+    questionSeed : long
+    createdAt    : ServerValue.TIMESTAMP
     players/
         {playerId} : {
             displayName : String
             score       : int
-            left        : bool
-            online      : bool
-            finished    : bool
+            forfeited   : bool
+            connected   : bool
+            timeUp      : bool
         }
 ```
 
 **Thuộc tính chỉ có trên Firebase, không lưu vào MySQL:**
 - `status`: chỉ có ý nghĩa khi trận chưa kết thúc (bước 5 ở trên).
-- `online`: máy của người chơi còn kết nối hay không; dùng `onDisconnect()` để máy chủ Firebase tự ghi `false` khi mất kết nối.
-- `finished`: máy của người chơi đã hết 60 giây hay chưa; dùng để biết khi nào gọi API kết thúc trận.
+- `connected`: máy của người chơi còn kết nối hay không; dùng `onDisconnect()` để máy chủ Firebase tự ghi `false` khi mất kết nối.
+- `timeUp`: máy của người chơi đã hết 60 giây hay chưa; dùng để biết khi nào gọi API kết thúc trận.
 
 **Thuộc tính sao chép:** `displayName` được chép từ `Player` khi vào phòng, để máy đối thủ hiện được tên mà không phải gọi backend.
 
 **Vòng đời một trận:**
-1. Tạo phòng → node `matches/{code}` xuất hiện với `status = waiting`.
+1. Tạo phòng → node `matches/{roomCode}` xuất hiện với `status = waiting`.
 2. Đối thủ vào → `status = playing`.
 3. Hết giờ hoặc có người bỏ trận → backend đọc node, lưu vào `tblMatch` + `tblMatchPlayer`, đặt `status = finished`.
 4. Node bị xóa.
@@ -239,8 +237,8 @@ Firebase vì vậy **không giữ dữ liệu lâu dài**.
 
 | Tệp | Khóa | Kiểu | Mặc định | Ý nghĩa |
 |---|---|---|---|---|
-| `config` | `soundOn` | boolean | `true` | Âm thanh bật / tắt (`GameConfig`) |
-| `config` | `vibrationOn` | boolean | `true` | Rung bật / tắt (`GameConfig`) |
+| `config` | `soundEnabled` | boolean | `true` | Âm thanh bật / tắt (`GameConfig`) |
+| `config` | `vibrationEnabled` | boolean | `true` | Rung bật / tắt (`GameConfig`) |
 | `config` | `secondsPerQuestion` | int | `6` | Thời gian mỗi câu, một trong 4 / 6 / 8 / 10 (`GameConfig`) |
 | `session` | `token` | String | — | Token đăng nhập gửi kèm mỗi lời gọi REST |
 | `session` | `playerId` | int | — | `id` người chơi đang đăng nhập |

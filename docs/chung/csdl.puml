@@ -22,15 +22,15 @@ package "MySQL (backend)" {
     * id : integer(10) <<PK>>
     --
     * username : varchar(255) <<UNIQUE>>
-    * password : varchar(255)
+    * passwordHash : varchar(255)
     * displayName : varchar(255)
     * createdAt : datetime
   }
   entity "tblMatch" as SM {
     * id : integer(10) <<PK>>
     --
-    * code : varchar(6)
-    * seed : bigint(20)
+    * roomCode : varchar(6)
+    * questionSeed : bigint(20)
     * createdAt : datetime
     * endedAt : datetime
   }
@@ -38,7 +38,7 @@ package "MySQL (backend)" {
     * id : integer(10) <<PK>>
     --
     * score : integer(10)
-    * hasLeft : tinyint(1)
+    * forfeited : tinyint(1)
     * tblMatchId : integer(10) <<FK>>
     * tblPlayerId : integer(10) <<FK>>
   }
@@ -57,8 +57,8 @@ package "SQLite (app)" {
     * difficulty : integer
     * score : integer
     * maxStreak : integer
-    * totalCorrect : integer
-    * totalWrong : integer
+    * correctCount : integer
+    * wrongCount : integer
     * playedAt : text
     * tblPlayerId : integer <<FK>>
   }
