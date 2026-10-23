@@ -1,12 +1,12 @@
 # Math Dash - Retro Arcade Speed Math (Android Java)
 
-> **Math Dash** là ứng dụng game giải toán nhanh sinh tồn (Speed Arithmetic Survival) trên nền tảng **Android Native (Java)**, được thiết kế theo phong cách đồ họa **Retro Arcade cổ điển**, độ tương phản cao và kiến trúc chuẩn **MVC + Frm / DAO / Entity** tuân thủ nguyên lý **Single Responsibility Principle (SRP)**.
+> **Math Dash** là ứng dụng game giải toán nhanh sinh tồn (Speed Arithmetic Survival) trên nền tảng **Android Native (Java)**, được thiết kế theo phong cách đồ họa **Retro Arcade cổ điển**, độ tương phản cao và kiến trúc chuẩn **MVC: View (Activity) / Controller / DAO / Entity** tuân thủ nguyên lý **Single Responsibility Principle (SRP)**.
 
 ---
 
 ## Mục lục
 1. [Giới thiệu & Lối chơi](#-giới-thiệu--lối-chơi)
-2. [Kiến trúc ứng dụng (MVC + Frm - DAO - Entity)](#-kiến-trúc-ứng-dụng)
+2. [Kiến trúc ứng dụng (MVC: View - Controller - DAO - Entity)](#-kiến-trúc-ứng-dụng)
 3. [Mô hình dữ liệu (ERD)](#-mô-hình-dữ-liệu-erd)
 4. [Giao diện & Phong cách Retro (UI/UX)](#-giao-diện--phong-cách-retro)
 5. [Cấu trúc thư mục dự án](#-cấu-trúc-thư-mục-dự-án)
@@ -33,7 +33,7 @@ Dự án áp dụng mô hình phân lớp rõ ràng, phân định trách nhiệ
 
 ```
                         +----------------------+
-                        |   Frm Activities     |  <- View Layer (UI & Events)
+                        |   Activities (View)  |  <- View Layer (UI & Events)
                         +----------+-----------+
                                    |
                                    v
@@ -70,7 +70,7 @@ Các JavaBean / POJO thuần túy, đóng gói dữ liệu:
   * Nhận input từ giao diện, đối chiếu đáp án, tăng/giảm điểm và mạng.
   * Bắn callback qua interface `GameControllerListener` để cập nhật UI.
 
-### 4. Tầng Frm / Activity (`ptit.e23cnpm01.nguyenbahung.math_dash.frm`)
+### 4. Tầng View / Activity (`ptit.e23cnpm01.nguyenbahung.math_dash.view`; code khung hiện vẫn ở package `frm`, đổi tên ở M1-05)
 * [`FrmMainActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmMainActivity.java): Màn hình Menu chính, nhập tên nhân vật, xem trước Top 5 kỷ lục, nút bắt đầu.
 * [`FrmGameActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmGameActivity.java): Màn hình thi đấu chính (bảng điểm, thanh thời gian chạy mượt, phép toán to bản, lưới 2x2 nút bấm xúc giác, modal Game Over).
 * [`FrmLeaderboardActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmLeaderboardActivity.java): Bảng vàng hiển thị đầy đủ thứ hạng, tỉ lệ chính xác và ngày chơi.

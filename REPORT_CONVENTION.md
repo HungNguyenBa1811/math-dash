@@ -196,9 +196,11 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 | Loại | Lớp trong Math Dash |
 |---|---|
-| Boundary | App: `FrmXxxActivity`, Adapter. Server: `XxxRestController` |
+| Boundary | App: `XxxActivity`, Adapter. Server: `XxxRestController` |
 | Control | App: Controller (`GameController`, `MatchController`), DAO. Server: DAO |
 | Entity | Lớp ở D1 (cùng tên ở app và server) |
+
+**Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `OnlineGameActivity`), layout tương ứng `activity_main.xml`, `activity_online_game.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 
 **Quy tắc DAO:** mỗi nơi lưu trữ có một lớp cha giữ kết nối dùng chung, các DAO con kế thừa.
 - App, SQLite: `DAO` (giữ `SQLiteDatabase con`) ← `PlayerDAO`, `GameRecordDAO`.
@@ -226,10 +228,10 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 
 **Kịch bản v3:** đánh số, mỗi bước một thông điệp, dùng **tên lớp và tên hàm thật trong code**. Mẫu:
 
-> 1. Người chơi nhập tên `HUNG` và nhấn nút Chơi offline trên `FrmMainActivity`.
-> 2. Phương thức `onClick` của `FrmMainActivity` được gọi.
-> 3. `onClick` gọi `FrmGameActivity`.
-> 4. Phương thức `onCreate` của `FrmGameActivity` được gọi.
+> 1. Người chơi nhập tên `HUNG` và nhấn nút Chơi offline trên `MainActivity`.
+> 2. Phương thức `onClick` của `MainActivity` được gọi.
+> 3. `onClick` gọi `GameActivity`.
+> 4. Phương thức `onCreate` của `GameActivity` được gọi.
 > 5. `onCreate` gọi phương thức `findOrCreateByUsername` của `PlayerDAO`.
 > 6. `findOrCreateByUsername` truy vấn bảng `tblPlayer`.
 > 7. `findOrCreateByUsername` gọi lớp `Player` để đóng gói kết quả.
