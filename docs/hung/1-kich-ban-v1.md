@@ -55,11 +55,11 @@ Người chơi đã đăng nhập, đang ở giao diện chính → Giao diện 
       → Nếu mã phòng không đủ 6 chữ số: Hệ thống thông báo "Mã phòng gồm 6 chữ số"
       → Nếu không có phòng nào mang mã này: Hệ thống thông báo "Không tìm thấy phòng"
       → Nếu phòng đã đủ 2 người hoặc trận đã bắt đầu: Hệ thống thông báo "Phòng đã đầy"
-Thi đấu: Giao diện thi đấu hiện lên với: hàng điểm (tên và điểm của mình được làm nổi bật, chữ VS, điểm và tên của đối thủ), đồng hồ đếm ngược 60 giây ở giữa, câu hỏi kèm số đang nhập, bàn phím số 0–9 cùng nút xóa (biểu tượng ⌫) và nút OK → Hai máy nhận cùng một dãy câu hỏi → Người chơi bấm các số để nhập đáp án (nút xóa bỏ số cuối, tối đa 3 chữ số) và nhấn OK
+Thi đấu: Giao diện thi đấu hiện lên với: hàng điểm (điểm của mình bên trái, được làm nổi bật, chữ VS, điểm của đối thủ bên phải; không hiện tên), đồng hồ đếm ngược 60 giây ở giữa, câu hỏi kèm số đang nhập, bàn phím số 0–9 cùng nút xóa (biểu tượng ⌫) và nút OK → Hai máy nhận cùng một dãy câu hỏi → Người chơi bấm các số để nhập đáp án (nút xóa bỏ số cuối, tối đa 3 chữ số) và nhấn OK
   → Nếu đúng: Hệ thống cộng 10 + chuỗi đúng × 2 điểm, chữ "+12" màu xanh bay lên từ điểm của mình rồi mờ dần → Điểm mới được gửi để máy đối thủ thấy → Xóa ô nhập, hiển thị câu tiếp theo
   → Nếu sai: Hệ thống không cộng điểm, đưa chuỗi đúng về 0, chữ "MISS" màu đỏ bay lên tương tự (không mất mạng) → Xóa ô nhập, hiển thị câu tiếp theo
   → Nếu nhấn OK khi chưa nhập số nào: Hệ thống không làm gì
-→ (lặp lại đến khi hết giờ, cứ 5 câu thì câu hỏi khó lên 1 mức) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên giao diện → Hết 60 giây: Hệ thống khóa bàn phím số, đồng hồ đổi thành "Hết giờ! Đang chờ kết quả..." → Khi cả 2 máy đều hết giờ: Hệ thống xác định kết quả và lưu trận vào lịch sử đấu của cả 2 người → Giao diện kết quả hiện lên với: dòng kết quả THẮNG! / THUA! / HÒA!, tỉ số "<mình> <điểm> - <điểm> <đối thủ>", nút Về menu → Người chơi nhấn Về menu → Quay về giao diện chính
+→ (lặp lại đến khi hết giờ, cứ 5 câu thì câu hỏi khó lên 1 mức) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên giao diện → Hết 60 giây: Hệ thống khóa bàn phím số, đồng hồ đổi thành "Hết giờ! Đang chờ kết quả..." → Khi cả 2 máy đều hết giờ: Hệ thống xác định kết quả và lưu trận vào lịch sử đấu của cả 2 người → Giao diện kết quả hiện lên với: dòng kết quả THẮNG! / THUA! / HÒA!, tỉ số "<điểm mình> - <điểm đối thủ>", nút Về menu → Người chơi nhấn Về menu → Quay về giao diện chính
   → Nếu người chơi nhấn Back khi đang thi đấu: Hệ thống hỏi "Thoát sẽ bị xử thua?" với 2 nút Ở lại, Thoát → Thoát: người chơi bị xử thua, hệ thống lưu trận, quay về giao diện chính → Ở lại: tiếp tục thi đấu
   → Nếu đối thủ thoát hoặc mất kết nối: Hệ thống thông báo "Đối thủ đã thoát" → Người chơi được xử thắng, hiện giao diện kết quả
   → Nếu máy của người chơi mất kết nối: Hệ thống thông báo "Mất kết nối, trận đấu đã kết thúc" → Quay về giao diện chính; người chơi bị xử thua
@@ -119,7 +119,7 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
 
     | Thành phần | Giá trị |
     |---|---|
-    | Hàng điểm (trên cùng) | `HUNG` **0** (nổi bật) · `VS` · 0 `HOANG` |
+    | Hàng điểm (trên cùng) | **0** (của mình, nổi bật) · `VS` · 0 (đối thủ) |
     | Đồng hồ (giữa) | `60` |
     | Câu hỏi | `12 + 7 = ?` (số đang nhập hiện thay cho dấu `?`) |
     | Bàn phím số | `1` `2` `3` / `4` `5` `6` / `7` `8` `9` / `⌫` `0` **OK** |
@@ -132,7 +132,7 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
     *(Lặp lại các bước 12–14 cho đến khi đồng hồ về 0. Trả lời sai thì chữ "MISS" màu đỏ bay lên, không cộng điểm, chuỗi đúng về 0, không mất mạng. Nhấn ⌫ thì xóa số cuối; nhấn OK khi chưa nhập gì thì không có gì xảy ra. Cứ 5 câu thì câu hỏi khó lên 1 mức.)*
 15. Đồng hồ về `0`. Hệ thống khóa bàn phím số, đồng hồ đổi thành "Hết giờ! Đang chờ kết quả...". Điểm cuối trên máy 1: HUNG `120`, HOANG `96`.
 16. Máy 2 cũng hết giờ. Hệ thống xác định kết quả: không ai bỏ trận, `120 > 96` nên Hùng thắng. Hệ thống lưu trận vào lịch sử đấu của cả 2 người.
-17. Giao diện kết quả hiện lên trên máy 1 gồm: dòng **THẮNG!** (màu xanh), tỉ số `HUNG 120 - 96 HOANG`, nút **Về menu**. Trên máy 2 hiện **THUA!** với tỉ số `HOANG 96 - 120 HUNG`.
+17. Giao diện kết quả hiện lên trên máy 1 gồm: dòng **THẮNG!** (màu xanh), tỉ số `120 - 96`, nút **Về menu**. Trên máy 2 hiện **THUA!** với tỉ số `96 - 120`.
 18. Hùng nhấn nút **Về menu**.
 19. Giao diện chính hiện lại.
 
@@ -145,7 +145,7 @@ Kịch bản chuẩn chia 3 đoạn, khớp với 3 use case con: **A. Tạo ph�
 | 9 | Hoàng nhập `482910`, không có phòng nào mang mã này. Hệ thống báo "Không tìm thấy phòng", giữ nguyên giao diện bước 7 để nhập lại. |
 | 9 | Sau khi Hoàng đã vào, Minh (máy 3) nhập `482915`. Phòng đã đủ 2 người, trận đã bắt đầu. Hệ thống báo "Phòng đã đầy", giữ nguyên giao diện chơi online của Minh. |
 | 12–14 | **Thoát trận.** Hùng nhấn Back. Hệ thống hiện hộp thoại "Thoát sẽ bị xử thua?" với 2 nút **Ở lại**, **Thoát**. Hùng nhấn **Thoát**: Hùng bị xử thua, hệ thống lưu trận (Hùng thua dù đang dẫn điểm) và quay về giao diện chính. Nhấn **Ở lại** thì tiếp tục thi đấu, đồng hồ vẫn chạy. |
-| 12–14 | **Đối thủ thoát.** Hoàng thoát trận hoặc máy 2 mất kết nối khi tỉ số đang `36 – 72`. Máy 1 hiện thông báo "Đối thủ đã thoát", hệ thống xác định Hùng thắng (người bỏ trận thua, không xét điểm), lưu trận và hiện giao diện kết quả **THẮNG!** `HUNG 36 - 72 HOANG`. |
+| 12–14 | **Đối thủ thoát.** Hoàng thoát trận hoặc máy 2 mất kết nối khi tỉ số đang `36 – 72`. Máy 1 hiện thông báo "Đối thủ đã thoát", hệ thống xác định Hùng thắng (người bỏ trận thua, không xét điểm), lưu trận và hiện giao diện kết quả **THẮNG!** `36 - 72`. |
 | 12–15 | **Máy của mình mất kết nối.** Máy 1 mất mạng. Hệ thống báo "Mất kết nối, trận đấu đã kết thúc" và quay về giao diện chính. Hùng bị xử thua; máy 2 nhận "Đối thủ đã thoát" như ngoại lệ trên. |
 | 16 | **Hòa.** Hết giờ với tỉ số `84 – 84`, không ai bỏ trận. Hệ thống xác định hòa; giao diện kết quả hiện **HÒA!** (màu vàng) trên cả 2 máy. |
 | 16 | Không kết nối được máy chủ khi xác định kết quả. Hệ thống báo "Không lưu được kết quả trận, kiểm tra kết nối mạng" và hiện nút **Về menu**. Trận vẫn được lưu khi máy đối thủ gửi yêu cầu kết thúc trận. |

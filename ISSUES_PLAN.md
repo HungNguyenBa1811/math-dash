@@ -456,7 +456,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
     - Nếu chưa lưu: `MatchDAO.insert(match)` (1 dòng `tblMatch` + 2 dòng `tblMatchPlayer`), `FirebaseAdminDAO.updateStatus(roomCode, "finished")`.
   - **Luật thắng thua là hàm Java thuần (D7):** `Match.getResult(int playerId): String` trả `WIN` / `LOSE` / `DRAW`: ai `forfeited` thì thua; không ai bỏ thì so điểm. Unit test `MatchResultTest` (phía server) cho 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm; thêm 3 trường hợp `isOver()`: chưa ai hết giờ → `false`, mới 1 người hết giờ → `false`, có người bỏ trận → `true`.
   - **`OnlineGameActivity`** (bố cục chi tiết ở `docs/hung/4-lop-thiet-ke.md` mục 1.1):
-    - Hàng điểm `MÌNH 36 VS 24 ĐỐI THỦ`, điểm của mình nổi bật; chữ `+12` / `MISS` bay lên từ điểm của mình rồi mờ dần.
+    - Hàng điểm `36 VS 24`, không hiện tên; điểm của mình bên trái, nổi bật; chữ `+12` / `MISS` bay lên từ điểm của mình rồi mờ dần.
     - Đồng hồ 60s ở giữa; phép tính kèm số đang nhập.
     - Bàn phím số `0`–`9`, nút xóa chỉ có icon ⌫ (`ImageButton`), nút OK; tối đa 3 chữ số. Online **không** dùng 4 phương án.
     - Overlay THẮNG / THUA / HÒA có tỉ số và nút "Về menu".

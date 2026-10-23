@@ -18,9 +18,7 @@ class LobbyView <<boundary>> {
   - subCancel
 }
 class OnlineGameView <<boundary>> {
-  - outMyName
   - outMyScore
-  - outOpponentName
   - outOpponentScore
   - outScorePopup
   - outTimer

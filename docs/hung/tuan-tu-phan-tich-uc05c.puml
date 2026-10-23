@@ -14,7 +14,7 @@ entity MathProblem as MPr
 GV -> M : watchMatch()
 GV -> MPr : generateProblem()
 MPr --> GV : câu hỏi 12 + 7
-GV --> U : hiển thị HUNG 0 VS 0 HOANG, 60, câu hỏi, bàn phím số
+GV --> U : hiển thị 0 VS 0, 60, câu hỏi, bàn phím số
 loop đến khi hết 60 giây
   alt Hùng nhập đáp án
     U -> GV : nhập 19, nhấn OK
@@ -52,7 +52,7 @@ M --> GV : trận đã lưu, HUNG 120 – HOANG 96
 GV -> M : getResult(HUNG)
 M --> GV : WIN
 GV -> RV : gọi
-RV --> U : hiển thị THẮNG!, HUNG 120 - 96 HOANG
+RV --> U : hiển thị THẮNG!, 120 - 96
 U -> RV : nhấn Về menu
 RV -> MV : gọi
 MV --> U : hiển thị

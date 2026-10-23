@@ -30,9 +30,7 @@ package "Client (Android)" {
     + onError(message : String) : void
   }
   class OnlineGameActivity <<boundary>> {
-    - txtMyName : TextView
     - txtMyScore : TextView
-    - txtOpponentName : TextView
     - txtOpponentScore : TextView
     - txtScorePopup : TextView
     - txtTimer : TextView

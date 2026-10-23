@@ -35,7 +35,7 @@ PD -> MP : new MathProblem(12, 7, "+")
 MP --> PD : MathProblem
 PD --> MC : MathProblem
 MC --> GA : MathProblem (12 + 7)
-GA --> U : hiển thị HUNG 0 VS 0 HOANG, 60, 12 + 7 = ?, bàn phím số
+GA --> U : hiển thị 0 VS 0, 60, 12 + 7 = ?, bàn phím số
 
 loop đến khi CountDownTimer hết giờ
   T -> MC : onTick(42000)
@@ -129,7 +129,7 @@ MC -> MFD : stopWatching("482915")
 MC -> GA : runOnUiThread: onMatchEnd(match)
 GA -> M : showResult(): getResult(1)
 M --> GA : "WIN"
-GA --> U : hiển thị THẮNG!, HUNG 120 - 96 HOANG
+GA --> U : hiển thị THẮNG!, 120 - 96
 U -> GA : nhấn Về menu
 GA -> MA : onClick(): finish()
 MA --> U : hiển thị

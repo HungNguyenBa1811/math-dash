@@ -29,8 +29,8 @@ Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activit
 | 1 | Giao diện chính | `MainView` | `outDisplayName`: dòng "Xin chào, HUNG"<br>`subPlayOnline`: nút Chơi online |
 | 2, 7 | Giao diện chơi online | `OnlineView` | `subCreateRoom`: nút Tạo phòng<br>`inRoomCode`: ô nhập mã phòng<br>`subJoinRoom`: nút Vào phòng |
 | 4, 9, 10 | Giao diện phòng chờ | `LobbyView` | `outRoomCode`: mã phòng chữ lớn<br>`outStatus`: dòng trạng thái ("Đang chờ đối thủ...", "Trận đấu bắt đầu!")<br>`outOpponentName`: tên đối thủ<br>`subCancel`: nút Hủy |
-| 11–15 | Giao diện thi đấu | `OnlineGameView` | `outMyName`, `outMyScore`: tên và điểm của mình (nổi bật)<br>`outOpponentName`, `outOpponentScore`: tên và điểm đối thủ<br>`outScorePopup`: chữ "+12" / "MISS" bay lên từ điểm của mình rồi biến mất<br>`outTimer`: đồng hồ đếm ngược, hết giờ thì hiện "Hết giờ! Đang chờ kết quả..."<br>`outProblem`: câu hỏi<br>`inAnswer`: số đang nhập, hiện sau dấu `=`<br>`subDigits`: 10 nút số 0–9<br>`subBackspace`: nút xóa số cuối<br>`subSubmit`: nút OK |
-| 17 | Giao diện kết quả | `MatchResultView` | `outResult`: THẮNG! / THUA! / HÒA!<br>`outScoreLine`: tỉ số "HUNG 120 - 96 HOANG"<br>`subBackToMenu`: nút Về menu |
+| 11–15 | Giao diện thi đấu | `OnlineGameView` | `outMyScore`: điểm của mình (bên trái, nổi bật)<br>`outOpponentScore`: điểm đối thủ (bên phải). Màn này không hiện tên; tên đối thủ đã hiện ở phòng chờ<br>`outScorePopup`: chữ "+12" / "MISS" bay lên từ điểm của mình rồi biến mất<br>`outTimer`: đồng hồ đếm ngược, hết giờ thì hiện "Hết giờ! Đang chờ kết quả..."<br>`outProblem`: câu hỏi<br>`inAnswer`: số đang nhập, hiện sau dấu `=`<br>`subDigits`: 10 nút số 0–9<br>`subBackspace`: nút xóa số cuối<br>`subSubmit`: nút OK |
+| 17 | Giao diện kết quả | `MatchResultView` | `outResult`: THẮNG! / THUA! / HÒA!<br>`outScoreLine`: tỉ số "120 - 96" (mình - đối thủ)<br>`subBackToMenu`: nút Về menu |
 
 Không đề xuất lớp View cho:
 - Hộp thoại "Thoát sẽ bị xử thua?".
@@ -113,6 +113,6 @@ Mọi thành phần giao diện nêu trong kịch bản v1 đều có ở lớp 
 | Nút Chơi online, nút Lịch sử đấu | `MainView.subPlayOnline`, `MainView.subHistory` |
 | Nút Tạo phòng, ô mã phòng, nút Vào phòng | `OnlineView.subCreateRoom`, `inRoomCode`, `subJoinRoom` |
 | Mã phòng, trạng thái, đối thủ, nút Hủy | `LobbyView.outRoomCode`, `outStatus`, `outOpponentName`, `subCancel` |
-| Hàng điểm, chữ bay "+12" / "MISS", đồng hồ, câu hỏi, số đang nhập, bàn phím số, nút xóa, nút OK | `OnlineGameView.outMyName`, `outMyScore`, `outOpponentName`, `outOpponentScore`, `outScorePopup`, `outTimer`, `outProblem`, `inAnswer`, `subDigits`, `subBackspace`, `subSubmit` |
+| Hàng điểm, chữ bay "+12" / "MISS", đồng hồ, câu hỏi, số đang nhập, bàn phím số, nút xóa, nút OK | `OnlineGameView.outMyScore`, `outOpponentScore`, `outScorePopup`, `outTimer`, `outProblem`, `inAnswer`, `subDigits`, `subBackspace`, `subSubmit` |
 | Dòng kết quả, tỉ số, nút Về menu | `MatchResultView.outResult`, `outScoreLine`, `subBackToMenu` |
 | Danh sách trận (hoặc "Chưa có trận nào") | `HistoryView.outListMatch` |

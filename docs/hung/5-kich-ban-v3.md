@@ -131,7 +131,7 @@ Quy ước:
 11. Lớp `MathProblem` trả đối tượng cho `generateProblem`.
 12. `generateProblem` trả `MathProblem` cho `startGame`; `startGame` lưu nó làm câu hiện tại của `GameSession`.
 13. `startGame` trả `MathProblem` cho `onCreate`.
-14. `OnlineGameActivity` (hàm `showProblem`) hiển thị cho Hùng: hàng điểm HUNG `0` VS `0` HOANG, đồng hồ `60`, `12 + 7 = ?` và bàn phím số.
+14. `OnlineGameActivity` (hàm `showProblem`) hiển thị cho Hùng: hàng điểm `0` VS `0`, đồng hồ `60`, `12 + 7 = ?` và bàn phím số.
 15. Mỗi giây, `CountDownTimer` gọi `onTick(42000)` của `MatchController`.
 16. `MatchController` gọi `onTick(42)` của `OnlineGameActivity`.
 17. `OnlineGameActivity` hiển thị đồng hồ `00:42`.
@@ -193,7 +193,7 @@ Quy ước:
 71. `finishMatch` gọi `onMatchEnd(match)` của `OnlineGameActivity` trong `runOnUiThread`.
 72. `onMatchEnd` gọi `showResult`, và `showResult` gọi `getResult(1)` của `Match`.
 73. `Match` trả về `"WIN"`: không ai bỏ trận, `120 > 96`.
-74. `OnlineGameActivity` hiện overlay `layoutResult`: "THẮNG!" màu xanh, `HUNG 120 - 96 HOANG`.
+74. `OnlineGameActivity` hiện overlay `layoutResult`: "THẮNG!" màu xanh, tỉ số `120 - 96`.
 75. Hùng nhấn nút Về menu.
 76. `onClick` gọi `finish()`, quay về `MainActivity`.
 77. `MainActivity` hiển thị cho Hùng.

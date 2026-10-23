@@ -99,7 +99,7 @@ Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → 
 - **Người tạo phòng** đi đủ 4 bước.
 - **Người tìm phòng** nhập mã ở màn đầu tiên. Màn phòng chờ hiện ngay "Trận đấu bắt đầu!" rồi tự sang màn thi đấu sau 2 giây.
 - **Màn thi đấu chia 4 tầng** từ trên xuống:
-  1. Hàng điểm: `HUNG` **36** `VS` 24 `HOANG`. Điểm của mình to hơn và có màu nhấn. Khi trả lời, chữ `+12` (xanh) hoặc `MISS` (đỏ) hiện ngay trên điểm của mình, bay lên khoảng 40dp và mờ dần trong 0,6 giây.
+  1. Hàng điểm: **36** `VS` 24, không hiện tên. Điểm của mình luôn ở bên trái, to hơn và có màu nhấn; tên đối thủ đã hiện ở phòng chờ. Khi trả lời, chữ `+12` (xanh) hoặc `MISS` (đỏ) hiện ngay trên điểm của mình, bay lên khoảng 40dp và mờ dần trong 0,6 giây.
   2. Đồng hồ ở giữa. Hết giờ thì đổi thành "Hết giờ! Đang chờ kết quả...".
   3. Câu hỏi, chữ monospace lớn. Số đang nhập hiện ngay sau dấu `=` thay cho `?`.
   4. Bàn phím số 3x4: `1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 OK`. Nút cao tối thiểu 64dp. Nút xóa chỉ có biểu tượng ⌫. Số nhập tối đa 3 chữ số (đáp án lớn nhất là 200). Nút OK chỉ bấm được khi đã nhập ít nhất 1 số.
@@ -118,9 +118,9 @@ Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → 
 | | `txtStatus` | `TextView` | "Đang chờ đối thủ..." / "Trận đấu bắt đầu!" | `outStatus` |
 | | `txtOpponentName` | `TextView` | "Đối thủ: HOANG" | `outOpponentName` |
 | | `btnCancel` | `Button` | Hủy phòng, ẩn khi đã có đối thủ | `subCancel` |
-| `OnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình (cỡ chữ lớn hơn, màu nhấn) | `outMyName`, `outMyScore` |
+| `OnlineGameActivity` | `txtMyScore` | `TextView` | Điểm của mình, bên trái (cỡ chữ lớn hơn, màu nhấn) | `outMyScore` |
 | | `txtTimer` | `TextView` | Đồng hồ đếm ngược `00:42`; hết giờ thì hiện "Hết giờ! Đang chờ kết quả..." | `outTimer` |
-| | `txtOpponentName`, `txtOpponentScore` | `TextView` | Tên, điểm đối thủ | `outOpponentName`, `outOpponentScore` |
+| | `txtOpponentScore` | `TextView` | Điểm đối thủ, bên phải | `outOpponentScore` |
 | | `txtProblem` | `TextView` | Câu hỏi `12 + 7 = ?` | `outProblem` |
 | | `txtScorePopup` | `TextView` (ẩn, chạy hiệu ứng bay lên + mờ dần) | "+12" xanh / "MISS" đỏ trên điểm của mình | `outScorePopup` |
 | | `txtAnswer` | `TextView` | Số đang nhập, hiện sau dấu `=` | `inAnswer` |
@@ -128,7 +128,7 @@ Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → 
 | | `btnBackspace` | `ImageButton` (icon ⌫, `contentDescription="Xóa"`) | Xóa chữ số cuối | `subBackspace` |
 | | `btnSubmit` | `Button` | OK: nộp đáp án | `subSubmit` |
 | Overlay `layoutResult` | `txtResult` | `TextView` | THẮNG! (xanh) / THUA! (đỏ) / HÒA! (vàng) | `outResult` |
-| | `txtFinalScore` | `TextView` | `HUNG 120 - 96 HOANG` | `outScoreLine` |
+| | `txtFinalScore` | `TextView` | `120 - 96` (mình - đối thủ) | `outScoreLine` |
 | | `btnBackToMenu` | `Button` | Về màn chính | `subBackToMenu` |
 
 Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối thủ đã thoát") dùng `Toast`. Hộp thoại "Thoát sẽ bị xử thua?" dùng `AlertDialog`. Cả hai đều không phải thành phần của layout.

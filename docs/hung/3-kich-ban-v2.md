@@ -77,7 +77,7 @@ Quy ước:
 1. `OnlineGameView` gọi phương thức `watchMatch()` của lớp `Match` để theo dõi điểm đối thủ.
 2. `OnlineGameView` gọi phương thức `generateProblem()` của lớp `MathProblem`, dùng mã đồng bộ câu hỏi của trận và mức 1.
 3. Lớp `MathProblem` trả về câu hỏi `12 + 7`.
-4. `OnlineGameView` hiển thị cho Hùng: hàng điểm HUNG `0` VS `0` HOANG, đồng hồ `60`, câu hỏi `12 + 7 = ?` và bàn phím số.
+4. `OnlineGameView` hiển thị cho Hùng: hàng điểm `0` VS `0`, đồng hồ `60`, câu hỏi `12 + 7 = ?` và bàn phím số.
 5. Hùng bấm `1`, `9` rồi nhấn OK trên `OnlineGameView`. Việc bấm số và nút xóa chỉ thay đổi số đang nhập trên giao diện, không gọi thực thể nên không tách thành bước riêng.
 6. `OnlineGameView` gọi phương thức `submitAnswer()` của lớp `GameSession` với đáp án `19`.
 7. Lớp `GameSession` chấm đúng, cộng `12` điểm, trả về điểm mới `12` cho `OnlineGameView`.
@@ -96,7 +96,7 @@ Quy ước:
 18. `OnlineGameView` gọi phương thức `getResult()` của lớp `Match` cho HUNG.
 19. Lớp `Match` trả về `WIN`.
 20. `OnlineGameView` gọi `MatchResultView`.
-21. `MatchResultView` hiển thị cho Hùng "THẮNG!" và tỉ số `HUNG 120 - 96 HOANG`.
+21. `MatchResultView` hiển thị cho Hùng "THẮNG!" và tỉ số `120 - 96`.
 22. Hùng nhấn nút Về menu trên `MatchResultView`.
 23. `MatchResultView` gọi `MainView`.
 24. `MainView` hiển thị cho Hùng.
