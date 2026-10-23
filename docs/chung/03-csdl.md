@@ -51,7 +51,7 @@ Chuyển kiểu:
 |---|---|
 | `tblPlayer` (MySQL) | id, username, passwordHash, displayName, createdAt |
 | `tblMatch` | id, roomCode, status, questionSeed, createdAt, endedAt |
-| `tblMatchPlayer` | id, score, forfeited |
+| `tblMatchPlayer` | id, score, forfeited, timeUp |
 | `tblGameRecord` | id, difficulty, score, maxStreak, correctCount, wrongCount, playedAt |
 | `tblPlayer` (SQLite) | id, username, displayName |
 
@@ -89,7 +89,11 @@ Không còn quan hệ n-n: quan hệ n-n `tblPlayer` – `tblMatch` đã đượ
 - Tỉ lệ trả lời đúng: `correctCount / (correctCount + wrongCount)` → `GameRecord.getAccuracy()`.
 - Mức hiện tại: chỉ có trong `GameSession`, không lưu.
 
-**Cột bị loại vì luôn mang một giá trị:** `status` của `tblMatch`. MySQL chỉ lưu trận **đã kết thúc**, nên cột này luôn là `finished`. Trạng thái `waiting` / `playing` chỉ có ý nghĩa khi trận đang diễn ra và được giữ trên Firebase (mục 2).
+**Cột bị loại vì luôn mang một giá trị:** MySQL chỉ lưu trận **đã kết thúc**, nên:
+- `status` của `tblMatch` luôn là `finished`. Trạng thái `waiting` / `playing` chỉ có ý nghĩa khi trận đang diễn ra.
+- `timeUp` của `tblMatchPlayer` luôn là `true` với người không bỏ trận, và không còn ý nghĩa sau khi trận đã có kết quả.
+
+Hai thuộc tính này vẫn có trong lớp thực thể và được giữ trên Firebase khi trận đang diễn ra (mục 2).
 
 **Các thuộc tính trông giống trùng lặp nhưng được giữ lại:**
 - `username`, `displayName` trong `tblPlayer` của SQLite so với `tblPlayer` của MySQL: đây là bản sao có chủ đích để chơi offline khi mất mạng (bước 1). Bản sao được ghi đè mỗi lần đăng nhập nên luôn khớp bản chính.
@@ -216,20 +220,19 @@ matches/{roomCode}
         }
 ```
 
-**Thuộc tính chỉ có trên Firebase, không lưu vào MySQL:**
-- `status`: chỉ có ý nghĩa khi trận chưa kết thúc (bước 5 ở trên).
-- `connected`: máy của người chơi còn kết nối hay không; dùng `onDisconnect()` để máy chủ Firebase tự ghi `false` khi mất kết nối.
-- `timeUp`: máy của người chơi đã hết 60 giây hay chưa; dùng để biết khi nào gọi API kết thúc trận.
+**Thuộc tính có trên Firebase nhưng không lưu vào MySQL:**
+- `status`, `timeUp`: chỉ có ý nghĩa khi trận chưa kết thúc (bước 5 ở trên). `Match.isOver()` đọc `forfeited` và `timeUp` của 2 người để biết trận đã xong chưa.
+- `connected`: máy của người chơi còn kết nối hay không; dùng `onDisconnect()` để máy chủ Firebase tự ghi `false` khi mất kết nối. Đây là dữ liệu kỹ thuật, không có trong lớp thực thể; cùng lúc đó `onDisconnect()` ghi `forfeited = true` nên luật thắng thua chỉ cần `forfeited`.
 
 **Thuộc tính sao chép:** `displayName` được chép từ `Player` khi vào phòng, để máy đối thủ hiện được tên mà không phải gọi backend.
 
 **Vòng đời một trận:**
 1. Tạo phòng → node `matches/{roomCode}` xuất hiện với `status = waiting`.
 2. Đối thủ vào → `status = playing`.
-3. Hết giờ hoặc có người bỏ trận → backend đọc node, lưu vào `tblMatch` + `tblMatchPlayer`, đặt `status = finished`.
-4. Node bị xóa.
+3. Mỗi máy hết 60 giây thì ghi `timeUp = true` của mình. Khi `Match.isOver()` đúng (cả 2 đã hết giờ, hoặc có người bỏ trận), app gọi backend → backend đọc node, kiểm tra lại `isOver()`, lưu vào `tblMatch` + `tblMatchPlayer`, đặt `status = finished`. Máy thứ hai gọi sau thì nhận lại đúng bản đã lưu.
+4. Node `finished` không còn được dùng. Lần tạo phòng sau nếu trùng mã thì ghi đè lên node này (tạo phòng coi node `finished` như mã còn trống). Phòng đang chờ mà người tạo hủy hoặc tắt app thì node bị xóa ngay.
 
-Firebase vì vậy **không giữ dữ liệu lâu dài**.
+Firebase vì vậy **không giữ dữ liệu lâu dài**; lịch sử đấu nằm ở MySQL.
 
 ---
 

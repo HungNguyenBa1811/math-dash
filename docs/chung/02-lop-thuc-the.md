@@ -140,6 +140,9 @@ Bổ sung 2 thuộc tính phục vụ thiết kế cho `GameSession`, không có
 - `onlineMode : boolean`: cùng một lớp chấm điểm cho cả 2 chế độ; `true` là trận online, không trừ mạng.
 - `questionsAsked : int`: số câu đã ra trong ván, dùng để tính mức hiện tại.
 
+Bổ sung 1 thuộc tính phục vụ thiết kế cho `MatchPlayer`:
+- `timeUp : boolean`: máy của người chơi này đã chạy hết 60 giây. Mỗi máy có đồng hồ riêng nên 2 máy hết giờ lệch nhau một chút; trận chỉ được coi là xong khi **cả 2** đã hết giờ (hoặc có người bỏ trận), để không mất câu trả lời cuối của máy chậm hơn.
+
 Đổi tên 1 thuộc tính so với pha phân tích: `password` của `Player` thành **`passwordHash`**, vì hệ thống chỉ lưu mật khẩu đã băm (BCrypt), không lưu mật khẩu gốc.
 
 Thuộc tính kiểu `boolean` đặt tên theo trạng thái, không có tiền tố `is` (`gameOver`, `forfeited`, `soundEnabled`…); getter tương ứng là `isGameOver()`, `isForfeited()`, `isSoundEnabled()` theo quy ước JavaBean. Nếu đặt tên trường là `isForfeited` thì getter thành `isIsForfeited()`, và thư viện chuyển JSON (Jackson ở server, Firebase SDK ở app) sẽ đọc sai tên trường.
@@ -152,7 +155,7 @@ Thuộc tính kiểu `boolean` đặt tên theo trạng thái, không có tiền
 | `GameRecord` | id: int, difficulty: int, score: int, maxStreak: int, correctCount: int, wrongCount: int, playedAt: Date |
 | `GameConfig` | soundEnabled: boolean, vibrationEnabled: boolean, secondsPerQuestion: int |
 | `Match` | id: int, roomCode: String, status: String, questionSeed: long, createdAt: Date, endedAt: Date |
-| `MatchPlayer` | id: int, score: int, forfeited: boolean |
+| `MatchPlayer` | id: int, score: int, forfeited: boolean, timeUp: boolean |
 
 ## B.3. Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành
 
@@ -185,6 +188,7 @@ Các thuộc tính dẫn xuất ở pha phân tích không thành thuộc tính 
 | `GameSession` | `getCurrentLevel() : int` | `min(difficulty + questionsAsked / 5, 4)` |
 | `GameRecord` | `getAccuracy() : double` | `correctCount / (correctCount + wrongCount)` |
 | `Match` | `canJoin(playerId : int) : boolean` | Trận đang `waiting`, chưa đủ 2 người, người này chưa có trong trận |
+| `Match` | `isOver() : boolean` | Trận đã xong: có người bỏ trận, hoặc cả 2 người đã hết giờ. App dùng để biết lúc gọi backend kết thúc trận; backend dùng để từ chối yêu cầu kết thúc trận khi trận chưa xong |
 | `Match` | `getResult(playerId : int) : String` | `WIN` / `LOSE` / `DRAW`: ai bỏ trận thì thua; không ai bỏ thì so điểm |
 
 Kỷ lục không là phương thức của lớp nào vì phải truy vấn nhiều `GameRecord`; nó được tính trong DAO (`SELECT MAX(score)`, xem tài liệu CSDL).
@@ -239,3 +243,4 @@ Mã nguồn PlantUML: [`lop-thuc-the-thiet-ke.puml`](lop-thuc-the-thiet-ke.puml)
 | `Match` | `endedAt` | Thời điểm trận kết thúc | Chỉ có khi `status = finished` |
 | `MatchPlayer` | `score` | Điểm của người chơi này trong trận | ≥ 0 |
 | `MatchPlayer` | `forfeited` | Người chơi này đã bỏ trận (bấm thoát hoặc mất kết nối) và bị xử thua | Mặc định `false` |
+| `MatchPlayer` | `timeUp` | Máy của người chơi này đã chạy hết 60 giây | Mặc định `false`; chỉ có ý nghĩa khi trận đang diễn ra |
