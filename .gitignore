@@ -11,3 +11,8 @@ scripts/preview/
 
 # File crash của Git Bash trên Windows
 *.stackdump
+
+# Backend
+server/target/
+server/src/main/resources/application-local.properties
+server/src/main/resources/firebase-service-account.json
