@@ -35,7 +35,7 @@
 | D4 | Đăng nhập | Backend kiểm tra tài khoản, trả **token** (dùng cho REST) và **Firebase custom token** (Admin SDK). App đăng nhập Firebase bằng custom token nên `auth.uid` = `playerId`. App ghi nhớ phiên trong SharedPreferences | Một định danh dùng chung cho backend và Firebase; mất mạng vẫn vào được Chơi offline |
 | D5 | Luật trận online | 60 giây, 2 người, cùng một dãy câu. Đúng: +10 + combo×2. Sai: 0 điểm, reset combo, **không mất mạng**. Người bỏ trận thua; nếu không ai bỏ thì so điểm, bằng điểm thì hòa | Đơn giản, dùng lại `GameSession` |
 | D6 | Đồng bộ câu hỏi | Khi tạo phòng sinh `questionSeed` (long); 2 máy cùng tạo `new ProblemDAO(new Random(questionSeed))` | Không phải đẩy từng câu qua mạng |
-| D7 | Trọng tài | Hết trận, app gọi `POST /api/matches/{roomCode}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, gọi `Match.getResult(...)`, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`. `Match.canJoin(...)` và `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
+| D7 | Trọng tài | Mỗi máy hết 60 giây thì ghi `timeUp`. Khi `Match.isOver()` đúng (cả 2 hết giờ hoặc có người bỏ trận), app gọi `POST /api/matches/{roomCode}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, **kiểm tra lại `isOver()`**, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`, trả `Match` đã lưu; app hiện kết quả bằng `getResult` trên bản đó. `Match.canJoin(...)`, `Match.isOver()`, `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
 | D8 | Độ khó offline | Dễ / Trung bình / Khó: bắt đầu ở mức 1 / 2 / 3, tăng 1 mức sau mỗi 5 câu, tối đa mức 4 | Có ý nghĩa với kỷ lục theo từng độ khó |
 | D9 | Thuộc tính dẫn xuất | **Không lưu:** kỷ lục (= MAX điểm theo người chơi + độ khó), kết quả trận (suy từ `forfeited` và điểm), mức, % chính xác | Đúng bước 5 thiết kế CSDL |
 | D10 | Lưu trữ phía app | SQLite: `tblPlayer` (bản sao người chơi lưu khi đăng nhập), `tblGameRecord`. SharedPreferences: cấu hình game, phiên đăng nhập | Chơi offline chạy được khi mất mạng; kết quả ván có khóa ngoại thật trong SQLite |
@@ -143,6 +143,8 @@ matches/{roomCode}                  // mã phòng 6 chữ số
     players/
         {playerId} : { displayName: String, score: int, forfeited: bool, connected: bool, timeUp: bool }
 ```
+
+- **Chữ ký hàm chi tiết** của UC05, UC06 (app + server) chốt ở `docs/hung/4-lop-thiet-ke.md`; code M2-02 → M2-05 theo đúng tài liệu này.
 
 - **REST API** (JSON, header `Authorization: Bearer <token>` trừ 2 API đầu):
 
@@ -297,7 +299,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - **Output:**
   - **7 entity** theo M1-02.
   - **SQLite:** `DatabaseHelper` tạo `tblPlayer`, `tblGameRecord`; `DAO` cha; `PlayerDAO.saveOrUpdate(Player)` (lưu bản sao khi đăng nhập).
-  - **HTTP:** `ApiDAO` cha (gửi/nhận JSON bằng `HttpURLConnection` + `org.json`, gắn token); `SessionDAO` (lưu / đọc / xóa phiên trong SharedPreferences `"session"`).
+  - **HTTP:** `ApiDAO` cha (gửi/nhận JSON bằng `HttpURLConnection` + `org.json`, gắn token); `SessionDAO` (lưu / đọc / xóa phiên trong SharedPreferences `"session"`; `getPlayer(): Player` trả người chơi đang đăng nhập).
   - **`FrmMainActivity`:** tên hiển thị; 5 nút: Chơi offline → `FrmDifficultyActivity`, Chơi online → `FrmOnlineActivity`, Lịch sử đấu → `FrmHistoryActivity`, Cài đặt → `FrmSettingsActivity`, Đăng xuất.
   - **Vỏ Activity** cho các màn còn lại, khai báo trong Manifest; quyền `INTERNET`; `usesCleartextTraffic`.
   - **Khung** `GameController`, `GameRecordDAO`, `GameConfigDAO`, `MatchController`, `MatchApiDAO`, `MatchFirebaseDAO`: đủ chữ ký, thân `// TODO`.
@@ -418,13 +420,13 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - **Mô tả:** Hai chế độ vào trận. Tạo phòng: sinh mã phòng 6 chữ số, chờ đối thủ. Tìm phòng: nhập mã phòng để vào.
 - **Input:** Luồng "Chơi online" trong `docs/chung/01-pham-vi-use-case.md`; schema mục 2.4.
 - **Output:**
-  - **`MatchFirebaseDAO extends FirebaseDAO`:**
-    - `createMatch(roomCode, questionSeed, me)`: dùng transaction để mã phòng không trùng; tạo được thì `onDisconnect().removeValue()`.
-    - `joinMatch(code, me)`: dùng `runTransaction`, bên trong gọi `Match.canJoin(myId)`.
-    - `watchMatch(code, listener)`: lắng nghe trận.
-    - `deleteMatch(code)`.
+  - **`MatchFirebaseDAO extends FirebaseDAO`** (chữ ký đầy đủ ở `docs/hung/4-lop-thiet-ke.md`, kết quả trả qua `MatchCallback`):
+    - `createMatch(match, callback)`: dùng transaction để mã phòng không trùng (node `finished` coi như trống); tạo được thì `onDisconnect().removeValue()`.
+    - `joinMatch(roomCode, me, callback)`: dùng `runTransaction`, bên trong gọi `Match.canJoin(myId)`.
+    - `watchMatch(roomCode, callback)`, `stopWatching(roomCode)`: lắng nghe / gỡ lắng nghe trận.
+    - `deleteMatch(roomCode)`.
   - **Luật vào phòng là hàm Java thuần (D7):** `Match.canJoin(int playerId): boolean`, đúng khi trận `waiting`, chưa đủ 2 người, và người này chưa có trong trận. Unit test `MatchTest` cho 4 trường hợp: phòng chờ 1 người khác → `true`; đang đấu → `false`; đủ 2 người → `false`; phòng của chính mình → `false`.
-  - **`MatchController` (Singleton):** `createRoom(listener)`, `findRoom(code, listener)`, `cancel()`.
+  - **`MatchController` (Singleton):** `createRoom(me, listener)`, `findRoom(roomCode, me, listener)`, `waitForOpponent(listener)`, `cancelRoom()`; báo về Activity qua `RoomListener`.
   - **Giao diện:**
     - `FrmOnlineActivity`: nút Tạo phòng; ô nhập mã + nút Vào phòng.
     - `FrmLobbyActivity`: mã phòng (chữ lớn), "Đang chờ đối thủ...", tên đối thủ khi có, nút Hủy.
@@ -442,15 +444,16 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - **Input:** Trận đang `playing`; `questionSeed`; id đối thủ; API mục 2.4.
 - **Output:**
   - **App – `MatchController`:**
-    - `startGame(listener)`: `ProblemDAO(new Random(questionSeed))`, `GameSession` chế độ online, `CountDownTimer` 60s.
-    - `submitAnswer(value)`: chấm bằng `GameSession`, ghi `players/{myId}/score`.
-    - Lắng nghe điểm đối thủ.
-    - Hết giờ: ghi `finished = true` rồi gọi `MatchApiDAO.finishMatch(code)`, nhận kết quả, gọi `onMatchEnd(Match)`.
+    - `startGame(listener)`: `ProblemDAO(new Random(questionSeed))`, `GameSession` chế độ online, `CountDownTimer` 60s; báo về Activity qua `GameListener`.
+    - `submitAnswer(value)`, `nextProblem()`: chấm bằng `MathProblem.isCorrect` + `GameSession`, đúng thì `updateScore` lên `players/{myId}/score`.
+    - Lắng nghe trận: mỗi lần thay đổi thì gọi `Match.isOver()`.
+    - Hết giờ: `setTimeUp`. Khi `isOver()` đúng thì gọi `MatchApiDAO.finishMatch(roomCode)` trong `Thread` (chỉ một lần), nhận `Match` đã lưu, gọi `onMatchEnd(Match)`.
   - **Server:**
     - `MatchRestController.finish(code)`: `FirebaseAdminDAO.readMatch(code)`.
     - Nếu trận đã được lưu thì trả lại bản đã lưu (máy thứ hai gọi sau).
-    - Nếu chưa: `MatchDAO.insert(match)` (1 dòng `tblMatch` + 2 dòng `tblMatchPlayer`), set `status = finished` trên Firebase.
-  - **Luật thắng thua là hàm Java thuần (D7):** `Match.getResult(int playerId): String` trả `WIN` / `LOSE` / `DRAW`: ai `forfeited` thì thua; không ai bỏ thì so điểm. Unit test `MatchResultTest` (phía server) cho 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm.
+    - Nếu `Match.isOver()` sai: trả 409 "Trận chưa kết thúc".
+    - Nếu chưa lưu: `MatchDAO.insert(match)` (1 dòng `tblMatch` + 2 dòng `tblMatchPlayer`), `FirebaseAdminDAO.updateStatus(roomCode, "finished")`.
+  - **Luật thắng thua là hàm Java thuần (D7):** `Match.getResult(int playerId): String` trả `WIN` / `LOSE` / `DRAW`: ai `forfeited` thì thua; không ai bỏ thì so điểm. Unit test `MatchResultTest` (phía server) cho 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm; thêm 3 trường hợp `isOver()`: chưa ai hết giờ → `false`, mới 1 người hết giờ → `false`, có người bỏ trận → `true`.
   - **`FrmOnlineGameActivity`:** đồng hồ 60s, phép tính, lưới 2x2 nút đáp án, điểm MÌNH vs ĐỐI THỦ, overlay THẮNG / THUA / HÒA có tỉ số và nút "Về menu".
 - **Requirement:**
   - 2 máy thấy cùng dãy câu.
@@ -458,7 +461,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
   - Kết quả 2 máy khớp nhau.
   - MySQL có đúng 1 dòng `tblMatch` cho mỗi trận.
   - `mvn test` pass, có `MatchResultTest`.
-- **Constraint:** Không phân thắng thua trong Activity hay callback Firebase; chỉ server gọi `Match.getResult`. `removeEventListener` và hủy timer khi kết thúc.
+- **Constraint:** Không phân thắng thua từ dữ liệu Firebase trong Activity hay callback; kết quả hiển thị bằng `Match.getResult` trên bản trận **server trả về**. `removeEventListener` và hủy timer khi kết thúc.
 
 ### [M2-04] UC05 Chơi online: thoát trận và mất kết nối · @HungNguyenBa1811
 - **Phụ thuộc:** M2-03.
