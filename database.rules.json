@@ -1,0 +1,36 @@
+{
+  "rules": {
+    "matches": {
+      "$roomCode": {
+        ".read": "auth != null",
+        ".write": "auth != null && (((!data.exists() || data.child('status').val() === 'finished') && newData.child('status').val() === 'waiting' && newData.child('players').child(auth.uid).exists()) || (data.child('status').val() === 'waiting' && newData.child('status').val() === 'playing' && !data.child('players').child(auth.uid).exists() && newData.child('players').child(auth.uid).exists()) || (data.child('status').val() === 'waiting' && !newData.exists() && data.child('players').child(auth.uid).exists()))",
+        "status": {
+          ".validate": "newData.val() === 'waiting' || newData.val() === 'playing' || newData.val() === 'finished'"
+        },
+        "questionSeed": {
+          ".validate": "newData.isNumber()"
+        },
+        "players": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && data.exists()",
+            "displayName": {
+              ".validate": "newData.isString()"
+            },
+            "score": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || (newData.val() >= data.val() && newData.val() - data.val() <= 200))"
+            },
+            "forfeited": {
+              ".validate": "newData.isBoolean()"
+            },
+            "connected": {
+              ".validate": "newData.isBoolean()"
+            },
+            "timeUp": {
+              ".validate": "newData.isBoolean()"
+            }
+          }
+        }
+      }
+    }
+  }
+}
