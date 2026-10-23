@@ -3,10 +3,10 @@
 title Tuần tự thiết kế – Chơi online, đoạn A: Tạo phòng
 
 actor "Hùng (máy 1)" as U
-boundary FrmMainActivity as MA
-boundary FrmOnlineActivity as OA
-boundary FrmLobbyActivity as LA
-boundary FrmOnlineGameActivity as GA
+boundary MainActivity as MA
+boundary OnlineActivity as OA
+boundary LobbyActivity as LA
+boundary OnlineGameActivity as GA
 control MatchController as MC
 control SessionDAO as SD
 control MatchFirebaseDAO as MFD

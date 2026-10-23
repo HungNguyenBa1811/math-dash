@@ -24,42 +24,42 @@ Quy ước:
 
 ### 1.1. Đoạn A: Tạo phòng (Hùng, máy 1)
 
-1. Hùng nhấn nút Chơi online trên `FrmMainActivity`.
-2. Phương thức `onClick` của `FrmMainActivity` gọi `startActivity` mở `FrmOnlineActivity`.
-3. Phương thức `onCreate` của `FrmOnlineActivity` gọi phương thức `getPlayer` của `SessionDAO`.
+1. Hùng nhấn nút Chơi online trên `MainActivity`.
+2. Phương thức `onClick` của `MainActivity` gọi `startActivity` mở `OnlineActivity`.
+3. Phương thức `onCreate` của `OnlineActivity` gọi phương thức `getPlayer` của `SessionDAO`.
 4. `getPlayer` đọc SharedPreferences `"session"` và gọi lớp `Player` để đóng gói thông tin.
 5. Lớp `Player` trả về đối tượng `Player` (id `1`, tên `HUNG`) cho `getPlayer`.
-6. `getPlayer` trả `Player` cho `onCreate`; `FrmOnlineActivity` giữ nó trong thuộc tính `me`.
-7. `FrmOnlineActivity` hiển thị cho Hùng nút Tạo phòng, ô mã phòng và nút Vào phòng.
+6. `getPlayer` trả `Player` cho `onCreate`; `OnlineActivity` giữ nó trong thuộc tính `me`.
+7. `OnlineActivity` hiển thị cho Hùng nút Tạo phòng, ô mã phòng và nút Vào phòng.
 8. Hùng nhấn nút Tạo phòng.
-9. `onClick` của `FrmOnlineActivity` gọi phương thức `createRoom(me, this)` của `MatchController`.
+9. `onClick` của `OnlineActivity` gọi phương thức `createRoom(me, this)` của `MatchController`.
 10. `createRoom` sinh mã phòng bằng `generateRoomCode` (`482915`) và một `questionSeed` ngẫu nhiên, rồi gọi lớp `Match` để tạo trận ở trạng thái `waiting` với người chơi thứ nhất là HUNG.
 11. Lớp `Match` trả đối tượng `Match` cho `createRoom`.
 12. `createRoom` gọi phương thức `createMatch(match, callback)` của `MatchFirebaseDAO`.
 13. `createMatch` chạy `runTransaction` trên node `matches/482915`: node chưa có (hoặc đã `finished`) thì ghi trận mới, đặt `onDisconnect().removeValue()` để phòng tự xóa nếu tắt app khi đang chờ.
 14. Transaction xong, callback `onComplete` của `MatchFirebaseDAO` gọi `onSuccess(match)` của `MatchController`.
-15. `MatchController` gọi phương thức `onRoomReady(match)` của `FrmOnlineActivity`.
-16. `onRoomReady` gọi `startActivity` mở `FrmLobbyActivity`, kèm mã phòng.
-17. Phương thức `onCreate` của `FrmLobbyActivity` gọi phương thức `waitForOpponent(this)` của `MatchController`.
+15. `MatchController` gọi phương thức `onRoomReady(match)` của `OnlineActivity`.
+16. `onRoomReady` gọi `startActivity` mở `LobbyActivity`, kèm mã phòng.
+17. Phương thức `onCreate` của `LobbyActivity` gọi phương thức `waitForOpponent(this)` của `MatchController`.
 18. `waitForOpponent` gọi phương thức `watchMatch("482915", callback)` của `MatchFirebaseDAO`.
-19. `FrmLobbyActivity` hiển thị cho Hùng mã `482915` và "Đang chờ đối thủ...".
+19. `LobbyActivity` hiển thị cho Hùng mã `482915` và "Đang chờ đối thủ...".
 20. Khi Hoàng vào phòng (đoạn B), node thay đổi. Callback `onDataChange` của `MatchFirebaseDAO` gọi `toMatch("482915", data)` của chính nó.
 21. `toMatch` gọi lớp `Match` để đóng gói trận: trạng thái `playing`, 2 người HUNG và HOANG.
 22. Lớp `Match` trả đối tượng cho `toMatch`.
 23. `MatchFirebaseDAO` gọi `onSuccess(match)` của `MatchController`.
-24. `MatchController` thấy trận đã `playing` nên gọi `onRoomReady(match)` của `FrmLobbyActivity`. Các lần `onDataChange` khi trận còn `waiting` thì bỏ qua.
-25. `FrmLobbyActivity` ẩn nút Hủy, hiển thị cho Hùng "Trận đấu bắt đầu!" và đối thủ HOANG.
-26. Sau 2 giây, `FrmLobbyActivity` gọi `startActivity` mở `FrmOnlineGameActivity` (sang đoạn C).
+24. `MatchController` thấy trận đã `playing` nên gọi `onRoomReady(match)` của `LobbyActivity`. Các lần `onDataChange` khi trận còn `waiting` thì bỏ qua.
+25. `LobbyActivity` ẩn nút Hủy, hiển thị cho Hùng "Trận đấu bắt đầu!" và đối thủ HOANG.
+26. Sau 2 giây, `LobbyActivity` gọi `startActivity` mở `OnlineGameActivity` (sang đoạn C).
 
 **Ngoại lệ 19a: Hùng nhấn Hủy khi chưa có đối thủ.**
 
-- 19a.1. Hùng nhấn nút Hủy trên `FrmLobbyActivity`.
-- 19a.2. `onClick` của `FrmLobbyActivity` gọi phương thức `cancelRoom` của `MatchController`.
+- 19a.1. Hùng nhấn nút Hủy trên `LobbyActivity`.
+- 19a.2. `onClick` của `LobbyActivity` gọi phương thức `cancelRoom` của `MatchController`.
 - 19a.3. `cancelRoom` gọi `stopWatching("482915")` của `MatchFirebaseDAO` để gỡ listener.
 - 19a.4. `cancelRoom` gọi `deleteMatch("482915")` của `MatchFirebaseDAO` để xóa node.
 - 19a.5. `cancelRoom` trả về cho `onClick`.
-- 19a.6. `onClick` gọi `finish()`, quay về `FrmMainActivity`.
-- 19a.7. `FrmMainActivity` hiển thị cho Hùng.
+- 19a.6. `onClick` gọi `finish()`, quay về `MainActivity`.
+- 19a.7. `MainActivity` hiển thị cho Hùng.
 
 ![Hình 16: Tuần tự thiết kế Chơi online – Tạo phòng](tuan-tu-thiet-ke-uc05a.png)
 
@@ -72,13 +72,13 @@ Quy ước:
 
 ### 1.2. Đoạn B: Tìm phòng (Hoàng, máy 2)
 
-1. Hoàng nhấn nút Chơi online trên `FrmMainActivity`.
-2. `onClick` của `FrmMainActivity` gọi `startActivity` mở `FrmOnlineActivity`.
-3. `onCreate` của `FrmOnlineActivity` gọi `getPlayer` của `SessionDAO`.
+1. Hoàng nhấn nút Chơi online trên `MainActivity`.
+2. `onClick` của `MainActivity` gọi `startActivity` mở `OnlineActivity`.
+3. `onCreate` của `OnlineActivity` gọi `getPlayer` của `SessionDAO`.
 4. `getPlayer` gọi lớp `Player` để đóng gói thông tin.
 5. Lớp `Player` trả về `Player` (id `2`, tên `HOANG`) cho `getPlayer`.
 6. `getPlayer` trả `Player` cho `onCreate`.
-7. `FrmOnlineActivity` hiển thị cho Hoàng nút Tạo phòng, ô mã phòng và nút Vào phòng.
+7. `OnlineActivity` hiển thị cho Hoàng nút Tạo phòng, ô mã phòng và nút Vào phòng.
 8. Hoàng nhập `482915` và nhấn nút Vào phòng.
 9. `onClick` kiểm tra mã đủ 6 chữ số rồi gọi `findRoom("482915", me, this)` của `MatchController`.
 10. `findRoom` gọi `joinMatch("482915", me, callback)` của `MatchFirebaseDAO`.
@@ -89,20 +89,20 @@ Quy ước:
 15. `canJoin` trả về `true`: trận đang `waiting`, mới có 1 người, người đó không phải HOANG.
 16. `doTransaction` ghi thêm node `players/2` (HOANG, điểm 0) và đặt `status = "playing"`.
 17. Transaction xong, callback `onComplete` gọi `onSuccess(match)` của `MatchController`.
-18. `MatchController` gọi `onRoomReady(match)` của `FrmOnlineActivity`.
-19. `onRoomReady` gọi `startActivity` mở `FrmLobbyActivity`.
-20. `onCreate` của `FrmLobbyActivity` gọi `waitForOpponent(this)` của `MatchController`.
-21. `waitForOpponent` thấy trận đã `playing` nên gọi ngay `onRoomReady(match)` của `FrmLobbyActivity`.
-22. `FrmLobbyActivity` hiển thị cho Hoàng "Trận đấu bắt đầu!" và đối thủ HUNG.
-23. Sau 2 giây, `FrmLobbyActivity` gọi `startActivity` mở `FrmOnlineGameActivity` (sang đoạn C, máy 2 chạy giống máy 1).
+18. `MatchController` gọi `onRoomReady(match)` của `OnlineActivity`.
+19. `onRoomReady` gọi `startActivity` mở `LobbyActivity`.
+20. `onCreate` của `LobbyActivity` gọi `waitForOpponent(this)` của `MatchController`.
+21. `waitForOpponent` thấy trận đã `playing` nên gọi ngay `onRoomReady(match)` của `LobbyActivity`.
+22. `LobbyActivity` hiển thị cho Hoàng "Trận đấu bắt đầu!" và đối thủ HUNG.
+23. Sau 2 giây, `LobbyActivity` gọi `startActivity` mở `OnlineGameActivity` (sang đoạn C, máy 2 chạy giống máy 1).
 
 **Ngoại lệ 15a: không có phòng `482915` (`toMatch` trả `null`), hoặc `canJoin` trả `false`.**
 
 - 15a.1. `canJoin` trả `false` cho `doTransaction`.
 - 15a.2. `doTransaction` trả `Transaction.abort()`, không ghi gì.
 - 15a.3. Callback `onComplete` gọi `onFail("Phòng đã đầy")` của `MatchController`. Nếu node không tồn tại thì thông báo là "Không tìm thấy phòng".
-- 15a.4. `MatchController` gọi `onError(message)` của `FrmOnlineActivity`.
-- 15a.5. `FrmOnlineActivity` hiện `Toast` thông báo cho Hoàng.
+- 15a.4. `MatchController` gọi `onError(message)` của `OnlineActivity`.
+- 15a.5. `OnlineActivity` hiện `Toast` thông báo cho Hoàng.
 
 **Ngoại lệ 9a:** mã không đủ 6 chữ số. `onClick` hiện `Toast` "Mã phòng gồm 6 chữ số" và dừng ở bước 9, không gọi `MatchController`.
 
@@ -118,7 +118,7 @@ Quy ước:
 
 ### 1.3. Đoạn C: Thi đấu và kết thúc trận (Hùng, máy 1)
 
-1. `onCreate` của `FrmOnlineGameActivity` gọi `startGame(this)` của `MatchController`.
+1. `onCreate` của `OnlineGameActivity` gọi `startGame(this)` của `MatchController`.
 2. `startGame` gọi `registerDisconnect("482915", 1)` của `MatchFirebaseDAO`: nếu máy 1 mất kết nối, máy chủ Firebase tự ghi `connected = false`, `forfeited = true` cho HUNG.
 3. `startGame` tạo `ProblemDAO` với `new Random(questionSeed)`, nên 2 máy có cùng dãy câu hỏi.
 4. `startGame` gọi lớp `GameSession` để tạo ván chấm điểm `new GameSession(1, true)`: bắt đầu ở mức 1, chế độ online (sai không trừ mạng).
@@ -131,12 +131,12 @@ Quy ước:
 11. Lớp `MathProblem` trả đối tượng cho `generateProblem`.
 12. `generateProblem` trả `MathProblem` cho `startGame`; `startGame` lưu nó làm câu hiện tại của `GameSession`.
 13. `startGame` trả `MathProblem` cho `onCreate`.
-14. `FrmOnlineGameActivity` (hàm `showProblem`) hiển thị cho Hùng: HUNG `0`, đồng hồ `60`, HOANG `0`, `12 + 7 = ?` và 4 nút đáp án.
+14. `OnlineGameActivity` (hàm `showProblem`) hiển thị cho Hùng: HUNG `0`, đồng hồ `60`, HOANG `0`, `12 + 7 = ?` và 4 nút đáp án.
 15. Mỗi giây, `CountDownTimer` gọi `onTick(42000)` của `MatchController`.
-16. `MatchController` gọi `onTick(42)` của `FrmOnlineGameActivity`.
-17. `FrmOnlineGameActivity` hiển thị đồng hồ `00:42`.
+16. `MatchController` gọi `onTick(42)` của `OnlineGameActivity`.
+17. `OnlineGameActivity` hiển thị đồng hồ `00:42`.
 18. Hùng nhấn nút `19`.
-19. `onClick` của `FrmOnlineGameActivity` gọi `submitAnswer(19)` của `MatchController`.
+19. `onClick` của `OnlineGameActivity` gọi `submitAnswer(19)` của `MatchController`.
 20. `submitAnswer` gọi `isCorrect(19)` của câu hiện tại (`MathProblem`).
 21. `MathProblem` trả về `true`.
 22. `submitAnswer` gọi `recordCorrectAnswer()` của `GameSession`.
@@ -151,21 +151,21 @@ Quy ước:
 31. Lớp `MathProblem` trả đối tượng cho `generateProblem`.
 32. `generateProblem` trả `MathProblem` cho `nextProblem`.
 33. `nextProblem` trả `MathProblem` cho `onClick`.
-34. `FrmOnlineGameActivity` hiển thị cho Hùng "+12 PTS!", điểm `12` và `9 − 4 = ?`.
+34. `OnlineGameActivity` hiển thị cho Hùng "+12 PTS!", điểm `12` và `9 − 4 = ?`.
 35. Khi Hoàng ghi điểm, node thay đổi. Callback `onDataChange` của `MatchFirebaseDAO` gọi `toMatch("482915", data)`.
 36. `toMatch` gọi lớp `Match` để đóng gói trận mới nhất.
 37. Lớp `Match` trả đối tượng cho `toMatch`.
 38. `MatchFirebaseDAO` gọi `onSuccess(match)` của `MatchController`.
 39. `MatchController` gọi `isOver()` của `Match`.
 40. `Match` trả về `false`: không ai bỏ trận, chưa ai hết giờ.
-41. `MatchController` gọi `onMatchChanged(match)` của `FrmOnlineGameActivity`.
-42. `FrmOnlineGameActivity` hiển thị điểm HOANG `12`.
+41. `MatchController` gọi `onMatchChanged(match)` của `OnlineGameActivity`.
+42. `OnlineGameActivity` hiển thị điểm HOANG `12`.
 
     *(Các bước 15–42 lặp lại đến khi `CountDownTimer` hết giờ. Trả lời sai thì bước 22 là `recordWrongAnswer()`, không có bước 24, và dòng phản hồi là "MISS!".)*
 43. Hết 60 giây, `CountDownTimer` gọi `onFinish()` của `MatchController`.
 44. `onFinish` gọi `setTimeUp("482915", 1)` của `MatchFirebaseDAO`.
-45. `onFinish` gọi `onTimeUp()` của `FrmOnlineGameActivity`.
-46. `FrmOnlineGameActivity` ẩn 4 nút đáp án, hiển thị "Hết giờ! Đang chờ kết quả...".
+45. `onFinish` gọi `onTimeUp()` của `OnlineGameActivity`.
+46. `OnlineGameActivity` ẩn 4 nút đáp án, hiển thị "Hết giờ! Đang chờ kết quả...".
 47. Khi máy 2 cũng ghi `timeUp`, callback `onDataChange` gọi `toMatch("482915", data)`.
 48. `toMatch` gọi lớp `Match` để đóng gói trận.
 49. Lớp `Match` trả đối tượng cho `toMatch`.
@@ -190,29 +190,29 @@ Quy ước:
 68. Lớp `Match` trả đối tượng cho `MatchApiDAO`.
 69. `MatchApiDAO` trả `Match` cho `finishMatch` của `MatchController`.
 70. `finishMatch` gọi `stopWatching("482915")` của `MatchFirebaseDAO` để gỡ listener; đồng hồ đã dừng.
-71. `finishMatch` gọi `onMatchEnd(match)` của `FrmOnlineGameActivity` trong `runOnUiThread`.
+71. `finishMatch` gọi `onMatchEnd(match)` của `OnlineGameActivity` trong `runOnUiThread`.
 72. `onMatchEnd` gọi `showResult`, và `showResult` gọi `getResult(1)` của `Match`.
 73. `Match` trả về `"WIN"`: không ai bỏ trận, `120 > 96`.
-74. `FrmOnlineGameActivity` hiện overlay `layoutResult`: "THẮNG!" màu xanh, `HUNG 120 - 96 HOANG`.
+74. `OnlineGameActivity` hiện overlay `layoutResult`: "THẮNG!" màu xanh, `HUNG 120 - 96 HOANG`.
 75. Hùng nhấn nút Về menu.
-76. `onClick` gọi `finish()`, quay về `FrmMainActivity`.
-77. `FrmMainActivity` hiển thị cho Hùng.
+76. `onClick` gọi `finish()`, quay về `MainActivity`.
+77. `MainActivity` hiển thị cho Hùng.
 
 **Ngoại lệ 18a: Hùng thoát trận.**
 
 - 18a.1. Hùng nhấn Back. `AlertDialog` "Thoát sẽ bị xử thua?" hiện lên, Hùng chọn Thoát.
-- 18a.2. `onBackPressed` của `FrmOnlineGameActivity` gọi `leaveMatch()` của `MatchController`.
+- 18a.2. `onBackPressed` của `OnlineGameActivity` gọi `leaveMatch()` của `MatchController`.
 - 18a.3. `leaveMatch` gọi `forfeit("482915", 1)` của `MatchFirebaseDAO`, ghi `forfeited = true` cho HUNG.
 - 18a.4. `leaveMatch` hủy đồng hồ, gỡ listener, rồi gọi `finishMatch("482915")` của `MatchApiDAO` trong `Thread`. Server xử lý như bước 55–65: `isOver()` đúng vì HUNG đã bỏ trận, trận được lưu với HUNG thua.
 - 18a.5. `leaveMatch` trả về cho `onBackPressed`.
-- 18a.6. `onBackPressed` gọi `finish()`, quay về `FrmMainActivity`.
-- 18a.7. `FrmMainActivity` hiển thị cho Hùng.
+- 18a.6. `onBackPressed` gọi `finish()`, quay về `MainActivity`.
+- 18a.7. `MainActivity` hiển thị cho Hùng.
 
 **Ngoại lệ 40a: đối thủ bỏ trận** (Hoàng bấm Thoát, hoặc máy 2 mất kết nối và `onDisconnect` ghi `forfeited = true`).
 
 - 40a.1. `isOver()` trả `true` vì HOANG đã `forfeited`.
-- 40a.2. `MatchController` gọi `onMatchChanged(match)` của `FrmOnlineGameActivity`.
-- 40a.3. `FrmOnlineGameActivity` hiện `Toast` "Đối thủ đã thoát".
+- 40a.2. `MatchController` gọi `onMatchChanged(match)` của `OnlineGameActivity`.
+- 40a.3. `OnlineGameActivity` hiện `Toast` "Đối thủ đã thoát".
 - 40a.4. `MatchController` hủy đồng hồ và gọi `finishMatch()` trong `Thread`, đi tiếp từ bước 54. Ở bước 73, `getResult(1)` trả `"WIN"` dù điểm của Hùng thấp hơn.
 
 **Ngoại lệ 60a: máy 2 đã gọi kết thúc trận trước** (trận trên Firebase đã `finished`).
@@ -225,7 +225,7 @@ Quy ước:
 **Các ngoại lệ khác (không vẽ):**
 - Bước 60 trả `false` (trận chưa xong): `finish` trả `409 Conflict`, `MatchApiDAO` ném lỗi, `MatchController` gọi `onError("Trận chưa kết thúc")`.
 - Mất mạng ở bước 55: `MatchApiDAO` ném `IOException`, `MatchController` gọi `onError("Không lưu được kết quả trận, kiểm tra kết nối mạng")`. Trận vẫn được lưu khi máy đối thủ gọi.
-- Máy 1 mất kết nối: listener `.info/connected` báo `false`, `MatchController` gọi `onError("Mất kết nối, trận đấu đã kết thúc")` và `FrmOnlineGameActivity` quay về màn chính. Việc xử thua do `onDisconnect` (bước 2) ghi lên Firebase.
+- Máy 1 mất kết nối: listener `.info/connected` báo `false`, `MatchController` gọi `onError("Mất kết nối, trận đấu đã kết thúc")` và `OnlineGameActivity` quay về màn chính. Việc xử thua do `onDisconnect` (bước 2) ghi lên Firebase.
 
 ![Hình 18: Tuần tự thiết kế Chơi online – Thi đấu và kết thúc trận](tuan-tu-thiet-ke-uc05c.png)
 
@@ -243,9 +243,9 @@ Quy ước:
 
 ## 2. Chức năng "Xem lịch sử đấu" (UC06)
 
-1. Hùng nhấn nút Lịch sử đấu trên `FrmMainActivity`.
-2. `onClick` của `FrmMainActivity` gọi `startActivity` mở `FrmHistoryActivity`.
-3. `onCreate` của `FrmHistoryActivity` gọi `getPlayer` của `SessionDAO`.
+1. Hùng nhấn nút Lịch sử đấu trên `MainActivity`.
+2. `onClick` của `MainActivity` gọi `startActivity` mở `HistoryActivity`.
+3. `onCreate` của `HistoryActivity` gọi `getPlayer` của `SessionDAO`.
 4. `getPlayer` gọi lớp `Player` để đóng gói thông tin.
 5. Lớp `Player` trả về `Player` (id `1`, tên `HUNG`) cho `getPlayer`.
 6. `getPlayer` trả `Player` cho `onCreate`.
@@ -264,10 +264,10 @@ Quy ước:
 19. Trong `runOnUiThread`, `loadHistory` tạo `new HistoryAdapter(list, 1)` và gắn vào `rvHistory`.
 20. Với mỗi dòng, `onBindViewHolder` của `HistoryAdapter` gọi `getResult(1)` của `Match`.
 21. `Match` trả về `"WIN"`, `"DRAW"`, `"LOSE"` hoặc `"WIN"` tùy trận.
-22. `FrmHistoryActivity` hiển thị cho Hùng 4 dòng: thời gian, `vs` đối thủ, tỉ số, kết quả có màu.
+22. `HistoryActivity` hiển thị cho Hùng 4 dòng: thời gian, `vs` đối thủ, tỉ số, kết quả có màu.
 23. Hùng nhấn Back.
-24. `FrmHistoryActivity` gọi `finish()`, quay về `FrmMainActivity`.
-25. `FrmMainActivity` hiển thị cho Hùng.
+24. `HistoryActivity` gọi `finish()`, quay về `MainActivity`.
+25. `MainActivity` hiển thị cho Hùng.
 
 **Ngoại lệ 19a: danh sách rỗng.**
 

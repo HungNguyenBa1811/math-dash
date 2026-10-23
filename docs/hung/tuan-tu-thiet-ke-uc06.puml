@@ -4,8 +4,8 @@ title Tuần tự thiết kế – Xem lịch sử đấu
 
 actor "Hùng" as U
 box "Client (Android)" #FFFFFF
-boundary FrmMainActivity as MA
-boundary FrmHistoryActivity as HA
+boundary MainActivity as MA
+boundary HistoryActivity as HA
 boundary HistoryAdapter as AD
 control SessionDAO as SD
 control MatchApiDAO as MAD

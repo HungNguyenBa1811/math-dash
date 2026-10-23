@@ -3,13 +3,13 @@
 title Biểu đồ lớp chi tiết – Chơi online (UC05)
 
 package "Client (Android)" {
-  class FrmMainActivity <<boundary>> {
+  class MainActivity <<boundary>> {
     - txtDisplayName : TextView
     - btnPlayOnline : Button
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
-  class FrmOnlineActivity <<boundary>> {
+  class OnlineActivity <<boundary>> {
     - btnCreateRoom : Button
     - edtRoomCode : EditText
     - btnJoinRoom : Button
@@ -19,7 +19,7 @@ package "Client (Android)" {
     + onRoomReady(match : Match) : void
     + onError(message : String) : void
   }
-  class FrmLobbyActivity <<boundary>> {
+  class LobbyActivity <<boundary>> {
     - txtRoomCode : TextView
     - txtStatus : TextView
     - txtOpponentName : TextView
@@ -29,7 +29,7 @@ package "Client (Android)" {
     + onRoomReady(match : Match) : void
     + onError(message : String) : void
   }
-  class FrmOnlineGameActivity <<boundary>> {
+  class OnlineGameActivity <<boundary>> {
     - txtMyName : TextView
     - txtMyScore : TextView
     - txtTimer : TextView
@@ -227,17 +227,17 @@ package "Server (Spring Boot)" {
   }
 }
 
-FrmMainActivity --> FrmOnlineActivity
-FrmOnlineActivity --> FrmLobbyActivity
-FrmLobbyActivity --> FrmOnlineGameActivity
-FrmOnlineActivity ..|> RoomListener
-FrmLobbyActivity ..|> RoomListener
-FrmOnlineGameActivity ..|> GameListener
-FrmOnlineActivity --> MatchController
-FrmLobbyActivity --> MatchController
-FrmOnlineGameActivity --> MatchController
-FrmOnlineActivity --> SessionDAO
-FrmOnlineGameActivity --> SessionDAO
+MainActivity --> OnlineActivity
+OnlineActivity --> LobbyActivity
+LobbyActivity --> OnlineGameActivity
+OnlineActivity ..|> RoomListener
+LobbyActivity ..|> RoomListener
+OnlineGameActivity ..|> GameListener
+OnlineActivity --> MatchController
+LobbyActivity --> MatchController
+OnlineGameActivity --> MatchController
+OnlineActivity --> SessionDAO
+OnlineGameActivity --> SessionDAO
 MatchController --> MatchFirebaseDAO
 MatchController --> MatchApiDAO
 MatchController --> ProblemDAO

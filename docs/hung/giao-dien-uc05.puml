@@ -2,7 +2,7 @@
 title Phác thảo giao diện – Chơi online
 {
   {+
-  <b>FrmOnlineActivity
+  <b>OnlineActivity
   ==
   .
   <b>CHƠI ONLINE
@@ -16,7 +16,7 @@ title Phác thảo giao diện – Chơi online
   .
   .
   } | . | {+
-  <b>FrmLobbyActivity
+  <b>LobbyActivity
   ==
   .
   MÃ PHÒNG
@@ -29,7 +29,7 @@ title Phác thảo giao diện – Chơi online
   [          HỦY          ]
   .
   } | . | {+
-  <b>FrmOnlineGameActivity
+  <b>OnlineGameActivity
   ==
   { HUNG | .   | <b>00:42 | .   | HOANG }
   { <b>36 | .  | .        | .   | <b>24 }

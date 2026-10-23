@@ -2,7 +2,7 @@
 title Phác thảo giao diện – Xem lịch sử đấu
 {
   {+
-  <b>FrmMainActivity
+  <b>MainActivity
   ==
   Xin chào, HUNG
   .
@@ -12,7 +12,7 @@ title Phác thảo giao diện – Xem lịch sử đấu
   [        CÀI ĐẶT       ]
   [       ĐĂNG XUẤT      ]
   } | . | {+
-  <b>FrmHistoryActivity
+  <b>HistoryActivity
   ==
   <b>LỊCH SỬ ĐẤU
   {#
@@ -23,7 +23,7 @@ title Phác thảo giao diện – Xem lịch sử đấu
   }
   .
   } | . | {+
-  <b>FrmHistoryActivity (rỗng)
+  <b>HistoryActivity (rỗng)
   ==
   <b>LỊCH SỬ ĐẤU
   .

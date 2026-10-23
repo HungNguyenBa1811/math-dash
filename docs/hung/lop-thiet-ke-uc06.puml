@@ -3,13 +3,13 @@
 title Biểu đồ lớp chi tiết – Xem lịch sử đấu (UC06)
 
 package "Client (Android)" {
-  class FrmMainActivity <<boundary>> {
+  class MainActivity <<boundary>> {
     - txtDisplayName : TextView
     - btnHistory : Button
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
-  class FrmHistoryActivity <<boundary>> {
+  class HistoryActivity <<boundary>> {
     - rvHistory : RecyclerView
     - txtEmpty : TextView
     - adapter : HistoryAdapter
@@ -108,11 +108,11 @@ package "Server (Spring Boot)" {
   }
 }
 
-FrmMainActivity --> FrmHistoryActivity
-FrmMainActivity --> SessionDAO
-FrmHistoryActivity --> SessionDAO
-FrmHistoryActivity --> MatchApiDAO
-FrmHistoryActivity *-- HistoryAdapter
+MainActivity --> HistoryActivity
+MainActivity --> SessionDAO
+HistoryActivity --> SessionDAO
+HistoryActivity --> MatchApiDAO
+HistoryActivity *-- HistoryAdapter
 HistoryAdapter *-- HistoryViewHolder
 HistoryAdapter ..> Match
 MatchApiDAO --|> ApiDAO

@@ -4,8 +4,8 @@ title Tuần tự thiết kế – Chơi online, đoạn C: Thi đấu và kết
 
 actor "Hùng (máy 1)" as U
 box "Client (Android)" #FFFFFF
-boundary FrmMainActivity as MA
-boundary FrmOnlineGameActivity as GA
+boundary MainActivity as MA
+boundary OnlineGameActivity as GA
 control MatchController as MC
 control CountDownTimer as T
 control ProblemDAO as PD

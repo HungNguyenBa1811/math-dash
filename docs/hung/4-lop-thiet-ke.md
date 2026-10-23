@@ -17,14 +17,16 @@
 
 ### 0.1. Lớp View → Activity hoặc overlay
 
+Tên lớp giao diện theo chuẩn Android: hậu tố `Activity`, đặt trong package `view`, layout `activity_<tên>.xml`. Không dùng tiền tố `Frm` của Java Swing.
+
 | Lớp phân tích | Lớp thiết kế | Layout |
 |---|---|---|
-| `MainView` | `FrmMainActivity` (chung) | `activity_main.xml` |
-| `OnlineView` | `FrmOnlineActivity` | `activity_online.xml` |
-| `LobbyView` | `FrmLobbyActivity` | `activity_lobby.xml` |
-| `OnlineGameView` | `FrmOnlineGameActivity` | `activity_online_game.xml` |
-| `MatchResultView` | Overlay `layoutResult` nằm trong `FrmOnlineGameActivity` | `activity_online_game.xml` |
-| `HistoryView` | `FrmHistoryActivity` + `HistoryAdapter` | `activity_history.xml`, `item_history.xml` |
+| `MainView` | `MainActivity` (chung) | `activity_main.xml` |
+| `OnlineView` | `OnlineActivity` | `activity_online.xml` |
+| `LobbyView` | `LobbyActivity` | `activity_lobby.xml` |
+| `OnlineGameView` | `OnlineGameActivity` | `activity_online_game.xml` |
+| `MatchResultView` | Overlay `layoutResult` nằm trong `OnlineGameActivity` | `activity_online_game.xml` |
+| `HistoryView` | `HistoryActivity` + `HistoryAdapter` | `activity_history.xml`, `item_history.xml` |
 
 `MatchResultView` là overlay chứ không phải Activity riêng, vì kết quả hiện đè lên màn thi đấu ngay khi trận xong, không cần chuyển dữ liệu qua `Intent`.
 
@@ -92,7 +94,7 @@ Lớp của framework (`CountDownTimer`, `DatabaseReference`, `Connection`…) c
 
 *Hình 12: Thiết kế giao diện chức năng Chơi online (phác thảo, thay bằng ảnh app thật khi nộp).*
 
-Chức năng có 3 màn và 1 overlay, đi theo thứ tự `FrmOnlineActivity` → `FrmLobbyActivity` → `FrmOnlineGameActivity` → overlay `layoutResult`.
+Chức năng có 3 màn và 1 overlay, đi theo thứ tự `OnlineActivity` → `LobbyActivity` → `OnlineGameActivity` → overlay `layoutResult`.
 - **Người tạo phòng** đi đủ 4 bước.
 - **Người tìm phòng** nhập mã ở màn đầu tiên. Màn phòng chờ hiện ngay "Trận đấu bắt đầu!" rồi tự sang màn thi đấu sau 2 giây.
 - Lưới 2x2 nút đáp án cao tối thiểu 72dp, chữ monospace 26sp, giống màn chơi offline để 2 chế độ có cùng cảm giác.
@@ -101,16 +103,16 @@ Chức năng có 3 màn và 1 overlay, đi theo thứ tự `FrmOnlineActivity` �
 
 | Màn | `id` trong layout | Loại View | Chức năng | Tên ở pha phân tích |
 |---|---|---|---|---|
-| `FrmMainActivity` | `txtDisplayName` | `TextView` | "Xin chào, HUNG" | `outDisplayName` |
+| `MainActivity` | `txtDisplayName` | `TextView` | "Xin chào, HUNG" | `outDisplayName` |
 | | `btnPlayOnline` | `Button` | Mở màn Chơi online | `subPlayOnline` |
-| `FrmOnlineActivity` | `btnCreateRoom` | `Button` | Tạo phòng mới | `subCreateRoom` |
+| `OnlineActivity` | `btnCreateRoom` | `Button` | Tạo phòng mới | `subCreateRoom` |
 | | `edtRoomCode` | `EditText` (`inputType=number`, `maxLength=6`) | Nhập mã phòng | `inRoomCode` |
 | | `btnJoinRoom` | `Button` | Vào phòng theo mã | `subJoinRoom` |
-| `FrmLobbyActivity` | `txtRoomCode` | `TextView` (36sp, đậm) | Mã phòng | `outRoomCode` |
+| `LobbyActivity` | `txtRoomCode` | `TextView` (36sp, đậm) | Mã phòng | `outRoomCode` |
 | | `txtStatus` | `TextView` | "Đang chờ đối thủ..." / "Trận đấu bắt đầu!" | `outStatus` |
 | | `txtOpponentName` | `TextView` | "Đối thủ: HOANG" | `outOpponentName` |
 | | `btnCancel` | `Button` | Hủy phòng, ẩn khi đã có đối thủ | `subCancel` |
-| `FrmOnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình | `outMyName`, `outMyScore` |
+| `OnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình | `outMyName`, `outMyScore` |
 | | `txtTimer` | `TextView` | Đồng hồ đếm ngược `00:42` | `outTimer` |
 | | `txtOpponentName`, `txtOpponentScore` | `TextView` | Tên, điểm đối thủ | `outOpponentName`, `outOpponentScore` |
 | | `txtProblem` | `TextView` | Câu hỏi `12 + 7 = ?` | `outProblem` |
@@ -132,10 +134,10 @@ Các thông báo ("Không tìm thấy phòng", "Phòng đã đầy", "Đối th�
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | `FrmMainActivity` | Màn chính (lớp chung); `onClick` của nút Chơi online mở `FrmOnlineActivity` |
-| Boundary | `FrmOnlineActivity` | Có `onClick` cho 2 nút:<br>- Tạo phòng gọi `MatchController.createRoom`.<br>- Vào phòng kiểm tra mã đủ 6 chữ số rồi gọi `MatchController.findRoom`.<br>Cài đặt `RoomListener`: vào được phòng thì `onRoomReady` mở `FrmLobbyActivity`; không vào được thì `onError` hiện `Toast` |
-| Boundary | `FrmLobbyActivity` | `onCreate` hiện mã phòng và gọi `MatchController.waitForOpponent`. `onRoomReady` hiện tên đối thủ, sau 2 giây mở `FrmOnlineGameActivity`. `onClick` của nút Hủy gọi `cancelRoom` |
-| Boundary | `FrmOnlineGameActivity` | Màn thi đấu, cài đặt `GameListener`.<br>- `onCreate` gọi `startGame`.<br>- `onClick` của nút đáp án gọi `submitAnswer` rồi `nextProblem`.<br>- `onTick` vẽ đồng hồ; `onMatchChanged` vẽ điểm đối thủ; `onMatchEnd` gọi `showResult` để hiện overlay.<br>- `onBackPressed` hỏi xác nhận rồi gọi `leaveMatch`.<br>Activity không tự chấm điểm, không tự phân thắng thua |
+| Boundary | `MainActivity` | Màn chính (lớp chung); `onClick` của nút Chơi online mở `OnlineActivity` |
+| Boundary | `OnlineActivity` | Có `onClick` cho 2 nút:<br>- Tạo phòng gọi `MatchController.createRoom`.<br>- Vào phòng kiểm tra mã đủ 6 chữ số rồi gọi `MatchController.findRoom`.<br>Cài đặt `RoomListener`: vào được phòng thì `onRoomReady` mở `LobbyActivity`; không vào được thì `onError` hiện `Toast` |
+| Boundary | `LobbyActivity` | `onCreate` hiện mã phòng và gọi `MatchController.waitForOpponent`. `onRoomReady` hiện tên đối thủ, sau 2 giây mở `OnlineGameActivity`. `onClick` của nút Hủy gọi `cancelRoom` |
+| Boundary | `OnlineGameActivity` | Màn thi đấu, cài đặt `GameListener`.<br>- `onCreate` gọi `startGame`.<br>- `onClick` của nút đáp án gọi `submitAnswer` rồi `nextProblem`.<br>- `onTick` vẽ đồng hồ; `onMatchChanged` vẽ điểm đối thủ; `onMatchEnd` gọi `showResult` để hiện overlay.<br>- `onBackPressed` hỏi xác nhận rồi gọi `leaveMatch`.<br>Activity không tự chấm điểm, không tự phân thắng thua |
 | — | `RoomListener`, `GameListener` | 2 interface để `MatchController` báo kết quả bất đồng bộ về Activity; không dùng lambda (CONVENTION) |
 | Control | `MatchController` | Singleton, điều phối cả trận online, giữ trận (`match`), ván chấm điểm (`session`), người chơi (`me`) và đồng hồ 60 giây (`timer`).<br>- `createRoom` sinh mã phòng bằng `generateRoomCode` và `questionSeed` ngẫu nhiên rồi nhờ `MatchFirebaseDAO` tạo trận.<br>- `startGame` tạo `ProblemDAO(new Random(questionSeed))` và `GameSession` chế độ online, đăng ký `onDisconnect`, bật đồng hồ.<br>- `submitAnswer` chấm bằng `MathProblem.isCorrect` + `GameSession`, đúng thì ghi điểm lên Firebase.<br>- Hết giờ thì ghi `timeUp`. Khi `Match.isOver()` đúng thì `finishMatch` gọi backend trong `Thread` (cờ `finishing` đảm bảo chỉ gọi một lần) |
 | Control | `SessionDAO` | `getPlayer()` đọc `playerId`, `displayName` từ SharedPreferences `"session"` và đóng gói thành `Player` (lớp chung) |
@@ -173,9 +175,9 @@ Màn Lịch sử đấu là một danh sách cuộn, mỗi dòng là một `item
 
 | Màn | `id` trong layout | Loại View | Chức năng | Tên ở pha phân tích |
 |---|---|---|---|---|
-| `FrmMainActivity` | `txtDisplayName` | `TextView` | "Xin chào, HUNG" | `outDisplayName` |
+| `MainActivity` | `txtDisplayName` | `TextView` | "Xin chào, HUNG" | `outDisplayName` |
 | | `btnHistory` | `Button` | Mở màn Lịch sử đấu | `subHistory` |
-| `FrmHistoryActivity` | `rvHistory` | `RecyclerView` | Danh sách trận, mới nhất trước | `outListMatch` |
+| `HistoryActivity` | `rvHistory` | `RecyclerView` | Danh sách trận, mới nhất trước | `outListMatch` |
 | | `txtEmpty` | `TextView` | "Chưa có trận nào" khi danh sách rỗng | `outListMatch` (trạng thái rỗng) |
 | `item_history.xml` | `txtPlayedAt` | `TextView` | Thời gian kết thúc `23/10/2026 20:16` | một dòng của `outListMatch` |
 | | `txtOpponent` | `TextView` | `vs HOANG` | một dòng của `outListMatch` |
@@ -192,8 +194,8 @@ Màn Lịch sử đấu là một danh sách cuộn, mỗi dòng là một `item
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | `FrmMainActivity` | `onClick` của nút Lịch sử đấu mở `FrmHistoryActivity` |
-| Boundary | `FrmHistoryActivity` | `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` rồi gọi `loadHistory(playerId)`. `loadHistory` gọi `MatchApiDAO.getHistory` trong `Thread`, rồi trong `runOnUiThread` gắn `HistoryAdapter`. Danh sách rỗng thì hiện `txtEmpty`; lỗi mạng thì hiện `Toast` |
+| Boundary | `MainActivity` | `onClick` của nút Lịch sử đấu mở `HistoryActivity` |
+| Boundary | `HistoryActivity` | `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` rồi gọi `loadHistory(playerId)`. `loadHistory` gọi `MatchApiDAO.getHistory` trong `Thread`, rồi trong `runOnUiThread` gắn `HistoryAdapter`. Danh sách rỗng thì hiện `txtEmpty`; lỗi mạng thì hiện `Toast` |
 | Boundary | `HistoryAdapter`, `HistoryViewHolder` | `HistoryAdapter` kế thừa `RecyclerView.Adapter`, giữ danh sách `Match` và `playerId` của người xem. `onBindViewHolder` tìm `MatchPlayer` của mình và của đối thủ trong `match.getPlayers()`, rồi gọi `match.getResult(playerId)` để chọn chữ và màu. `HistoryViewHolder` giữ 4 `TextView` của một dòng |
 | Control | `SessionDAO` | Như ở UC05 |
 | Control | `ApiDAO` ← `MatchApiDAO` | `getHistory(playerId)` gửi `GET /api/matches?playerId={id}` qua `ApiDAO.getArray`, đóng gói từng phần tử JSON thành `Match` bằng `toMatch` |

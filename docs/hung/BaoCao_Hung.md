@@ -361,14 +361,14 @@ Người tạo phòng đi qua đủ 4 màn. Người tìm phòng nhập mã ở 
 
 | Màn | `id` | Loại View | Chức năng | Tên pha phân tích |
 |---|---|---|---|---|
-| `FrmOnlineActivity` | `btnCreateRoom` | `Button` | Tạo phòng | `subCreateRoom` |
+| `OnlineActivity` | `btnCreateRoom` | `Button` | Tạo phòng | `subCreateRoom` |
 | | `edtRoomCode` | `EditText` (số, tối đa 6) | Nhập mã phòng | `inRoomCode` |
 | | `btnJoinRoom` | `Button` | Vào phòng | `subJoinRoom` |
-| `FrmLobbyActivity` | `txtRoomCode` | `TextView` | Mã phòng | `outRoomCode` |
+| `LobbyActivity` | `txtRoomCode` | `TextView` | Mã phòng | `outRoomCode` |
 | | `txtStatus` | `TextView` | Trạng thái chờ / bắt đầu | `outStatus` |
 | | `txtOpponentName` | `TextView` | Tên đối thủ | `outOpponentName` |
 | | `btnCancel` | `Button` | Hủy phòng | `subCancel` |
-| `FrmOnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình | `outMyName`, `outMyScore` |
+| `OnlineGameActivity` | `txtMyName`, `txtMyScore` | `TextView` | Tên, điểm của mình | `outMyName`, `outMyScore` |
 | | `txtTimer` | `TextView` | Đồng hồ | `outTimer` |
 | | `txtOpponentName`, `txtOpponentScore` | `TextView` | Tên, điểm đối thủ | `outOpponentName`, `outOpponentScore` |
 | | `txtProblem` | `TextView` | Câu hỏi | `outProblem` |
@@ -385,7 +385,7 @@ Người tạo phòng đi qua đủ 4 màn. Người tìm phòng nhập mã ở 
 *Hình 5: Biểu đồ lớp chi tiết chức năng Chơi online (client + server).*
 
 **Client (Android):**
-- `FrmOnlineActivity`, `FrmLobbyActivity` cài đặt `RoomListener`; `FrmOnlineGameActivity` cài đặt `GameListener`. Activity chỉ gọi `MatchController` và hiển thị, không gọi Firebase hay REST trực tiếp, không tự chấm điểm hay phân thắng thua.
+- `OnlineActivity`, `LobbyActivity` cài đặt `RoomListener`; `OnlineGameActivity` cài đặt `GameListener`. Activity chỉ gọi `MatchController` và hiển thị, không gọi Firebase hay REST trực tiếp, không tự chấm điểm hay phân thắng thua.
 - `MatchController` (Singleton) điều phối cả trận, giữ `match`, `session`, `me`, `timer`.
   - `createRoom` sinh mã phòng và `questionSeed`.
   - `startGame` tạo `ProblemDAO(new Random(questionSeed))` (2 máy cùng dãy câu), `GameSession` online, đăng ký `onDisconnect` và bật đồng hồ 60 giây.
@@ -413,12 +413,12 @@ Người tạo phòng đi qua đủ 4 màn. Người tìm phòng nhập mã ở 
 Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 đầy đủ (từng bước khớp với từng thông điệp) ở `docs/hung/5-kich-ban-v3.md`, mục 1. Tóm tắt các bước chính:
 
 **Đoạn A: Tạo phòng (26 bước).**
-1. `FrmMainActivity.onClick` mở `FrmOnlineActivity`.
+1. `MainActivity.onClick` mở `OnlineActivity`.
 2. `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` (bước 3–6).
 3. Hùng nhấn Tạo phòng. `onClick` gọi `MatchController.createRoom`, hàm này tạo `Match` và gọi `MatchFirebaseDAO.createMatch` (bước 9–12).
-4. `runTransaction` ghi node; `onComplete` báo về `onSuccess`, rồi `onRoomReady` mở `FrmLobbyActivity` (bước 13–16).
-5. `FrmLobbyActivity` gọi `waitForOpponent` → `watchMatch` (bước 17–18).
-6. Khi Hoàng vào, `onDataChange` → `toMatch` → `onSuccess` → `onRoomReady`. Lobby hiện đối thủ và mở `FrmOnlineGameActivity` (bước 20–26).
+4. `runTransaction` ghi node; `onComplete` báo về `onSuccess`, rồi `onRoomReady` mở `LobbyActivity` (bước 13–16).
+5. `LobbyActivity` gọi `waitForOpponent` → `watchMatch` (bước 17–18).
+6. Khi Hoàng vào, `onDataChange` → `toMatch` → `onSuccess` → `onRoomReady`. Lobby hiện đối thủ và mở `OnlineGameActivity` (bước 20–26).
 7. Ngoại lệ 19a: Hủy phòng → `cancelRoom` → `stopWatching`, `deleteMatch`.
 
 ![Hình 6](tuan-tu-thiet-ke-uc05a.png)
@@ -428,7 +428,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 **Đoạn B: Tìm phòng (23 bước).**
 1. Hoàng nhập mã. `onClick` gọi `findRoom` → `MatchFirebaseDAO.joinMatch` (bước 9–10).
 2. Trong `doTransaction`, `toMatch` đóng gói trận hiện tại, rồi gọi `Match.canJoin(2)` (bước 11–15).
-3. Nếu đúng thì ghi `players/2` và `status = "playing"`. `onComplete` → `onSuccess` → `onRoomReady` → `FrmLobbyActivity` → `FrmOnlineGameActivity` (bước 16–23).
+3. Nếu đúng thì ghi `players/2` và `status = "playing"`. `onComplete` → `onSuccess` → `onRoomReady` → `LobbyActivity` → `OnlineGameActivity` (bước 16–23).
 4. Ngoại lệ 15a: `canJoin` sai hoặc không có phòng → `Transaction.abort()` → `onFail` → `onError` → `Toast`.
 
 ![Hình 7](tuan-tu-thiet-ke-uc05b.png)
@@ -471,8 +471,8 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 
 | Màn | `id` | Loại View | Chức năng | Tên pha phân tích |
 |---|---|---|---|---|
-| `FrmMainActivity` | `btnHistory` | `Button` | Mở Lịch sử đấu | `subHistory` |
-| `FrmHistoryActivity` | `rvHistory` | `RecyclerView` | Danh sách trận | `outListMatch` |
+| `MainActivity` | `btnHistory` | `Button` | Mở Lịch sử đấu | `subHistory` |
+| `HistoryActivity` | `rvHistory` | `RecyclerView` | Danh sách trận | `outListMatch` |
 | | `txtEmpty` | `TextView` | "Chưa có trận nào" | `outListMatch` (rỗng) |
 | `item_history.xml` | `txtPlayedAt`, `txtOpponent`, `txtScore`, `txtResult` | `TextView` | Thời gian, đối thủ, tỉ số, kết quả có màu | một dòng của `outListMatch` |
 
@@ -483,7 +483,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 *Hình 10: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu (client + server).*
 
 **Client (Android):**
-- `FrmHistoryActivity.onCreate` lấy người chơi bằng `SessionDAO`.
+- `HistoryActivity.onCreate` lấy người chơi bằng `SessionDAO`.
 - `loadHistory(playerId)` gọi `MatchApiDAO.getHistory` trong `Thread`, rồi gắn `HistoryAdapter` trong `runOnUiThread`.
 - `HistoryAdapter` giữ danh sách `Match` và `playerId`. `onBindViewHolder` gọi `Match.getResult(playerId)` để chọn chữ và màu.
 - `MatchApiDAO` kế thừa `ApiDAO`. `getHistory` gửi `GET /api/matches?playerId={id}`.
@@ -494,7 +494,7 @@ Chức năng chia 3 đoạn, mỗi đoạn một biểu đồ. Kịch bản v3 �
 #### 4.2.3. Biểu đồ tuần tự chi tiết
 
 Kịch bản v3 đầy đủ ở `docs/hung/5-kich-ban-v3.md`, mục 2 (25 bước):
-1. `FrmMainActivity.onClick` mở `FrmHistoryActivity` (bước 1–2).
+1. `MainActivity.onClick` mở `HistoryActivity` (bước 1–2).
 2. `onCreate` lấy người chơi bằng `SessionDAO.getPlayer` (bước 3–6).
 3. `loadHistory(1)` → `MatchApiDAO.getHistory(1)` trong `Thread` → **`GET /api/matches?playerId=1`** → `MatchRestController.getByPlayer` → `MatchDAO.findByPlayer` truy vấn và đóng gói `Match` → trả JSON (bước 7–15).
 4. `toMatch(json)` đóng gói `Match` phía app → trả `List<Match>` (bước 16–18).
