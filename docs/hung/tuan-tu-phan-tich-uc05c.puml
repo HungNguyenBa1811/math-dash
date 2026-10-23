@@ -1,0 +1,40 @@
+@startuml tuan-tu-phan-tich-uc05c
+!include _seq.iuml
+title Tuần tự pha phân tích – Chơi online, đoạn C: Thi đấu
+
+actor "Hùng (máy 1)" as U
+boundary OnlineGameView as GV
+boundary MatchResultView as RV
+boundary MainView as MV
+entity Match as M
+entity MatchPlayer as MP
+entity GameSession as GS
+entity MathProblem as MPr
+
+GV -> M : watchMatch()
+GV -> MPr : generateProblem()
+MPr --> GV : câu hỏi 12 + 7
+GV --> U : hiển thị 0 VS 0, 60, câu hỏi, bàn phím số
+loop đến khi hết 60 giây
+  U -> GV : nhập 19, nhấn OK
+  GV -> GS : submitAnswer(19)
+  GS --> GV : đúng, +12, điểm 12
+  GV -> MP : updateScore(12)
+  MP --> GV : đã gửi điểm
+  GV -> MPr : generateProblem()
+  MPr --> GV : câu hỏi 9 − 4
+  GV --> U : "+12" bay lên, điểm 12, câu mới
+  M --> GV : trận mới: điểm HOANG = 12
+  GV --> U : hiển thị điểm đối thủ 12
+end
+GV --> U : hết giờ: khóa bàn phím, hiển thị "Hết giờ! Đang chờ kết quả..."
+GV -> M : finishMatch()
+M --> GV : trận đã lưu, HUNG 120 – HOANG 96
+GV -> M : getResult(HUNG)
+M --> GV : WIN
+GV -> RV : gọi
+RV --> U : hiển thị THẮNG!, 120 - 96
+U -> RV : nhấn Về menu
+RV -> MV : gọi
+MV --> U : hiển thị
+@enduml

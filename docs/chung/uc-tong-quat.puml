@@ -1,0 +1,50 @@
+@startuml uc-tong-quat
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam linetype ortho
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+
+skinparam usecase {
+  BackgroundColor #7ACFF5
+  BorderColor Black
+  FontColor Black
+}
+
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor Black
+}
+
+left to right direction
+skinparam packageStyle rectangle
+title Biểu đồ use case tổng quát – Math Dash 1v1
+
+actor "Người chơi" as A1
+
+rectangle "Math Dash 1v1" {
+  rectangle "Tài khoản (chung)" {
+    usecase "Đăng ký" as UC01
+    usecase "Đăng nhập" as UC02
+  }
+  rectangle "Chơi offline (Hoàng)" {
+    usecase "Chơi offline" as UC03
+    usecase "Cài đặt cấu hình game" as UC04
+  }
+  rectangle "Chơi online (Hùng)" {
+    usecase "Chơi online" as UC05
+    usecase "Xem lịch sử đấu" as UC06
+  }
+}
+
+A1 --> UC01
+A1 --> UC02
+A1 --> UC03
+A1 --> UC04
+A1 --> UC05
+A1 --> UC06
+@enduml

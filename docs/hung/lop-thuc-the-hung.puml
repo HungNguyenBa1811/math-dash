@@ -1,0 +1,72 @@
+@startuml lop-thuc-the-hung
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+  FontColor #000000
+  FontSize 11
+  AttributeFontSize 10
+  BorderThickness 1
+}
+left to right direction
+title Lớp thực thể pha thiết kế – phần Chơi online, Xem lịch sử đấu
+
+class Player {
+  - id : int
+  - username : String
+  - passwordHash : String
+  - displayName : String
+  - createdAt : Date
+}
+class MathProblem {
+  - operand1 : int
+  - operand2 : int
+  - operator : String
+  - correctAnswer : int
+  - answerOptions : List<Integer>
+}
+class GameSession {
+  - difficulty : int
+  - onlineMode : boolean
+  - questionsAsked : int
+  - score : int
+  - currentStreak : int
+  - maxStreak : int
+  - livesLeft : int
+  - correctCount : int
+  - wrongCount : int
+  - gameOver : boolean
+  - player : Player
+  - currentProblem : MathProblem
+}
+class Match {
+  - id : int
+  - roomCode : String
+  - status : String
+  - questionSeed : long
+  - createdAt : Date
+  - endedAt : Date
+  - players : List<MatchPlayer>
+}
+class MatchPlayer {
+  - id : int
+  - score : int
+  - forfeited : boolean
+  - timeUp : boolean
+  - player : Player
+}
+
+GameSession "n" o-- "1" Player
+GameSession "1" *-- "n" MathProblem
+Match "1" *-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
+@enduml

@@ -1,0 +1,281 @@
+@startuml lop-thiet-ke-uc05
+!include _theme.iuml
+title Biểu đồ lớp chi tiết – Chơi online
+
+package "Client (Android)" {
+  class MainActivity <<boundary>> {
+    - txtDisplayName : TextView
+    - btnPlayOnline : Button
+    + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
+  class OnlineActivity <<boundary>> {
+    - btnCreateRoom : Button
+    - edtRoomCode : EditText
+    - btnJoinRoom : Button
+    - me : Player
+    + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+    + onRoomReady(match : Match) : void
+    + onError(message : String) : void
+  }
+  class LobbyActivity <<boundary>> {
+    - txtRoomCode : TextView
+    - txtStatus : TextView
+    - txtOpponentName : TextView
+    - btnCancel : Button
+    + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+    + onRoomReady(match : Match) : void
+    + onError(message : String) : void
+  }
+  class OnlineGameActivity <<boundary>> {
+    - txtMyScore : TextView
+    - txtOpponentScore : TextView
+    - txtScorePopup : TextView
+    - txtTimer : TextView
+    - txtProblem : TextView
+    - txtAnswer : TextView
+    - btnDigits : Button[10]
+    - btnBackspace : ImageButton
+    - btnSubmit : Button
+    - layoutResult : LinearLayout
+    - txtResult : TextView
+    - txtFinalScore : TextView
+    - btnBackToMenu : Button
+    - me : Player
+    + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+    + onBackPressed() : void
+    + onMatchChanged(match : Match) : void
+    + onTick(secondsLeft : int) : void
+    + onTimeUp() : void
+    + onMatchEnd(match : Match) : void
+    + onError(message : String) : void
+    - appendDigit(digit : int) : void
+    - deleteDigit() : void
+    - showScorePopup(points : int) : void
+    - showProblem(problem : MathProblem) : void
+    - showResult(match : Match) : void
+  }
+  class "activity_main.xml" as xmlMain
+  class "activity_online.xml" as xmlOnline
+  class "activity_lobby.xml" as xmlLobby
+  class "activity_online_game.xml" as xmlOnlineGame
+  interface RoomListener {
+    + onRoomReady(match : Match) : void
+    + onError(message : String) : void
+  }
+  interface GameListener {
+    + onMatchChanged(match : Match) : void
+    + onTick(secondsLeft : int) : void
+    + onTimeUp() : void
+    + onMatchEnd(match : Match) : void
+    + onError(message : String) : void
+  }
+  class MatchController <<control>> {
+    - {static} instance : MatchController
+    - matchFirebaseDAO : MatchFirebaseDAO
+    - matchApiDAO : MatchApiDAO
+    - problemDAO : ProblemDAO
+    - session : GameSession
+    - match : Match
+    - me : Player
+    - timer : CountDownTimer
+    - finishing : boolean
+    + {static} getInstance() : MatchController
+    + createRoom(me : Player, listener : RoomListener) : void
+    + findRoom(roomCode : String, me : Player, listener : RoomListener) : void
+    + waitForOpponent(listener : RoomListener) : void
+    + cancelRoom() : void
+    + startGame(listener : GameListener) : MathProblem
+    + submitAnswer(value : int) : int
+    + nextProblem() : MathProblem
+    + leaveMatch() : void
+    + getSession() : GameSession
+    - finishMatch() : void
+    - generateRoomCode() : String
+  }
+  class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
+    + getPlayer() : Player
+  }
+  abstract class FirebaseDAO <<control>> {
+    # {static} con : DatabaseReference
+    # {static} auth : FirebaseAuth
+    + FirebaseDAO()
+  }
+  class MatchFirebaseDAO <<control>> {
+    + createMatch(match : Match, callback : MatchCallback) : void
+    + joinMatch(roomCode : String, me : Player, callback : MatchCallback) : void
+    + watchMatch(roomCode : String, callback : MatchCallback) : void
+    + stopWatching(roomCode : String) : void
+    + deleteMatch(roomCode : String) : void
+    + updateScore(roomCode : String, playerId : int, score : int) : void
+    + setTimeUp(roomCode : String, playerId : int) : void
+    + forfeit(roomCode : String, playerId : int) : void
+    + registerDisconnect(roomCode : String, playerId : int) : void
+    - toMatch(roomCode : String, data : Map<String, Object>) : Match
+  }
+  interface MatchCallback {
+    + onSuccess(match : Match) : void
+    + onFail(message : String) : void
+  }
+  abstract class ApiDAO <<control>> {
+    # {static} BASE_URL : String
+    # {static} token : String
+    # post(path : String, body : JSONObject) : JSONObject
+    # getArray(path : String) : JSONArray
+  }
+  class MatchApiDAO <<control>> {
+    + finishMatch(roomCode : String) : Match
+    - toMatch(json : JSONObject) : Match
+  }
+  class ProblemDAO <<control>> {
+    - random : Random
+    + ProblemDAO(random : Random)
+    + generateProblem(level : int) : MathProblem
+  }
+  class Player <<entity>> {
+    - id : int
+    - username : String
+    - displayName : String
+  }
+  class Match <<entity>> {
+    - id : int
+    - roomCode : String
+    - status : String
+    - questionSeed : long
+    - createdAt : Date
+    - endedAt : Date
+    - players : List<MatchPlayer>
+    + canJoin(playerId : int) : boolean
+    + isOver() : boolean
+    + getResult(playerId : int) : String
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - score : int
+    - forfeited : boolean
+    - timeUp : boolean
+    - player : Player
+  }
+  class GameSession <<entity>> {
+    - difficulty : int
+    - onlineMode : boolean
+    - questionsAsked : int
+    - score : int
+    - currentStreak : int
+    - maxStreak : int
+    - livesLeft : int
+    - correctCount : int
+    - wrongCount : int
+    - gameOver : boolean
+    - player : Player
+    - currentProblem : MathProblem
+    + recordCorrectAnswer() : int
+    + recordWrongAnswer() : void
+    + getCurrentLevel() : int
+  }
+  class MathProblem <<entity>> {
+    - operand1 : int
+    - operand2 : int
+    - operator : String
+    - correctAnswer : int
+    - answerOptions : List<Integer>
+    + getExpression() : String
+    + isCorrect(answer : int) : boolean
+  }
+}
+
+package "Server (Spring Boot)" {
+  class MatchRestController <<boundary>> {
+    - matchDAO : MatchDAO
+    - firebaseAdminDAO : FirebaseAdminDAO
+    + finish(roomCode : String) : Match
+  }
+  abstract class "DAO" as SDAO <<control>> {
+    # {static} conn : Connection
+    + DAO()
+  }
+  class MatchDAO <<control>> {
+    + insert(match : Match) : boolean
+    + findByRoomCode(roomCode : String, createdAt : Date) : Match
+  }
+  class FirebaseAdminDAO <<control>> {
+    - db : FirebaseDatabase
+    + readMatch(roomCode : String) : Match
+    + updateStatus(roomCode : String, status : String) : void
+  }
+  class "Match" as SMatch <<entity>> {
+    - id : int
+    - roomCode : String
+    - status : String
+    - questionSeed : long
+    - createdAt : Date
+    - endedAt : Date
+    - players : List<MatchPlayer>
+    + isOver() : boolean
+    + getResult(playerId : int) : String
+  }
+  class "MatchPlayer" as SMatchPlayer <<entity>> {
+    - id : int
+    - score : int
+    - forfeited : boolean
+    - timeUp : boolean
+    - player : Player
+  }
+  class "Player" as SPlayer <<entity>> {
+    - id : int
+    - username : String
+    - passwordHash : String
+    - displayName : String
+    - createdAt : Date
+  }
+}
+
+MainActivity -- OnlineActivity
+OnlineActivity -- LobbyActivity
+LobbyActivity -- OnlineGameActivity
+MainActivity -- xmlMain
+OnlineActivity -- xmlOnline
+LobbyActivity -- xmlLobby
+OnlineGameActivity -- xmlOnlineGame
+OnlineActivity o-- "1" Player
+OnlineGameActivity o-- "1" Player
+OnlineActivity ..|> RoomListener
+LobbyActivity ..|> RoomListener
+OnlineGameActivity ..|> GameListener
+OnlineActivity -- MatchController
+LobbyActivity -- MatchController
+OnlineGameActivity -- MatchController
+OnlineActivity -- SessionDAO
+OnlineGameActivity -- SessionDAO
+MatchController -- MatchFirebaseDAO
+MatchController -- MatchApiDAO
+MatchController -- ProblemDAO
+MatchController -- MatchCallback
+MatchFirebaseDAO --|> FirebaseDAO
+MatchApiDAO --|> ApiDAO
+MatchFirebaseDAO -- Match
+MatchApiDAO -- Match
+ProblemDAO -- MathProblem
+SessionDAO -- Player
+MatchController -- GameSession
+MatchController -- Match
+Match "1" *-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
+GameSession "n" o-- "1" Player
+GameSession "1" *-- "n" MathProblem
+
+MatchRestController -- MatchDAO
+MatchRestController -- FirebaseAdminDAO
+MatchDAO --|> SDAO
+MatchDAO -- SMatch
+FirebaseAdminDAO -- SMatch
+SMatch "1" *-- "2" SMatchPlayer
+SMatchPlayer "n" o-- "1" SPlayer
+
+MatchApiDAO -- MatchRestController : HTTP/JSON
+@enduml

@@ -1,0 +1,48 @@
+@startuml tuan-tu-thiet-ke-uc06
+!include _seq.iuml
+title Tuần tự thiết kế – Xem lịch sử đấu
+
+actor "Hùng" as U
+box "Client (Android)" #FFFFFF
+boundary MainActivity as MA
+boundary HistoryActivity as HA
+boundary HistoryAdapter as AD
+control SessionDAO as SD
+control MatchApiDAO as MAD
+entity Player as P
+entity Match as M
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary MatchRestController as MRC
+control MatchDAO as MD
+entity "Match" as SM
+end box
+
+U -> MA : nhấn Lịch sử đấu
+MA -> HA : onClick(): startActivity()
+HA -> SD : onCreate(): getPlayer()
+SD -> P : new Player()
+P --> SD : Player (id 1, HUNG)
+SD --> HA : Player
+HA -> HA : loadHistory(1)
+HA -> MAD : getHistory(1) {Thread}
+MAD -> MRC : GET /api/matches?playerId=1 → getByPlayer(1)
+MRC -> MD : findByPlayer(1)
+MD -> MD : SELECT tblMatch JOIN tblMatchPlayer JOIN tblPlayer ORDER BY endedAt DESC
+MD -> SM : new Match(...) (mỗi dòng)
+SM --> MD : Match
+MD --> MRC : List<Match> (4 trận)
+MRC --> MAD : 200 OK, List<Match> (JSON)
+MAD -> M : toMatch(json): new Match(...) (mỗi phần tử)
+M --> MAD : Match
+MAD --> HA : List<Match>
+HA -> AD : runOnUiThread: new HistoryAdapter(list, 1)
+loop mỗi dòng
+  AD -> M : onBindViewHolder(): getResult(1)
+  M --> AD : "WIN" / "DRAW" / "LOSE"
+end
+HA --> U : hiển thị 4 trận: thời gian, đối thủ, tỉ số, kết quả có màu
+U -> HA : nhấn Back
+HA -> MA : finish()
+MA --> U : hiển thị
+@enduml

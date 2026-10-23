@@ -1,0 +1,36 @@
+@startsalt giao-dien-uc06
+title Phác thảo giao diện – Xem lịch sử đấu
+{
+  {+
+  <b>MainActivity
+  ==
+  Xin chào, HUNG
+  .
+  [     CHƠI OFFLINE     ]
+  [      CHƠI ONLINE     ]
+  [      LỊCH SỬ ĐẤU     ]
+  [        CÀI ĐẶT       ]
+  [       ĐĂNG XUẤT      ]
+  } | . | {+
+  <b>HistoryActivity
+  ==
+  <b>LỊCH SỬ ĐẤU
+  {#
+  23/10/2026 20:16 | vs HOANG | 120 - 96 | <color:green><b>THẮNG</b></color>
+  22/10/2026 21:42 | vs HOANG | 84 - 84 | <color:orange><b>HÒA</b></color>
+  22/10/2026 21:35 | vs HOANG | 60 - 132 | <color:red><b>THUA</b></color>
+  21/10/2026 19:05 | vs MINH | 36 - 72 | <color:green><b>THẮNG</b></color>
+  }
+  .
+  } | . | {+
+  <b>HistoryActivity (rỗng)
+  ==
+  <b>LỊCH SỬ ĐẤU
+  .
+  .
+  Chưa có trận nào
+  .
+  .
+  }
+}
+@endsalt

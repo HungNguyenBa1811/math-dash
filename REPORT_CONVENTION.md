@@ -118,6 +118,8 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 
 **Không cần** đủ thuộc tính. **Không thêm** `id`. **Không vẽ** View, DAO, Controller.
 
+**Đặt tên:** tên lớp tiếng Anh, PascalCase, trùng tên lớp trong code; tên thuộc tính camelCase.
+
 ### A3. Thiết kế tĩnh phân tích (mỗi chức năng một biểu đồ)
 
 Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
@@ -135,7 +137,9 @@ Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
    4. Gán cho lớp nào?
       - Đầu ra là lớp thực thể nào thì gán vào lớp đó.
       - Nếu không, xét đầu vào: chỉ thuộc một lớp thực thể thì gán vào lớp đó; thuộc nhiều lớp thì gán vào lớp chứa được tất cả đầu vào.
-4. **Vẽ biểu đồ lớp** cho chức năng.
+4. **Vẽ biểu đồ lớp** cho chức năng. View – View và View – thực thể đều nối bằng **liên kết (association)**, không vẽ mũi tên.
+
+Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activity, REST.
 
 ### A4. Thiết kế động phân tích: kịch bản v2 + tuần tự
 
@@ -144,8 +148,10 @@ Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
   > 8. `MathProblem` trả về câu hỏi cho `GameView`.
 - **Biểu đồ tuần tự:**
   - Chỉ có 3 loại đối tượng: **tác nhân – View – thực thể**.
-  - Số thông điệp và thứ tự **giống hệt** kịch bản v2.
-- **Ngoại lệ quan trọng nhất** vẽ bằng khung `alt`.
+  - Số thông điệp và thứ tự **giống hệt** kịch bản chuẩn của v2.
+- Kịch bản v2 **vẫn viết ngoại lệ** (đánh số theo bước rẽ nhánh, ví dụ `9a.1`). Ngoại lệ mô tả ở mức chung ("hiển thị thông báo không tìm thấy phòng"), không ghi chi tiết kỹ thuật như `Toast`, `AlertDialog`. Biểu đồ tuần tự **chỉ vẽ kịch bản chuẩn**, không vẽ khung `alt`.
+- Mọi phương thức trên biểu đồ tuần tự phải có ở biểu đồ lớp phân tích.
+- Chức năng dài (Chơi online) chia đoạn như kịch bản v1, mỗi đoạn một biểu đồ, đánh số lại từ 1.
 
 ### D1. Thiết kế lớp thực thể (mục 3 của báo cáo)
 
@@ -191,6 +197,11 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 **4.x.1 Thiết kế giao diện:**
 - Ảnh từng màn của chức năng: lúc thiết kế dùng phác thảo, khi nộp thay bằng ảnh chụp app thật.
 - Bảng thành phần gồm `id` trong layout (`btnPlayOffline`), loại View (`Button`), chức năng, và tên tương ứng ở bước phân tích (`subPlayOffline`).
+- Thuộc tính của View chuyển sang thành phần Android:
+  - Bỏ tiền tố `in` / `out` / `sub`, thay bằng tiền tố theo loại View: `btn` (`Button`), `edt` (`EditText`), `txt` (`TextView`), `rv` (`RecyclerView`), `layout` (`LinearLayout`).
+  - Nhóm nút cùng loại gom thành mảng, ví dụ `subDigits` → `btnDigits : Button[10]`.
+  - Nút chỉ có biểu tượng dùng `ImageButton`, đặt `contentDescription`.
+  - Thuộc tính ẩn kiểu thực thể giữ dữ liệu dùng giữa các bước, ví dụ `me : Player`.
 
 **4.x.2 Biểu đồ lớp chi tiết** theo MVC, đủ 3 loại lớp:
 
@@ -202,6 +213,12 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `OnlineGameActivity`), layout tương ứng `activity_main.xml`, `activity_online_game.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 
+**Quan hệ của lớp giao diện (phần app):**
+- Boundary nối boundary bằng **liên kết (association)**: Activity – Activity, Activity – Adapter, Adapter – ViewHolder.
+- Boundary – control (Activity – Controller, Activity – DAO), control – control và control – entity cũng nối bằng **liên kết**, không vẽ mũi tên phụ thuộc. Chỉ giữ ký hiệu riêng cho kế thừa, thực thi interface, kết tập và hợp thành.
+- **Mỗi Activity nối với một lớp layout** đặt tên đúng tên file, ví dụ `activity_main.xml`. Lớp này để **rỗng**.
+- Activity **giữ thực thể làm thuộc tính** (ví dụ `me : Player`) thì nối bằng **kết tập (aggregation)**, hình thoi ở phía Activity: `Player --<> OnlineGameActivity`. Cách đọc giống `KhachHang --<> HoaDon`: hóa đơn chứa thông tin khách hàng nên hình thoi ở phía hóa đơn.
+
 **Quy tắc DAO:** mỗi nơi lưu trữ có một lớp cha giữ kết nối dùng chung, các DAO con kế thừa.
 - App, SQLite: `DAO` (giữ `SQLiteDatabase con`) ← `PlayerDAO`, `GameRecordDAO`.
 - App, REST: `ApiDAO` (giữ địa chỉ server và token) ← `PlayerApiDAO`, `MatchApiDAO`.
@@ -209,9 +226,9 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 - Server, MySQL: `DAO` (giữ `Connection conn`) ← `PlayerDAO`, `MatchDAO`.
 
 **Chức năng có gọi server (REST)** vẽ thành **2 package** trên cùng một biểu đồ:
-- **"Client (Android)"**: boundary → control (Controller, `XxxApiDAO`) → entity.
-- **"Server (Spring Boot)"**: `XxxRestController` → `XxxDAO extends DAO` → entity. Không có tầng Service.
-- Hai package nối nhau bằng **đúng một mũi tên** từ `XxxApiDAO` tới `XxxRestController`, ghi `HTTP/JSON`.
+- **"Client (Android)"**: boundary – control (Controller, `XxxApiDAO`) – entity.
+- **"Server (Spring Boot)"**: `XxxRestController` – `XxxDAO extends DAO` – entity. Không có tầng Service.
+- Hai package nối nhau bằng **đúng một đường liên kết** giữa `XxxApiDAO` và `XxxRestController`, ghi `HTTP/JSON`.
 - Không vẽ lớp của framework (Spring, Firebase SDK, `HttpURLConnection`); chỉ ghi chúng làm kiểu dữ liệu của thuộc tính.
 
 Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game) vẽ một package như bài mẫu.
@@ -242,7 +259,8 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 **Biểu đồ tuần tự chi tiết:**
 - Đủ boundary – control – entity.
 - Đánh số **khớp 1-1** với kịch bản v3.
-- Ngoại lệ chính vẽ bằng khung `alt`.
+- Kịch bản v3 và biểu đồ **chỉ gồm kịch bản chuẩn**, không có ngoại lệ.
+- Đóng gói thực thể con được lược bỏ: khi đóng gói `Match` thì 2 `MatchPlayer`, 2 `Player` bên trong không vẽ thành thông điệp riêng.
 
 **Quy ước riêng:**
 - **REST:** mỗi lời gọi API là **một thông điệp** từ `XxxApiDAO` tới `XxxRestController`, ghi phương thức và đường dẫn (ví dụ `POST /api/matches/{code}/finish`). Kết quả trả về là một thông điệp ngược lại, ghi kiểu dữ liệu (ví dụ `Match`). Phía server tiếp tục như bài mẫu: Controller gọi DAO → DAO đóng gói Entity → trả về.
@@ -283,3 +301,41 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 - [ ] Mọi tên lớp, hàm, bảng trong báo cáo đều có trong code ở nhánh `main`.
 - [ ] Mỗi hình có "Hình x" và lời giải thích.
 - [ ] Người còn lại đã đọc lại và góp ý.
+
+---
+
+## 6. Quy ước viết tài liệu trong `docs/`
+
+- **Tài liệu chỉ chứa nội dung báo cáo.** Không ghi quy ước, luật, trạng thái, số issue, người làm / người duyệt vào tiêu đề hay nội dung tài liệu. Những thứ đó ghi ở file này (mục 6, 7).
+- **Tiêu đề và chú thích hình không có ghi chú trong ngoặc.** Viết `## 1. Chức năng "Chơi online"`, không viết `## 1. Chức năng "Chơi online" (UC05)`; viết `*Hình 13: Biểu đồ lớp chi tiết chức năng Chơi online.*`, không thêm `(client + server)` hay `(phác thảo…)`. Tiêu đề trong ảnh PlantUML cũng vậy.
+- **Ngoại lệ trong kịch bản v2** viết ở mức chung: "hiển thị thông báo không vào được phòng", không ghi `Toast`, `AlertDialog`.
+- **Dữ liệu mẫu** dùng chung cho kịch bản v1, v2, v3 của một người (ví dụ của Hùng: HUNG máy 1 tạo phòng, HOANG máy 2 tìm phòng, MINH máy 3 vào khi phòng đã đầy; phòng `482915`; câu đầu `12 + 7`; tỉ số `120 – 96`).
+- **Kịch bản v1** chỉ có Người chơi và Hệ thống, không có tên lớp, tên hàm, thuật ngữ kỹ thuật.
+
+---
+
+## 7. Bảng tài liệu và việc còn lại
+
+| Tài liệu | Bước | Vị trí trong báo cáo | Issue | Người làm / duyệt | Đầu vào |
+|---|---|---|---|---|---|
+| `docs/chung/01-pham-vi-use-case.md` | Phạm vi, UC tổng quát | Mở đầu, cả 2 báo cáo | #22 M1-01 | Hùng / Hoàng | — |
+| `docs/chung/02-lop-thuc-the.md` | A2, D1 | Mục 3, cả 2 báo cáo | #23 M1-02 | Hùng / Hoàng | 01 |
+| `docs/chung/03-csdl.md` | D2 | Mục 2: Hoàng phần SQLite + SharedPreferences, Hùng phần MySQL + Firebase | #24 M1-03 | Hùng / Hoàng | 02 phần B |
+| `docs/hung/1-kich-ban-v1.md` | A1 | Mục 1 | #37 M3-01 | Hùng / Hoàng | 01 |
+| `docs/hung/2-lop-phan-tich.md` | A3 | Phụ lục | #39 M3-03 | Hùng / Hoàng | v1, 02 phần A |
+| `docs/hung/3-kich-ban-v2.md` | A4 | Phụ lục | #41 M3-05 | Hùng / Hoàng | v1, 2-lop-phan-tich |
+| `docs/hung/4-lop-thiet-ke.md` | D3 | Mục 4.x.1, 4.x.2 | #43 M4-01 | Hùng / Hoàng | 2-lop-phan-tich, 02, 03 |
+| `docs/hung/5-kich-ban-v3.md` | D4 | Mục 4.x.3 | #45 M4-03 | Hùng / Hoàng | v2, 4-lop-thiet-ke |
+| `docs/hung/BaoCao_Hung.md` | Bản nháp báo cáo | Toàn bộ | #47 M4-05 | Hùng / Hoàng | Các file trên |
+
+Lớp thực thể theo báo cáo: Hùng (UC05, UC06; thêm UC01, UC02 nếu trình bày) dùng `Player`, `MathProblem`, `GameSession`, `Match`, `MatchPlayer`; Hoàng (UC03, UC04) dùng `Player`, `MathProblem`, `GameSession`, `GameRecord`, `GameConfig`.
+
+Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28/10/2026.
+
+**Trạng thái tài liệu của Hùng:** viết trước khi code, thiết kế dẫn code. Tên lớp, hàm trong `4-lop-thiet-ke.md` là chữ ký code M2-02 → M2-05 phải theo; code buộc phải khác thì sửa tài liệu theo code trước khi nộp.
+
+**Việc còn lại trước khi nộp (Hùng):**
+1. Thay hình phác thảo giao diện bằng ảnh chụp app thật (M2-08).
+2. Đối chiếu tên lớp, hàm, API trong tài liệu với code trên `main`.
+3. Hoàng đọc lại.
+4. Báo cáo cuối viết trên file online riêng, xuất một lần ra `docs/BaoCao_Hung.docx`. Hình trong báo cáo đánh số lại từ 1, khác số hình trong `docs/`.

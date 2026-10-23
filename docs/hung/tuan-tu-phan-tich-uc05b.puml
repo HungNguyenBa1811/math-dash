@@ -1,0 +1,22 @@
+@startuml tuan-tu-phan-tich-uc05b
+!include _seq.iuml
+title Tuần tự pha phân tích – Chơi online, đoạn B: Tìm phòng
+
+actor "Hoàng (máy 2)" as U
+boundary MainView as MV
+boundary OnlineView as OV
+boundary LobbyView as LV
+boundary OnlineGameView as GV
+entity Match as M
+
+U -> MV : nhấn Chơi online
+MV -> OV : gọi
+OV --> U : hiển thị
+U -> OV : nhập mã 482915, nhấn Vào phòng
+OV -> M : joinMatch(482915)
+M -> M : canJoin()
+M --> OV : trận playing, 2 người HUNG, HOANG
+OV -> LV : gọi
+LV --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HUNG
+LV -> GV : gọi (sang đoạn C)
+@enduml

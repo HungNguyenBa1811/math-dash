@@ -1,0 +1,23 @@
+' === VP Base Theme v2 (dùng chung cho các biểu đồ của Hùng) ===
+!pragma layout smetana
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+  FontColor #000000
+  FontSize 11
+  AttributeFontSize 10
+  BorderThickness 1
+}
+skinparam stereotypeFontSize 9
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+}
