@@ -1,0 +1,46 @@
+@startuml uc-chi-tiet-choi-online
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+
+skinparam usecase {
+  BackgroundColor #7ACFF5
+  BorderColor Black
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor Black
+}
+
+left to right direction
+title Biểu đồ use case chi tiết module Chơi online – Math Dash 1v1
+
+actor "Người chơi" as A1
+
+rectangle "Module Chơi online" {
+  usecase "Chơi online" as UC05
+  usecase "Xem lịch sử đấu" as UC06
+  usecase "//Vào phòng đấu//" as VPD
+  usecase "Tạo phòng" as TP
+  usecase "Tìm phòng" as TIM
+  usecase "Hủy phòng" as HP
+  usecase "Thi đấu" as TD
+  usecase "Thoát trận" as TT
+}
+
+A1 --> UC05
+A1 --> UC06
+
+UC05 ..> VPD : <<include>>
+UC05 ..> TD : <<include>>
+TP --|> VPD
+TIM --|> VPD
+HP ..> TP : <<extend>>
+TT ..> TD : <<extend>>
+@enduml

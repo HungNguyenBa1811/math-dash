@@ -1,0 +1,29 @@
+@startuml tuan-tu-phan-tich-uc06
+!include _seq.iuml
+title Tuần tự pha phân tích – Xem lịch sử đấu
+
+actor "Hùng" as U
+boundary MainView as MV
+boundary HistoryView as HV
+entity Match as M
+
+U -> MV : nhấn Lịch sử đấu
+MV -> HV : gọi
+HV -> M : getHistory(HUNG)
+alt có trận
+  M --> HV : danh sách 4 trận
+  loop mỗi trận
+    HV -> M : getResult(HUNG)
+    M --> HV : WIN / DRAW / LOSE
+  end
+  HV --> U : hiển thị danh sách trận
+else chưa có trận nào
+  autonumber stop
+  M --> HV : 4a.1. danh sách rỗng
+  HV --> U : 4a.2. hiển thị "Chưa có trận nào"
+  autonumber resume
+end
+U -> HV : nhấn Back
+HV -> MV : gọi
+MV --> U : hiển thị
+@enduml

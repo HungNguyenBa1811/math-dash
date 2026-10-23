@@ -1,0 +1,38 @@
+@startuml lop-phan-tich-uc06
+!include _theme.iuml
+left to right direction
+title Biểu đồ lớp pha phân tích – Xem lịch sử đấu (UC06)
+
+class MainView <<boundary>> {
+  - outDisplayName
+  - subHistory
+}
+class HistoryView <<boundary>> {
+  - outListMatch
+}
+class Player <<entity>> {
+  - username
+  - password
+  - displayName
+  - createdAt
+}
+class Match <<entity>> {
+  - roomCode
+  - status
+  - questionSeed
+  - createdAt
+  - endedAt
+  + getHistory()
+  + getResult()
+}
+class MatchPlayer <<entity>> {
+  - score
+  - forfeited
+}
+
+MainView --> HistoryView
+MainView ..> Player
+HistoryView ..> Match
+Player "n" -- "2" Match
+(Player, Match) .. MatchPlayer
+@enduml

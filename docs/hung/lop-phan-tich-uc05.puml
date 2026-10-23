@@ -1,0 +1,100 @@
+@startuml lop-phan-tich-uc05
+!include _theme.iuml
+title Biểu đồ lớp pha phân tích – Chơi online (UC05)
+
+class MainView <<boundary>> {
+  - outDisplayName
+  - subPlayOnline
+}
+class OnlineView <<boundary>> {
+  - subCreateRoom
+  - inRoomCode
+  - subJoinRoom
+}
+class LobbyView <<boundary>> {
+  - outRoomCode
+  - outStatus
+  - outOpponentName
+  - subCancel
+}
+class OnlineGameView <<boundary>> {
+  - outMyName
+  - outMyScore
+  - outTimer
+  - outOpponentName
+  - outOpponentScore
+  - outProblem
+  - outsubAnswers
+  - outFeedback
+}
+class MatchResultView <<boundary>> {
+  - outResult
+  - outScoreLine
+  - subBackToMenu
+}
+
+class Player <<entity>> {
+  - username
+  - password
+  - displayName
+  - createdAt
+}
+class Match <<entity>> {
+  - roomCode
+  - status
+  - questionSeed
+  - createdAt
+  - endedAt
+  + createMatch()
+  + joinMatch()
+  + canJoin()
+  + watchMatch()
+  + deleteMatch()
+  + finishMatch()
+  + getResult()
+}
+class MatchPlayer <<entity>> {
+  - score
+  - forfeited
+  + updateScore()
+  + forfeit()
+}
+class GameSession <<entity>> {
+  - difficulty
+  - score
+  - currentStreak
+  - maxStreak
+  - correctCount
+  - wrongCount
+  - gameOver
+  + submitAnswer()
+}
+class MathProblem <<entity>> {
+  - operand1
+  - operand2
+  - operator
+  - correctAnswer
+  - answerOptions
+  + generateProblem()
+}
+
+MainView --> OnlineView
+OnlineView --> LobbyView
+LobbyView --> OnlineGameView
+OnlineGameView --> MatchResultView
+MatchResultView --> MainView
+
+OnlineView ..> Match
+LobbyView ..> Match
+OnlineGameView ..> Match
+OnlineGameView ..> MatchPlayer
+OnlineGameView ..> GameSession
+OnlineGameView ..> MathProblem
+MatchResultView ..> Match
+MainView ..> Player
+
+Player "n" -- "2" Match
+(Player, Match) .. MatchPlayer
+GameSession "n" o-- "1" Player
+GameSession "1" *-- "n" MathProblem
+@enduml

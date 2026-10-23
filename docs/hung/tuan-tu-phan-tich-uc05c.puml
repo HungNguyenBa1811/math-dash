@@ -1,0 +1,59 @@
+@startuml tuan-tu-phan-tich-uc05c
+!include _seq.iuml
+title Tuần tự pha phân tích – Chơi online, đoạn C: Thi đấu
+
+actor "Hùng (máy 1)" as U
+boundary OnlineGameView as GV
+boundary MatchResultView as RV
+boundary MainView as MV
+entity Match as M
+entity MatchPlayer as MP
+entity GameSession as GS
+entity MathProblem as MPr
+
+GV -> M : watchMatch()
+GV -> MPr : generateProblem()
+MPr --> GV : câu hỏi 12 + 7
+GV --> U : hiển thị HUNG 0 | 60 | HOANG 0, câu hỏi, 4 đáp án
+loop đến khi hết 60 giây
+  alt Hùng chọn đáp án
+    U -> GV : nhấn 19
+    GV -> GS : submitAnswer(19)
+    GS --> GV : đúng, +12, điểm 12
+    GV -> MP : updateScore(12)
+    MP --> GV : đã gửi điểm
+    GV -> MPr : generateProblem()
+    MPr --> GV : câu hỏi 9 − 4
+    GV --> U : hiển thị "+12 PTS!", điểm 12, câu mới
+  else Hùng nhấn Back, chọn Thoát
+    autonumber stop
+    U -> GV : 5a.1. nhấn Back, chọn Thoát
+    GV -> MP : 5a.2. forfeit()
+    MP --> GV : 5a.3. đã ghi bỏ trận
+    GV -> M : 5a.4. finishMatch()
+    M --> GV : 5a.5. trận đã lưu (HUNG thua)
+    GV -> MV : 5a.6. gọi
+    MV --> U : 5a.7. hiển thị
+    autonumber resume
+  end
+  alt đối thủ ghi điểm
+    M --> GV : trận mới: điểm HOANG = 12
+    GV --> U : hiển thị điểm đối thủ 12
+  else đối thủ bỏ trận
+    autonumber stop
+    M --> GV : 13a.1. trận mới: HOANG đã bỏ trận
+    GV --> U : 13a.2. thông báo "Đối thủ đã thoát", sang bước 16
+    autonumber resume
+  end
+end
+GV --> U : hết giờ: ẩn đáp án, hiển thị "Hết giờ! Đang chờ kết quả..."
+GV -> M : finishMatch()
+M --> GV : trận đã lưu, HUNG 120 – HOANG 96
+GV -> M : getResult(HUNG)
+M --> GV : WIN
+GV -> RV : gọi
+RV --> U : hiển thị THẮNG!, HUNG 120 - 96 HOANG
+U -> RV : nhấn Về menu
+RV -> MV : gọi
+MV --> U : hiển thị
+@enduml

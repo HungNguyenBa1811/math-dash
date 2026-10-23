@@ -1,0 +1,136 @@
+@startuml tuan-tu-thiet-ke-uc05c
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn C: Thi đấu và kết thúc trận
+
+actor "Hùng (máy 1)" as U
+box "Client (Android)" #FFFFFF
+boundary MainActivity as MA
+boundary OnlineGameActivity as GA
+control MatchController as MC
+control CountDownTimer as T
+control ProblemDAO as PD
+control MatchFirebaseDAO as MFD
+control MatchApiDAO as MAD
+entity GameSession as GS
+entity MathProblem as MP
+entity Match as M
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary MatchRestController as MRC
+control FirebaseAdminDAO as FAD
+control MatchDAO as MD
+entity "Match" as SM
+end box
+
+GA -> MC : onCreate(): startGame(this)
+MC -> MFD : registerDisconnect("482915", 1)
+MC -> PD : new ProblemDAO(new Random(questionSeed))
+MC -> GS : new GameSession(1, true)
+MC -> MFD : watchMatch("482915", callback)
+MC -> T : start() (60 giây)
+MC -> GS : getCurrentLevel()
+GS --> MC : 1
+MC -> PD : generateProblem(1)
+PD -> MP : new MathProblem(12, 7, "+")
+MP --> PD : MathProblem
+PD --> MC : MathProblem
+MC --> GA : MathProblem (12 + 7)
+GA --> U : hiển thị HUNG 0 | 60 | HOANG 0, 12 + 7 = ?, 4 đáp án
+
+loop đến khi CountDownTimer hết giờ
+  T -> MC : onTick(42000)
+  MC -> GA : onTick(42)
+  GA --> U : hiển thị 00:42
+  alt Hùng chọn đáp án
+    U -> GA : nhấn 19
+    GA -> MC : onClick(): submitAnswer(19)
+    MC -> MP : isCorrect(19)
+    MP --> MC : true
+    MC -> GS : recordCorrectAnswer()
+    GS --> MC : 12 (điểm mới 12)
+    MC -> MFD : updateScore("482915", 1, 12)
+    MC --> GA : 12
+    GA -> MC : nextProblem()
+    MC -> GS : getCurrentLevel()
+    GS --> MC : 1
+    MC -> PD : generateProblem(1)
+    PD -> MP : new MathProblem(9, 4, "-")
+    MP --> PD : MathProblem
+    PD --> MC : MathProblem
+    MC --> GA : MathProblem (9 − 4)
+    GA --> U : hiển thị "+12 PTS!", điểm 12, 9 − 4 = ?
+  else Hùng nhấn Back, chọn Thoát
+    autonumber stop
+    U -> GA : 18a.1. nhấn Back, chọn Thoát
+    GA -> MC : 18a.2. onBackPressed(): leaveMatch()
+    MC -> MFD : 18a.3. forfeit("482915", 1)
+    MC -> MAD : 18a.4. finishMatch("482915") {Thread} (server như bước 55–65)
+    MC --> GA : 18a.5. đã thoát
+    GA -> MA : 18a.6. finish()
+    MA --> U : 18a.7. hiển thị
+    autonumber resume
+  end
+  MFD -> MFD : onDataChange → toMatch("482915", data)
+  MFD -> M : new Match(...)
+  M --> MFD : Match
+  MFD -> MC : onSuccess(match)
+  MC -> M : isOver()
+  alt isOver() sai (đối thủ ghi điểm)
+    M --> MC : false
+    MC -> GA : onMatchChanged(match)
+    GA --> U : hiển thị điểm HOANG 12
+  else isOver() đúng (đối thủ bỏ trận)
+    autonumber stop
+    M --> MC : 40a.1. true (HOANG forfeited)
+    MC -> GA : 40a.2. onMatchChanged(match)
+    GA --> U : 40a.3. Toast "Đối thủ đã thoát"
+    MC -> MC : 40a.4. finishMatch() {Thread}, sang bước 54
+    autonumber resume
+  end
+end
+
+T -> MC : onFinish()
+MC -> MFD : setTimeUp("482915", 1)
+MC -> GA : onTimeUp()
+GA --> U : ẩn đáp án, hiển thị "Hết giờ! Đang chờ kết quả..."
+MFD -> MFD : onDataChange → toMatch("482915", data)
+MFD -> M : new Match(...)
+M --> MFD : Match
+MFD -> MC : onSuccess(match)
+MC -> M : isOver()
+M --> MC : true (cả 2 đã timeUp)
+MC -> MC : finishMatch() {Thread}
+MC -> MAD : finishMatch("482915")
+MAD -> MRC : POST /api/matches/482915/finish → finish("482915")
+MRC -> FAD : readMatch("482915")
+FAD -> SM : new Match(...)
+SM --> FAD : Match
+FAD --> MRC : Match (playing, 120 – 96)
+alt status = "playing"
+  MRC -> SM : isOver()
+  SM --> MRC : true
+  MRC -> MD : insert(match) (endedAt = now)
+  MD -> MD : INSERT tblMatch + 2 tblMatchPlayer (1 transaction)
+  MD --> MRC : true
+  MRC -> FAD : updateStatus("482915", "finished")
+else status = "finished" (máy 2 đã gọi trước)
+  autonumber stop
+  MRC -> MD : 60a.1. findByRoomCode("482915", createdAt)
+  MD -> SM : 60a.2. new Match(...)
+  SM --> MD : 60a.3. Match
+  MD --> MRC : 60a.4. Match đã lưu, sang bước 66
+  autonumber resume
+end
+MRC --> MAD : 200 OK, Match (JSON)
+MAD -> M : toMatch(json): new Match(...)
+M --> MAD : Match
+MAD --> MC : Match
+MC -> MFD : stopWatching("482915")
+MC -> GA : runOnUiThread: onMatchEnd(match)
+GA -> M : showResult(): getResult(1)
+M --> GA : "WIN"
+GA --> U : hiển thị THẮNG!, HUNG 120 - 96 HOANG
+U -> GA : nhấn Về menu
+GA -> MA : onClick(): finish()
+MA --> U : hiển thị
+@enduml

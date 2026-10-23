@@ -1,0 +1,57 @@
+@startsalt giao-dien-uc05
+title Phác thảo giao diện – Chơi online
+{
+  {+
+  <b>OnlineActivity
+  ==
+  .
+  <b>CHƠI ONLINE
+  .
+  [        TẠO PHÒNG        ]
+  .
+  ---- hoặc ----
+  .
+  "Nhập mã 6 chữ số  "
+  [        VÀO PHÒNG        ]
+  .
+  .
+  } | . | {+
+  <b>LobbyActivity
+  ==
+  .
+  MÃ PHÒNG
+  <size:22><b>482915</b></size>
+  Gửi mã này cho bạn để vào phòng
+  .
+  Đang chờ đối thủ...
+  Đối thủ: —
+  .
+  [          HỦY          ]
+  .
+  } | . | {+
+  <b>OnlineGameActivity
+  ==
+  { HUNG | .   | <b>00:42 | .   | HOANG }
+  { <b>36 | .  | .        | .   | <b>24 }
+  .
+  <size:20><b>   12 + 7 = ?</b></size>
+  .
+  { [  17  ] | [  19  ] }
+  { [  21  ] | [  18  ] }
+  .
+  +12 PTS!
+  } | . | {+
+  <b>layoutResult (overlay)
+  ==
+  .
+  <size:22><b>THẮNG!</b></size>
+  .
+  HUNG 120 - 96 HOANG
+  .
+  .
+  [        VỀ MENU        ]
+  .
+  .
+  }
+}
+@endsalt

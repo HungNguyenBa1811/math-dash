@@ -1,0 +1,54 @@
+@startuml tuan-tu-thiet-ke-uc05a
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn A: Tạo phòng
+
+actor "Hùng (máy 1)" as U
+boundary MainActivity as MA
+boundary OnlineActivity as OA
+boundary LobbyActivity as LA
+boundary OnlineGameActivity as GA
+control MatchController as MC
+control SessionDAO as SD
+control MatchFirebaseDAO as MFD
+entity Player as P
+entity Match as M
+
+U -> MA : nhấn Chơi online
+MA -> OA : onClick(): startActivity()
+OA -> SD : onCreate(): getPlayer()
+SD -> P : new Player()
+P --> SD : Player (id 1, HUNG)
+SD --> OA : Player
+OA --> U : hiển thị nút Tạo phòng, ô mã phòng, nút Vào phòng
+U -> OA : nhấn Tạo phòng
+OA -> MC : onClick(): createRoom(me, this)
+MC -> M : new Match("482915", seed, "waiting", HUNG)
+M --> MC : Match
+MC -> MFD : createMatch(match, callback)
+MFD -> MFD : runTransaction(matches/482915)
+MFD -> MC : onComplete → onSuccess(match)
+MC -> OA : onRoomReady(match)
+OA -> LA : startActivity(roomCode)
+LA -> MC : onCreate(): waitForOpponent(this)
+MC -> MFD : watchMatch("482915", callback)
+LA --> U : hiển thị 482915, "Đang chờ đối thủ..."
+alt Hùng nhấn Hủy
+  autonumber stop
+  U -> LA : 19a.1. nhấn Hủy
+  LA -> MC : 19a.2. onClick(): cancelRoom()
+  MC -> MFD : 19a.3. stopWatching("482915")
+  MC -> MFD : 19a.4. deleteMatch("482915")
+  MC --> LA : 19a.5. đã hủy
+  LA -> MA : 19a.6. finish()
+  MA --> U : 19a.7. hiển thị
+  autonumber resume
+else Hoàng vào phòng (đoạn B)
+  MFD -> MFD : onDataChange → toMatch("482915", data)
+  MFD -> M : new Match(...) (playing, HUNG + HOANG)
+  M --> MFD : Match
+  MFD -> MC : onSuccess(match)
+  MC -> LA : onRoomReady(match)
+  LA --> U : hiển thị "Trận đấu bắt đầu!", đối thủ HOANG
+  LA -> GA : sau 2 giây: startActivity() (sang đoạn C)
+end
+@enduml

@@ -1,0 +1,23 @@
+' === Theme biểu đồ tuần tự (dùng chung cho các biểu đồ của Hùng) ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+skinparam sequence {
+  ParticipantBackgroundColor #FFFFFF
+  ParticipantBorderColor #000000
+  ActorBackgroundColor #FFFFFF
+  ActorBorderColor #000000
+  LifeLineBorderColor #555555
+  GroupBorderColor #000000
+  GroupBackgroundColor #F2F2F2
+  BoxBorderColor #000000
+}
+skinparam boundaryBackgroundColor #FFFFFF
+skinparam entityBackgroundColor #FFFFFF
+skinparam controlBackgroundColor #FFFFFF
+skinparam noteBackgroundColor #FFFFE0
+skinparam noteBorderColor #888888
+hide footbox
+autonumber "0."
