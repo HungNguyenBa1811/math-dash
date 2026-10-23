@@ -314,8 +314,8 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
   - Tác nhân gọi là "người chơi" (hoặc "người dùng"), bên kia là "đối thủ". Không ghi tên người, không ghi "hiển thị cho Hùng".
   - Không nêu dữ liệu cụ thể: mã phòng, câu hỏi, điểm của ai bao nhiêu, kết quả WIN/LOSE. Viết "hiển thị điểm", "trả về kết quả trận".
   - Hàm ghi đầy đủ dạng "hàm onFinish()", không ghi tham số truyền vào.
-  - Không dùng định dạng backtick trong kịch bản v2, v3 và phần giải thích dưới hình.
   - Biểu đồ tuần tự đi kèm cũng vậy: tác nhân "Người chơi", thông điệp ghi hàm không tham số, không có dữ liệu cụ thể.
+- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành đoạn văn và danh sách lồng nhau, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL và cây dữ liệu Firebase. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
 - **Kịch bản v1** chỉ có Người chơi và Hệ thống, không có tên lớp, tên hàm, thuật ngữ kỹ thuật.
 
 ---
