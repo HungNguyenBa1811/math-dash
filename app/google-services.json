@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "896457869041",
+    "firebase_url": "https://math-dash-biden-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "math-dash-biden",
+    "storage_bucket": "math-dash-biden.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896457869041:android:082a712c18428ec8b3cb50",
+        "android_client_info": {
+          "package_name": "ptit.e23cnpm01.nguyenbahung.math_dash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNNIrRMldrl5vIpQyx2_RDxh7Fvewr10Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
