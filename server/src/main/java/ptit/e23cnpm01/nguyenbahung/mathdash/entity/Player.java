@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
 
-/**
- * Người chơi. passwordHash chỉ dùng ở server, không bao giờ trả ra JSON.
- */
 public class Player {
     private int id;
     private String username;

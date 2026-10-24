@@ -13,7 +13,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
@@ -31,8 +33,9 @@ public class MatchFirebaseDAO extends FirebaseDAO {
     private ValueEventListener connectionWatcher;
     private boolean connected;
 
-    // Ghi trận mới bằng transaction: mã đã có trận chưa kết thúc thì báo trùng (node finished coi như mã trống)
-    public void createMatch(final Match match, final MatchCallback callback) {
+    // Tạo phòng: ghi trận mới bằng transaction; mã đã có trận chưa kết thúc thì báo trùng (node finished coi như mã trống)
+    public void createMatch(Player me, final MatchCallback callback) {
+        final Match match = newMatch(me);
         final DatabaseReference ref = matchRef(match.getRoomCode());
         ref.runTransaction(new Transaction.Handler() {
             @NonNull
@@ -145,6 +148,17 @@ public class MatchFirebaseDAO extends FirebaseDAO {
         values.put("connected", false);
         values.put("forfeited", true);
         playerRef(roomCode, playerId).onDisconnect().updateChildren(values);
+    }
+
+    // Trận mới: mã phòng 6 chữ số, questionSeed ngẫu nhiên, người tạo là người chơi đầu tiên, trạng thái chờ
+    private Match newMatch(Player me) {
+        Random random = new Random();
+        Match match = new Match();
+        match.setRoomCode(String.format(Locale.US, "%06d", random.nextInt(1000000)));
+        match.setStatus(Match.WAITING);
+        match.setQuestionSeed(random.nextLong());
+        match.getPlayers().add(new MatchPlayer(me));
+        return match;
     }
 
     // Đóng gói dữ liệu node thành Match + các MatchPlayer

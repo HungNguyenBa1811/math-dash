@@ -4,9 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Tạo CSDL SQLite của app: tblPlayer (bản sao người chơi), tblGameRecord.
- */
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "math_dash.db";
     private static final int DB_VERSION = 2;
@@ -15,7 +12,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    // Bật khóa ngoại để tblGameRecord.tblPlayerId trỏ đúng tới tblPlayer
     @Override
     public void onConfigure(SQLiteDatabase db) {
         db.setForeignKeyConstraintsEnabled(true);

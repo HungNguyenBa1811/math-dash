@@ -13,15 +13,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Lớp cha của mọi DAO gọi REST: giữ địa chỉ server, gửi / nhận JSON.
- * Các hàm chạy đồng bộ nên phải gọi trong Thread.
- */
 public abstract class ApiDAO {
     protected static final String BASE_URL = "https://math-dash-server.onrender.com/api"; // server trên Render; chạy local: "http://10.0.2.2:8080/api"
     protected static final String NETWORK_ERROR = "Không kết nối được máy chủ, kiểm tra kết nối mạng";
 
-    // Gửi POST kèm JSON, trả JSON server trả về
     protected JSONObject post(String path, JSONObject body) throws IOException, JSONException {
         HttpURLConnection conn = open(path, "POST");
         int code;
@@ -38,7 +33,6 @@ public abstract class ApiDAO {
         return text.isEmpty() ? new JSONObject() : new JSONObject(text);
     }
 
-    // Gửi GET, trả mảng JSON
     protected JSONArray getArray(String path) throws IOException, JSONException {
         HttpURLConnection conn = open(path, "GET");
         int code;

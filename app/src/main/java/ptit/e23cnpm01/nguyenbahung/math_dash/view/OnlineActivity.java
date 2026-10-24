@@ -10,20 +10,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
-import ptit.e23cnpm01.nguyenbahung.math_dash.controller.MatchController;
-import ptit.e23cnpm01.nguyenbahung.math_dash.controller.RoomListener;
+import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchCallback;
+import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchFirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Màn Chơi online: Tạo phòng, hoặc nhập mã phòng để vào phòng.
- */
-public class OnlineActivity extends AppCompatActivity implements View.OnClickListener, RoomListener {
+public class OnlineActivity extends AppCompatActivity implements View.OnClickListener, MatchCallback {
     private Button btnCreateRoom;
     private EditText edtRoomCode;
     private Button btnJoinRoom;
     private Player me;
+    private MatchFirebaseDAO matchFirebaseDAO = new MatchFirebaseDAO();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +39,7 @@ public class OnlineActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if (v == btnCreateRoom) {
             btnCreateRoom.setEnabled(false);
-            MatchController.getInstance().createRoom(me, this);
+            matchFirebaseDAO.createMatch(me, this);
             return;
         }
         String roomCode = edtRoomCode.getText().toString().trim();
@@ -50,12 +48,12 @@ public class OnlineActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
         btnJoinRoom.setEnabled(false);
-        MatchController.getInstance().findRoom(roomCode, me, this);
+        matchFirebaseDAO.joinMatch(roomCode, me, this);
     }
 
-    // Vào được phòng: mở phòng chờ
+    // Tạo hoặc vào được phòng: mở phòng chờ
     @Override
-    public void onRoomReady(Match match) {
+    public void onSuccess(Match match) {
         Intent intent = new Intent(this, LobbyActivity.class);
         intent.putExtra("roomCode", match.getRoomCode());
         intent.putExtra("playerId", me.getId());
@@ -65,7 +63,7 @@ public class OnlineActivity extends AppCompatActivity implements View.OnClickLis
 
     // Không vào được phòng: "Không tìm thấy phòng", "Phòng đã đầy"...
     @Override
-    public void onError(String message) {
+    public void onFail(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         btnCreateRoom.setEnabled(true);
         btnJoinRoom.setEnabled(true);

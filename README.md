@@ -1,12 +1,12 @@
 # Math Dash - Retro Arcade Speed Math (Android Java)
 
-> **Math Dash** là ứng dụng game giải toán nhanh sinh tồn (Speed Arithmetic Survival) trên nền tảng **Android Native (Java)**, được thiết kế theo phong cách đồ họa **Retro Arcade cổ điển**, độ tương phản cao và kiến trúc chuẩn **MVC: View (Activity) / Controller / DAO / Entity** tuân thủ nguyên lý **Single Responsibility Principle (SRP)**.
+> **Math Dash** là ứng dụng game giải toán nhanh sinh tồn (Speed Arithmetic Survival) trên nền tảng **Android Native (Java)**, được thiết kế theo phong cách đồ họa **Retro Arcade cổ điển**, độ tương phản cao và kiến trúc **MVC 3 tầng: View (Activity) / DAO / Entity** tuân thủ nguyên lý **Single Responsibility Principle (SRP)**.
 
 ---
 
 ## Mục lục
 1. [Giới thiệu & Lối chơi](#-giới-thiệu--lối-chơi)
-2. [Kiến trúc ứng dụng (MVC: View - Controller - DAO - Entity)](#-kiến-trúc-ứng-dụng)
+2. [Kiến trúc ứng dụng (MVC: View - DAO - Entity)](#-kiến-trúc-ứng-dụng)
 3. [Mô hình dữ liệu (ERD)](#-mô-hình-dữ-liệu-erd)
 4. [Giao diện & Phong cách Retro (UI/UX)](#-giao-diện--phong-cách-retro)
 5. [Cấu trúc thư mục dự án](#-cấu-trúc-thư-mục-dự-án)
@@ -32,23 +32,21 @@ Người chơi sẽ hóa thân vào một thử thách tính nhẩm phản xạ 
 Dự án áp dụng mô hình phân lớp rõ ràng, phân định trách nhiệm đơn nhất (**Single Responsibility**):
 
 ```
-                        +----------------------+
-                        |   Activities (View)  |  <- View Layer (UI & Events)
-                        +----------+-----------+
-                                   |
-                                   v
-                        +----------------------+
-                        |    GameController    |  <- Controller Layer (Timer, Rules)
-                        +----+------------+----+
-                             |            |
-             +---------------+            +---------------+
-             v                                            v
-+------------------------+                     +----------------------+
-|        Entity          |                     |         DAO          |
-| (Player, MathProblem,  |                     | (SQLite Database,    |
-|  GameSession, Record)  |                     |  CRUD & Generator)   |
-+------------------------+                     +----------------------+
+                        +-----------------------------+
+                        |      Activities (View)      |  <- Giao diện, sự kiện, điều phối
+                        +-------------+---------------+     (đồng hồ, gọi DAO, hiển thị)
+                                      |
+             +------------------------+------------------------+
+             v                                                 v
++--------------------------+                     +--------------------------+
+|          Entity          |                     |           DAO            |
+| (Player, MathProblem,    |                     | (SQLite, REST, Firebase, |
+|  GameSession, Match...)  |                     |  sinh câu hỏi)           |
+|  + luật nghiệp vụ        |                     |                          |
++--------------------------+                     +--------------------------+
 ```
+
+Không có lớp Controller riêng: Activity gọi thẳng DAO và dùng các hàm nghiệp vụ của Entity. Package `util` chỉ chứa lớp tiện ích không thuộc nghiệp vụ (ví dụ `SoundManager`), mỗi file dưới 200 dòng.
 
 ### 1. Tầng Entity (`ptit.e23cnpm01.nguyenbahung.math_dash.entity`)
 Các JavaBean / POJO thuần túy, đóng gói dữ liệu:
@@ -64,13 +62,7 @@ Các JavaBean / POJO thuần túy, đóng gói dữ liệu:
 * [`GameRecordDAO.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/dao/GameRecordDAO.java): Thêm lịch sử trận đấu, truy vấn Top 10 / Top 20 điểm cao nhất.
 * [`ProblemDAO.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/dao/ProblemDAO.java): Sinh ngẫu nhiên các câu hỏi số học hợp lý kèm 4 phương án không trùng lặp.
 
-### 3. Tầng Controller (`ptit.e23cnpm01.nguyenbahung.math_dash.controller`)
-* [`GameController.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/controller/GameController.java):
-  * Điều khiển bộ đếm thời gian `CountDownTimer` 6 giây.
-  * Nhận input từ giao diện, đối chiếu đáp án, tăng/giảm điểm và mạng.
-  * Bắn callback qua interface `GameControllerListener` để cập nhật UI.
-
-### 4. Tầng View / Activity (`ptit.e23cnpm01.nguyenbahung.math_dash.view`; code khung hiện vẫn ở package `frm`, đổi tên ở M1-05)
+### 3. Tầng View / Activity (`ptit.e23cnpm01.nguyenbahung.math_dash.view`)
 * [`FrmMainActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmMainActivity.java): Màn hình Menu chính, nhập tên nhân vật, xem trước Top 5 kỷ lục, nút bắt đầu.
 * [`FrmGameActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmGameActivity.java): Màn hình thi đấu chính (bảng điểm, thanh thời gian chạy mượt, phép toán to bản, lưới 2x2 nút bấm xúc giác, modal Game Over).
 * [`FrmLeaderboardActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmLeaderboardActivity.java): Bảng vàng hiển thị đầy đủ thứ hạng, tỉ lệ chính xác và ngày chơi.
@@ -130,8 +122,6 @@ math-dash/
 │       ├── main/
 │       │   ├── AndroidManifest.xml
 │       │   ├── java/ptit/e23cnpm01/nguyenbahung/math_dash/
-│       │   │   ├── controller/
-│       │   │   │   └── GameController.java
 │       │   │   ├── dao/
 │       │   │   │   ├── DatabaseHelper.java
 │       │   │   │   ├── GameRecordDAO.java

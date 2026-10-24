@@ -17,9 +17,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Màn Lịch sử đấu: danh sách các trận online đã kết thúc, mới nhất trước.
- */
 public class HistoryActivity extends AppCompatActivity {
     private RecyclerView rvHistory;
     private TextView txtEmpty;

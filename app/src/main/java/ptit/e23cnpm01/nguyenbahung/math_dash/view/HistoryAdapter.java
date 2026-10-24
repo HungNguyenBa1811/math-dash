@@ -16,9 +16,7 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 
-/**
- * Đổ danh sách trận lên RecyclerView; mỗi dòng là một item_history.xml.
- */
+
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryViewHolder> {
     private List<Match> listMatch;
     private int playerId;

@@ -8,9 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
-/**
- * Giữ 4 TextView của một dòng lịch sử đấu.
- */
 public class HistoryViewHolder extends RecyclerView.ViewHolder {
     TextView txtPlayedAt;
     TextView txtOpponent;

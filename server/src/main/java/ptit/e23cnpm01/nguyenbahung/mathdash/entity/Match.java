@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Trận đấu online gồm đúng 2 người chơi.
- * isOver và getResult là luật của trận, viết bằng Java thuần để kiểm thử được.
- */
 public class Match {
     public static final String WIN = "WIN";
     public static final String LOSE = "LOSE";

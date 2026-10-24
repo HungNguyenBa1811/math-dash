@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Phiên đăng nhập lưu trong SharedPreferences "session".
- */
 public class SessionDAO {
     private SharedPreferences prefs;
 
@@ -15,7 +12,6 @@ public class SessionDAO {
         prefs = context.getSharedPreferences("session", Context.MODE_PRIVATE);
     }
 
-    // Ghi nhớ người chơi vừa đăng nhập
     public void save(Player player) {
         prefs.edit()
                 .putInt("playerId", player.getId())
@@ -23,7 +19,6 @@ public class SessionDAO {
                 .apply();
     }
 
-    // Đọc phiên và đóng gói thành Player; chưa đăng nhập thì trả null
     public Player getPlayer() {
         if (!prefs.contains("playerId")) {
             return null;
@@ -31,7 +26,6 @@ public class SessionDAO {
         return new Player(prefs.getInt("playerId", 0), null, prefs.getString("displayName", ""));
     }
 
-    // Đăng xuất: xóa toàn bộ phiên
     public void clear() {
         prefs.edit().clear().apply();
     }

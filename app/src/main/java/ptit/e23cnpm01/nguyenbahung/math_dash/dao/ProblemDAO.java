@@ -7,10 +7,6 @@ import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 
-/**
- * Sinh câu hỏi theo mức, không truy cập CSDL.
- * Mọi số ngẫu nhiên đi qua random: 2 máy cùng questionSeed sinh ra cùng một dãy câu.
- */
 public class ProblemDAO {
     private static final int OPTION_COUNT = 4;
     private static final int MAX_OFFSET = 10;

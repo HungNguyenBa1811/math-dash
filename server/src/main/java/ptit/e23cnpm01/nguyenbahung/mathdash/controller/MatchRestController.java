@@ -18,9 +18,6 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.dao.FirebaseAdminDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.MatchDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 
-/**
- * API trận đấu: kết thúc trận (server làm trọng tài), lịch sử đấu.
- */
 @RestController
 @RequestMapping("/api/matches")
 public class MatchRestController {
@@ -28,7 +25,6 @@ public class MatchRestController {
     private FirebaseAdminDAO firebaseAdminDAO = new FirebaseAdminDAO();
 
     // POST /api/matches/{roomCode}/finish
-    // synchronized: 2 máy gọi cùng lúc thì máy gọi sau nhận lại đúng bản đã lưu
     @PostMapping("/{roomCode}/finish")
     public synchronized Match finish(@PathVariable String roomCode)
             throws SQLException, IOException, InterruptedException {
@@ -39,7 +35,6 @@ public class MatchRestController {
         if ("finished".equals(match.getStatus())) {
             return matchDAO.findByRoomCode(roomCode, match.getCreatedAt());
         }
-        // Kiểm tra lại ở server, không tin yêu cầu kết thúc trận gửi từ app
         if (!match.isOver()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Trận chưa kết thúc");
         }

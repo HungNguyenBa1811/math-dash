@@ -6,9 +6,6 @@ import java.sql.SQLException;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * Thao tác bảng tblPlayer.
- */
 public class PlayerDAO extends DAO {
 
     // Tìm người chơi theo tên đăng nhập, không có thì trả null

@@ -2,9 +2,6 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
 import java.util.Date;
 
-/**
- * Kết quả một ván offline đã kết thúc.
- */
 public class GameRecord {
     private int id;
     private int difficulty;

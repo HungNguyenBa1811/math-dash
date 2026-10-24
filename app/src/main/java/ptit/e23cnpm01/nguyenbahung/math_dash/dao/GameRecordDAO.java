@@ -7,9 +7,6 @@ import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.GameRecord;
 
-/**
- * Thao tác SQLite trên bảng game_records.
- */
 public class GameRecordDAO {
 
     public GameRecordDAO(Context context) {

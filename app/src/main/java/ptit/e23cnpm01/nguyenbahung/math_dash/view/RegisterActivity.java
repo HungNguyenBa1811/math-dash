@@ -15,9 +15,6 @@ import java.io.IOException;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
 
-/**
- * Màn Đăng ký. Đăng ký xong quay về màn Đăng nhập.
- */
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText edtUsername;
     private EditText edtPassword;

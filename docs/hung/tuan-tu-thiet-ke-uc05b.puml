@@ -7,7 +7,6 @@ boundary MainActivity as MA
 boundary OnlineActivity as OA
 boundary LobbyActivity as LA
 boundary OnlineGameActivity as GA
-control MatchController as MC
 control SessionDAO as SD
 control MatchFirebaseDAO as MFD
 entity Player as P
@@ -21,19 +20,21 @@ P --> SD : Player
 SD --> OA : Player
 OA --> U : hiển thị giao diện chơi online
 U -> OA : nhập mã phòng, nhấn Vào phòng
-OA -> MC : onClick(): findRoom()
-MC -> MFD : joinMatch()
+OA -> MFD : onClick(): joinMatch()
 MFD -> MFD : doTransaction(): toMatch()
 MFD -> M : đóng gói Match
 M --> MFD : Match
 MFD -> M : canJoin()
 M --> MFD : true
 MFD -> MFD : thêm người chơi, chuyển trận sang đang chơi
-MFD -> MC : onComplete(): onSuccess()
-MC -> OA : onRoomReady()
+MFD -> OA : onComplete(): onSuccess()
 OA -> LA : startActivity()
-LA -> MC : onCreate(): waitForOpponent()
-MC -> LA : onRoomReady()
+LA -> MFD : onCreate(): watchMatch()
+MFD -> MFD : onDataChange(): toMatch()
+MFD -> M : đóng gói Match
+M --> MFD : Match
+MFD -> LA : onSuccess()
+LA -> MFD : stopWatching()
 LA --> U : hiển thị trận đấu bắt đầu, tên đối thủ
 LA -> GA : startActivity()
 @enduml

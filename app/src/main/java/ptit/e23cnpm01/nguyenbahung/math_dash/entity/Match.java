@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Trận đấu online gồm đúng 2 người chơi.
- * canJoin, isOver, getResult là luật của trận, viết bằng Java thuần để kiểm thử được.
- */
+
 public class Match {
     public static final String WAITING = "waiting";
     public static final String PLAYING = "playing";

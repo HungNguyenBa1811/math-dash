@@ -10,21 +10,23 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
-import ptit.e23cnpm01.nguyenbahung.math_dash.controller.MatchController;
-import ptit.e23cnpm01.nguyenbahung.math_dash.controller.RoomListener;
+import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchCallback;
+import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchFirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 
 /**
  * Màn Phòng chờ: hiện mã phòng, chờ đối thủ; có đối thủ thì sau 2 giây vào màn thi đấu.
  */
-public class LobbyActivity extends AppCompatActivity implements View.OnClickListener, RoomListener {
+public class LobbyActivity extends AppCompatActivity implements View.OnClickListener, MatchCallback {
     private static final long START_DELAY_MILLIS = 2000;
 
     private TextView txtRoomCode;
     private TextView txtStatus;
     private TextView txtOpponentName;
     private Button btnCancel;
+    private String roomCode;
+    private MatchFirebaseDAO matchFirebaseDAO = new MatchFirebaseDAO();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,32 +37,32 @@ public class LobbyActivity extends AppCompatActivity implements View.OnClickList
         txtOpponentName = findViewById(R.id.txtOpponentName);
         btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(this);
-        txtRoomCode.setText(getIntent().getStringExtra("roomCode"));
-        MatchController.getInstance().waitForOpponent(this);
+        roomCode = getIntent().getStringExtra("roomCode");
+        txtRoomCode.setText(roomCode);
+        matchFirebaseDAO.watchMatch(roomCode, this);
     }
 
-    // Có đối thủ: hiện tên đối thủ, ẩn nút Hủy, sau 2 giây mở màn thi đấu
+    // Trận chuyển sang đang đấu (người tìm phòng thấy ngay): hiện tên đối thủ, sau 2 giây mở màn thi đấu
     @Override
-    public void onRoomReady(Match match) {
-        int myId = getIntent().getIntExtra("playerId", 0);
-        for (MatchPlayer mp : match.getPlayers()) {
-            if (mp.getPlayer().getId() != myId) {
-                txtOpponentName.setText("Đối thủ: " + mp.getPlayer().getDisplayName());
-            }
+    public void onSuccess(Match match) {
+        if (!Match.PLAYING.equals(match.getStatus())) {
+            return;
         }
-        txtStatus.setText("Trận đấu bắt đầu!");
-        btnCancel.setVisibility(View.GONE);
+        matchFirebaseDAO.stopWatching(roomCode);
+        showOpponent(match);
         txtStatus.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(LobbyActivity.this, OnlineGameActivity.class));
+                Intent intent = new Intent(LobbyActivity.this, OnlineGameActivity.class);
+                intent.putExtra("roomCode", roomCode);
+                startActivity(intent);
                 finish();
             }
         }, START_DELAY_MILLIS);
     }
 
     @Override
-    public void onError(String message) {
+    public void onFail(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -68,7 +70,8 @@ public class LobbyActivity extends AppCompatActivity implements View.OnClickList
     // Hủy phòng khi chưa có đối thủ, quay về màn Chính
     @Override
     public void onClick(View v) {
-        MatchController.getInstance().cancelRoom();
+        matchFirebaseDAO.stopWatching(roomCode);
+        matchFirebaseDAO.deleteMatch(roomCode);
         finish();
     }
 
@@ -78,5 +81,17 @@ public class LobbyActivity extends AppCompatActivity implements View.OnClickList
         if (btnCancel.getVisibility() == View.VISIBLE) {
             onClick(btnCancel);
         }
+    }
+
+    // Hiện tên đối thủ, ẩn nút Hủy
+    private void showOpponent(Match match) {
+        int myId = getIntent().getIntExtra("playerId", 0);
+        for (MatchPlayer mp : match.getPlayers()) {
+            if (mp.getPlayer().getId() != myId) {
+                txtOpponentName.setText("Đối thủ: " + mp.getPlayer().getDisplayName());
+            }
+        }
+        txtStatus.setText("Trận đấu bắt đầu!");
+        btnCancel.setVisibility(View.GONE);
     }
 }

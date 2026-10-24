@@ -2,9 +2,7 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
 import java.util.List;
 
-/**
- * Một câu hỏi: 2 toán hạng, toán tử, đáp án đúng và 4 phương án (chỉ chế độ offline hiển thị).
- */
+
 public class MathProblem {
     private int operand1;
     private int operand2;

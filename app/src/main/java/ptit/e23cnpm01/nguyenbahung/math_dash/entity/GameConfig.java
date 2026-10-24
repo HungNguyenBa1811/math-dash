@@ -1,8 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
-/**
- * Cấu hình game trên máy: âm thanh, rung, thời gian trả lời mỗi câu (chế độ offline).
- */
 public class GameConfig {
     private boolean soundEnabled = true;
     private boolean vibrationEnabled = true;

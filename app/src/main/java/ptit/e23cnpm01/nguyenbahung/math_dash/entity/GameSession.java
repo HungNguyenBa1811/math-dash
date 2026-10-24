@@ -1,9 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
-/**
- * Ván đang chơi, dùng chung cho chơi offline và chơi online.
- * Đúng: cộng 10 + chuỗi đúng × 2. Sai: chuỗi đúng về 0; chỉ chế độ offline mới mất mạng.
- */
 public class GameSession {
     public static final int MAX_LIVES = 3;
     public static final int MAX_LEVEL = 4;

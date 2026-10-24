@@ -12,9 +12,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Màn Chính: tên hiển thị và 5 nút chức năng.
- */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView txtDisplayName;
     private Button btnPlayOffline;

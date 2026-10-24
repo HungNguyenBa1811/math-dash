@@ -1,8 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.mathdash.entity;
 
-/**
- * Một người chơi trong một trận: điểm, đã bỏ trận chưa, máy đã hết giờ chưa.
- */
 public class MatchPlayer {
     private int id;
     private int score;

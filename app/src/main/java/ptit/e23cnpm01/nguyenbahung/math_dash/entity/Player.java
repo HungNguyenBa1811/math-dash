@@ -1,8 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
-/**
- * Người chơi. App không bao giờ giữ mật khẩu nên không có passwordHash.
- */
 public class Player {
     private int id;
     private String username;

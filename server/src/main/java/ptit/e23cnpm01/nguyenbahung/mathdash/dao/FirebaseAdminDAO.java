@@ -16,10 +16,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * Đọc / ghi trận đang diễn ra trên Firebase qua REST API của Realtime Database.
- * Không dùng JDBC nên không kế thừa DAO.
- */
+
 public class FirebaseAdminDAO {
     private String dbUrl;
     private HttpClient client = HttpClient.newHttpClient();
@@ -29,7 +26,7 @@ public class FirebaseAdminDAO {
         dbUrl = DAO.loadConfig().getProperty("firebase.databaseUrl");
     }
 
-    // GET matches/{roomCode}.json và đóng gói thành Match; không có trận thì trả null
+    // GET matches/{roomCode}.json
     public Match readMatch(String roomCode) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(nodeUri(roomCode, "")).GET().build();
         JsonNode node = mapper.readTree(send(request));

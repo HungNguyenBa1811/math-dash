@@ -44,6 +44,7 @@
 | D13 | Chia việc | Theo chức năng (mục 2.1). Phần chung Hùng làm (cùng Claude), Hoàng duyệt PR | Hoàng bận đến 25/10, không làm Spring Boot |
 | D14 | Thứ tự OOAD | Phần chung (use case tổng quát, lớp thực thể, CSDL) làm **trước khi code**. Phân tích và thiết kế từng chức năng làm **sau demo**, đối chiếu code thật | Không đủ thời gian vẽ trước khi demo |
 | D15 | Báo cáo | Mỗi người **một file riêng**, chỉ lấy phần chung liên quan chức năng của mình | Đề ghi "bài làm cá nhân" |
+| D16 | Kiến trúc app | MVC 3 tầng `entity` – `dao` – `view`. Activity xử lý sự kiện, điều phối (đồng hồ, chấm điểm bằng entity, gọi DAO) và hiển thị; **không có lớp Controller riêng**. Luật nghiệp vụ là hàm Java thuần trên entity; truy cập dữ liệu (SQLite, REST, Firebase) chỉ nằm trong DAO. Package `util` chỉ chứa lớp tiện ích không thuộc nghiệp vụ (ví dụ `SoundManager`), mỗi file dưới 200 dòng | Khớp mô hình boundary – DAO – entity của bài mẫu; ít lớp trung gian, dễ giải thích khi demo |
 
 ---
 
@@ -75,12 +76,10 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-offline` (UC03), `uc-cai-da
 | DAO HTTP | `MatchApiDAO` (kết thúc trận, lịch sử đấu) | Hùng |
 | DAO Firebase | `FirebaseDAO` (cha), `MatchFirebaseDAO` (tạo / tìm / theo dõi trận đang diễn ra) | Hùng |
 | Sinh câu hỏi | `ProblemDAO` (không truy cập CSDL) | **Chung** |
-| Điều khiển | `GameController` (offline) | Hoàng |
-| Điều khiển | `MatchController` (online, Singleton) | Hùng |
 | Giao diện | `LoginActivity`, `RegisterActivity`, `MainActivity` | **Chung** |
 | Giao diện | `DifficultyActivity`, `GameActivity`, `SettingsActivity` | Hoàng |
 | Giao diện | `OnlineActivity` (Tạo phòng / nhập mã), `LobbyActivity` (chờ đối thủ), `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter` | Hùng |
-| Tiện ích | `SoundManager` (Singleton) | Hoàng |
+| Tiện ích | `util/SoundManager` (Singleton, dưới 200 dòng) | Hoàng |
 
 **Backend** (thư mục `server/`, package `ptit.e23cnpm01.nguyenbahung.mathdash`):
 
@@ -301,7 +300,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
   - **`MainActivity`:** tên hiển thị; 5 nút: Chơi offline → `DifficultyActivity`, Chơi online → `OnlineActivity`, Lịch sử đấu → `HistoryActivity`, Cài đặt → `SettingsActivity`, Đăng xuất.
   - **Đổi tên lớp giao diện cũ:** package `frm` → `view`, bỏ tiền tố `Frm` (`FrmMainActivity` → `MainActivity`, layout `activity_frm_main.xml` → `activity_main.xml`); xóa `FrmLeaderboardActivity` (bảng vàng ngoài phạm vi).
   - **Vỏ Activity** cho các màn còn lại, khai báo trong Manifest; quyền `INTERNET`; `usesCleartextTraffic`.
-  - **Khung** `GameController`, `GameRecordDAO`, `GameConfigDAO`, `MatchController`, `MatchApiDAO`, `MatchFirebaseDAO`: đủ chữ ký, thân `// TODO`.
+  - **Khung** `GameRecordDAO`, `GameConfigDAO`, `MatchApiDAO`, `MatchFirebaseDAO`: đủ chữ ký, thân `// TODO`.
 - **Requirement:** Build pass; 5 nút mở đúng màn; Đăng xuất xóa phiên và về màn Đăng nhập. Hoàng đã approve.
 - **Constraint:** Gọi mạng và SQLite trong `Thread` + `runOnUiThread`; không dùng Retrofit, Volley, lambda.
 
@@ -374,10 +373,10 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 **Sản phẩm bàn giao:**
 - Hùng:
-  - App: `MatchController`, `MatchFirebaseDAO`, `MatchApiDAO`, `OnlineActivity`, `LobbyActivity`, `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter`.
+  - App: `MatchFirebaseDAO`, `MatchApiDAO`, `OnlineActivity`, `LobbyActivity`, `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter`.
   - Server: `MatchRestController`, `MatchDAO`, `FirebaseAdminDAO`.
 - Hoàng:
-  - App: `GameController`, `GameRecordDAO`, `GameConfigDAO`, `DifficultyActivity`, `GameActivity`, `SettingsActivity`, `SoundManager`, `res/raw/*.mp3`.
+  - App: `GameRecordDAO`, `GameConfigDAO`, `DifficultyActivity`, `GameActivity`, `SettingsActivity`, `SoundManager`, `res/raw/*.mp3`.
 
 **Điều kiện hoàn thành milestone:**
 1. Mọi issue M2 đã đóng, hoặc đã cắt theo mục 8.
@@ -413,33 +412,33 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - **Input:** Luồng "Chơi online" trong `docs/chung/01-pham-vi-use-case.md`; schema mục 2.4.
 - **Output:**
   - **`MatchFirebaseDAO extends FirebaseDAO`** (chữ ký đầy đủ ở `docs/hung/4-lop-thiet-ke.md`, kết quả trả qua `MatchCallback`):
-    - `createMatch(match, callback)`: dùng transaction để mã phòng không trùng (node `finished` coi như trống); tạo được thì `onDisconnect().removeValue()`.
+    - `createMatch(me, callback)`: tạo trận bằng `newMatch(me)` (mã phòng 6 chữ số, `questionSeed`), dùng transaction để mã phòng không trùng (node `finished` coi như trống); tạo được thì `onDisconnect().removeValue()`.
     - `joinMatch(roomCode, me, callback)`: dùng `runTransaction`, bên trong gọi `Match.canJoin(myId)`.
     - `watchMatch(roomCode, callback)`, `stopWatching(roomCode)`: lắng nghe / gỡ lắng nghe trận.
     - `deleteMatch(roomCode)`.
   - **Luật vào phòng là hàm Java thuần (D7):** `Match.canJoin(int playerId): boolean`, đúng khi trận `waiting`, chưa đủ 2 người, và người này chưa có trong trận. Unit test `MatchTest` cho 4 trường hợp: phòng chờ 1 người khác → `true`; đang đấu → `false`; đủ 2 người → `false`; phòng của chính mình → `false`.
-  - **`MatchController` (Singleton):** `createRoom(me, listener)`, `findRoom(roomCode, me, listener)`, `waitForOpponent(listener)`, `cancelRoom()`; báo về Activity qua `RoomListener`.
   - **Giao diện:**
-    - `OnlineActivity`: nút Tạo phòng; ô nhập mã + nút Vào phòng.
-    - `LobbyActivity`: mã phòng (chữ lớn), "Đang chờ đối thủ...", tên đối thủ khi có, nút Hủy.
+    - `OnlineActivity`: nút Tạo phòng (`createMatch`); ô nhập mã + nút Vào phòng (`joinMatch`).
+    - `LobbyActivity`: mã phòng (chữ lớn), "Đang chờ đối thủ...", tên đối thủ khi có (`watchMatch`), nút Hủy (`deleteMatch`).
+    - Activity cài đặt `MatchCallback` để nhận kết quả từ `MatchFirebaseDAO`.
 - **Requirement:**
   - Máy A tạo phòng, máy B nhập đúng mã → cả 2 thấy tên nhau, trận chuyển `playing`.
   - Nhập mã sai → "Không tìm thấy phòng".
   - Máy C nhập mã phòng đã đủ người → "Phòng đã đầy".
   - Bấm Hủy hoặc kill app khi đang chờ → trận biến mất trên Console.
   - `gradlew test` pass, có `MatchTest`.
-- **Constraint:** Activity không gọi Firebase trực tiếp, chỉ gọi `MatchController`. `Match.canJoin` không import Android / Firebase.
+- **Constraint:** Activity không gọi Firebase SDK trực tiếp, chỉ gọi `MatchFirebaseDAO`. `Match.canJoin` không import Android / Firebase.
 
 ### [M2-03] UC05 Chơi online: Thi đấu realtime + backend trọng tài · @HungNguyenBa1811
 - **Phụ thuộc:** M1-07, M2-02.
 - **Mô tả:** 2 máy chơi cùng dãy câu theo seed, thấy điểm nhau; hết giờ backend xác định kết quả và lưu trận (D7).
 - **Input:** Trận đang `playing`; `questionSeed`; id đối thủ; API mục 2.4.
 - **Output:**
-  - **App – `MatchController`:**
-    - `startGame(listener)`: `ProblemDAO(new Random(questionSeed))`, `GameSession` chế độ online, `CountDownTimer` 60s; báo về Activity qua `GameListener`.
+  - **App – `OnlineGameActivity`:**
+    - `startGame(match)` (lần đầu `watchMatch` báo trận): `ProblemDAO(new Random(questionSeed))`, `GameSession` chế độ online, `CountDownTimer` 60s.
     - `submitAnswer(value)`, `nextProblem()`: chấm bằng `MathProblem.isCorrect` + `GameSession`, đúng thì `updateScore` lên `players/{myId}/score`.
     - Lắng nghe trận: mỗi lần thay đổi thì gọi `Match.isOver()`.
-    - Hết giờ: `setTimeUp`. Khi `isOver()` đúng thì gọi `MatchApiDAO.finishMatch(roomCode)` trong `Thread` (chỉ một lần), nhận `Match` đã lưu, gọi `onMatchEnd(Match)`.
+    - Hết giờ: `setTimeUp`. Khi `isOver()` đúng thì gọi `MatchApiDAO.finishMatch(roomCode)` trong `Thread` (chỉ một lần), nhận `Match` đã lưu, hiện kết quả bằng `showResult(Match)`.
   - **Server:**
     - `MatchRestController.finish(code)`: `FirebaseAdminDAO.readMatch(code)`.
     - Nếu trận đã được lưu thì trả lại bản đã lưu (máy thứ hai gọi sau).
@@ -492,19 +491,14 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 ### [M2-06] UC03 Chơi offline: chọn độ khó, chơi, kỷ lục · @Minahn210
 - **Phụ thuộc:** M1-05, M1-07.
 - **Mô tả:** Chức năng chính Hoàng demo. Làm ngày 26/10.
-- **Input:** Người chơi đang đăng nhập (`SessionDAO`); `GameSession`, `ProblemDAO` (M1-07); `GameConfigDAO` (đọc thời gian mỗi câu; nếu M2-07 chưa xong thì mặc định 6 giây); chữ ký `GameController`, `GameRecordDAO` trong khung.
+- **Input:** Người chơi đang đăng nhập (`SessionDAO`); `GameSession`, `ProblemDAO` (M1-07); `GameConfigDAO` (đọc thời gian mỗi câu; nếu M2-07 chưa xong thì mặc định 6 giây); chữ ký `GameRecordDAO` trong khung.
 - **Output:**
   - **`DifficultyActivity`:** 3 nút Dễ / Trung bình / Khó, mỗi nút hiện kỷ lục ở độ khó đó.
-  - **`GameController`:**
-    - Constructor nhận `(GameSession, ProblemDAO, int bestScore, int secondsPerQuestion, GameControllerListener)`.
-    - `startGame()`, `submitAnswer()`.
-    - `CountDownTimer` theo thời gian mỗi câu; hết giờ tính như sai.
-    - `onPause` / `onResume` / `onDestroy`.
-    - Hết mạng gọi `onGameOver(session, score > bestScore)`.
   - **`GameRecordDAO extends DAO`:**
     - `insert(GameRecord)`.
     - `getBestScore(playerId, difficulty)`: `SELECT MAX(score) ... WHERE tblPlayerId = ? AND difficulty = ?`.
   - **`GameActivity`** + layout:
+    - Điều phối ván: `startGame()`, `submitAnswer()` chấm bằng `MathProblem` + `GameSession`; `CountDownTimer` theo thời gian mỗi câu, hết giờ tính như sai; hủy / chạy lại đồng hồ ở `onPause` / `onResume` / `onDestroy`; hết mạng thì lưu ván và hiện Game Over (`score > bestScore` là kỷ lục mới).
     - Hiển thị: tên, kỷ lục, điểm, combo `xN`, mạng `♥ ♥ ♥`, thanh thời gian, phép tính.
     - Lưới 2x2 nút đáp án, cao ≥ 72dp, chữ monospace 26sp.
     - Dòng phản hồi `+12 PTS!` / `MISS!`.
@@ -514,7 +508,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
   - Ván được lưu vào `tblGameRecord`.
   - Kỷ lục tách riêng theo độ khó.
   - Chơi được khi tắt mạng.
-- **Constraint:** Không tính điểm trong Activity; SQLite trong `Thread`; hủy timer trong `onDestroy()`.
+- **Constraint:** Luật tính điểm nằm ở `GameSession`, Activity chỉ gọi; SQLite trong `Thread`; hủy timer trong `onDestroy()`.
 
 ### [M2-07] UC04 Cài đặt cấu hình game + âm thanh, rung · @Minahn210
 - **Phụ thuộc:** M2-06.
@@ -527,7 +521,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
     - `playSound(context, resId)`, `vibrate(context, ms)`.
     - Kiểm tra cấu hình trước khi phát.
   - `res/raw/correct.mp3`, `wrong.mp3`, `timeout.mp3` (ghi lại nguồn); quyền `VIBRATE`.
-  - Gắn vào `GameActivity`: phát âm / rung khi trả lời và khi hết giờ; `GameController` nhận thời gian mỗi câu từ cấu hình.
+  - Gắn vào `GameActivity`: phát âm / rung khi trả lời và khi hết giờ; `GameActivity` lấy thời gian mỗi câu từ cấu hình.
 - **Requirement:**
   - Lưu xong có hiệu lực từ ván tiếp theo.
   - Vẫn giữ sau khi tắt app mở lại.
@@ -568,7 +562,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài liệu chung.
 
-**Ngoài phạm vi:** DAO, Controller, Activity, REST → milestone 4.
+**Ngoài phạm vi:** DAO, Activity, REST → milestone 4.
 
 **Sản phẩm bàn giao:** `docs/hung/` và `docs/hoang/`: `1-kich-ban-v1.md`, `2-lop-phan-tich.md`, `3-kich-ban-v2.md` + PNG.
 
@@ -611,7 +605,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
   - View: `OnlineView`, `LobbyView`, `OnlineGameView`, `MatchResultView`, `HistoryView`; thành phần đặt tiền tố `in` / `out` / `sub`.
   - Phương thức gán vào thực thể theo quy tắc 4 câu hỏi.
 - **Requirement:** Mỗi thành phần giao diện trong kịch bản v1 đều có trong View tương ứng.
-- **Constraint:** Chưa có DAO, Controller, Activity, REST.
+- **Constraint:** Chưa có DAO, Activity, REST.
 
 ### [M3-04] Biểu đồ lớp phân tích: Chơi offline, Cài đặt cấu hình game · @Minahn210
 - **Phụ thuộc:** M3-02.
@@ -673,7 +667,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
   - **Biểu đồ lớp chi tiết, 2 package:**
     - **Client:**
       - Boundary: `OnlineActivity`, `LobbyActivity`, `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter`.
-      - Control: `MatchController`; `FirebaseDAO` ← `MatchFirebaseDAO`; `ApiDAO` ← `MatchApiDAO`; `ProblemDAO`.
+      - Control: `FirebaseDAO` ← `MatchFirebaseDAO`; `ApiDAO` ← `MatchApiDAO`; `ProblemDAO`; `SessionDAO`.
       - Entity: `Match`, `MatchPlayer`, `Player`, `MathProblem`, `GameSession`.
     - **Server:**
       - Boundary: `MatchRestController`.
@@ -692,7 +686,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
   - Thiết kế giao diện: ảnh app thật và bảng thành phần.
   - Biểu đồ lớp chi tiết (chỉ phía app):
     - Boundary: `MainActivity`, `DifficultyActivity`, `GameActivity`, `SettingsActivity`.
-    - Control: `GameController`; `DAO` ← `GameRecordDAO`; `GameConfigDAO`; `DatabaseHelper`; `ProblemDAO`; `SoundManager`.
+    - Control: `DAO` ← `GameRecordDAO`; `GameConfigDAO`; `DatabaseHelper`; `ProblemDAO`; `SoundManager`.
     - Entity: `Player`, `GameRecord`, `GameConfig`, `MathProblem`, `GameSession`.
   - Mô tả từng lớp 1–2 dòng.
 - **Requirement:** Giống M4-01.

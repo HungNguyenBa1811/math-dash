@@ -6,7 +6,6 @@ actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
 boundary MainActivity as MA
 boundary OnlineGameActivity as GA
-control MatchController as MC
 control CountDownTimer as T
 control ProblemDAO as PD
 control MatchFirebaseDAO as MFD
@@ -22,64 +21,66 @@ control MatchDAO as MD
 entity "Match" as SM
 end box
 
-GA -> MC : onCreate(): startGame()
-MC -> MFD : registerDisconnect()
-MC -> PD : tạo ProblemDAO
-MC -> GS : tạo GameSession
-MC -> MFD : watchMatch()
-MC -> T : start()
-MC -> GS : getCurrentLevel()
-GS --> MC : mức hiện tại
-MC -> PD : generateProblem()
+GA -> MFD : onCreate(): watchMatch()
+MFD -> MFD : onDataChange(): toMatch()
+MFD -> M : đóng gói Match
+M --> MFD : Match
+MFD -> GA : onSuccess()
+GA -> GA : startGame()
+GA -> MFD : registerDisconnect()
+GA -> PD : tạo ProblemDAO
+GA -> GS : tạo GameSession
+GA -> T : start()
+GA -> GA : nextProblem()
+GA -> GS : getCurrentLevel()
+GS --> GA : mức hiện tại
+GA -> PD : generateProblem()
 PD -> MP : đóng gói MathProblem
 MP --> PD : MathProblem
-PD --> MC : MathProblem
-MC --> GA : MathProblem
+PD --> GA : MathProblem
+GA -> M : isOver()
+M --> GA : false
 GA --> U : hiển thị điểm, đồng hồ, câu hỏi, bàn phím số
 
 loop đến khi CountDownTimer hết giờ
-  T -> MC : onTick()
-  MC -> GA : onTick()
+  T -> GA : onTick()
   GA --> U : hiển thị thời gian còn lại
   U -> GA : nhập đáp án, nhấn OK
-  GA -> MC : onClick(): submitAnswer()
-  MC -> MP : isCorrect()
-  MP --> MC : true
-  MC -> GS : recordCorrectAnswer()
-  GS --> MC : điểm được cộng
-  MC -> MFD : updateScore()
-  MC --> GA : điểm được cộng
-  GA -> MC : nextProblem()
-  MC -> GS : getCurrentLevel()
-  GS --> MC : mức hiện tại
-  MC -> PD : generateProblem()
+  GA -> GA : onClick(): submitAnswer()
+  GA -> MP : isCorrect()
+  MP --> GA : true
+  GA -> GS : recordCorrectAnswer()
+  GS --> GA : điểm được cộng
+  GA -> MFD : updateScore()
+  GA -> GA : nextProblem()
+  GA -> GS : getCurrentLevel()
+  GS --> GA : mức hiện tại
+  GA -> PD : generateProblem()
   PD -> MP : đóng gói MathProblem
   MP --> PD : MathProblem
-  PD --> MC : MathProblem
-  MC --> GA : MathProblem
+  PD --> GA : MathProblem
   GA --> U : showScorePopup(): điểm mới, câu hỏi mới
   MFD -> MFD : onDataChange(): toMatch()
   MFD -> M : đóng gói Match
   M --> MFD : Match
-  MFD -> MC : onSuccess()
-  MC -> M : isOver()
-  M --> MC : false
-  MC -> GA : onMatchChanged()
-  GA --> U : hiển thị điểm đối thủ
+  MFD -> GA : onSuccess()
+  GA -> M : isOver()
+  M --> GA : false
+  GA --> U : showOpponentScore(): điểm đối thủ
 end
 
-T -> MC : onFinish()
-MC -> MFD : setTimeUp()
-MC -> GA : onTimeUp()
-GA --> U : khóa bàn phím, hiển thị thông báo chờ kết quả
+T -> GA : onFinish()
+GA -> MFD : setTimeUp()
+GA --> U : lockKeypad(): khóa bàn phím, chờ kết quả
 MFD -> MFD : onDataChange(): toMatch()
 MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> MC : onSuccess()
-MC -> M : isOver()
-M --> MC : true
-MC -> MC : finishMatch() {Thread}
-MC -> MAD : finishMatch()
+MFD -> GA : onSuccess()
+GA -> M : isOver()
+M --> GA : true
+GA -> GA : finishMatch()
+GA -> MFD : stopGame(): stopWatching()
+GA -> MAD : finishMatch() {Thread}
 MAD -> MRC : POST /api/matches/{roomCode}/finish → finish()
 MRC -> FAD : readMatch()
 FAD -> SM : đóng gói Match
@@ -94,10 +95,9 @@ MRC -> FAD : updateStatus()
 MRC --> MAD : Match (JSON)
 MAD -> M : toMatch()
 M --> MAD : Match
-MAD --> MC : Match
-MC -> MFD : stopWatching()
-MC -> GA : runOnUiThread(): onMatchEnd()
-GA -> M : showResult(): getResult()
+MAD --> GA : Match
+GA -> GA : runOnUiThread(): showResult()
+GA -> M : getResult()
 M --> GA : kết quả
 GA --> U : hiển thị kết quả, tỉ số
 U -> GA : nhấn Về menu

@@ -14,20 +14,25 @@ package "Client (Android)" {
     - edtRoomCode : EditText
     - btnJoinRoom : Button
     - me : Player
+    - matchFirebaseDAO : MatchFirebaseDAO
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
-    + onRoomReady(match : Match) : void
-    + onError(message : String) : void
+    + onSuccess(match : Match) : void
+    + onFail(message : String) : void
   }
   class LobbyActivity <<boundary>> {
     - txtRoomCode : TextView
     - txtStatus : TextView
     - txtOpponentName : TextView
     - btnCancel : Button
+    - roomCode : String
+    - matchFirebaseDAO : MatchFirebaseDAO
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
-    + onRoomReady(match : Match) : void
-    + onError(message : String) : void
+    + onBackPressed() : void
+    + onSuccess(match : Match) : void
+    + onFail(message : String) : void
+    - showOpponent(match : Match) : void
   }
   class OnlineGameActivity <<boundary>> {
     - txtMyScore : TextView
@@ -43,59 +48,39 @@ package "Client (Android)" {
     - txtResult : TextView
     - txtFinalScore : TextView
     - btnBackToMenu : Button
+    - matchFirebaseDAO : MatchFirebaseDAO
+    - matchApiDAO : MatchApiDAO
+    - problemDAO : ProblemDAO
+    - session : GameSession
+    - timer : CountDownTimer
+    - roomCode : String
     - me : Player
+    - finishing : boolean
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
     + onBackPressed() : void
-    + onMatchChanged(match : Match) : void
-    + onTick(secondsLeft : int) : void
-    + onTimeUp() : void
-    + onMatchEnd(match : Match) : void
-    + onError(message : String) : void
+    + onSuccess(match : Match) : void
+    + onFail(message : String) : void
+    - startGame(match : Match) : void
+    - submitAnswer(value : int) : void
+    - nextProblem() : MathProblem
+    - leaveMatch() : void
+    - finishMatch() : void
+    - stopGame() : void
+    - createTimer() : CountDownTimer
     - appendDigit(digit : int) : void
     - deleteDigit() : void
+    - lockKeypad() : void
+    - showOpponentScore(match : Match) : void
     - showScorePopup(points : int) : void
     - showProblem(problem : MathProblem) : void
     - showResult(match : Match) : void
+    - showError(message : String) : void
   }
   class "activity_main.xml" as xmlMain
   class "activity_online.xml" as xmlOnline
   class "activity_lobby.xml" as xmlLobby
   class "activity_online_game.xml" as xmlOnlineGame
-  interface RoomListener {
-    + onRoomReady(match : Match) : void
-    + onError(message : String) : void
-  }
-  interface GameListener {
-    + onMatchChanged(match : Match) : void
-    + onTick(secondsLeft : int) : void
-    + onTimeUp() : void
-    + onMatchEnd(match : Match) : void
-    + onError(message : String) : void
-  }
-  class MatchController <<control>> {
-    - {static} instance : MatchController
-    - matchFirebaseDAO : MatchFirebaseDAO
-    - matchApiDAO : MatchApiDAO
-    - problemDAO : ProblemDAO
-    - session : GameSession
-    - match : Match
-    - me : Player
-    - timer : CountDownTimer
-    - finishing : boolean
-    + {static} getInstance() : MatchController
-    + createRoom(me : Player, listener : RoomListener) : void
-    + findRoom(roomCode : String, me : Player, listener : RoomListener) : void
-    + waitForOpponent(listener : RoomListener) : void
-    + cancelRoom() : void
-    + startGame(listener : GameListener) : MathProblem
-    + submitAnswer(value : int) : int
-    + nextProblem() : MathProblem
-    + leaveMatch() : void
-    + getSession() : GameSession
-    - finishMatch() : void
-    - generateRoomCode() : String
-  }
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
     + SessionDAO(context : Context)
@@ -106,7 +91,7 @@ package "Client (Android)" {
     + FirebaseDAO()
   }
   class MatchFirebaseDAO <<control>> {
-    + createMatch(match : Match, callback : MatchCallback) : void
+    + createMatch(me : Player, callback : MatchCallback) : void
     + joinMatch(roomCode : String, me : Player, callback : MatchCallback) : void
     + watchMatch(roomCode : String, callback : MatchCallback) : void
     + stopWatching(roomCode : String) : void
@@ -115,6 +100,7 @@ package "Client (Android)" {
     + setTimeUp(roomCode : String, playerId : int) : void
     + forfeit(roomCode : String, playerId : int) : void
     + registerDisconnect(roomCode : String, playerId : int) : void
+    - newMatch(me : Player) : Match
     - toMatch(roomCode : String, data : Map<String, Object>) : Match
   }
   interface MatchCallback {
@@ -127,6 +113,7 @@ package "Client (Android)" {
     # getArray(path : String) : JSONArray
   }
   class MatchApiDAO <<control>> {
+    - {static} FINISH_ATTEMPTS : int
     + finishMatch(roomCode : String) : Match
     - toMatch(json : JSONObject) : Match
   }
@@ -242,26 +229,23 @@ LobbyActivity -- xmlLobby
 OnlineGameActivity -- xmlOnlineGame
 OnlineActivity o-- "1" Player
 OnlineGameActivity o-- "1" Player
-OnlineActivity ..|> RoomListener
-LobbyActivity ..|> RoomListener
-OnlineGameActivity ..|> GameListener
-OnlineActivity -- MatchController
-LobbyActivity -- MatchController
-OnlineGameActivity -- MatchController
+OnlineActivity ..|> MatchCallback
+LobbyActivity ..|> MatchCallback
+OnlineGameActivity ..|> MatchCallback
 OnlineActivity -- SessionDAO
 OnlineGameActivity -- SessionDAO
-MatchController -- MatchFirebaseDAO
-MatchController -- MatchApiDAO
-MatchController -- ProblemDAO
-MatchController -- MatchCallback
+OnlineActivity -- MatchFirebaseDAO
+LobbyActivity -- MatchFirebaseDAO
+OnlineGameActivity -- MatchFirebaseDAO
+OnlineGameActivity -- MatchApiDAO
+OnlineGameActivity -- ProblemDAO
 MatchFirebaseDAO --|> FirebaseDAO
 MatchApiDAO --|> ApiDAO
 MatchFirebaseDAO -- Match
 MatchApiDAO -- Match
 ProblemDAO -- MathProblem
 SessionDAO -- Player
-MatchController -- GameSession
-MatchController -- Match
+OnlineGameActivity -- GameSession
 Match "1" *-- "2" MatchPlayer
 MatchPlayer "n" o-- "1" Player
 GameSession "n" o-- "1" Player

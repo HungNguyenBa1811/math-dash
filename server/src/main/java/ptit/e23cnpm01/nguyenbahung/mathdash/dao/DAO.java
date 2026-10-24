@@ -7,9 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Lớp cha của mọi DAO JDBC: giữ một kết nối MySQL dùng chung.
- */
+
 public abstract class DAO {
     protected static Connection conn;
 
@@ -26,7 +24,6 @@ public abstract class DAO {
         }
     }
 
-    // Đọc application.properties, rồi ghi đè bằng application-local.properties nếu có (mật khẩu thật)
     public static Properties loadConfig() {
         Properties config = new Properties();
         try {

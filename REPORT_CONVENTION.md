@@ -116,7 +116,7 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
    - Ví dụ: thông tin Khách hàng nằm trong Hóa đơn → `KhachHang --<> HoaDon`. Trong Math Dash: `Player --<> GameRecord`.
    - Ghi bội số ở 2 đầu (1, n).
 
-**Không cần** đủ thuộc tính. **Không thêm** `id`. **Không vẽ** View, DAO, Controller.
+**Không cần** đủ thuộc tính. **Không thêm** `id`. **Không vẽ** View, DAO.
 
 **Đặt tên:** tên lớp tiếng Anh, PascalCase, trùng tên lớp trong code; tên thuộc tính camelCase.
 
@@ -139,7 +139,7 @@ Gồm **lớp View + lớp thực thể liên quan**. Làm theo 4 bước:
       - Nếu không, xét đầu vào: chỉ thuộc một lớp thực thể thì gán vào lớp đó; thuộc nhiều lớp thì gán vào lớp chứa được tất cả đầu vào.
 4. **Vẽ biểu đồ lớp** cho chức năng. View – View và View – thực thể đều nối bằng **liên kết (association)**, không vẽ mũi tên.
 
-Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Controller, Activity, REST.
+Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Activity, REST.
 
 ### A4. Thiết kế động phân tích: kịch bản v2 + tuần tự
 
@@ -208,25 +208,27 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 | Loại | Lớp trong Math Dash |
 |---|---|
 | Boundary | App: `XxxActivity`, Adapter. Server: `XxxRestController` |
-| Control | App: Controller (`GameController`, `MatchController`), DAO. Server: DAO |
+| Control | App: DAO (`XxxDAO`, `XxxApiDAO`, `XxxFirebaseDAO`, `ProblemDAO`, `SessionDAO`). Server: DAO |
 | Entity | Lớp ở D1 (cùng tên ở app và server) |
+
+App **không có lớp Controller riêng**: Activity xử lý sự kiện, điều phối và gọi thẳng DAO (`ISSUES_PLAN.md` D16).
 
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `OnlineGameActivity`), layout tương ứng `activity_main.xml`, `activity_online_game.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 
 **Quan hệ của lớp giao diện (phần app):**
 - Boundary nối boundary bằng **liên kết (association)**: Activity – Activity, Activity – Adapter, Adapter – ViewHolder.
-- Boundary – control (Activity – Controller, Activity – DAO), control – control và control – entity cũng nối bằng **liên kết**, không vẽ mũi tên phụ thuộc. Chỉ giữ ký hiệu riêng cho kế thừa, thực thi interface, kết tập và hợp thành.
+- Boundary – control (Activity – DAO), control – control và control – entity cũng nối bằng **liên kết**, không vẽ mũi tên phụ thuộc. Chỉ giữ ký hiệu riêng cho kế thừa, thực thi interface, kết tập và hợp thành.
 - **Mỗi Activity nối với một lớp layout** đặt tên đúng tên file, ví dụ `activity_main.xml`. Lớp này để **rỗng**.
 - Activity **giữ thực thể làm thuộc tính** (ví dụ `me : Player`) thì nối bằng **kết tập (aggregation)**, hình thoi ở phía Activity: `Player --<> OnlineGameActivity`. Cách đọc giống `KhachHang --<> HoaDon`: hóa đơn chứa thông tin khách hàng nên hình thoi ở phía hóa đơn.
 
 **Quy tắc DAO:** mỗi nơi lưu trữ có một lớp cha giữ kết nối dùng chung, các DAO con kế thừa.
 - App, SQLite: `DAO` (giữ `SQLiteDatabase con`) ← `PlayerDAO`, `GameRecordDAO`.
-- App, REST: `ApiDAO` (giữ địa chỉ server và token) ← `PlayerApiDAO`, `MatchApiDAO`.
+- App, REST: `ApiDAO` (giữ địa chỉ server) ← `PlayerApiDAO`, `MatchApiDAO`.
 - App, Firebase: `FirebaseDAO` (giữ `DatabaseReference con`) ← `MatchFirebaseDAO`.
 - Server, MySQL: `DAO` (giữ `Connection conn`) ← `PlayerDAO`, `MatchDAO`.
 
 **Chức năng có gọi server (REST)** vẽ thành **2 package** trên cùng một biểu đồ:
-- **"Client (Android)"**: boundary – control (Controller, `XxxApiDAO`) – entity.
+- **"Client (Android)"**: boundary (Activity) – control (`XxxApiDAO`, các DAO khác) – entity.
 - **"Server (Spring Boot)"**: `XxxRestController` – `XxxDAO extends DAO` – entity. Không có tầng Service.
 - Hai package nối nhau bằng **đúng một đường liên kết** giữa `XxxApiDAO` và `XxxRestController`, ghi `HTTP/JSON`.
 - Không vẽ lớp của framework (Spring, Firebase SDK, `HttpURLConnection`); chỉ ghi chúng làm kiểu dữ liệu của thuộc tính.
@@ -239,7 +241,7 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 
 **Ánh xạ từ phân tích sang thiết kế:**
 - Mỗi `XxxView` thành một Activity hoặc overlay (bảng ở `ISSUES_PLAN.md` mục 2.2).
-- Mỗi phương thức của thực thể ở A3 chuyển sang DAO hoặc Controller tương ứng.
+- Mỗi phương thức của thực thể ở A3 chuyển sang DAO (truy cập dữ liệu) hoặc Activity (điều phối) tương ứng; luật nghiệp vụ giữ ở thực thể.
 
 ### D4. Thiết kế động: kịch bản v3 + tuần tự chi tiết (mục 4.x.3)
 
@@ -296,7 +298,7 @@ Chức năng chỉ chạy trên app (Chơi offline, Cài đặt cấu hình game
 - [ ] Mục 2 có đủ 5 bước. Tên bảng có tiền tố `tbl`, đủ PK và FK, không còn cột dẫn xuất.
 - [ ] Mục 3 có đủ 4 bước. Không còn quan hệ liên kết trơn, mọi lớp có khóa.
 - [ ] Mỗi chức năng có đủ 3 phần: giao diện (ảnh app thật), lớp chi tiết, tuần tự chi tiết.
-- [ ] Biểu đồ lớp chi tiết có đủ boundary, control (Controller + DAO), entity. DAO con kế thừa lớp DAO cha.
+- [ ] Biểu đồ lớp chi tiết có đủ boundary, control (DAO), entity. DAO con kế thừa lớp DAO cha.
 - [ ] Kịch bản v3 và biểu đồ tuần tự khớp từng bước.
 - [ ] Mọi tên lớp, hàm, bảng trong báo cáo đều có trong code ở nhánh `main`.
 - [ ] Mỗi hình có "Hình x" và lời giải thích.

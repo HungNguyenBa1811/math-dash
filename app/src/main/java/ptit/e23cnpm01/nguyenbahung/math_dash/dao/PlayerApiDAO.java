@@ -7,12 +7,9 @@ import java.io.IOException;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Gọi API tài khoản: đăng ký, đăng nhập.
- */
 public class PlayerApiDAO extends ApiDAO {
 
-    // POST /api/auth/register; trùng tên đăng nhập thì ném IOException "Tên đăng nhập đã được dùng"
+    // POST /api/auth/register
     public void register(String username, String password, String displayName) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("username", username);
@@ -21,7 +18,7 @@ public class PlayerApiDAO extends ApiDAO {
         post("/auth/register", body);
     }
 
-    // POST /api/auth/login: sai tên đăng nhập hoặc mật khẩu thì ném IOException "Sai tên đăng nhập hoặc mật khẩu"
+    // POST /api/auth/login
     public Player login(String username, String password) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("username", username);

@@ -19,9 +19,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Màn Đăng nhập (màn mở đầu). Đã có phiên từ lần trước thì vào thẳng màn Chính.
- */
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText edtUsername;
     private EditText edtPassword;

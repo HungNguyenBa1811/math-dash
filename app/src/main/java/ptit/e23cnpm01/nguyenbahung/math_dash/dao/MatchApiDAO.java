@@ -1,5 +1,7 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 
+import android.os.SystemClock;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,10 +19,21 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
  * Gọi API trận đấu. Các hàm chạy đồng bộ nên phải gọi trong Thread.
  */
 public class MatchApiDAO extends ApiDAO {
+    private static final int FINISH_ATTEMPTS = 3;
 
-    // POST /api/matches/{roomCode}/finish: server kiểm tra, lưu trận và trả trận đã lưu
+    // POST /api/matches/{roomCode}/finish: server kiểm tra, lưu trận và trả trận đã lưu.
+    // Lần ghi timeUp / forfeited của máy này có thể chưa tới Firebase khi server đọc, nên thử lại cách nhau 1 giây
     public Match finishMatch(String roomCode) throws IOException, JSONException {
-        return toMatch(post("/matches/" + roomCode + "/finish", new JSONObject()));
+        IOException lastError = null;
+        for (int attempt = 0; attempt < FINISH_ATTEMPTS; attempt++) {
+            try {
+                return toMatch(post("/matches/" + roomCode + "/finish", new JSONObject()));
+            } catch (IOException e) {
+                lastError = e;
+                SystemClock.sleep(1000);
+            }
+        }
+        throw lastError;
     }
 
     // GET /api/matches?playerId={id}: các trận đã kết thúc của người chơi, mới nhất trước

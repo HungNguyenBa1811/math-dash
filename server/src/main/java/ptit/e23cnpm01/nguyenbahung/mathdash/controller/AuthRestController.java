@@ -15,16 +15,14 @@ import java.util.Map;
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * API tài khoản: đăng ký, đăng nhập bằng tên đăng nhập và mật khẩu (mật khẩu lưu dạng băm BCrypt).
- */
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthRestController {
     private PlayerDAO playerDAO = new PlayerDAO();
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    // POST /api/auth/register: 201, hoặc 409 nếu trùng tên đăng nhập
+    // POST /api/auth/register
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody Map<String, String> body) {

@@ -13,9 +13,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * Thao tác bảng tblMatch và tblMatchPlayer.
- */
+
 public class MatchDAO extends DAO {
 
     // Mỗi dòng kết quả là 1 trận: người chơi a và người chơi b, kèm tên của cả 2
