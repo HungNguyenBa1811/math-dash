@@ -4,6 +4,8 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn -q dependency:go-offline
 COPY src ./src
+# Secret File application-local.properties trên Render nằm ở gốc build context
+COPY application-local.properties src/main/resources/
 RUN mvn -q -DskipTests package
 
 # Bước 2: chỉ giữ JRE + file jar để chạy

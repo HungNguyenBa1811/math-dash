@@ -37,19 +37,6 @@ public abstract class DAO {
         } catch (IOException e) {
             throw new IllegalStateException("Không đọc được cấu hình", e);
         }
-        overrideFromEnv(config);
         return config;
-    }
-
-    // Khi chạy trên Render: biến môi trường ghi đè cấu hình trong file
-    private static void overrideFromEnv(Properties config) {
-        String[][] keys = {{"DB_URL", "db.url"}, {"DB_USER", "db.user"}, {"DB_PASSWORD", "db.password"},
-                {"FIREBASE_DATABASE_URL", "firebase.databaseUrl"}};
-        for (String[] key : keys) {
-            String value = System.getenv(key[0]);
-            if (value != null && !value.isEmpty()) {
-                config.setProperty(key[1], value);
-            }
-        }
     }
 }

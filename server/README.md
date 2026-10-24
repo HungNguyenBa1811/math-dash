@@ -37,14 +37,15 @@ mvn test
 
 - MySQL đặt ở dịch vụ ngoài (ví dụ Aiven, gói Free), tạo bảng bằng `db/schema.sql`.
 - Render: Web Service, Root Directory `server`, Language `Docker` (dùng `server/Dockerfile`).
-- Biến môi trường (ghi đè cấu hình trong file):
+- **Environment → Secret Files** thêm file `application-local.properties` (Dockerfile chép vào `src/main/resources/` lúc build):
 
-| Biến | Ví dụ |
-|---|---|
-| `DB_URL` | `jdbc:mysql://<host>:<port>/mathdash?sslMode=REQUIRED&serverTimezone=UTC&autoReconnect=true` (MySQL trên Aiven chạy giờ UTC) |
-| `DB_USER` | `avnadmin` |
-| `DB_PASSWORD` | mật khẩu MySQL |
+```
+db.url=jdbc:mysql://<host>:<port>/mathdash?sslMode=REQUIRED&serverTimezone=UTC&autoReconnect=true
+db.user=avnadmin
+db.password=<mật khẩu MySQL>
+```
 
+- MySQL trên Aiven chạy giờ UTC nên dùng `serverTimezone=UTC`.
 - Cổng lấy từ biến `PORT` do Render cấp (`server.port=${PORT:8080}`).
 - App: đổi `BASE_URL` trong `ApiDAO` thành `https://<tên-service>.onrender.com/api`.
 
