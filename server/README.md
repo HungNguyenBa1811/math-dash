@@ -33,7 +33,22 @@ mvn test
 - Đặt `google-services.json` của app (`ptit.e23cnpm01.nguyenbahung.math_dash`) vào `app/`.
 - Bật Realtime Database, dán nội dung `database.rules.json` ở thư mục gốc repo vào tab Rules. Không cần bật Authentication.
 
-## 6. API
+## 6. Deploy lên Render
+
+- MySQL đặt ở dịch vụ ngoài (ví dụ Aiven, gói Free), tạo bảng bằng `db/schema.sql`.
+- Render: Web Service, Root Directory `server`, Language `Docker` (dùng `server/Dockerfile`).
+- Biến môi trường (ghi đè cấu hình trong file):
+
+| Biến | Ví dụ |
+|---|---|
+| `DB_URL` | `jdbc:mysql://<host>:<port>/mathdash?sslMode=REQUIRED&serverTimezone=UTC&autoReconnect=true` (MySQL trên Aiven chạy giờ UTC) |
+| `DB_USER` | `avnadmin` |
+| `DB_PASSWORD` | mật khẩu MySQL |
+
+- Cổng lấy từ biến `PORT` do Render cấp (`server.port=${PORT:8080}`).
+- App: đổi `BASE_URL` trong `ApiDAO` thành `https://<tên-service>.onrender.com/api`.
+
+## 7. API
 
 | Phương thức | Đường dẫn | Kết quả |
 |---|---|---|

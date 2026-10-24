@@ -16,3 +16,6 @@ scripts/preview/
 server/target/
 server/src/main/resources/application-local.properties
 server/src/main/resources/firebase-service-account.json
+
+# Thông tin kết nối MySQL trên Aiven
+.env
