@@ -109,7 +109,7 @@ public abstract class DAO {
 
 // App: dao/ApiDAO.java — cha của mọi DAO gọi REST (HttpURLConnection, gọi trong Thread)
 public abstract class ApiDAO {
-    protected static final String BASE_URL = "http://10.0.2.2:8080/api"; // máy ảo gọi về máy tính
+    protected static final String BASE_URL = "https://math-dash-server.onrender.com/api"; // server trên Render; chạy local: "http://10.0.2.2:8080/api"
     protected JSONObject post(String path, JSONObject body) throws IOException, JSONException { /* ... */ }
     protected JSONArray getArray(String path) throws IOException, JSONException { /* ... */ }
 }
