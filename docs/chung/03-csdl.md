@@ -319,5 +319,6 @@ matches/{matchId}
 | session | playerId | int | id người chơi đang đăng nhập |
 | session | username | String | Tên đăng nhập |
 | session | displayName | String | Tên hiển thị |
+| session | role | String | Vai trò: player hoặc admin, quyết định mở giao diện chính hay giao diện quản lý người chơi |
 
 session không phải lớp thực thể. Đây là dữ liệu kỹ thuật để app nhớ người chơi đang đăng nhập; đăng xuất thì xóa toàn bộ tệp này.

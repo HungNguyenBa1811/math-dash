@@ -1,71 +1,47 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 
-import android.os.SystemClock;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
 /**
- * Gọi API trận đấu. Các hàm chạy đồng bộ nên phải gọi trong Thread.
+ * Gọi API trận đấu, mỗi hàm một API. Các hàm chạy đồng bộ nên phải gọi trong Thread.
+ * Thiết kế: docs/hung/4-lop-thiet-ke.md mục 1.2. Thân các hàm làm ở M2-02 → M2-04.
  */
 public class MatchApiDAO extends ApiDAO {
-    private static final int FINISH_ATTEMPTS = 3;
 
-    // POST /api/matches/{roomCode}/finish: server kiểm tra, lưu trận và trả trận đã lưu.
-    // Lần ghi timeUp / forfeited của máy này có thể chưa tới Firebase khi server đọc, nên thử lại cách nhau 1 giây
-    public Match finishMatch(String roomCode) throws IOException, JSONException {
-        IOException lastError = null;
-        for (int attempt = 0; attempt < FINISH_ATTEMPTS; attempt++) {
-            try {
-                return toMatch(post("/matches/" + roomCode + "/finish", new JSONObject()));
-            } catch (IOException e) {
-                lastError = e;
-                SystemClock.sleep(1000);
-            }
-        }
-        throw lastError;
+    // POST /api/matches: tạo trận từ lời mời đã đồng ý
+    public Match createMatch(Challenge challenge) throws IOException, JSONException {
+        throw new UnsupportedOperationException("TODO M2-02");
     }
 
-    // GET /api/matches?playerId={id}: các trận đã kết thúc của người chơi, mới nhất trước
-    public List<Match> getHistory(int playerId) throws IOException, JSONException {
-        JSONArray array = getArray("/matches?playerId=" + playerId);
-        List<Match> list = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++) {
-            list.add(toMatch(array.getJSONObject(i)));
-        }
-        return list;
+    // POST /api/matches/{id}/submit: nộp bài làm
+    public Match submit(int matchId, int playerId, List<Integer> answers) throws IOException, JSONException {
+        throw new UnsupportedOperationException("TODO M2-03");
     }
 
-    // Đóng gói JSON thành Match + 2 MatchPlayer + 2 Player
+    // POST /api/matches/{id}/forfeit: bỏ trận
+    public Match forfeit(int matchId, int playerId) throws IOException, JSONException {
+        throw new UnsupportedOperationException("TODO M2-04");
+    }
+
+    // POST /api/matches/{id}/continue: chơi tiếp (true) hoặc dừng (false)
+    public Match continueMatch(int matchId, int playerId, boolean choice) throws IOException, JSONException {
+        throw new UnsupportedOperationException("TODO M2-04");
+    }
+
+    // GET /api/matches/{id}: trận đầy đủ, có đáp án khi trận đã xong
+    public Match getById(int matchId) throws IOException, JSONException {
+        throw new UnsupportedOperationException("TODO M2-03");
+    }
+
+    // Đóng gói JSON thành Match + MathProblem + 2 MatchPlayer + 2 Player
     private Match toMatch(JSONObject json) throws JSONException {
-        Match match = new Match();
-        match.setId(json.getInt("id"));
-        match.setRoomCode(json.getString("roomCode"));
-        match.setStatus(json.getString("status"));
-        match.setQuestionSeed(json.getLong("questionSeed"));
-        match.setCreatedAt(new Date(json.getLong("createdAt")));
-        match.setEndedAt(new Date(json.getLong("endedAt")));
-        JSONArray players = json.getJSONArray("players");
-        for (int i = 0; i < players.length(); i++) {
-            JSONObject item = players.getJSONObject(i);
-            JSONObject p = item.getJSONObject("player");
-            MatchPlayer mp = new MatchPlayer(new Player(p.getInt("id"), p.optString("username"), p.getString("displayName")));
-            mp.setId(item.getInt("id"));
-            mp.setScore(item.getInt("score"));
-            mp.setForfeited(item.getBoolean("forfeited"));
-            mp.setTimeUp(item.getBoolean("timeUp"));
-            match.getPlayers().add(mp);
-        }
-        return match;
+        throw new UnsupportedOperationException("TODO M2-02");
     }
 }

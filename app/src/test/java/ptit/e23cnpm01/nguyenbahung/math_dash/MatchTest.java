@@ -1,50 +1,127 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ProblemDAO;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.BotGame;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
 /**
- * Luật vào phòng Match.canJoin.
+ * Luật của đề (giống MatchTest phía server), dùng chung cho Chơi với máy: chấm bài (countCorrect), điều kiện kết thúc (isOver), thắng thua (getResult), điểm (getPoints).
  */
 public class MatchTest {
     private static final int HUNG = 1;
     private static final int HOANG = 2;
-    private static final int MINH = 3;
+    private static final long START = 1_000_000L;
 
-    // Trận mã 482915 do Hùng tạo, trạng thái cho trước
-    private Match match(String status) {
+    // Trận giữa Hùng và Hoàng: số câu đúng và số giây nộp bài (âm = chưa nộp) cho trước
+    private Match match(int hungCorrect, double hungSeconds, int hoangCorrect, double hoangSeconds) {
         Match match = new Match();
-        match.setRoomCode("482915");
-        match.setStatus(status);
-        match.getPlayers().add(new MatchPlayer(new Player(HUNG, "hung", "HUNG")));
+        match.setStartedAt(new Date(START));
+        match.getPlayers().add(matchPlayer(HUNG, hungCorrect, hungSeconds));
+        match.getPlayers().add(matchPlayer(HOANG, hoangCorrect, hoangSeconds));
         return match;
     }
 
-    @Test
-    public void phongChoMotNguoiKhac() {
-        assertTrue(match(Match.WAITING).canJoin(HOANG));
+    private MatchPlayer matchPlayer(int playerId, int correct, double seconds) {
+        MatchPlayer mp = new MatchPlayer(new Player(playerId, "u" + playerId, "P" + playerId));
+        mp.setCorrectCount(correct);
+        if (seconds >= 0) {
+            mp.setSubmittedAt(new Date(START + (long) (seconds * 1000)));
+        }
+        return mp;
     }
 
     @Test
-    public void tranDangDau() {
-        assertFalse(match(Match.PLAYING).canJoin(HOANG));
+    public void cungDungHetAiNhanhHonThiThang() {
+        Match m = match(10, 38.2, 10, 45.6);
+        assertEquals(Match.WIN, m.getResult(HUNG));
+        assertEquals(Match.LOSE, m.getResult(HOANG));
+        assertEquals(38_200L, m.getFinishTime(HUNG));
     }
 
     @Test
-    public void phongDaDu2Nguoi() {
-        Match match = match(Match.WAITING);
-        match.getPlayers().add(new MatchPlayer(new Player(HOANG, "hoang", "HOANG")));
-        assertFalse(match.canJoin(MINH));
+    public void motNguoiDungHetThiThangDuCham() {
+        Match m = match(10, 55, 9, 30);
+        assertEquals(Match.WIN, m.getResult(HUNG));
+        assertEquals(Match.LOSE, m.getResult(HOANG));
     }
 
     @Test
-    public void phongCuaChinhMinh() {
-        assertFalse(match(Match.WAITING).canJoin(HUNG));
+    public void caHaiCoCauSaiThiHoa() {
+        Match m = match(9, 20, 7, 50);
+        assertEquals(Match.DRAW, m.getResult(HUNG));
+        assertEquals(Match.DRAW, m.getResult(HOANG));
+    }
+
+    @Test
+    public void cungDungHetCungThoiGianThiHoa() {
+        assertEquals(Match.DRAW, match(10, 40, 10, 40).getResult(HUNG));
+    }
+
+    @Test
+    public void boTranThiThuaDuDangDungHet() {
+        Match m = match(10, 20, 3, -1);
+        m.getPlayers().get(0).setForfeited(true);
+        assertEquals(Match.LOSE, m.getResult(HUNG));
+        assertEquals(Match.WIN, m.getResult(HOANG));
+    }
+
+    @Test
+    public void diemTranLa1VaNuaVa0() {
+        assertEquals(1.0, match(10, 30, 10, 31).getPoints(HUNG), 0);
+        assertEquals(0.0, match(10, 30, 10, 31).getPoints(HOANG), 0);
+        assertEquals(0.5, match(8, 30, 9, 31).getPoints(HUNG), 0);
+    }
+
+    @Test
+    public void isOverKhiCa2DaNopHoacCoNguoiBoTran() {
+        assertFalse(match(10, 30, 0, -1).isOver());
+        assertTrue(match(10, 30, 9, 40).isOver());
+        Match m = match(0, -1, 0, -1);
+        m.getPlayers().get(1).setForfeited(true);
+        assertTrue(m.isOver());
+    }
+
+    @Test
+    public void countCorrectChamTheoDapAnDung() {
+        Match m = new Match();
+        m.setQuestions(new ProblemDAO(new Random(37)).generateProblems(Match.QUESTION_COUNT));
+        List<Integer> answers = new ArrayList<>();
+        for (MathProblem p : m.getQuestions()) {
+            answers.add(p.getCorrectAnswer());
+        }
+        assertEquals(10, m.countCorrect(answers));
+        answers.set(3, -1);
+        answers.set(7, answers.get(7) + 1);
+        assertEquals(8, m.countCorrect(answers));
+        assertEquals(0, m.countCorrect(Arrays.asList(-1, -1)));
+    }
+
+    @Test
+    public void botGameDungCungLuat() {
+        BotGame game = new BotGame(new Player(HUNG, "hung", "HUNG"), BotGame.MEDIUM);
+        game.setCorrectCount(10);
+        game.setFinishTime(40_000);
+        game.setBotCorrectCount(10);
+        game.setBotFinishTime(45_000);
+        assertEquals(Match.WIN, game.getResult());
+        game.setCorrectCount(9);
+        assertEquals(Match.LOSE, game.getResult());
+        game.setBotCorrectCount(8);
+        assertEquals(Match.DRAW, game.getResult());
     }
 }

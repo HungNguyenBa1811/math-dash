@@ -30,8 +30,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sessionDAO = new SessionDAO(this);
-        if (sessionDAO.getPlayer() != null) {
-            openMain();
+        Player saved = sessionDAO.getPlayer();
+        if (saved != null) {
+            openHome(saved);
             return;
         }
         setContentView(R.layout.activity_login);
@@ -65,13 +66,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void run() {
                 try {
-                    Player player = new PlayerApiDAO().login(username, password);
+                    final Player player = new PlayerApiDAO().login(username, password);
                     sessionDAO.save(player);
                     new PlayerDAO(LoginActivity.this).saveOrUpdate(player);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            openMain();
+                            openHome(player);
                         }
                     });
                 } catch (IOException e) {
@@ -93,8 +94,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void openMain() {
-        startActivity(new Intent(this, MainActivity.class));
+    // Quản trị viên vào màn quản lý người chơi, người chơi vào màn chính
+    private void openHome(Player player) {
+        Class<?> home = Player.ROLE_ADMIN.equals(player.getRole()) ? AdminActivity.class : MainActivity.class;
+        startActivity(new Intent(this, home));
         finish();
     }
 }
