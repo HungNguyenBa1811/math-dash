@@ -53,10 +53,12 @@ package "Client (Android)" {
     - timer : CountDownTimer
     - questionAdapter : QuestionAdapter
     - matchFirebaseDAO : MatchFirebaseDAO
+    - presenceFirebaseDAO : PresenceFirebaseDAO
     - matchApiDAO : MatchApiDAO
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
     + onBackPressed() : void
+    + onPlayersChanged(players : List<Player>) : void
     + onSuccess(match : Match) : void
     + onNextMatch(nextMatchId : int) : void
     + onStopped(playerId : int) : void
@@ -66,6 +68,7 @@ package "Client (Android)" {
     - startMatch(match : Match) : void
     - submitAnswers() : void
     - leaveMatch() : void
+    - forfeit(playerId : int) : void
     - loadResult() : void
     - showResult(match : Match) : void
     - showOpponentStatus(match : Match) : void
@@ -117,6 +120,7 @@ package "Client (Android)" {
   }
   class PresenceFirebaseDAO <<control>> {
     + goOnline(player : Player) : void
+    + goOffline(playerId : int) : void
     + watchOnlinePlayers(callback : PlayerListCallback) : void
     + stopWatching() : void
     - toPlayer(id : String, data : DataSnapshot) : Player
@@ -127,6 +131,7 @@ package "Client (Android)" {
     + watchChallenge(challengeId : String, callback : ChallengeCallback) : void
     + rejectChallenge(challengeId : String) : void
     + stopWatching() : void
+    + stopWatchingSent() : void
     - toChallenge(id : String, data : DataSnapshot) : Challenge
   }
   class MatchFirebaseDAO <<control>> {
@@ -162,6 +167,7 @@ package "Client (Android)" {
     - id : String
     - status : String
     - createdAt : Date
+    - matchId : int
     - challenger : Player
     - opponent : Player
   }
@@ -213,6 +219,7 @@ package "Server (Spring Boot)" {
     + continueMatch(id : int, playerId : int, choice : boolean) : Match
     + getById(id : int) : Match
     - startMatch(p1 : Player, p2 : Player) : Match
+    - endMatch(match : Match) : void
   }
   abstract class "DAO" as SDAO <<control>> {
     # {static} conn : Connection
@@ -236,6 +243,7 @@ package "Server (Spring Boot)" {
   }
   class FirebaseAdminDAO <<control>> {
     - dbUrl : String
+    + readChallengeStatus(challengeId : String) : String
     + readPresence(playerId : int) : Player
     + updateStatus(playerId : int, status : String) : void
     + updatePoints(playerId : int, totalPoints : double) : void
@@ -261,6 +269,7 @@ package "Server (Spring Boot)" {
     - id : String
     - status : String
     - createdAt : Date
+    - matchId : int
     - challenger : Player
     - opponent : Player
   }
@@ -312,6 +321,8 @@ QuestionAdapter o-- "10" MathProblem
 MainActivity ..|> PlayerListCallback
 MainActivity ..|> ChallengeCallback
 MatchActivity ..|> MatchCallback
+MatchActivity ..|> PlayerListCallback
+MatchActivity -- PresenceFirebaseDAO
 MainActivity -- SessionDAO
 MatchActivity -- SessionDAO
 MainActivity -- PlayerApiDAO

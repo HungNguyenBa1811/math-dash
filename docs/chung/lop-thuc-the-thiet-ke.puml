@@ -46,6 +46,7 @@ class Challenge {
   - id : String
   - status : String
   - createdAt : Date
+  - matchId : int
   - challenger : Player
   - opponent : Player
 }

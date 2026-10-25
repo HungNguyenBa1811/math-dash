@@ -70,38 +70,39 @@
 8. Hàm onClick() của nút Đồng ý gọi hàm acceptChallenge() của MainActivity.
 9. Hàm acceptChallenge() mở một Thread và gọi hàm createMatch() của MatchApiDAO.
 10. MatchApiDAO gửi yêu cầu POST /api/matches kèm lời mời tới hàm create() của MatchRestController.
-11. Hàm create() gọi hàm readPresence() của FirebaseAdminDAO cho người mời và người được mời.
-12. Hàm readPresence() đọc node presence và gọi lớp Player để đóng gói người chơi kèm trạng thái.
-13. Lớp Player trả đối tượng Player cho hàm readPresence().
-14. Hàm readPresence() trả đối tượng Player cho hàm create(); cả 2 người đang online và rỗi.
-15. Hàm create() gọi hàm startMatch() của chính nó.
-16. Hàm startMatch() gọi hàm generateProblems() của ProblemDAO để sinh đề 10 câu.
-17. Với mỗi câu, hàm generateProblems() sinh phép tính ngẫu nhiên và gọi lớp MathProblem để đóng gói kèm 4 phương án.
-18. Lớp MathProblem trả đối tượng MathProblem cho hàm generateProblems().
-19. Hàm generateProblems() trả danh sách 10 câu hỏi cho hàm startMatch().
-20. Hàm startMatch() gọi lớp Match để tạo trận với đề vừa sinh, thời điểm bắt đầu và 2 người chơi.
-21. Lớp Match trả đối tượng Match cho hàm startMatch().
-22. Hàm startMatch() gọi hàm insert() của MatchDAO.
-23. Hàm insert() lưu trận, 10 câu hỏi và 2 người chơi trong trận vào CSDL trong một transaction, gán id vừa sinh cho trận.
-24. Hàm insert() trả kết quả cho hàm startMatch().
-25. Hàm startMatch() gọi hàm writeMatch() của FirebaseAdminDAO để gửi đề, không kèm đáp án, cho cả 2 máy.
-26. Hàm startMatch() gọi hàm updateStatus() của FirebaseAdminDAO để chuyển 2 người chơi sang trạng thái bận.
-27. Hàm create() gọi hàm updateChallenge() của FirebaseAdminDAO để đánh dấu lời mời đã được đồng ý, kèm mã trận.
-28. Hàm create() trả trận dạng JSON cho MatchApiDAO.
-29. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
-30. Lớp Match trả đối tượng Match cho MatchApiDAO.
-31. MatchApiDAO trả đối tượng Match cho hàm acceptChallenge().
-32. Trong hàm runOnUiThread(), hàm acceptChallenge() gọi hàm openMatch() để mở MatchActivity với mã trận.
+11. Hàm create() gọi hàm readChallengeStatus() của FirebaseAdminDAO; lời mời vẫn đang chờ, người mời chưa hủy.
+12. Hàm create() gọi hàm readPresence() của FirebaseAdminDAO cho người mời và người được mời.
+13. Hàm readPresence() đọc node presence và gọi lớp Player để đóng gói người chơi kèm trạng thái.
+14. Lớp Player trả đối tượng Player cho hàm readPresence().
+15. Hàm readPresence() trả đối tượng Player cho hàm create(); cả 2 người đang online và rỗi.
+16. Hàm create() gọi hàm startMatch() của chính nó.
+17. Hàm startMatch() gọi hàm generateProblems() của ProblemDAO để sinh đề 10 câu.
+18. Với mỗi câu, hàm generateProblems() sinh phép tính ngẫu nhiên và gọi lớp MathProblem để đóng gói kèm 4 phương án.
+19. Lớp MathProblem trả đối tượng MathProblem cho hàm generateProblems().
+20. Hàm generateProblems() trả danh sách 10 câu hỏi cho hàm startMatch().
+21. Hàm startMatch() gọi lớp Match để tạo trận với đề vừa sinh, thời điểm bắt đầu và 2 người chơi.
+22. Lớp Match trả đối tượng Match cho hàm startMatch().
+23. Hàm startMatch() gọi hàm insert() của MatchDAO.
+24. Hàm insert() lưu trận, 10 câu hỏi và 2 người chơi trong trận vào CSDL trong một transaction, gán id vừa sinh cho trận.
+25. Hàm insert() trả kết quả cho hàm startMatch().
+26. Hàm startMatch() gọi hàm writeMatch() của FirebaseAdminDAO để gửi đề, không kèm đáp án, cho cả 2 máy.
+27. Hàm startMatch() gọi hàm updateStatus() của FirebaseAdminDAO để chuyển 2 người chơi sang trạng thái bận.
+28. Hàm create() gọi hàm updateChallenge() của FirebaseAdminDAO để đánh dấu lời mời đã được đồng ý, kèm mã trận.
+29. Hàm create() trả trận dạng JSON cho MatchApiDAO.
+30. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
+31. Lớp Match trả đối tượng Match cho MatchApiDAO.
+32. MatchApiDAO trả đối tượng Match cho hàm acceptChallenge().
+33. Trong hàm runOnUiThread(), hàm acceptChallenge() gọi hàm openMatch() để mở MatchActivity với mã trận.
 
 ![Hình 18: Tuần tự thiết kế Chơi online – Nhận lời thách đấu](tuan-tu-thiet-ke-uc03b.png)
 
 *Hình 18: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
-- Biểu đồ có 32 thông điệp.
-- **Server sinh đề** (bước 16–19) và lưu đề vào MySQL cùng trận (bước 22–23), vì server cần đáp án để chấm bài sau này.
-- **Đề gửi qua Firebase không kèm đáp án** (bước 25): người chơi không đọc được đáp án trước khi nộp bài.
-- Bước 27 cập nhật lời mời, đây chính là tín hiệu để máy người mời mở MatchActivity ở bước 35 của đoạn A.
-- Hàm create() kiểm tra lại cả 2 người còn online và rỗi (bước 11–14), nên không thể có người ở trong 2 trận cùng lúc.
+- Biểu đồ có 33 thông điệp.
+- **Server sinh đề** (bước 17–20) và lưu đề vào MySQL cùng trận (bước 23–24), vì server cần đáp án để chấm bài sau này.
+- **Đề gửi qua Firebase không kèm đáp án** (bước 26): người chơi không đọc được đáp án trước khi nộp bài.
+- Bước 28 cập nhật lời mời, đây chính là tín hiệu để máy người mời mở MatchActivity ở bước 35 của đoạn A.
+- Hàm create() kiểm tra lời mời chưa bị hủy (bước 11) và cả 2 người còn online, rỗi (bước 12–15), nên không thể có người ở trong 2 trận cùng lúc.
 
 ### 1.3. Đoạn C: Thi đấu
 

@@ -141,6 +141,8 @@ Kiểu dữ liệu được chọn như sau:
 - Tổng điểm → double, vì có điểm hòa 0,5.
 - Độ khó dùng int: 1 = Dễ, 2 = Trung bình, 3 = Khó.
 
+Bổ sung 1 thuộc tính phục vụ thiết kế cho Challenge: matchId : int, mã trận server tạo khi lời mời được đồng ý. Máy người mời đọc nó để mở đúng trận.
+
 Đổi tên 1 thuộc tính so với pha phân tích: password của Player thành **passwordHash**, vì hệ thống chỉ lưu mật khẩu đã băm (BCrypt), không lưu mật khẩu gốc.
 
 Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền tố is (forfeited); getter tương ứng là isForfeited() theo quy ước JavaBean. Nếu đặt tên trường là isForfeited thì getter thành isIsForfeited(), và thư viện chuyển JSON (Jackson ở server, Firebase SDK ở app) sẽ đọc sai tên trường.
@@ -149,7 +151,7 @@ Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền t
 |---|---|
 | Player | id: int, username: String, passwordHash: String, displayName: String, role: String, createdAt: Date, totalPoints: double, avgOpponentPoints: double, avgWinTime: double, status: String |
 | MathProblem | id: int, operand1: int, operand2: int, operator: String, correctAnswer: int, answerOptions: List&lt;Integer&gt; |
-| Challenge | id: String, status: String, createdAt: Date |
+| Challenge | id: String, status: String, createdAt: Date, matchId: int |
 | Match | id: int, status: String, startedAt: Date, endedAt: Date |
 | MatchPlayer | id: int, answers: List&lt;Integer&gt;, correctCount: int, submittedAt: Date, forfeited: boolean |
 | BotGame | id: int, difficulty: int, correctCount: int, finishTime: long, botCorrectCount: int, botFinishTime: long, playedAt: Date |
@@ -242,6 +244,7 @@ Mã nguồn PlantUML: [lop-thuc-the-thiet-ke.puml](lop-thuc-the-thiet-ke.puml).
 | Challenge | status | Trạng thái lời mời | pending (đang chờ), accepted (đã đồng ý), rejected (đã từ chối) |
 | Challenge | createdAt | Thời điểm gửi lời mời | |
 | Challenge | challenger, opponent | Người mời, người được mời | Hai người chơi khác nhau |
+| Challenge | matchId | Trận được tạo khi lời mời được đồng ý; máy người mời dùng để mở đúng trận | 0 khi chưa đồng ý |
 | Match | status | Trạng thái trận | playing (đang đấu), finished (đã xong) |
 | Match | startedAt | Thời điểm server tạo trận và gửi đề | Mốc tính thời gian làm bài |
 | Match | endedAt | Thời điểm trận kết thúc | Chỉ có khi status = finished |

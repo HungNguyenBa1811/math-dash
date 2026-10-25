@@ -67,6 +67,7 @@ package "Server (Spring Boot)" {
   class PlayerDAO <<control>> {
     - matchDAO : MatchDAO
     + getRanking() : List<Player>
+    + {static} rank(players : List<Player>, matches : List<Match>) : List<Player>
   }
   class MatchDAO <<control>> {
     + findFinished() : List<Match>
