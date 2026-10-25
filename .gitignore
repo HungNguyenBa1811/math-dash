@@ -19,3 +19,7 @@ server/src/main/resources/firebase-service-account.json
 
 # Thông tin kết nối MySQL trên Aiven
 .env
+
+# Keystore ký bản release
+*.jks
+keystore.properties
