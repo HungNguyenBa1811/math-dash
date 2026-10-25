@@ -46,4 +46,13 @@
         <item name="android:fontFamily">monospace</item>
         <item name="android:textSize">16sp</item>
     </style>
+
+    <!-- Phương án trắc nghiệm -->
+    <style name="RetroOption">
+        <item name="android:textColor">@color/arcade_text_bright</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="buttonTint">@color/arcade_cyan</item>
+    </style>
 </resources>

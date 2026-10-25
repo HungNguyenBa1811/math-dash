@@ -1,9 +1,12 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
@@ -32,6 +35,16 @@ public class PlayerApiDAO extends ApiDAO {
     // GET /api/players/{id}: người chơi kèm tổng điểm hiện có
     public Player getById(int id) throws IOException, JSONException {
         return toPlayer(get("/players/" + id));
+    }
+
+    // GET /api/players/ranking: mọi người chơi kèm 3 tiêu chí, đã xếp hạng
+    public List<Player> getRanking() throws IOException, JSONException {
+        JSONArray array = getArray("/players/ranking");
+        List<Player> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            list.add(toPlayer(array.getJSONObject(i)));
+        }
+        return list;
     }
 
     // Đóng gói JSON thành Player; các trường dẫn xuất có thể vắng

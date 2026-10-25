@@ -1,25 +1,100 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
 /**
  * Theo dõi trận đang đấu ở node matches/{matchId}. App chỉ đọc, mọi ghi do server làm.
- * Thiết kế: docs/hung/4-lop-thiet-ke.md mục 1.2. Thân các hàm làm ở M2-03, M2-04.
  */
 public class MatchFirebaseDAO extends FirebaseDAO {
+    private static final String NETWORK_ERROR = "Mất kết nối, kiểm tra kết nối mạng";
 
-    public void watchMatch(int matchId, MatchCallback callback) {
-        throw new UnsupportedOperationException("TODO M2-03");
+    private DatabaseReference matchRef;
+    private ValueEventListener watcher;
+
+    // Báo về: có trận mới tiếp theo, có người dừng / bỏ trận, hoặc trận thay đổi
+    public void watchMatch(int matchId, final MatchCallback callback) {
+        stopWatching(matchId);
+        matchRef = con.child("matches").child(String.valueOf(matchId));
+        watcher = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    return;
+                }
+                Integer next = snapshot.child("nextMatchId").getValue(Integer.class);
+                Integer stoppedBy = snapshot.child("stoppedBy").getValue(Integer.class);
+                if (next != null) {
+                    callback.onNextMatch(next);
+                } else if (stoppedBy != null) {
+                    callback.onStopped(stoppedBy);
+                } else {
+                    callback.onSuccess(toMatch(Integer.parseInt(snapshot.getKey()), snapshot));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFail(NETWORK_ERROR);
+            }
+        };
+        matchRef.addValueEventListener(watcher);
     }
 
     public void stopWatching(int matchId) {
-        throw new UnsupportedOperationException("TODO M2-03");
+        if (watcher != null) {
+            matchRef.removeEventListener(watcher);
+            watcher = null;
+        }
     }
 
     // Đóng gói node thành Match kèm 10 câu hỏi (không có đáp án) và 2 người chơi
     private Match toMatch(int matchId, DataSnapshot data) {
-        throw new UnsupportedOperationException("TODO M2-03");
+        Match match = new Match();
+        match.setId(matchId);
+        match.setStatus(data.child("status").getValue(String.class));
+        Long startedAt = data.child("startedAt").getValue(Long.class);
+        match.setStartedAt(new Date(startedAt == null ? 0 : startedAt));
+        for (DataSnapshot q : data.child("questions").getChildren()) {
+            match.getQuestions().add(toProblem(q));
+        }
+        for (DataSnapshot p : data.child("players").getChildren()) {
+            match.getPlayers().add(toMatchPlayer(Integer.parseInt(p.getKey()), p));
+        }
+        return match;
+    }
+
+    private MathProblem toProblem(DataSnapshot q) {
+        List<Integer> options = new ArrayList<>();
+        for (DataSnapshot o : q.child("answerOptions").getChildren()) {
+            options.add(o.getValue(Integer.class));
+        }
+        Integer a = q.child("operand1").getValue(Integer.class);
+        Integer b = q.child("operand2").getValue(Integer.class);
+        return new MathProblem(a == null ? 0 : a, b == null ? 0 : b,
+                q.child("operator").getValue(String.class), -1, options);
+    }
+
+    // submitted chỉ là cờ; thời điểm nộp thật nằm ở server
+    private MatchPlayer toMatchPlayer(int playerId, DataSnapshot p) {
+        MatchPlayer mp = new MatchPlayer(new Player(playerId, null, p.child("displayName").getValue(String.class)));
+        if (Boolean.TRUE.equals(p.child("submitted").getValue(Boolean.class))) {
+            mp.setSubmittedAt(new Date());
+        }
+        mp.setForfeited(Boolean.TRUE.equals(p.child("forfeited").getValue(Boolean.class)));
+        return mp;
     }
 }

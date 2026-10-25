@@ -18,9 +18,49 @@
     <string name="btn_ranking">BẢNG XẾP HẠNG</string>
     <string name="btn_logout">ĐĂNG XUẤT</string>
 
-    <!-- Chơi online, bảng xếp hạng -->
+    <!-- Chơi online: danh sách online, lời mời -->
+    <string name="status_free">Rỗi</string>
+    <string name="status_busy">Bận</string>
+    <string name="msg_busy">%1$s đang bận</string>
+    <string name="msg_waiting_answer">Đang chờ %1$s trả lời...</string>
+    <string name="msg_rejected">%1$s đã từ chối lời mời</string>
+    <string name="msg_challenge">%1$s (%2$s điểm) thách đấu bạn</string>
+    <string name="btn_accept">ĐỒNG Ý</string>
+    <string name="btn_reject">TỪ CHỐI</string>
+    <string name="btn_cancel">HỦY</string>
+
+    <!-- Chơi online: thi đấu, kết quả -->
     <string name="title_match">THI ĐẤU</string>
+    <string name="time_full">01:00</string>
+    <string name="time_zero">00:00</string>
+    <string name="status_opponent_working">%1$s đang làm bài</string>
+    <string name="status_opponent_submitted">%1$s đã nộp bài</string>
+    <string name="btn_submit">NỘP BÀI</string>
+    <string name="btn_exit">THOÁT</string>
+    <string name="msg_submitted">Đã nộp bài, đang chờ đối thủ...</string>
+    <string name="msg_confirm_leave">Thoát sẽ bị xử thua?</string>
+    <string name="btn_stay">Ở LẠI</string>
+    <string name="btn_leave">THOÁT</string>
+    <string name="result_win">THẮNG!</string>
+    <string name="result_lose">THUA!</string>
+    <string name="result_draw">HÒA!</string>
+    <string name="label_my_result">Bạn: %1$d/10 câu đúng · %2$s</string>
+    <string name="label_opponent_result">%1$s: %2$d/10 câu đúng · %3$s</string>
+    <string name="label_match_points">+%1$s điểm · Tổng điểm: %2$s</string>
+    <string name="label_seconds">%1$s giây</string>
+    <string name="label_seconds_short">%1$s s</string>
+    <string name="label_no_time">—</string>
+    <string name="label_continue">Chơi tiếp?</string>
+    <string name="btn_continue">CHƠI TIẾP</string>
+    <string name="btn_stop">DỪNG</string>
+    <string name="btn_back_to_menu">VỀ MENU</string>
+    <string name="msg_waiting_opponent">Đang chờ đối thủ...</string>
+    <string name="msg_opponent_left">Đối thủ đã thoát, bạn thắng</string>
+    <string name="msg_opponent_stopped">Đối thủ đã dừng chơi</string>
+
+    <!-- Bảng xếp hạng -->
     <string name="title_ranking">BẢNG XẾP HẠNG</string>
+    <string name="msg_ranking_error">Không tải được bảng xếp hạng, kiểm tra kết nối mạng</string>
 
     <!-- Chơi với máy -->
     <string name="title_bot_game">CHƠI VỚI MÁY</string>
