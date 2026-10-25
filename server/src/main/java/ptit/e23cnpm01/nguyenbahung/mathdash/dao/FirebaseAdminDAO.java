@@ -1,6 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.mathdash.dao;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -8,15 +7,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-
+/**
+ * Đọc / ghi Realtime Database qua REST API: presence, challenges, matches.
+ * Cây dữ liệu: docs/chung/03-csdl.md mục 2. Thân các hàm làm ở M2-01 → M2-04.
+ */
 public class FirebaseAdminDAO {
     private String dbUrl;
     private HttpClient client = HttpClient.newHttpClient();
@@ -26,22 +24,57 @@ public class FirebaseAdminDAO {
         dbUrl = DAO.loadConfig().getProperty("firebase.databaseUrl");
     }
 
-    // GET matches/{roomCode}.json
-    public Match readMatch(String roomCode) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(nodeUri(roomCode, "")).GET().build();
-        JsonNode node = mapper.readTree(send(request));
-        return node.isNull() ? null : toMatch(roomCode, node);
+    // GET presence/{playerId}: người chơi kèm trạng thái; không online thì trả null
+    public Player readPresence(int playerId) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-01");
     }
 
-    // PUT matches/{roomCode}/status.json
-    public void updateStatus(String roomCode, String status) throws IOException, InterruptedException {
-        String body = mapper.writeValueAsString(status);
-        HttpRequest request = HttpRequest.newBuilder(nodeUri(roomCode, "/status"))
-                .PUT(HttpRequest.BodyPublishers.ofString(body))
-                .build();
-        send(request);
+    // PATCH presence/{playerId}: status = free | busy
+    public void updateStatus(int playerId, String status) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-01");
     }
 
+    // PATCH presence/{playerId}: totalPoints
+    public void updatePoints(int playerId, double totalPoints) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-03");
+    }
+
+    // PATCH challenges/{challengeId}: status, matchId
+    public void updateChallenge(String challengeId, String status, int matchId) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-02");
+    }
+
+    // PUT matches/{matchId}: đề không kèm đáp án, 2 người chơi, status = playing
+    public void writeMatch(Match match) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-02");
+    }
+
+    // PUT matches/{matchId}/players/{playerId}/submitted = true
+    public void writeSubmitted(int matchId, int playerId) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-03");
+    }
+
+    // PUT matches/{matchId}/status = finished
+    public void writeFinished(int matchId) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-03");
+    }
+
+    // PUT matches/{matchId}/players/{playerId}/choice = continue | stop
+    public void writeChoice(int matchId, int playerId, boolean choice) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-04");
+    }
+
+    // PUT matches/{matchId}/nextMatchId
+    public void writeNextMatch(int matchId, int nextMatchId) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-04");
+    }
+
+    // PUT matches/{matchId}/stoppedBy
+    public void writeStopped(int matchId, int playerId) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("TODO M2-04");
+    }
+
+    // Gửi yêu cầu; Firebase trả mã khác 200 thì ném lỗi
     private String send(HttpRequest request) throws IOException, InterruptedException {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200) {
@@ -50,45 +83,8 @@ public class FirebaseAdminDAO {
         return response.body();
     }
 
-    private URI nodeUri(String roomCode, String child) {
-        return URI.create(dbUrl + "/matches/" + roomCode + child + ".json");
-    }
-
-    private Match toMatch(String roomCode, JsonNode node) {
-        Match match = new Match();
-        match.setRoomCode(roomCode);
-        match.setStatus(node.path("status").asText());
-        match.setQuestionSeed(node.path("questionSeed").asLong());
-        match.setCreatedAt(new Date(node.path("createdAt").asLong()));
-        addPlayers(match, node.path("players"));
-        return match;
-    }
-
-    // Firebase đổi node có khóa là số (id người chơi) thành mảng, nên đọc được cả 2 dạng
-    private void addPlayers(Match match, JsonNode players) {
-        if (players.isArray()) {
-            for (int id = 0; id < players.size(); id++) {
-                if (!players.get(id).isNull()) {
-                    match.getPlayers().add(toMatchPlayer(id, players.get(id)));
-                }
-            }
-            return;
-        }
-        Iterator<Map.Entry<String, JsonNode>> fields = players.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            match.getPlayers().add(toMatchPlayer(Integer.parseInt(field.getKey()), field.getValue()));
-        }
-    }
-
-    private MatchPlayer toMatchPlayer(int playerId, JsonNode node) {
-        Player player = new Player();
-        player.setId(playerId);
-        player.setDisplayName(node.path("displayName").asText());
-        MatchPlayer mp = new MatchPlayer(player);
-        mp.setScore(node.path("score").asInt());
-        mp.setForfeited(node.path("forfeited").asBoolean());
-        mp.setTimeUp(node.path("timeUp").asBoolean());
-        return mp;
+    // Địa chỉ REST của một node, ví dụ path = "matches/37/status"
+    private URI nodeUri(String path) {
+        return URI.create(dbUrl + "/" + path + ".json");
     }
 }

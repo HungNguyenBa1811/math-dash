@@ -1,10 +1,16 @@
 package ptit.e23cnpm01.nguyenbahung.mathdash.entity;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class MatchPlayer {
     private int id;
-    private int score;
+    // Bài làm: phương án đã chọn cho từng câu, -1 là câu chưa chọn. Chỉ dùng để chấm, không lưu
+    private List<Integer> answers = new ArrayList<>();
+    private int correctCount;
+    private Date submittedAt;
     private boolean forfeited;
-    private boolean timeUp;
     private Player player;
 
     public MatchPlayer() {
@@ -22,12 +28,28 @@ public class MatchPlayer {
         this.id = id;
     }
 
-    public int getScore() {
-        return score;
+    public List<Integer> getAnswers() {
+        return answers;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setAnswers(List<Integer> answers) {
+        this.answers = answers;
+    }
+
+    public int getCorrectCount() {
+        return correctCount;
+    }
+
+    public void setCorrectCount(int correctCount) {
+        this.correctCount = correctCount;
+    }
+
+    public Date getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(Date submittedAt) {
+        this.submittedAt = submittedAt;
     }
 
     public boolean isForfeited() {
@@ -36,14 +58,6 @@ public class MatchPlayer {
 
     public void setForfeited(boolean forfeited) {
         this.forfeited = forfeited;
-    }
-
-    public boolean isTimeUp() {
-        return timeUp;
-    }
-
-    public void setTimeUp(boolean timeUp) {
-        this.timeUp = timeUp;
     }
 
     public Player getPlayer() {
