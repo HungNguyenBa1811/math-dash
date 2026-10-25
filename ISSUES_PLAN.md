@@ -1,16 +1,17 @@
-# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 4: MVP, BACKEND SPRING BOOT, DEMO 28/10)
+# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 5: THEO ĐỀ 9 "GAME GIẢI TOÁN NHANH", DEMO 28/10)
 
-> Nguồn: `PLAN.md`, `CONVENTION.md` (quy ước code Android), `REPORT_CONVENTION.md` (yêu cầu báo cáo + quy trình OOAD), `docs/chung/01-pham-vi-use-case.md` (phạm vi MVP).
+> Nguồn: đề bài số 9 (dán nguyên văn ở `REPORT_CONVENTION.md` mục 1), `CONVENTION.md` (quy ước code Android), `REPORT_CONVENTION.md` (yêu cầu báo cáo + quy trình OOAD), `docs/chung/01-pham-vi-use-case.md` (phạm vi).
 > Thành viên: **@HungNguyenBa1811** (Hùng – nhóm trưởng) · **@Minahn210** (Hoàng – thành viên 2).
 > Mỗi mục `[Mx-yy]` bên dưới là 1 GitHub issue. Số thứ tự trong mỗi milestone là thứ tự nên làm.
 
-**Thay đổi so với bản 3:**
-- **Phạm vi MVP còn 6 use case**, một tác nhân là Người chơi: Đăng ký, Đăng nhập, Chơi offline, Cài đặt cấu hình game, Chơi online, Xem lịch sử đấu.
-- Ngoài phạm vi: Sửa thông tin cá nhân, Quản lý người dùng, Quản lý lịch sử đấu (vai trò quản trị viên), Bảng vàng, xem danh sách ván offline.
-- **Có backend Spring Boot + MySQL**, giữ tài khoản và lịch sử đấu. Backend làm **trọng tài** khi trận online kết thúc.
-- Firebase Realtime Database chỉ còn giữ trận **đang diễn ra**.
-- Chơi online có 2 chế độ: **Tạo phòng** (nhận mã phòng 6 chữ số) và **Tìm phòng** (nhập mã phòng).
-- **Hoàng chỉ làm phía offline**, không đụng backend: Chơi offline và Cài đặt cấu hình game.
+**Thay đổi so với bản 4** (đối chiếu lại với đề, ngày 26/10):
+- **Chơi online theo đề:** danh sách người chơi online (tên, tổng điểm, rỗi / bận) → bấm tên để thách đấu → đồng ý / từ chối → **server sinh cùng một đề N = 10 câu trắc nghiệm** và gửi cho cả 2 → nộp bài → **server chấm và làm trọng tài**: đúng hết và nhanh hơn thì thắng, cả 2 có câu sai thì hòa; thắng 1, hòa 0,5, thua 0 → hỏi chơi tiếp sau mỗi ván.
+- **Bỏ:** tạo / tìm phòng bằng mã 6 số, `questionSeed`, đấu 60 giây tính điểm combo, bàn phím số.
+- **Thêm Xem bảng xếp hạng** theo 3 tiêu chí của đề: tổng điểm ↓, trung bình điểm đối thủ đã gặp ↓, trung bình thời gian thắng ↑.
+- **Chơi offline đổi thành Chơi với máy:** cùng luật 10 câu trắc nghiệm, máy có 3 độ khó, chạy offline, lưu SQLite.
+- **Thêm tác nhân Quản trị viên** và chức năng Quản lý thông tin người chơi.
+- **Bỏ:** Cài đặt cấu hình game, Xem lịch sử đấu, chơi offline kiểu 3 mạng / kỷ lục.
+- **Phân công mới:** Hùng: Chơi online, Xem bảng xếp hạng, Đăng nhập / Đăng ký. Hoàng: Chơi với máy, Quản lý thông tin người chơi, Đăng nhập / Đăng ký.
 
 ---
 
@@ -29,22 +30,22 @@
 
 | # | Vấn đề | Quyết định | Lý do |
 |---|---|---|---|
-| D1 | Phạm vi | MVP 6 UC như trên. Ngoài phạm vi ghi ở `docs/chung/01-pham-vi-use-case.md` mục 2.1 | Kịp demo 28/10, mỗi chức năng làm trọn vẹn |
-| D2 | Kiến trúc | **App Android** + **Backend Spring Boot** (REST, MySQL) + **Firebase Realtime Database** (chỉ trận đang diễn ra) | Backend giữ dữ liệu lâu dài và làm trọng tài; Firebase lo phần thời gian thực |
-| D3 | Backend mỏng | `RestController` → `DAO` (JDBC, lớp cha giữ `#conn: Connection`) → Entity. **Không có tầng Service, không dùng JPA** | Giữ đúng khuôn MVC của bài mẫu OOAD; biểu đồ lớp và tuần tự không phình ra |
-| D4 | Đăng nhập | Đăng nhập đơn giản bằng tên đăng nhập và mật khẩu: backend so mật khẩu với bản băm BCrypt và trả Player, không cấp token. App không dùng Firebase Authentication. App ghi nhớ người chơi trong SharedPreferences | Đơn giản, đủ cho demo; mất mạng vẫn vào được Chơi offline |
-| D5 | Luật trận online | 60 giây, 2 người, cùng một dãy câu. Đúng: +10 + combo×2. Sai: 0 điểm, reset combo, **không mất mạng**. Người bỏ trận thua; nếu không ai bỏ thì so điểm, bằng điểm thì hòa | Đơn giản, dùng lại `GameSession` |
-| D6 | Đồng bộ câu hỏi | Khi tạo phòng sinh `questionSeed` (long); 2 máy cùng tạo `new ProblemDAO(new Random(questionSeed))` | Không phải đẩy từng câu qua mạng |
-| D7 | Trọng tài | Mỗi máy hết 60 giây thì ghi `timeUp`. Khi `Match.isOver()` đúng (cả 2 hết giờ hoặc có người bỏ trận), app gọi `POST /api/matches/{roomCode}/finish`. Backend đọc trận từ Firebase bằng Admin SDK, **kiểm tra lại `isOver()`**, ghi **1 bản ghi** vào `tblMatch` + 2 dòng `tblMatchPlayer`, trả `Match` đã lưu; app hiện kết quả bằng `getResult` trên bản đó. `Match.canJoin(...)`, `Match.isOver()`, `Match.getResult(...)` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm (trả lời được câu "Firebase có ăn hết module không"); chống gửi kết quả giả |
-| D8 | Độ khó offline | Dễ / Trung bình / Khó: bắt đầu ở mức 1 / 2 / 3, tăng 1 mức sau mỗi 5 câu, tối đa mức 4 | Có ý nghĩa với kỷ lục theo từng độ khó |
-| D9 | Thuộc tính dẫn xuất | **Không lưu:** kỷ lục (= MAX điểm theo người chơi + độ khó), kết quả trận (suy từ `forfeited` và điểm), mức, % chính xác | Đúng bước 5 thiết kế CSDL |
-| D10 | Lưu trữ phía app | SQLite: `tblPlayer` (bản sao người chơi lưu khi đăng nhập), `tblGameRecord`. SharedPreferences: cấu hình game, phiên đăng nhập | Chơi offline chạy được khi mất mạng; kết quả ván có khóa ngoại thật trong SQLite |
+| D1 | Phạm vi | 6 UC, 2 tác nhân (Người chơi, Quản trị viên) như mục 2.1. Ngoài phạm vi ghi ở `docs/chung/01-pham-vi-use-case.md` mục 2.1 | Đúng 3 chức năng của đề + tài khoản |
+| D2 | Kiến trúc | **App Android** (client) + **Server Spring Boot** (REST, MySQL) + **Firebase Realtime Database** (kênh báo tức thời: online, lời mời, trận đang đấu) | Đề yêu cầu server lưu toàn bộ dữ liệu và làm trọng tài; Firebase lo phần đẩy thay đổi tới các máy |
+| D3 | Server mỏng | `RestController` → `DAO` (JDBC, lớp cha giữ `#conn: Connection`) → Entity. **Không có tầng Service, không dùng JPA** | Giữ đúng khuôn MVC của bài mẫu OOAD |
+| D4 | Đăng nhập | Tên đăng nhập + mật khẩu, server so bản băm BCrypt và trả `Player` (có `role`), không cấp token. `role = admin` thì app mở màn quản trị. Tài khoản admin chèn sẵn trong `schema.sql` | Đơn giản, đủ cho demo |
+| D5 | Luật trận online | 10 câu trắc nghiệm 4 phương án, tối đa 60 giây, hết giờ tự nộp. Kết quả theo thứ tự: bỏ trận thì thua → chỉ một người đúng hết thì người đó thắng → cả 2 có câu sai thì hòa → cả 2 đúng hết thì ai nộp sớm hơn thắng, bằng nhau hòa. Thắng 1, hòa 0,5, thua 0 | Đúng nguyên văn đề |
+| D6 | Đề bài | **Server sinh đề** (`ProblemDAO` phía server), lưu vào `tblMathProblem`, gửi qua Firebase **không kèm đáp án** | "Server sinh tự động cùng một đề bài và gửi về cho cả hai" |
+| D7 | Trọng tài | App gửi bài làm `POST /api/matches/{id}/submit`. Server ghi thời điểm nhận (đồng hồ server), chấm bằng `Match.countCorrect`, lưu; khi `Match.isOver()` thì ghi `endedAt`, cập nhật tổng điểm, báo qua Firebase. `Match.countCorrect`, `isOver`, `getResult`, `getPoints`, `getFinishTime` là **hàm Java thuần có unit test** | Luật nằm trong code của nhóm; thời gian đo ở server nên công bằng |
+| D8 | Chơi với máy | Độ khó máy: Dễ / Trung bình / Khó. Mỗi câu máy trả lời đúng với xác suất 60% / 80% / 95%; thời gian nộp ngẫu nhiên 45–58 s / 35–48 s / 25–40 s. Cùng luật D5 | Có ý nghĩa thắng / thua, không cần mạng |
+| D9 | Thuộc tính dẫn xuất | **Không lưu:** kết quả trận, điểm trận, tổng điểm, 2 tiêu chí còn lại của bảng xếp hạng, trạng thái trận (suy từ `endedAt`), kết quả ván với máy | Đúng bước 5 thiết kế CSDL |
+| D10 | Lưu trữ phía app | SQLite: `tblPlayer` (bản sao), `tblBotGame`. SharedPreferences: phiên đăng nhập | Chơi với máy chạy khi mất mạng |
 | D11 | Lớp DAO | Mỗi nơi lưu trữ có **một lớp cha giữ kết nối**: app `DAO` (SQLite), `ApiDAO` (HTTP), `FirebaseDAO` (Firebase); server `DAO` (JDBC). Các DAO con kế thừa | Đúng tài liệu OOAD của môn |
 | D12 | Tên bảng | Tiền tố `tbl` + tên lớp; khóa ngoại `tbl<Bảng>Id` | Đúng bước 1 và 4 thiết kế CSDL |
-| D13 | Chia việc | Theo chức năng (mục 2.1). Phần chung Hùng làm (cùng Claude), Hoàng duyệt PR | Hoàng bận đến 25/10, không làm Spring Boot |
-| D14 | Thứ tự OOAD | Phần chung (use case tổng quát, lớp thực thể, CSDL) làm **trước khi code**. Phân tích và thiết kế từng chức năng làm **sau demo**, đối chiếu code thật | Không đủ thời gian vẽ trước khi demo |
+| D13 | Chia việc | Theo chức năng (mục 2.1). Phần chung Hùng làm, Hoàng duyệt PR. Đăng nhập / Đăng ký cả 2 cùng trình bày, code chung | Mỗi người tối đa 3 chức năng |
+| D14 | Thứ tự OOAD | Phần chung làm **trước khi code**. Phân tích và thiết kế từng chức năng: Hùng đã viết trước (thiết kế dẫn code), Hoàng làm sau demo | Kịp demo |
 | D15 | Báo cáo | Mỗi người **một file riêng**, chỉ lấy phần chung liên quan chức năng của mình | Đề ghi "bài làm cá nhân" |
-| D16 | Kiến trúc app | MVC 3 tầng `entity` – `dao` – `view`. Activity xử lý sự kiện, điều phối (đồng hồ, chấm điểm bằng entity, gọi DAO) và hiển thị; **không có lớp Controller riêng**. Luật nghiệp vụ là hàm Java thuần trên entity; truy cập dữ liệu (SQLite, REST, Firebase) chỉ nằm trong DAO. Package `util` chỉ chứa lớp tiện ích không thuộc nghiệp vụ (ví dụ `SoundManager`), mỗi file dưới 200 dòng | Khớp mô hình boundary – DAO – entity của bài mẫu; ít lớp trung gian, dễ giải thích khi demo |
+| D16 | Kiến trúc app | MVC 3 tầng `entity` – `dao` – `view`. Activity xử lý sự kiện, điều phối và hiển thị; **không có lớp Controller riêng**. Luật nghiệp vụ là hàm Java thuần trên entity; truy cập dữ liệu (SQLite, REST, Firebase) chỉ nằm trong DAO | Khớp mô hình boundary – DAO – entity của bài mẫu |
 
 ---
 
@@ -52,16 +53,16 @@
 
 ### 2.1. Use case và người demo
 
-| UC | Tên use case | Module | Người code, demo, vẽ |
-|---|---|---|---|
-| UC01 | Đăng ký | Tài khoản | Chung (Hùng làm, Hoàng duyệt). Hùng có thể demo thêm |
-| UC02 | Đăng nhập | Tài khoản | Chung (Hùng làm, Hoàng duyệt). Hùng có thể demo thêm |
-| UC03 | Chơi offline | Chơi offline | **Hoàng** |
-| UC04 | Cài đặt cấu hình game | Chơi offline | **Hoàng** |
-| UC05 | Chơi online (Tạo phòng / Tìm phòng / Thi đấu) | Chơi online | **Hùng** |
-| UC06 | Xem lịch sử đấu | Chơi online | **Hùng** |
+| UC | Tên use case | Tác nhân | Module | Người code, demo, vẽ |
+|---|---|---|---|---|
+| UC01 | Đăng ký | Người chơi | Tài khoản | Code chung (Hùng làm, Hoàng duyệt). **Cả 2 cùng trình bày** |
+| UC02 | Đăng nhập | Người chơi, Quản trị viên | Tài khoản | Code chung. **Cả 2 cùng trình bày** |
+| UC03 | Chơi online (danh sách online, thách đấu, thi đấu, chơi tiếp) | Người chơi | Chơi online | **Hùng** |
+| UC04 | Xem bảng xếp hạng | Người chơi | Chơi online | **Hùng** |
+| UC05 | Chơi với máy | Người chơi | Chơi với máy | **Hoàng** |
+| UC06 | Quản lý thông tin người chơi | Quản trị viên | Quản trị | **Hoàng** |
 
-Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-offline` (UC03), `uc-cai-dat` (UC04), `uc-choi-online` (UC05), `uc-lich-su` (UC06).
+Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-online` (UC03), `uc-bxh` (UC04), `uc-choi-voi-may` (UC05), `uc-quan-tri` (UC06).
 
 ### 2.2. Tên lớp và người sở hữu
 
@@ -69,28 +70,31 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-offline` (UC03), `uc-cai-da
 
 | Loại | Lớp | Sở hữu |
 |---|---|---|
-| Entity | `Player`, `MathProblem`, `GameSession`, `GameRecord`, `GameConfig`, `Match`, `MatchPlayer` | **Chung** |
+| Entity | `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `BotGame` | **Chung** |
 | DAO SQLite | `DAO` (cha), `DatabaseHelper`, `PlayerDAO` (bản sao người chơi) | **Chung** |
-| DAO SQLite / SharedPreferences | `GameRecordDAO`, `GameConfigDAO` | Hoàng |
-| DAO HTTP | `ApiDAO` (cha: địa chỉ server, gửi/nhận JSON), `PlayerApiDAO` (đăng ký, đăng nhập), `SessionDAO` (lưu phiên) | **Chung** |
-| DAO HTTP | `MatchApiDAO` (kết thúc trận, lịch sử đấu) | Hùng |
-| DAO Firebase | `FirebaseDAO` (cha), `MatchFirebaseDAO` (tạo / tìm / theo dõi trận đang diễn ra) | Hùng |
-| Sinh câu hỏi | `ProblemDAO` (không truy cập CSDL) | **Chung** |
-| Giao diện | `LoginActivity`, `RegisterActivity`, `MainActivity` | **Chung** |
-| Giao diện | `DifficultyActivity`, `GameActivity`, `SettingsActivity` | Hoàng |
-| Giao diện | `OnlineActivity` (Tạo phòng / nhập mã), `LobbyActivity` (chờ đối thủ), `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter` | Hùng |
-| Tiện ích | `util/SoundManager` (Singleton, dưới 200 dòng) | Hoàng |
+| DAO SQLite | `BotGameDAO` | Hoàng |
+| DAO HTTP | `ApiDAO` (cha), `PlayerApiDAO` (đăng ký, đăng nhập, `getById`), `SessionDAO` (lưu phiên) | **Chung** |
+| DAO HTTP | `PlayerApiDAO.getRanking`, `MatchApiDAO` | Hùng |
+| DAO HTTP | `PlayerApiDAO` các hàm quản trị (`search`, `update`, `resetPassword`, `delete`) | Hoàng |
+| DAO Firebase | `FirebaseDAO` (cha), `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO` | Hùng |
+| Sinh câu hỏi | `ProblemDAO` (không truy cập CSDL; app dùng cho Chơi với máy) | **Chung** |
+| Giao diện | `LoginActivity`, `RegisterActivity`, `MainActivity` (khung) | **Chung** |
+| Giao diện | `MainActivity` phần danh sách online + `PlayerAdapter`, `MatchActivity`, `QuestionAdapter`, `RankingActivity`, `RankingAdapter` | Hùng |
+| Giao diện | `DifficultyActivity`, `BotGameActivity`, `AdminActivity`, `PlayerDetailActivity` | Hoàng |
 
-**Backend** (thư mục `server/`, package `ptit.e23cnpm01.nguyenbahung.mathdash`):
+**Server** (thư mục `server/`, package `ptit.e23cnpm01.nguyenbahung.mathdash`):
 
 | Loại | Lớp | Sở hữu |
 |---|---|---|
-| Entity | `Player`, `Match`, `MatchPlayer` (cùng tên, cùng thuộc tính với phía app) | **Chung** |
+| Entity | `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer` (cùng tên, cùng thuộc tính với phía app) | **Chung** |
 | Controller (REST) | `AuthRestController` (`/api/auth/*`) | **Chung** |
-| Controller (REST) | `MatchRestController` (`/api/matches/*`) | Hùng |
-| DAO JDBC | `DAO` (cha, `#conn: Connection`), `PlayerDAO` | **Chung** |
-| DAO JDBC | `MatchDAO` | Hùng |
-| Firebase REST | `FirebaseAdminDAO` (đọc trận đang diễn ra, ghi trạng thái qua REST API của Firebase) | Hùng |
+| Controller (REST) | `MatchRestController` (`/api/matches/*`), `PlayerRestController.getById`, `getRanking` | Hùng |
+| Controller (REST) | `PlayerRestController` các hàm quản trị | Hoàng |
+| DAO JDBC | `DAO` (cha), `PlayerDAO` (`findByUsername`, `insert`, `findById`, `getTotalPoints`) | **Chung** |
+| DAO JDBC | `MatchDAO`, `PlayerDAO.getRanking` | Hùng |
+| DAO JDBC | `PlayerDAO` các hàm quản trị | Hoàng |
+| Sinh đề | `ProblemDAO` (server) | Hùng |
+| Firebase REST | `FirebaseAdminDAO` (đọc presence, ghi lời mời, trận, trạng thái) | Hùng |
 
 - Lớp **Chung**: Hùng viết, Hoàng duyệt. Sau khi merge, muốn sửa thì mở PR riêng và người kia duyệt.
 - Lớp của ai thì người đó viết thân hàm, demo và giải thích.
@@ -109,6 +113,7 @@ public abstract class DAO {
 // App: dao/ApiDAO.java — cha của mọi DAO gọi REST (HttpURLConnection, gọi trong Thread)
 public abstract class ApiDAO {
     protected static final String BASE_URL = "https://math-dash-server.onrender.com/api"; // server trên Render; chạy local: "http://10.0.2.2:8080/api"
+    protected JSONObject get(String path) throws IOException, JSONException { /* ... */ }
     protected JSONObject post(String path, JSONObject body) throws IOException, JSONException { /* ... */ }
     protected JSONArray getArray(String path) throws IOException, JSONException { /* ... */ }
 }
@@ -127,44 +132,56 @@ public abstract class DAO {
 
 ### 2.4. CSDL và REST API
 
-- **MySQL (server):** `tblPlayer`, `tblMatch`, `tblMatchPlayer`. Cột cụ thể chốt ở M1-03.
-- **SQLite (app):** `tblPlayer` (bản sao), `tblGameRecord`. Cột cụ thể chốt ở M1-03.
-- **SharedPreferences (app):** `"config"` (cấu hình game), `"session"` (phiên đăng nhập).
+Chi tiết cột, khóa, câu lệnh tạo bảng: `docs/chung/03-csdl.md`.
+
+- **MySQL (server):** `tblPlayer` (có `role`), `tblMatch`, `tblMathProblem`, `tblMatchPlayer`.
+- **SQLite (app):** `tblPlayer` (bản sao), `tblBotGame`.
+- **SharedPreferences (app):** `"session"` (phiên đăng nhập).
 - **Firebase Realtime Database:**
 
 ```
-matches/{roomCode}                  // mã phòng 6 chữ số
-    status       : "waiting" | "playing" | "finished"
-    questionSeed : long
-    createdAt    : ServerValue.TIMESTAMP
-    players/
-        {playerId} : { displayName: String, score: int, forfeited: bool, connected: bool, timeUp: bool }
+presence/{playerId}        displayName, totalPoints, status ("free" | "busy")
+challenges/{challengeId}   challengerId, challengerName, challengerPoints, opponentId, opponentName,
+                           status ("pending" | "accepted" | "rejected"), createdAt, matchId
+matches/{matchId}          status ("playing" | "finished"), startedAt,
+    questions/{i}          operand1, operand2, operator, answerOptions     // không có correctAnswer
+    players/{playerId}     displayName, submitted, forfeited, choice
+    nextMatchId, stoppedBy
 ```
 
-- **Chữ ký hàm chi tiết** của UC05, UC06 (app + server) chốt ở `docs/hung/4-lop-thiet-ke.md`; code M2-02 → M2-05 theo đúng tài liệu này.
+- **Chữ ký hàm chi tiết** của UC03, UC04 (app + server) chốt ở `docs/hung/4-lop-thiet-ke.md`; code M2-01 → M2-05 theo đúng tài liệu này.
 
 - **REST API** (JSON, không cần token):
 
 | Phương thức | Đường dẫn | Dùng cho | Kết quả |
 |---|---|---|---|
 | `POST` | `/api/auth/register` | UC01 | 201, hoặc 409 nếu trùng tên đăng nhập |
-| `POST` | `/api/auth/login` | UC02 | `Player`, hoặc 401 |
-| `POST` | `/api/matches/{roomCode}/finish` | UC05 | Kết quả trận đã lưu |
-| `GET` | `/api/matches?playerId={id}` | UC06 | Danh sách trận đã kết thúc của người chơi, mới nhất trước |
+| `POST` | `/api/auth/login` | UC02 | `Player` (có `role`), hoặc 401 |
+| `GET` | `/api/players/{id}` | UC03, UC06 | `Player` kèm `totalPoints` |
+| `GET` | `/api/players/ranking` | UC04 | Danh sách `Player` đã xếp hạng, kèm 3 tiêu chí |
+| `POST` | `/api/matches` | UC03 | Tạo trận từ lời mời: `Match` (đề không có đáp án), hoặc 409 nếu một người không online / đang bận |
+| `POST` | `/api/matches/{id}/submit` | UC03 | Nộp bài: `Match` sau khi chấm |
+| `POST` | `/api/matches/{id}/forfeit` | UC03 | Bỏ trận: `Match` đã kết thúc |
+| `POST` | `/api/matches/{id}/continue` | UC03 | Chơi tiếp / dừng: `Match` hiện tại hoặc trận mới |
+| `GET` | `/api/matches/{id}` | UC03 | `Match` đầy đủ, có đáp án khi trận đã xong |
+| `GET` | `/api/players?name={tên}` | UC06 | Danh sách người chơi (role = player) |
+| `PUT` | `/api/players/{id}` | UC06 | Sửa tên hiển thị |
+| `PUT` | `/api/players/{id}/password` | UC06 | Đặt lại mật khẩu |
+| `DELETE` | `/api/players/{id}` | UC06 | 204, hoặc 409 nếu người chơi đã có trận |
 
 ### 2.5. Ba phiên bản kịch bản
 
 | Phiên bản | Issue | Đối tượng xuất hiện | Đi kèm |
 |---|---|---|---|
-| v1 | M3-01, M3-02 | Người chơi ↔ Hệ thống | — |
-| v2 | M3-05, M3-06 | Người chơi, lớp `XxxView`, lớp thực thể | Biểu đồ tuần tự phân tích, **khớp từng bước** |
-| v3 | M4-03, M4-04 | Người chơi, boundary (`XxxActivity`, `XxxRestController`), control (Controller, DAO), entity | Biểu đồ tuần tự thiết kế, **khớp từng bước** |
+| v1 | M3-01, M3-02 | Người chơi / Quản trị viên ↔ Hệ thống | — |
+| v2 | M3-05, M3-06 | Tác nhân, lớp `XxxView`, lớp thực thể | Biểu đồ tuần tự phân tích, **khớp từng bước** |
+| v3 | M4-03, M4-04 | Tác nhân, boundary (`XxxActivity`, `XxxRestController`), control (DAO), entity | Biểu đồ tuần tự thiết kế, **khớp từng bước** |
 
 ---
 
 ## 3. Quy ước chung cho mọi issue
 
-- **Branch:** tài liệu `docs/M3-01-kich-ban-v1`; code `feat/M2-02-tao-tim-phong`. Tạo nhanh bằng `gh issue develop <số> --checkout`.
+- **Branch:** tài liệu `docs/M3-01-kich-ban-v1`; code `feat/M2-02-thach-dau`. Tạo nhanh bằng `gh issue develop <số> --checkout`.
 - **PR:** mô tả ghi `Closes #<số>`. PR phần chung (M1) phải được **Hoàng approve**. PR module riêng: người kia review nếu kịp; trước demo, ưu tiên merge cho kịp.
 - **Trạng thái issue:** không đóng issue bằng tay.
   1. Làm xong thì mở PR có `Closes #<số>`, gắn nhãn `need-review` cho cả issue và PR, request review người còn lại.
@@ -176,11 +193,11 @@ matches/{roomCode}                  // mã phòng 6 chữ số
   server/   backend Spring Boot (Maven, Java 17)
   docs/
     chung/  phạm vi + use case, lớp thực thể, CSDL
-    hung/   tài liệu UC05, UC06 (và UC01, UC02 nếu Hùng trình bày)
-    hoang/  tài liệu UC03, UC04
+    hung/   tài liệu UC03, UC04 (và UC01, UC02)
+    hoang/  tài liệu UC05, UC06 (và UC01, UC02)
   ```
   - Kịch bản viết Markdown; biểu đồ vẽ PlantUML / Visual Paradigm / draw.io, xuất PNG cạnh file Markdown.
-  - Không commit bí mật: `server/src/main/resources/firebase-service-account.json`, mật khẩu MySQL thật (đặt trong `application-local.properties`, có trong `.gitignore`).
+  - Không commit bí mật: `server/src/main/resources/firebase-service-account.json`, mật khẩu MySQL thật.
 - **Definition of Done:**
   - Issue tài liệu (label `ooad`): đạt hết *Requirement*, tick hết checklist OOAD.
   - Issue code: build pass (app và server), chạy được trên máy ảo, đạt hết *Requirement*, tick hết checklist CONVENTION.
@@ -204,14 +221,14 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 ### Mô tả milestone (dùng làm description cho Milestone `M1 - Phan chung`)
 
-**Người làm:** @HungNguyenBa1811 (cùng Claude), 21/10 → 24/10.
-**Người duyệt:** @Minahn210, chậm nhất **tối 25/10**.
+**Người làm:** @HungNguyenBa1811. Bản 4 đã xong 21/10 → 24/10; bản 5 làm lại phần lệch đề trong **26/10**.
+**Người duyệt:** @Minahn210, chậm nhất **tối 26/10**.
 
-**Mục tiêu.** Làm trước mọi thứ cả 2 module cùng dùng, để từ 26/10 Hoàng chỉ việc code 2 chức năng offline, còn Hùng code phần online:
-- 3 tài liệu OOAD chung: phạm vi + use case tổng quát, lớp thực thể, CSDL.
-- Khung backend và khung app.
-- Đăng ký, đăng nhập chạy được từ app tới MySQL.
-- Lõi câu hỏi và luật điểm.
+**Mục tiêu.** Làm trước mọi thứ cả 2 module cùng dùng, theo đúng đề 9:
+- 3 tài liệu OOAD chung: phạm vi + use case tổng quát (2 tác nhân), lớp thực thể, CSDL.
+- Khung server và khung app theo entity mới.
+- Đăng ký, đăng nhập (có vai trò quản trị) chạy được từ app tới MySQL.
+- Lõi câu hỏi và luật thắng thua.
 
 **Trong phạm vi:** Những gì thuộc cột "Chung" ở mục 2.2; chữ ký hàm (thân `// TODO`) cho lớp riêng của mỗi người.
 
@@ -222,30 +239,29 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 | Loại | Nội dung |
 |---|---|
 | Tài liệu | `docs/chung/01-pham-vi-use-case.md`, `02-lop-thuc-the.md`, `03-csdl.md` + PNG |
-| Backend | Project `server/` chạy được, kết nối MySQL, `DAO` cha, `PlayerDAO`, `AuthRestController`, script `server/db/schema.sql` |
-| App | 7 entity, `DAO`, `DatabaseHelper`, `PlayerDAO`, `ApiDAO`, `PlayerApiDAO`, `SessionDAO`, `ProblemDAO`, `GameSession`; 3 màn Đăng nhập, Đăng ký, Chính; vỏ các Activity còn lại |
-| Test | `GameSessionTest`, `ProblemDAOTest` |
+| Server | `DAO` cha, `PlayerDAO`, `AuthRestController`, entity mới, `schema.sql` mới (4 bảng, có tài khoản admin) |
+| App | 6 entity, `DAO`, `DatabaseHelper` (`tblPlayer`, `tblBotGame`), `PlayerDAO`, `ApiDAO`, `PlayerApiDAO`, `SessionDAO`, `ProblemDAO`; 3 màn Đăng nhập, Đăng ký, Chính; vỏ các Activity còn lại |
+| Test | `ProblemDAOTest`, `MatchTest` (luật thắng thua) |
 
 **Điều kiện hoàn thành milestone:**
 1. 7 issue M1-01 → M1-07 đã đóng; mọi PR đã được Hoàng approve.
 2. App build pass, `gradlew test` pass; server `mvn test` pass.
-3. Trên máy ảo: đăng ký → đăng nhập → vào màn Chính; tắt app mở lại vẫn ở màn Chính.
-4. Từ màn Chính, 4 nút mở đúng 4 màn (dù màn còn rỗng).
+3. Trên máy ảo: đăng ký → đăng nhập → vào màn Chính; đăng nhập admin → vào màn quản trị; tắt app mở lại vẫn giữ phiên.
 
 **Rủi ro đã biết:**
-- Mỗi máy chạy demo phải cài MySQL. Viết sẵn `schema.sql` và hướng dẫn chạy trong `server/README.md`.
-- Máy ảo gọi máy tính qua `10.0.2.2`; app cần cho phép HTTP (`usesCleartextTraffic`) vì server chạy local không có HTTPS.
+- Đổi entity giữa chừng làm vỡ code cũ của Chơi online (phòng mã 6 số). Xóa hẳn code cũ thay vì sửa dần.
+- Server trên Render ngủ khi không có request; lần gọi đầu có thể chậm 30–50 giây. Gọi thử trước khi demo.
 
 ### [M1-01] Phạm vi hệ thống + biểu đồ use case tổng quát · @HungNguyenBa1811
 - **Phụ thuộc:** không có. **LÀM ĐẦU TIÊN.**
-- **Mô tả:** Bước "Yêu cầu" của OOAD theo phạm vi MVP, dùng chung cho cả 2 báo cáo. Hoàng duyệt.
-- **Input:** README (luật chơi), `PLAN.md`, mục 1 và 2 của tài liệu này.
+- **Mô tả:** Bước "Yêu cầu" của OOAD theo đúng đề 9, dùng chung cho cả 2 báo cáo. Hoàng duyệt.
+- **Input:** Đề bài (`REPORT_CONVENTION.md` mục 1); mục 1 và 2 của tài liệu này.
 - **Output:** `docs/chung/01-pham-vi-use-case.md` + `uc-tong-quat.png`:
-  - Bảng thuật ngữ; mục tiêu, phạm vi, phần ngoài phạm vi.
-  - Người dùng, chức năng, luồng từng chức năng dạng `A → B → C` (có nhánh ngoại lệ).
+  - Bảng thuật ngữ (đề bài, trạng thái rỗi / bận, lời mời, bài làm, kết quả trận, điểm trận, tổng điểm, bảng xếp hạng…); mục tiêu, phạm vi, ngoài phạm vi.
+  - 2 nhóm người dùng, chức năng, luồng từng chức năng dạng `A → B → C` (có nhánh ngoại lệ).
   - Đối tượng và quan hệ giữa các đối tượng.
-  - Bảng UC và biểu đồ use case tổng quát: **chỉ 6 UC chính**; các bước con phân rã ở tài liệu phân tích cá nhân.
-- **Requirement:** Không có yêu cầu phi chức năng (nền tảng, công nghệ, hiệu năng). Hoàng đã approve.
+  - Bảng UC và biểu đồ use case tổng quát: **2 tác nhân, 6 UC chính**; các bước con phân rã ở tài liệu phân tích cá nhân.
+- **Requirement:** Đủ mọi ý của đề: danh sách online có tên, tổng điểm, trạng thái; thách đấu bằng cách bấm tên; OK / Reject; server sinh cùng đề; luật thắng / hòa; điểm 1 / 0,5 / 0; hỏi chơi tiếp; bảng xếp hạng 3 tiêu chí; chơi với máy; quản lý thông tin người chơi. Hoàng đã approve.
 - **Constraint:** Tên 6 UC dùng nguyên văn trong code, tài liệu và báo cáo.
 
 ### [M1-02] Lớp thực thể: phân tích + thiết kế (toàn hệ thống) · @HungNguyenBa1811
@@ -253,103 +269,75 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 - **Mô tả:** Nguồn cho mục 3 trong báo cáo của cả 2 người. Hoàng duyệt.
 - **Input:** M1-01; `REPORT_CONVENTION.md` mục 3 (bước A2, D1).
 - **Output:** `docs/chung/02-lop-thuc-the.md` + 2 PNG:
-  - **Phân tích (A2):** đoạn văn mô tả, trích danh từ, đánh giá giữ / loại, quan hệ số lượng, quan hệ đối tượng, danh sách lớp, biểu đồ (không `id`, chưa có kiểu).
-  - **Thiết kế (D1), đủ 4 bước:**
-    1. Thêm `id`.
-    2. Thêm kiểu dữ liệu Java.
-    3. Chuyển liên kết thành kết tập / hợp thành (`MatchPlayer` là thành phần của `Match`).
-    4. Thêm thuộc tính đối tượng (`GameRecord` có `Player player`, `Match` có `List<MatchPlayer> players`, `MatchPlayer` có `Player player`).
+  - **Phân tích (A2):** đoạn văn mô tả, trích danh từ, đánh giá giữ / loại, quan hệ số lượng, quan hệ đối tượng, danh sách 6 lớp `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `BotGame`, biểu đồ.
+  - **Thiết kế (D1), đủ 4 bước:** thêm `id`; thêm kiểu Java; `MatchPlayer` là thành phần của `Match`, `MathProblem` là thành phần của `Match` / `BotGame`; thêm thuộc tính đối tượng.
   - **Bảng "lớp nào dùng cho chức năng nào".**
 - **Requirement:** Không còn đường liên kết trơn trên biểu đồ thiết kế. Hoàng đã approve.
-- **Constraint:** Thuộc tính dẫn xuất (D9) viết thành phương thức: `Match.getResult(playerId)`, `GameRecord.getAccuracy()`.
+- **Constraint:** Thuộc tính dẫn xuất (D9) viết thành phương thức: `Match.countCorrect`, `isOver`, `getFinishTime`, `getResult`, `getPoints`; `BotGame.getResult`.
 
 ### [M1-03] Thiết kế CSDL: MySQL + SQLite + Firebase · @HungNguyenBa1811
 - **Phụ thuộc:** M1-02.
-- **Mô tả:** Từ lớp thực thể thiết kế, làm theo 5 bước thiết kế CSDL. Nguồn cho mục 2 trong báo cáo: Hoàng dùng phần SQLite, Hùng dùng phần MySQL + Firebase. Hoàng duyệt.
+- **Mô tả:** Từ lớp thực thể thiết kế, làm theo 5 bước thiết kế CSDL. Nguồn cho mục 2 trong báo cáo: Hùng dùng phần MySQL + Firebase, Hoàng dùng phần SQLite và `tblPlayer` của MySQL. Hoàng duyệt.
 - **Input:** `docs/chung/02-lop-thuc-the.md`; mục 2.4; `REPORT_CONVENTION.md` mục 3 (bước D2).
 - **Output:** `docs/chung/03-csdl.md` + PNG:
-  - **MySQL, đủ 5 bước:** `tblPlayer`, `tblMatch`, `tblMatchPlayer` (khóa ngoại `tblMatchId`, `tblPlayerId`).
-  - **SQLite:** `tblPlayer` (bản sao, giải thích vì sao cần), `tblGameRecord` (khóa ngoại `tblPlayerId`).
-  - **Câu lệnh `CREATE TABLE`** cho cả 2 CSDL: `server/db/schema.sql` và đoạn tương ứng cho `DatabaseHelper`.
-  - **Firebase:** ánh xạ `Match` / `MatchPlayer` sang cây `matches/{roomCode}`; giải thích thuộc tính nào chỉ có trên Firebase (`connected`, `timeUp`) và vì sao không lưu vào MySQL.
-  - Giải thích vì sao `MathProblem`, `GameSession` không lưu và `GameConfig` lưu bằng SharedPreferences.
+  - **MySQL, đủ 5 bước:** `tblPlayer` (có `role`), `tblMatch`, `tblMathProblem`, `tblMatchPlayer`.
+  - **SQLite:** `tblPlayer` (bản sao), `tblBotGame`.
+  - **Câu lệnh `CREATE TABLE`** cho cả 2 CSDL và bảng truy vấn chính.
+  - **Firebase:** cây `presence`, `challenges`, `matches`; ai ghi node nào; vì sao đề trên Firebase không có đáp án.
 - **Requirement:** Mỗi bảng có khóa chính; khóa ngoại đúng chiều 1-n; không có cột dẫn xuất (D9). Hoàng đã approve.
 - **Constraint:** Mật khẩu lưu dạng băm (BCrypt), không lưu bản rõ.
 
-### [M1-04] Khung backend Spring Boot · @HungNguyenBa1811
+### [M1-04] Khung server Spring Boot theo entity mới · @HungNguyenBa1811
 - **Phụ thuộc:** M1-03.
-- **Mô tả:** Dựng project backend theo D3, sẵn sàng cho các API của M1-06 và M2.
-- **Input:** `server/db/schema.sql`; mục 2.2, 2.3, 2.4.
+- **Mô tả:** Server đã chạy được trên Render từ bản 4. Bản 5 đổi entity, schema và khung controller theo thiết kế mới.
+- **Input:** `docs/chung/03-csdl.md`; mục 2.2, 2.3, 2.4.
 - **Output:**
-  - **Project `server/`:** Maven, Java 17, Spring Boot (chỉ `spring-boot-starter-web`), MySQL Connector/J, `spring-security-crypto` (BCrypt).
-  - **`dao/DAO.java`** theo mục 2.3; cấu hình kết nối đọc từ `application.properties`.
-  - **Entity** `Player`, `Match`, `MatchPlayer` đúng thiết kế M1-02.
-  - **Khung** `AuthRestController`, `MatchRestController`, `PlayerDAO`, `MatchDAO`: đủ chữ ký, thân `// TODO`.
-  - **`server/README.md`:** cách tạo CSDL bằng `schema.sql` và chạy server.
-- **Requirement:** `mvn spring-boot:run` khởi động được và kết nối được MySQL.
+  - **`server/db/schema.sql`** mới: 4 bảng, chèn sẵn 1 tài khoản `admin` (role = admin).
+  - **Entity** `Player` (thêm `role`, `totalPoints`, `avgOpponentPoints`, `avgWinTime`, `status`), `MathProblem`, `Challenge`, `Match`, `MatchPlayer` đúng M1-02; xóa `roomCode`, `questionSeed`, `score`, `timeUp`.
+  - **Khung** `MatchRestController`, `PlayerRestController`, `MatchDAO`, `ProblemDAO`, `FirebaseAdminDAO`: đủ chữ ký theo `docs/hung/4-lop-thiet-ke.md`, thân `// TODO`.
+- **Requirement:** `mvn spring-boot:run` khởi động được, kết nối MySQL; server trên Render deploy lại thành công.
 - **Constraint:** Không dùng JPA, không thêm tầng Service (D3). SQL dùng `PreparedStatement`.
 
 ### [M1-05] Khung app Android: entity, DAO cha, phiên đăng nhập, màn Chính · @HungNguyenBa1811
 - **Phụ thuộc:** M1-03.
-- **Mô tả:** Dựng phần chung phía app để 2 module dựng tiếp lên. Hoàng duyệt.
-- **Input:** M1-02, M1-03; mục 2.2, 2.3; khung stub hiện tại.
+- **Mô tả:** Đổi phần chung phía app theo thiết kế mới để 2 module dựng tiếp lên. Hoàng duyệt.
+- **Input:** M1-02, M1-03; mục 2.2, 2.3.
 - **Output:**
-  - **7 entity** theo M1-02.
-  - **SQLite:** `DatabaseHelper` tạo `tblPlayer`, `tblGameRecord`; `DAO` cha; `PlayerDAO.saveOrUpdate(Player)` (lưu bản sao khi đăng nhập).
-  - **HTTP:** `ApiDAO` cha (gửi/nhận JSON bằng `HttpURLConnection` + `org.json`); `SessionDAO` (lưu / đọc / xóa phiên trong SharedPreferences `"session"`; `getPlayer(): Player` trả người chơi đang đăng nhập).
-  - **`MainActivity`:** tên hiển thị; 5 nút: Chơi offline → `DifficultyActivity`, Chơi online → `OnlineActivity`, Lịch sử đấu → `HistoryActivity`, Cài đặt → `SettingsActivity`, Đăng xuất.
-  - **Đổi tên lớp giao diện cũ:** package `frm` → `view`, bỏ tiền tố `Frm` (`FrmMainActivity` → `MainActivity`, layout `activity_frm_main.xml` → `activity_main.xml`); xóa `FrmLeaderboardActivity` (bảng vàng ngoài phạm vi).
-  - **Vỏ Activity** cho các màn còn lại, khai báo trong Manifest; quyền `INTERNET`; `usesCleartextTraffic`.
-  - **Khung** `GameRecordDAO`, `GameConfigDAO`, `MatchApiDAO`, `MatchFirebaseDAO`: đủ chữ ký, thân `// TODO`.
-- **Requirement:** Build pass; 5 nút mở đúng màn; Đăng xuất xóa phiên và về màn Đăng nhập. Hoàng đã approve.
+  - **6 entity** theo M1-02; xóa `GameSession`, `GameRecord`, `GameConfig`.
+  - **SQLite:** `DatabaseHelper` tạo `tblPlayer`, `tblBotGame` (tăng version, xóa bảng cũ); `PlayerDAO.saveOrUpdate(Player)`.
+  - **HTTP:** `ApiDAO` thêm `get(path)`; `SessionDAO` lưu `playerId`, `username`, `displayName`.
+  - **`MainActivity`:** dòng tên + tổng điểm, vùng danh sách online (`rvPlayers`, Hùng làm thân ở M2-02), nút Chơi với máy → `DifficultyActivity`, Bảng xếp hạng → `RankingActivity`, Đăng xuất.
+  - **Xóa** `OnlineActivity`, `LobbyActivity`, `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter`, `SettingsActivity`, `GameActivity` và layout tương ứng; tạo vỏ `MatchActivity`, `RankingActivity`, `BotGameActivity`, `AdminActivity`, `PlayerDetailActivity`.
+- **Requirement:** Build pass; các nút mở đúng màn; Đăng xuất xóa phiên và về màn Đăng nhập. Hoàng đã approve.
 - **Constraint:** Gọi mạng và SQLite trong `Thread` + `runOnUiThread`; không dùng Retrofit, Volley, lambda.
 
 ### [M1-06] UC01 Đăng ký + UC02 Đăng nhập (app + server) · @HungNguyenBa1811
 - **Phụ thuộc:** M1-04, M1-05.
-- **Mô tả:** Chức năng tài khoản chạy trọn từ app tới MySQL.
+- **Mô tả:** Chức năng tài khoản chạy trọn từ app tới MySQL. Code chung; **cả Hùng và Hoàng đều demo và trình bày** chức năng này.
 - **Input:** Luồng "Đăng ký", "Đăng nhập" trong `docs/chung/01-pham-vi-use-case.md`; API mục 2.4.
 - **Output:**
-  - **Server:**
-    - `AuthRestController`: `register`, `login`.
-    - `PlayerDAO`: `findByUsername`, `insert`.
-    - Mật khẩu băm BCrypt.
-  - **App:**
-    - `LoginActivity` (màn mở đầu): ô tên đăng nhập, ô mật khẩu, nút Đăng nhập, nút Đăng ký.
-    - `RegisterActivity`: tên đăng nhập, mật khẩu, nhập lại mật khẩu, tên hiển thị.
-    - `PlayerApiDAO`: `register`, `login`.
-    - Đăng nhập xong lưu phiên (`SessionDAO`) + bản sao người chơi (`PlayerDAO`), vào màn Chính.
-    - Mở app khi đã có phiên thì vào thẳng màn Chính.
+  - **Server:** `AuthRestController.register`, `login` (trả `role`); `PlayerDAO.findByUsername`, `insert` (role = player); BCrypt.
+  - **App:** `LoginActivity`, `RegisterActivity`; `PlayerApiDAO.register`, `login`; đăng nhập xong lưu phiên + bản sao người chơi; `role = admin` thì mở `AdminActivity`, ngược lại mở `MainActivity`; có phiên thì vào thẳng.
 - **Requirement:**
   - Trùng tên đăng nhập → "Tên đăng nhập đã được dùng".
   - Sai mật khẩu → "Sai tên đăng nhập hoặc mật khẩu".
   - Mật khẩu nhập lại không khớp → báo lỗi, không gọi server.
+  - Đăng nhập tài khoản admin → màn quản trị.
   - Mất mạng → thông báo tiếng Việt, app không crash.
-- **Constraint:** Không lưu mật khẩu ở app; chỉ lưu thông tin người chơi.
+- **Constraint:** Không lưu mật khẩu ở app.
 
-### [M1-07] Lõi câu hỏi và luật điểm: MathProblem, ProblemDAO, GameSession · @HungNguyenBa1811
+### [M1-07] Lõi câu hỏi và luật thắng thua: MathProblem, ProblemDAO, Match · @HungNguyenBa1811
 - **Phụ thuộc:** M1-02.
-- **Mô tả:** Lõi dùng chung cho UC03 (offline) và UC05 (online). Hoàng duyệt kỹ, vì 3 lớp này nằm trong biểu đồ lớp của "Chơi offline" và Hoàng phải giải thích được khi demo.
-- **Input:** Luật trong README, D5, D8; M1-02.
+- **Mô tả:** Lõi dùng chung cho UC03 (server sinh đề, chấm, phân thắng thua) và UC05 (app sinh đề, phân thắng thua với máy). Hoàng duyệt kỹ vì dùng lại trong Chơi với máy.
+- **Input:** D5, D7, D8; M1-02.
 - **Output:**
-  - **`MathProblem`:** `getExpression()` (ví dụ `"12 + 7"`), `isCorrect(int)`.
-  - **`GameSession`:**
-    - Constructor nhận độ khó và chế độ (offline / online).
-    - `recordCorrectAnswer()`: cộng `10 + streak * 2`, trả về số điểm vừa cộng.
-    - `recordWrongAnswer()`: reset combo; chỉ chế độ offline mới trừ mạng, hết mạng thì game over.
-    - `getCurrentLevel()`: tính từ độ khó và số câu đã ra (D8).
-  - **`ProblemDAO.generateProblem(int level)`:**
-
-    | Level | Phép tính | Khoảng số |
-    |---|---|---|
-    | 1 | `+ −` | 1–10 |
-    | 2 | `+ −` | 1–30 |
-    | 3 | `+ − ×` | `+ −`: 1–50, `×`: 2–9 |
-    | 4 | `+ − ×` | `+ −`: 1–100, `×`: 2–12 |
-
-    4 đáp án khác nhau, không âm, có đáp án đúng, xáo trộn bằng `Collections.shuffle(list, random)`.
-  - **`GameSessionTest`:** trạng thái ban đầu; combo +10 rồi +12; sai thì reset combo và trừ mạng; sai 3 lần thì game over; online sai không trừ mạng; mức bắt đầu đúng theo độ khó.
-  - **`ProblemDAOTest`:** 1000 câu mỗi level hợp lệ; **2 `ProblemDAO` cùng seed sinh ra 30 câu giống hệt nhau.**
-- **Requirement:** `gradlew test` pass. Hoàng đã approve.
+  - **`MathProblem`:** `getExpression()` (ví dụ `"12 + 7 = ?"`), `isCorrect(int)`.
+  - **`ProblemDAO`** (bản app và bản server giống nhau): `generateProblems(int count)`, `generateProblem()`; toán tử `+ − ×`, `+ −` trong 1–99, `×` trong 2–15; 4 phương án khác nhau, không âm, có đáp án đúng, xáo trộn.
+  - **`Match`:** `countCorrect(List<Integer>)`, `isOver()`, `getFinishTime(int)`, `getResult(int)`, `getPoints(int)` theo D5.
+  - **`BotGame.getResult()`** cùng luật.
+  - **`ProblemDAOTest`:** 1000 câu hợp lệ.
+  - **`MatchTest`** (server): đúng hết + nhanh hơn → WIN; đúng hết + chậm hơn → LOSE; một người đúng hết, người kia sai → WIN dù chậm hơn; cả 2 sai → DRAW; cùng đúng hết, cùng thời gian → DRAW; bỏ trận → LOSE; `getPoints` 1 / 0,5 / 0; `isOver` khi mới 1 người nộp → false.
+- **Requirement:** `gradlew test`, `mvn test` pass. Hoàng đã approve.
 - **Constraint:** Entity không import `android.*`. Mọi chỗ random đi qua `this.random`.
 
 ---
@@ -359,7 +347,7 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 ### Mô tả milestone (dùng làm description cho Milestone `M2 - Demo`)
 
 **Người phụ trách:**
-- Hùng: M2-01 → M2-05, làm từ 22/10.
+- Hùng: M2-01 → M2-05.
 - Hoàng: M2-06, M2-07, làm trong 26–27/10.
 - Cả 2: M2-08, tổng duyệt tối 27/10.
 
@@ -367,16 +355,17 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 **Mục tiêu.** Mỗi người có các chức năng của mình chạy được trên máy ảo, demo trơn tru và giải thích được code của chính mình.
 
-**Trong phạm vi:** Thân hàm, layout, Adapter, câu SQL, API, truy vấn Firebase của UC03–UC06; âm thanh và rung.
+**Trong phạm vi:** Thân hàm, layout, Adapter, câu SQL, API, truy vấn Firebase của UC03–UC06.
 
-**Ngoài phạm vi:** Các chức năng ngoài phạm vi ở D1; sửa lớp "Chung" mà không qua PR được người kia duyệt; vẽ biểu đồ (làm sau demo).
+**Ngoài phạm vi:** Các chức năng ngoài phạm vi ở D1; sửa lớp "Chung" mà không qua PR được người kia duyệt; vẽ biểu đồ.
 
 **Sản phẩm bàn giao:**
 - Hùng:
-  - App: `MatchFirebaseDAO`, `MatchApiDAO`, `OnlineActivity`, `LobbyActivity`, `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter`.
-  - Server: `MatchRestController`, `MatchDAO`, `FirebaseAdminDAO`.
+  - App: `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO`, `MatchApiDAO`, `PlayerApiDAO.getById`, `getRanking`, `MainActivity` (danh sách online), `PlayerAdapter`, `MatchActivity`, `QuestionAdapter`, `RankingActivity`, `RankingAdapter`.
+  - Server: `MatchRestController`, `PlayerRestController.getById`, `getRanking`, `MatchDAO`, `ProblemDAO`, `FirebaseAdminDAO`.
 - Hoàng:
-  - App: `GameRecordDAO`, `GameConfigDAO`, `DifficultyActivity`, `GameActivity`, `SettingsActivity`, `SoundManager`, `res/raw/*.mp3`.
+  - App: `BotGameDAO`, `DifficultyActivity`, `BotGameActivity`, `AdminActivity`, `PlayerDetailActivity`, các hàm quản trị của `PlayerApiDAO`.
+  - Server: các hàm quản trị của `PlayerRestController`, `PlayerDAO`.
 
 **Điều kiện hoàn thành milestone:**
 1. Mọi issue M2 đã đóng, hoặc đã cắt theo mục 8.
@@ -384,163 +373,127 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 3. Tìm `"-> "` trong `app/src/main/java` không ra kết quả nào (không dùng lambda).
 
 **Rủi ro đã biết:**
-- Hùng ôm nhiều việc nhất (backend + Firebase + 2 UC). Ưu tiên theo thứ tự: M2-02 → M2-03 → M2-05 → M2-04.
-- Khi mất mạng đột ngột, Firebase có thể mất vài chục giây mới báo `onDisconnect`. Lúc demo nên dùng cách bấm Back để minh họa việc thoát trận.
-- `VibrationEffect` chỉ có từ API 26, trong khi minSdk là 24. Phải rẽ nhánh theo `Build.VERSION.SDK_INT`.
+- Chỉ còn 2 ngày, Hùng phải viết lại toàn bộ Chơi online. Ưu tiên: M2-01 → M2-02 → M2-03 → M2-05 → M2-04.
+- Khi mất mạng đột ngột, Firebase có thể mất vài chục giây mới xóa node presence. Lúc demo nên dùng nút Thoát để minh họa bỏ trận.
 
-### [M2-01] Hạ tầng Firebase: Realtime Database + Security Rules · @HungNguyenBa1811
+### [M2-01] Hạ tầng Firebase: presence, lời mời, trận đang đấu + Security Rules · @HungNguyenBa1811
 - **Phụ thuộc:** M1-06.
-- **Mô tả:** Nối app và server với Firebase Realtime Database. Phục vụ UC05. Không dùng Firebase Authentication; đăng nhập là đăng nhập đơn giản của backend (D4).
-- **Input:** applicationId `ptit.e23cnpm01.nguyenbahung.math_dash`; D4; mục 2.3, 2.4.
+- **Mô tả:** Firebase đã nối từ bản 4. Bản 5 đổi cây dữ liệu sang `presence`, `challenges`, `matches/{matchId}` và viết lại Rules.
+- **Input:** Mục 2.4; `docs/chung/03-csdl.md` mục 2.
 - **Output:**
-  - **Firebase Console:** tạo project, bật Realtime Database.
-  - **App:**
-    - `google-services.json`, plugin `com.google.gms.google-services`, `firebase-database`.
-    - `FirebaseDAO` cha.
-  - **Server:** `FirebaseAdminDAO` đọc / ghi node trận qua REST API (`GET matches/{roomCode}.json`, `PUT matches/{roomCode}/status.json`), địa chỉ database đặt trong `application.properties`.
-  - **Security Rules** (`database.rules.json` trong repo):
-    - Chỉ tạo, vào, hủy phòng đúng vòng đời trận: tạo khi mã trống hoặc trận cũ đã `finished`; vào khi `waiting` → `playing`; hủy khi đang `waiting`; server chuyển `playing` → `finished`.
-    - Chỉ sửa được node `players/{playerId}` đã có trong trận.
-    - `score` là số, ≥ 0, không giảm, mỗi lần tăng không quá 200.
-    - `status` chỉ nhận `waiting` / `playing` / `finished`.
-- **Requirement:** Thử trong **Rules Playground**, chụp màn hình dán vào issue: ghi điểm giảm → bị từ chối; ghi `status` sai giá trị → bị từ chối.
+  - **App:** `PresenceFirebaseDAO` (`goOnline` + `onDisconnect().removeValue()`, `watchOnlinePlayers`, `stopWatching`, `toPlayer`); khung `ChallengeFirebaseDAO`, `MatchFirebaseDAO`.
+  - **Server:** `FirebaseAdminDAO`: `readPresence`, `updateStatus`, `updatePoints`, `updateChallenge`, `writeMatch`, `writeSubmitted`, `writeFinished`, `writeChoice`, `writeNextMatch`, `writeStopped` qua REST API.
+  - **Security Rules** (`database.rules.json`):
+    - `presence/{id}`: chỉ app ghi tên và status free khi vào; status busy và totalPoints do server ghi.
+    - `challenges`: tạo với status pending; người được mời chỉ đổi sang rejected.
+    - `matches`: app chỉ đọc.
+- **Requirement:** 2 máy ảo đăng nhập 2 tài khoản thì thấy nhau trong danh sách; tắt app 1 máy thì máy kia thấy người đó biến mất. Thử Rules Playground: app ghi vào `matches` → bị từ chối.
 - **Constraint:** Không dùng Firestore, FirebaseUI, Cloud Functions, Firebase Authentication.
 
-### [M2-02] UC05 Chơi online: Tạo phòng và Tìm phòng bằng mã · @HungNguyenBa1811
+### [M2-02] UC03 Chơi online: danh sách người chơi online, thách đấu, nhận lời · @HungNguyenBa1811
 - **Phụ thuộc:** M1-05, M2-01.
-- **Mô tả:** Hai chế độ vào trận. Tạo phòng: sinh mã phòng 6 chữ số, chờ đối thủ. Tìm phòng: nhập mã phòng để vào.
-- **Input:** Luồng "Chơi online" trong `docs/chung/01-pham-vi-use-case.md`; schema mục 2.4.
+- **Mô tả:** Đoạn A, B của UC03 trong `docs/hung/5-kich-ban-v3.md`.
+- **Input:** Luồng "Chơi online" trong `docs/chung/01-pham-vi-use-case.md`; `docs/hung/4-lop-thiet-ke.md`.
 - **Output:**
-  - **`MatchFirebaseDAO extends FirebaseDAO`** (chữ ký đầy đủ ở `docs/hung/4-lop-thiet-ke.md`, kết quả trả qua `MatchCallback`):
-    - `createMatch(me, callback)`: tạo trận bằng `newMatch(me)` (mã phòng 6 chữ số, `questionSeed`), dùng transaction để mã phòng không trùng (node `finished` coi như trống); tạo được thì `onDisconnect().removeValue()`.
-    - `joinMatch(roomCode, me, callback)`: dùng `runTransaction`, bên trong gọi `Match.canJoin(myId)`.
-    - `watchMatch(roomCode, callback)`, `stopWatching(roomCode)`: lắng nghe / gỡ lắng nghe trận.
-    - `deleteMatch(roomCode)`.
-  - **Luật vào phòng là hàm Java thuần (D7):** `Match.canJoin(int playerId): boolean`, đúng khi trận `waiting`, chưa đủ 2 người, và người này chưa có trong trận. Unit test `MatchTest` cho 4 trường hợp: phòng chờ 1 người khác → `true`; đang đấu → `false`; đủ 2 người → `false`; phòng của chính mình → `false`.
-  - **Giao diện:**
-    - `OnlineActivity`: nút Tạo phòng (`createMatch`); ô nhập mã + nút Vào phòng (`joinMatch`).
-    - `LobbyActivity`: mã phòng (chữ lớn), "Đang chờ đối thủ...", tên đối thủ khi có (`watchMatch`), nút Hủy (`deleteMatch`).
-    - Activity cài đặt `MatchCallback` để nhận kết quả từ `MatchFirebaseDAO`.
+  - **App:**
+    - `MainActivity`: `onPlayersChanged` (thông tin của mình + `PlayerAdapter`), `onPlayerClick`, `onChallengeChanged`, `showChallengeDialog`, `acceptChallenge`, `openMatch`.
+    - `PlayerAdapter` + `item_player.xml`: tên, tổng điểm, nhãn Rỗi (xanh) / Bận (xám); sắp tổng điểm giảm dần.
+    - `ChallengeFirebaseDAO`: `sendChallenge`, `watchIncoming`, `watchChallenge`, `rejectChallenge`, `toChallenge`.
+    - `MatchApiDAO.createMatch`; `PlayerApiDAO.getById`.
+  - **Server:** `PlayerRestController.getById`; `MatchRestController.create` + `startMatch` (`readPresence` 2 người, `ProblemDAO.generateProblems(10)`, `MatchDAO.insert` trong transaction, `writeMatch`, `updateStatus` busy, `updateChallenge` accepted).
 - **Requirement:**
-  - Máy A tạo phòng, máy B nhập đúng mã → cả 2 thấy tên nhau, trận chuyển `playing`.
-  - Nhập mã sai → "Không tìm thấy phòng".
-  - Máy C nhập mã phòng đã đủ người → "Phòng đã đầy".
-  - Bấm Hủy hoặc kill app khi đang chờ → trận biến mất trên Console.
-  - `gradlew test` pass, có `MatchTest`.
-- **Constraint:** Activity không gọi Firebase SDK trực tiếp, chỉ gọi `MatchFirebaseDAO`. `Match.canJoin` không import Android / Firebase.
+  - Máy A bấm B (Rỗi) → máy B hiện hộp thoại lời mời → Đồng ý → cả 2 vào `MatchActivity` với cùng đề; trên máy C, A và B thành Bận.
+  - Bấm người Bận → "<tên> đang bận".
+  - B Từ chối → máy A "B đã từ chối lời mời".
+  - MySQL có 1 dòng `tblMatch`, 10 dòng `tblMathProblem`, 2 dòng `tblMatchPlayer`.
+- **Constraint:** Activity không gọi Firebase SDK trực tiếp, chỉ gọi DAO.
 
-### [M2-03] UC05 Chơi online: Thi đấu realtime + backend trọng tài · @HungNguyenBa1811
+### [M2-03] UC03 Chơi online: thi đấu, nộp bài, server chấm và trọng tài · @HungNguyenBa1811
 - **Phụ thuộc:** M1-07, M2-02.
-- **Mô tả:** 2 máy chơi cùng dãy câu theo seed, thấy điểm nhau; hết giờ backend xác định kết quả và lưu trận (D7).
-- **Input:** Trận đang `playing`; `questionSeed`; id đối thủ; API mục 2.4.
+- **Mô tả:** Đoạn C của UC03.
+- **Input:** Trận đang `playing`; API mục 2.4; `docs/hung/4-lop-thiet-ke.md` mục 1.
 - **Output:**
-  - **App – `OnlineGameActivity`:**
-    - `startGame(match)` (lần đầu `watchMatch` báo trận): `ProblemDAO(new Random(questionSeed))`, `GameSession` chế độ online, `CountDownTimer` 60s.
-    - `submitAnswer(value)`, `nextProblem()`: chấm bằng `MathProblem.isCorrect` + `GameSession`, đúng thì `updateScore` lên `players/{myId}/score`.
-    - Lắng nghe trận: mỗi lần thay đổi thì gọi `Match.isOver()`.
-    - Hết giờ: `setTimeUp`. Khi `isOver()` đúng thì gọi `MatchApiDAO.finishMatch(roomCode)` trong `Thread` (chỉ một lần), nhận `Match` đã lưu, hiện kết quả bằng `showResult(Match)`.
-  - **Server:**
-    - `MatchRestController.finish(code)`: `FirebaseAdminDAO.readMatch(code)`.
-    - Nếu trận đã được lưu thì trả lại bản đã lưu (máy thứ hai gọi sau).
-    - Nếu `Match.isOver()` sai: trả 409 "Trận chưa kết thúc".
-    - Nếu chưa lưu: `MatchDAO.insert(match)` (1 dòng `tblMatch` + 2 dòng `tblMatchPlayer`), `FirebaseAdminDAO.updateStatus(roomCode, "finished")`.
-  - **Luật thắng thua là hàm Java thuần (D7):** `Match.getResult(int playerId): String` trả `WIN` / `LOSE` / `DRAW`: ai `forfeited` thì thua; không ai bỏ thì so điểm. Unit test `MatchResultTest` (phía server) cho 5 trường hợp: thắng điểm, thua điểm, hòa, đối thủ bỏ khi đang dẫn điểm, mình bỏ khi đang dẫn điểm; thêm 3 trường hợp `isOver()`: chưa ai hết giờ → `false`, mới 1 người hết giờ → `false`, có người bỏ trận → `true`.
-  - **`OnlineGameActivity`** (bố cục chi tiết ở `docs/hung/4-lop-thiet-ke.md` mục 1.1):
-    - Hàng điểm `36 VS 24`, không hiện tên; điểm của mình bên trái, nổi bật; chữ `+12` / `MISS` bay lên từ điểm của mình rồi mờ dần.
-    - Đồng hồ 60s ở giữa; phép tính kèm số đang nhập.
-    - Bàn phím số `0`–`9`, nút xóa chỉ có icon ⌫ (`ImageButton`), nút OK; tối đa 3 chữ số. Online **không** dùng 4 phương án.
-    - Overlay THẮNG / THUA / HÒA có tỉ số và nút "Về menu".
+  - **App:**
+    - `MatchActivity`: `startMatch`, `CountDownTimer` 60 s (`onTick`, `onFinish` tự nộp), `submitAnswers`, `showOpponentStatus`, `loadResult`, `showResult` (dùng `Match.getResult`, `getFinishTime`, `getPoints` trên bản server trả về).
+    - `QuestionAdapter` + `item_question.xml`: phép tính, `RadioGroup` 4 phương án 2 x 2; `getAnswers` (câu chưa chọn là −1), `setLocked`.
+    - Overlay kết quả: THẮNG / THUA / HÒA, số câu đúng và thời gian của 2 người, điểm trận, tổng điểm mới, nút Chơi tiếp / Dừng.
+    - `MatchFirebaseDAO.watchMatch`, `stopWatching`, `toMatch`; `MatchApiDAO.submit`, `getById`.
+  - **Server:** `MatchRestController.submit` (ghi thời điểm nhận, `countCorrect`, `updateSubmission`, `writeSubmitted`; khi `isOver`: `updateEndedAt`, `getTotalPoints`, `updatePoints`, `writeFinished`), `getById`; `MatchDAO.findById`, `updateSubmission`, `updateEndedAt`; `PlayerDAO.getTotalPoints`.
 - **Requirement:**
-  - 2 máy thấy cùng dãy câu.
-  - Điểm đối thủ cập nhật dưới 1 giây.
-  - Kết quả 2 máy khớp nhau.
-  - MySQL có đúng 1 dòng `tblMatch` cho mỗi trận.
-  - `mvn test` pass, có `MatchResultTest`.
-- **Constraint:** Không phân thắng thua từ dữ liệu Firebase trong Activity hay callback; kết quả hiển thị bằng `Match.getResult` trên bản trận **server trả về**. `removeEventListener` và hủy timer khi kết thúc.
+  - 2 máy thấy cùng đề; máy này nộp thì máy kia hiện "<tên> đã nộp bài" dưới 1 giây.
+  - Kết quả 2 máy khớp nhau và đúng luật D5; tổng điểm trên danh sách online cập nhật.
+  - Hết 60 giây chưa nộp thì tự nộp.
+  - `mvn test` pass, có `MatchTest`.
+- **Constraint:** Không chấm bài, không phân thắng thua trong Activity; đáp án không có trên Firebase. Hủy timer và gỡ listener khi rời màn.
 
-### [M2-04] UC05 Chơi online: thoát trận và mất kết nối · @HungNguyenBa1811
+### [M2-04] UC03 Chơi online: thoát trận, mất kết nối, chơi tiếp · @HungNguyenBa1811
 - **Phụ thuộc:** M2-03.
-- **Mô tả:** Các ngoại lệ của UC05, để không bao giờ để trận bị treo.
+- **Mô tả:** Đoạn D và các ngoại lệ của UC03.
 - **Input:** Trận hiện tại, id người chơi.
 - **Output:**
-  - Khi vào trận: `onDisconnect()` cho `players/{myId}` set `connected = false`, `forfeited = true`.
-  - `leaveMatch()` (nút Back + `AlertDialog` "Thoát sẽ bị xử thua?"): set `forfeited = true`, gọi `finishMatch`.
-  - Thấy đối thủ `forfeited == true` thì thông báo "Đối thủ đã thoát" và gọi `finishMatch`.
-  - Lắng nghe `.info/connected`; mất kết nối thì thông báo, app không crash.
-- **Requirement:** Pass cả 3 test case:
-  1. Đang chơi, B bấm Back → A thắng ngay, MySQL lưu A thắng.
-  2. Đang chơi, B tắt mạng → A nhận "Đối thủ đã thoát" (có thể mất vài chục giây).
-  3. A mất mạng → A thấy thông báo, app không crash.
-- **Constraint:** Kết quả vẫn do server tính bằng `Match.getResult` (dựa vào `forfeited`).
+  - **Chơi tiếp:** `MatchActivity.sendChoice`, `onNextMatch`, `openNextMatch`, `onStopped`; `MatchApiDAO.continueMatch`; server `MatchRestController.continueMatch` (synchronized, `waitingChoices`), `writeChoice`, `writeNextMatch`, `writeStopped`, trả 2 người về free khi dừng.
+  - **Thoát trận:** nút Thoát / Back + `AlertDialog` "Thoát sẽ bị xử thua?" → `leaveMatch` → `MatchApiDAO.forfeit`; server `MatchRestController.forfeit`, `MatchDAO.updateForfeit`.
+  - **Đối thủ mất kết nối:** thấy đối thủ biến khỏi `presence` khi trận đang đấu thì gọi `forfeit` thay cho đối thủ.
+- **Requirement:**
+  1. Cả 2 chọn Chơi tiếp → cả 2 vào trận mới với đề mới.
+  2. Một người chọn Dừng → cả 2 về màn chính, Rỗi; máy kia "Đối thủ đã dừng chơi".
+  3. B bấm Thoát → A thắng, +1 điểm.
+  4. B tắt mạng → A được xử thắng (có thể mất vài chục giây).
+- **Constraint:** Kết quả vẫn do server tính bằng `Match.getResult`.
 
-### [M2-05] UC06 Xem lịch sử đấu · @HungNguyenBa1811
+### [M2-05] UC04 Xem bảng xếp hạng · @HungNguyenBa1811
 - **Phụ thuộc:** M2-03.
-- **Mô tả:** Người chơi xem các trận online đã đấu, lấy từ MySQL qua API.
-- **Input:** `GET /api/matches?playerId={id}`; Pattern 1 trong CONVENTION.
+- **Mô tả:** Bảng xếp hạng mọi người chơi theo 3 tiêu chí của đề, tính từ các trận chơi online đã xong.
+- **Input:** `GET /api/players/ranking`; `docs/hung/4-lop-thiet-ke.md` mục 2.
 - **Output:**
-  - **Server:** `MatchRestController.getByPlayer(playerId)`, `MatchDAO.findByPlayer(playerId)` (JOIN `tblMatch`, `tblMatchPlayer`, `tblPlayer`), mới nhất trước.
-  - **App:**
-    - `MatchApiDAO.getHistory(playerId)`.
-    - `HistoryActivity` + `HistoryAdapter` + `item_history.xml`: thời gian, tên đối thủ, tỉ số `X - Y`, kết quả. Màu: WIN `arcade_green`, LOSE `arcade_red`, DRAW vàng.
+  - **Server:** `PlayerRestController.getRanking`; `PlayerDAO.getRanking` (đọc người chơi role = player, `MatchDAO.findFinished`, cộng `getPoints`, tính trung bình điểm đối thủ khác nhau đã gặp, trung bình `getFinishTime` các trận thắng, sắp xếp 3 tiêu chí); `MatchDAO.findFinished`.
+  - **App:** `PlayerApiDAO.getRanking`; `RankingActivity` + `RankingAdapter` + `item_ranking.xml`: hạng, tên, tổng điểm, TB điểm đối thủ, TB thời gian thắng ("—" nếu chưa thắng); dòng của mình tô nổi bật.
 - **Requirement:**
-  - Đấu xong 1 trận thì lịch sử có thêm dòng mới ở cả 2 máy.
-  - Chưa có trận thì hiện "Chưa có trận nào".
+  - Đấu xong 1 trận thì bảng xếp hạng đổi đúng.
+  - 2 người cùng tổng điểm thì xếp theo tiêu chí 2; trùng tiêu chí 2 thì theo tiêu chí 3.
   - Mất mạng thì báo lỗi, không crash.
-- **Constraint:** Gọi API trong `Thread` + `runOnUiThread`; không dùng DiffUtil, ListAdapter.
+- **Constraint:** Không lưu tiêu chí vào CSDL; dùng lại `Match.getPoints`, `getResult`, `getFinishTime`.
 
-### [M2-06] UC03 Chơi offline: chọn độ khó, chơi, kỷ lục · @Minahn210
+### [M2-06] UC05 Chơi với máy · @Minahn210
 - **Phụ thuộc:** M1-05, M1-07.
-- **Mô tả:** Chức năng chính Hoàng demo. Làm ngày 26/10.
-- **Input:** Người chơi đang đăng nhập (`SessionDAO`); `GameSession`, `ProblemDAO` (M1-07); `GameConfigDAO` (đọc thời gian mỗi câu; nếu M2-07 chưa xong thì mặc định 6 giây); chữ ký `GameRecordDAO` trong khung.
+- **Mô tả:** Người chơi chọn độ khó của máy, làm đề 10 câu như trận online, máy giả lập bài làm theo D8. Chạy được khi tắt mạng.
+- **Input:** `SessionDAO`; `ProblemDAO`, `MathProblem`, `BotGame.getResult` (M1-07); bố cục màn thi đấu ở `docs/hung/4-lop-thiet-ke.md` mục 1.1 để thống nhất giao diện.
 - **Output:**
-  - **`DifficultyActivity`:** 3 nút Dễ / Trung bình / Khó, mỗi nút hiện kỷ lục ở độ khó đó.
-  - **`GameRecordDAO extends DAO`:**
-    - `insert(GameRecord)`.
-    - `getBestScore(playerId, difficulty)`: `SELECT MAX(score) ... WHERE tblPlayerId = ? AND difficulty = ?`.
-  - **`GameActivity`** + layout:
-    - Điều phối ván: `startGame()`, `submitAnswer()` chấm bằng `MathProblem` + `GameSession`; `CountDownTimer` theo thời gian mỗi câu, hết giờ tính như sai; hủy / chạy lại đồng hồ ở `onPause` / `onResume` / `onDestroy`; hết mạng thì lưu ván và hiện Game Over (`score > bestScore` là kỷ lục mới).
-    - Hiển thị: tên, kỷ lục, điểm, combo `xN`, mạng `♥ ♥ ♥`, thanh thời gian, phép tính.
-    - Lưới 2x2 nút đáp án, cao ≥ 72dp, chữ monospace 26sp.
-    - Dòng phản hồi `+12 PTS!` / `MISS!`.
-    - Overlay Game Over: điểm cuối, kỷ lục, "KỶ LỤC MỚI", nút Chơi lại / Về menu.
+  - **`DifficultyActivity`:** 3 nút Dễ / Trung bình / Khó.
+  - **`BotGameActivity`** + layout: ô thời gian 60 s, dòng "Máy đang làm bài" / "Máy đã nộp bài" (đổi khi tới thời gian nộp của máy), danh sách 10 câu 4 phương án, nút Nộp bài, nút Thoát; overlay kết quả THẮNG / THUA / HÒA, số câu đúng và thời gian của mình và của máy, nút Chơi lại / Về menu.
+  - Giả lập máy: số câu đúng theo xác suất, thời gian nộp ngẫu nhiên theo D8.
+  - **`BotGameDAO extends DAO`:** `insert(BotGame)`.
 - **Requirement:**
-  - Hết giờ thì mất mạng; hết 3 mạng thì Game Over.
-  - Ván được lưu vào `tblGameRecord`.
-  - Kỷ lục tách riêng theo độ khó.
+  - Kết quả đúng luật D5.
+  - Ván được lưu vào `tblBotGame`.
   - Chơi được khi tắt mạng.
-- **Constraint:** Luật tính điểm nằm ở `GameSession`, Activity chỉ gọi; SQLite trong `Thread`; hủy timer trong `onDestroy()`.
+- **Constraint:** Luật thắng thua nằm ở `BotGame.getResult`, Activity chỉ gọi; SQLite trong `Thread`; hủy timer trong `onDestroy()`.
 
-### [M2-07] UC04 Cài đặt cấu hình game + âm thanh, rung · @Minahn210
-- **Phụ thuộc:** M2-06.
-- **Mô tả:** Người chơi chỉnh âm thanh, rung, thời gian mỗi câu; ván offline dùng cấu hình này. Làm ngày 27/10.
-- **Input:** Pattern 4 (Singleton); entity `GameConfig`.
+### [M2-07] UC06 Quản lý thông tin người chơi (quản trị viên) · @Minahn210
+- **Phụ thuộc:** M1-06.
+- **Mô tả:** Quản trị viên xem danh sách người chơi, tìm theo tên, sửa tên hiển thị, đặt lại mật khẩu, xóa tài khoản.
+- **Input:** Luồng "Quản lý thông tin người chơi" trong `docs/chung/01-pham-vi-use-case.md`; API UC06 ở mục 2.4.
 - **Output:**
-  - **`GameConfigDAO`:** `load(): GameConfig`, `save(GameConfig)` trên SharedPreferences `"config"`. Mặc định: âm thanh bật, rung bật, 6 giây.
-  - **`SettingsActivity`:** Switch Âm thanh, Switch Rung, lựa chọn 4 / 6 / 8 / 10 giây, nút Lưu.
-  - **`util/SoundManager`** (Singleton):
-    - `playSound(context, resId)`, `vibrate(context, ms)`.
-    - Kiểm tra cấu hình trước khi phát.
-  - `res/raw/correct.mp3`, `wrong.mp3`, `timeout.mp3` (ghi lại nguồn); quyền `VIBRATE`.
-  - Gắn vào `GameActivity`: phát âm / rung khi trả lời và khi hết giờ; `GameActivity` lấy thời gian mỗi câu từ cấu hình.
+  - **Server:** `PlayerRestController.search`, `update`, `resetPassword`, `delete`; `PlayerDAO.search`, `updateDisplayName`, `updatePassword`, `delete` (không xóa người đã có trận, trả 409).
+  - **App:** `AdminActivity` (ô tìm, danh sách người chơi: tên đăng nhập, tên hiển thị, tổng điểm, ngày tạo; nút Đăng xuất); `PlayerDetailActivity` (tên đăng nhập, ô tên hiển thị, tổng điểm, số trận thắng / hòa / thua, nút Lưu, Đặt lại mật khẩu, Xóa tài khoản); các hàm tương ứng trong `PlayerApiDAO`.
 - **Requirement:**
-  - Lưu xong có hiệu lực từ ván tiếp theo.
-  - Vẫn giữ sau khi tắt app mở lại.
-  - Đổi thành 4 giây thì đồng hồ mỗi câu còn 4 giây.
-- **Constraint:** `release()` MediaPlayer cũ trước khi tạo cái mới; kiểm tra `Build.VERSION.SDK_INT` trước khi dùng `VibrationEffect`; mỗi file âm thanh < 100KB.
+  - Sửa tên hiển thị thì danh sách online và bảng xếp hạng hiện tên mới.
+  - Xóa người chưa có trận thành công; người đã có trận → "Không xóa được người chơi đã có trận đấu".
+  - Đặt lại mật khẩu xong đăng nhập được bằng mật khẩu mới.
+- **Constraint:** Mật khẩu mới băm BCrypt ở server; tài khoản admin không có trong danh sách.
 
 ### [M2-08] Tổng duyệt demo · @HungNguyenBa1811 @Minahn210
 - **Phụ thuộc:** M2-01 → M2-07.
 - **Mô tả:** Tối 27/10, chạy thử đúng như buổi demo trên bản `main` cuối cùng.
-- **Input:** `main` đã merge đủ; MySQL và server chạy trên laptop demo.
+- **Input:** `main` đã merge đủ; server trên Render đã deploy bản mới.
 - **Output:**
-  - **Kịch bản demo của mỗi người** (dán vào comment issue), kèm dữ liệu chuẩn bị sẵn: 2 tài khoản, vài ván offline để có kỷ lục, 1 trận để lịch sử có dữ liệu.
-  - **Hùng** chạy UC05, UC06 trên 2 máy ảo, gồm 3 test case của M2-04. Chuẩn bị phần giải thích, mở code ra nói được:
-    1. Firebase chỉ giữ trận đang diễn ra và báo thay đổi; chỉ `MatchFirebaseDAO`, `FirebaseAdminDAO` gọi Firebase.
-    2. `Match.canJoin` trong transaction xử lý 2 người vào cùng lúc; chạy `MatchTest`.
-    3. Đồng bộ câu hỏi bằng `questionSeed`; chạy test cùng seed.
-    4. Server làm trọng tài bằng `Match.getResult`; chạy `MatchResultTest`.
-    5. Security Rules chặn ghi điểm của người khác và điểm giảm.
-  - **Hoàng** chạy UC03, UC04 trên 1 máy ảo, gồm cả lúc tắt mạng.
+  - **Kịch bản demo của mỗi người** (dán vào comment issue), kèm dữ liệu chuẩn bị sẵn: 4 tài khoản người chơi, 1 tài khoản admin, vài trận để bảng xếp hạng có dữ liệu.
+  - **Hùng** chạy Đăng nhập, UC03, UC04 trên 2–3 máy ảo. Chuẩn bị phần giải thích, mở code ra nói được:
+    1. Server sinh đề, đáp án không lên Firebase.
+    2. Server chấm bằng `Match.countCorrect`, phân thắng thua bằng `Match.getResult`; chạy `MatchTest`.
+    3. Thời gian làm bài đo bằng đồng hồ server.
+    4. Bảng xếp hạng dùng lại luật của trận.
+  - **Hoàng** chạy Đăng nhập (cả tài khoản admin), UC05 (gồm lúc tắt mạng), UC06.
   - Lỗi phát hiện được thành issue `bug`, sửa ngay trong tối 27/10.
 - **Requirement:** Mỗi người chạy trọn các chức năng của mình từ màn Đăng nhập, không crash, 2 lần liên tiếp.
 - **Constraint:** Không thêm tính năng mới.
@@ -551,10 +504,10 @@ matches/{roomCode}                  // mã phòng 6 chữ số
 
 ### Mô tả milestone (dùng làm description cho Milestone `M3 - Phan tich`)
 
-**Người phụ trách:** Hùng làm UC05, UC06; Hoàng làm UC03, UC04. Nếu Hùng trình bày thêm UC01, UC02 thì làm cùng format.
-**Thời gian:** 29/10 → **04/11/2026**.
+**Người phụ trách:** Hùng làm UC03, UC04 (+ UC01, UC02); Hoàng làm UC05, UC06 (+ UC01, UC02).
+**Thời gian:** 29/10 → **04/11/2026**. Phần UC03, UC04 của Hùng đã viết trước để dẫn code.
 
-**Mục tiêu.** Bước phân tích OOAD cho từng chức năng đã demo:
+**Mục tiêu.** Bước phân tích OOAD cho từng chức năng demo:
 - Biểu đồ use case chi tiết của module.
 - Kịch bản v1.
 - Biểu đồ lớp phân tích.
@@ -570,65 +523,54 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 1. 6 issue M3-01 → M3-06 đã đóng.
 2. Mỗi phương thức trên biểu đồ tuần tự v2 đều có trên biểu đồ lớp phân tích tương ứng.
 
-### [M3-01] Use case chi tiết + kịch bản v1: Chơi online, Xem lịch sử đấu · @HungNguyenBa1811
-- **Phụ thuộc:** M2-08.
-- **Mô tả:** Mục 1 trong báo cáo của Hùng. Làm theo `REPORT_CONVENTION.md` bước A1, mô tả đúng như app đã demo.
-- **Input:** App thật sau demo; M1-01.
+### [M3-01] Use case chi tiết + kịch bản v1: Chơi online, Xem bảng xếp hạng, Đăng nhập · @HungNguyenBa1811
+- **Phụ thuộc:** M1-01.
+- **Mô tả:** Mục 1 trong báo cáo của Hùng. Làm theo `REPORT_CONVENTION.md` bước A1.
+- **Input:** M1-01; đề bài.
 - **Output:** `docs/hung/1-kich-ban-v1.md`:
-  - **Biểu đồ use case chi tiết module Chơi online:**
-    - UC05 include "Vào phòng đấu" (UC trừu tượng) với 2 UC con kế thừa "Tạo phòng", "Tìm phòng".
-    - UC05 include "Thi đấu"; "Thi đấu" có extend "Thoát trận".
-    - "Tạo phòng" có extend "Hủy phòng".
-  - **Đặc tả + kịch bản chuẩn v1 + kịch bản ngoại lệ** cho UC05, UC06 (bảng 2 cột theo mẫu skill `cnpm`). Ngoại lệ tối thiểu:
-    - Mã phòng sai; phòng đã đầy; hủy khi đang chờ; đối thủ thoát; mất mạng; hòa.
-    - Chưa có trận nào.
+  - **Biểu đồ use case chi tiết module Chơi online:** UC03 include "Xem danh sách người chơi online", include "Vào trận đấu" (trừu tượng, 2 con "Gửi lời thách đấu", "Nhận lời thách đấu"), include "Thi đấu"; "Từ chối lời thách đấu" extend "Nhận lời thách đấu"; "Thoát trận", "Chơi tiếp" extend "Thi đấu".
+  - **Đặc tả + kịch bản chuẩn v1 + ngoại lệ** cho UC03, UC04. Ngoại lệ tối thiểu: mời người bận; từ chối; hết giờ tự nộp; thoát trận; đối thủ mất kết nối; một người đúng hết; hòa; dừng chơi.
+  - **Đăng nhập, Đăng ký:** đặc tả + kịch bản v1 (thêm vào cùng file).
 - **Requirement:** Không có tên lớp, tên hàm trong kịch bản v1; mỗi bước của hệ thống ghi rõ giao diện gồm thành phần gì.
 - **Constraint:** Dùng đúng tên UC ở M1-01.
 
-### [M3-02] Use case chi tiết + kịch bản v1: Chơi offline, Cài đặt cấu hình game · @Minahn210
+### [M3-02] Use case chi tiết + kịch bản v1: Chơi với máy, Quản lý thông tin người chơi, Đăng nhập · @Minahn210
 - **Phụ thuộc:** M2-08.
 - **Mô tả:** Mục 1 trong báo cáo của Hoàng. Làm theo `REPORT_CONVENTION.md` bước A1.
 - **Input:** App thật sau demo; M1-01; `docs/hung/1-kich-ban-v1.md` để tham khảo cách viết.
 - **Output:** `docs/hoang/1-kich-ban-v1.md`:
-  - **Biểu đồ use case chi tiết module Chơi offline:** UC03 include "Chọn độ khó", include "Trả lời câu hỏi".
-  - **Đặc tả + kịch bản chuẩn v1 + ngoại lệ** cho UC03, UC04. Ngoại lệ tối thiểu:
-    - Hết giờ 1 câu; hết 3 mạng; đạt kỷ lục mới; bấm Back giữa ván; chơi khi mất mạng.
-    - Lưu cấu hình rồi vào chơi.
+  - **Biểu đồ use case chi tiết:** module Chơi với máy (UC05 include "Chọn độ khó", include "Thi đấu với máy") và module Quản trị (UC06 include "Tìm người chơi"; extend "Sửa thông tin", "Đặt lại mật khẩu", "Xóa tài khoản").
+  - **Đặc tả + kịch bản chuẩn v1 + ngoại lệ** cho UC05, UC06, Đăng nhập, Đăng ký. Ngoại lệ tối thiểu: hết giờ tự nộp; máy nộp trước; hòa; chơi khi mất mạng; xóa người đã có trận; tên hiển thị bỏ trống.
 - **Requirement:** Giống M3-01.
 - **Constraint:** Dùng đúng tên UC ở M1-01.
 
-### [M3-03] Biểu đồ lớp phân tích: Chơi online, Xem lịch sử đấu · @HungNguyenBa1811
+### [M3-03] Biểu đồ lớp phân tích: Chơi online, Xem bảng xếp hạng, Đăng nhập · @HungNguyenBa1811
 - **Phụ thuộc:** M3-01.
 - **Mô tả:** Bước A3 trong `REPORT_CONVENTION.md`. Mỗi UC một biểu đồ gồm các lớp View và lớp thực thể liên quan.
 - **Input:** Kịch bản v1 (M3-01); `docs/chung/02-lop-thuc-the.md`.
-- **Output:** `docs/hung/2-lop-phan-tich.md` + PNG:
-  - View: `OnlineView`, `LobbyView`, `OnlineGameView`, `MatchResultView`, `HistoryView`; thành phần đặt tiền tố `in` / `out` / `sub`.
-  - Phương thức gán vào thực thể theo quy tắc 4 câu hỏi.
+- **Output:** `docs/hung/2-lop-phan-tich.md` + PNG. View: `MainView`, `MatchView`, `MatchResultView`, `RankingView` (+ `LoginView`, `RegisterView`); thành phần đặt tiền tố `in` / `out` / `sub`.
 - **Requirement:** Mỗi thành phần giao diện trong kịch bản v1 đều có trong View tương ứng.
 - **Constraint:** Chưa có DAO, Activity, REST.
 
-### [M3-04] Biểu đồ lớp phân tích: Chơi offline, Cài đặt cấu hình game · @Minahn210
+### [M3-04] Biểu đồ lớp phân tích: Chơi với máy, Quản lý thông tin người chơi, Đăng nhập · @Minahn210
 - **Phụ thuộc:** M3-02.
-- **Mô tả:** Như M3-03, cho UC03, UC04.
+- **Mô tả:** Như M3-03, cho UC05, UC06, Đăng nhập, Đăng ký.
 - **Input:** Kịch bản v1 (M3-02); `docs/chung/02-lop-thuc-the.md`; `docs/hung/2-lop-phan-tich.md` để tham khảo.
-- **Output:** `docs/hoang/2-lop-phan-tich.md` + PNG. View dự kiến: `MainView`, `DifficultyView`, `GameView`, `GameOverView`, `SettingsView`.
+- **Output:** `docs/hoang/2-lop-phan-tich.md` + PNG. View dự kiến: `DifficultyView`, `BotGameView`, `BotResultView`, `AdminView`, `PlayerDetailView`, `LoginView`, `RegisterView`.
 - **Requirement:** Giống M3-03.
 - **Constraint:** Giống M3-03.
 
-### [M3-05] Kịch bản v2 + biểu đồ tuần tự phân tích: Chơi online, Xem lịch sử đấu · @HungNguyenBa1811
+### [M3-05] Kịch bản v2 + biểu đồ tuần tự phân tích: Chơi online, Xem bảng xếp hạng, Đăng nhập · @HungNguyenBa1811
 - **Phụ thuộc:** M3-03.
 - **Mô tả:** Bước A4 trong `REPORT_CONVENTION.md`.
 - **Input:** Kịch bản v1 (M3-01); biểu đồ lớp phân tích (M3-03).
-- **Output:** `docs/hung/3-kich-ban-v2.md` + PNG. Với mỗi UC:
-  - Kịch bản v2, mỗi bước đúng một thông điệp giữa Người chơi, View, thực thể.
-  - Biểu đồ tuần tự đánh số giống kịch bản.
-  - Ngoại lệ chính vẽ bằng khung `alt`.
+- **Output:** `docs/hung/3-kich-ban-v2.md` + PNG. UC03 chia 4 đoạn: Gửi lời thách đấu, Nhận lời thách đấu, Thi đấu, Chơi tiếp.
 - **Requirement:** Số bước bằng số thông điệp, cùng thứ tự.
-- **Constraint:** Chỉ 3 loại đối tượng: tác nhân, View, thực thể.
+- **Constraint:** Chỉ 3 loại đối tượng: tác nhân, View, thực thể. Biểu đồ chỉ vẽ kịch bản chuẩn.
 
-### [M3-06] Kịch bản v2 + biểu đồ tuần tự phân tích: Chơi offline, Cài đặt cấu hình game · @Minahn210
+### [M3-06] Kịch bản v2 + biểu đồ tuần tự phân tích: Chơi với máy, Quản lý thông tin người chơi, Đăng nhập · @Minahn210
 - **Phụ thuộc:** M3-04.
-- **Mô tả:** Như M3-05, cho UC03, UC04.
+- **Mô tả:** Như M3-05, cho UC05, UC06, Đăng nhập, Đăng ký.
 - **Input:** Kịch bản v1 (M3-02); biểu đồ lớp phân tích (M3-04); `docs/hung/3-kich-ban-v2.md` để tham khảo.
 - **Output:** `docs/hoang/3-kich-ban-v2.md` + PNG.
 - **Requirement:** Giống M3-05.
@@ -640,12 +582,12 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 
 ### Mô tả milestone (dùng làm description cho Milestone `M4 - Thiet ke & Bao cao`)
 
-**Người phụ trách:** Hùng làm UC05, UC06 và báo cáo của Hùng; Hoàng làm UC03, UC04 và báo cáo của Hoàng.
+**Người phụ trách:** Hùng làm UC03, UC04 (+ Đăng nhập) và báo cáo của Hùng; Hoàng làm UC05, UC06 (+ Đăng nhập) và báo cáo của Hoàng.
 **Thời gian:** 05/11 → **15/11/2026**. Biểu đồ thiết kế xong trước 11/11; 12–15/11 hoàn thiện báo cáo và đọc chéo.
 
-**Mục tiêu.** Biểu đồ lớp chi tiết và tuần tự chi tiết cho từng chức năng, **vẽ theo code thật**, rồi ghép thành báo cáo cá nhân đúng khung đề.
-- Chức năng có gọi server (UC05, UC06) vẽ theo quy ước 2 package "Client (Android)" và "Server (Spring Boot)" ở `REPORT_CONVENTION.md`.
-- Chức năng offline (UC03, UC04) vẽ MVC thuần.
+**Mục tiêu.** Biểu đồ lớp chi tiết và tuần tự chi tiết cho từng chức năng, **khớp code thật**, rồi ghép thành báo cáo cá nhân đúng khung đề.
+- Chức năng có gọi server (UC03, UC04, UC06, Đăng nhập) vẽ theo quy ước 2 package "Client (Android)" và "Server (Spring Boot)" ở `REPORT_CONVENTION.md`.
+- Chức năng chỉ chạy trên app (UC05) vẽ MVC thuần.
 
 **Ngoài phạm vi:** Thêm tính năng; sửa code chỉ để biểu đồ đẹp hơn (lệch thì sửa biểu đồ theo code).
 
@@ -658,62 +600,50 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 2. Mỗi báo cáo tick đủ checklist ở `REPORT_CONVENTION.md` mục 5.
 3. Mọi tên lớp, hàm, bảng, API trong báo cáo đều có trong code ở `main`.
 
-### [M4-01] Thiết kế giao diện + biểu đồ lớp chi tiết: Chơi online, Xem lịch sử đấu · @HungNguyenBa1811
-- **Phụ thuộc:** M3-03, M2-08.
-- **Mô tả:** Bước D3 trong `REPORT_CONVENTION.md`. Mục 4.x.1 và 4.x.2 trong báo cáo của Hùng.
-- **Input:** Code thật trên `main`; biểu đồ lớp phân tích (M3-03); M1-02, M1-03.
+### [M4-01] Thiết kế giao diện + biểu đồ lớp chi tiết: Chơi online, Xem bảng xếp hạng, Đăng nhập · @HungNguyenBa1811
+- **Phụ thuộc:** M3-03.
+- **Mô tả:** Bước D3 trong `REPORT_CONVENTION.md`. Mục 4.x.1 và 4.x.2 trong báo cáo của Hùng. Bản đầu viết trước code; sau demo thay ảnh phác thảo bằng ảnh app thật và đối chiếu chữ ký với code.
+- **Input:** Biểu đồ lớp phân tích (M3-03); M1-02, M1-03; code thật trên `main`.
 - **Output:** `docs/hung/4-lop-thiet-ke.md` + PNG. Với mỗi UC:
   - **Thiết kế giao diện:** ảnh app thật; bảng thành phần (`id` trong layout, loại View, chức năng, tên ở bước phân tích).
   - **Biểu đồ lớp chi tiết, 2 package:**
-    - **Client:**
-      - Boundary: `OnlineActivity`, `LobbyActivity`, `OnlineGameActivity`, `HistoryActivity`, `HistoryAdapter`.
-      - Control: `FirebaseDAO` ← `MatchFirebaseDAO`; `ApiDAO` ← `MatchApiDAO`; `ProblemDAO`; `SessionDAO`.
-      - Entity: `Match`, `MatchPlayer`, `Player`, `MathProblem`, `GameSession`.
-    - **Server:**
-      - Boundary: `MatchRestController`.
-      - Control: `DAO` ← `MatchDAO`; `FirebaseAdminDAO`.
-      - Entity: `Match`, `MatchPlayer`, `Player`.
-    - Nối 2 package bằng một đường liên kết `HTTP/JSON` giữa `MatchApiDAO` và `MatchRestController`.
+    - **Client:** `MainActivity`, `PlayerAdapter`, `MatchActivity`, `QuestionAdapter`, `RankingActivity`, `RankingAdapter`; `FirebaseDAO` ← `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO`; `ApiDAO` ← `PlayerApiDAO`, `MatchApiDAO`; `SessionDAO`; entity.
+    - **Server:** `PlayerRestController`, `MatchRestController`; `DAO` ← `PlayerDAO`, `MatchDAO`; `ProblemDAO`; `FirebaseAdminDAO`; entity.
+    - Nối 2 package bằng liên kết `HTTP/JSON` giữa các cặp `XxxApiDAO` – `XxxRestController`.
   - **Mô tả từng lớp 1–2 dòng.**
 - **Requirement:** Mỗi View ở M3-03 ánh xạ sang đúng một Activity hoặc overlay; tên lớp, hàm, API trùng với code.
 - **Constraint:** Không vẽ lớp của framework (Spring, Firebase SDK) ngoài kiểu dữ liệu của thuộc tính.
 
-### [M4-02] Thiết kế giao diện + biểu đồ lớp chi tiết: Chơi offline, Cài đặt cấu hình game · @Minahn210
+### [M4-02] Thiết kế giao diện + biểu đồ lớp chi tiết: Chơi với máy, Quản lý thông tin người chơi, Đăng nhập · @Minahn210
 - **Phụ thuộc:** M3-04, M2-08.
-- **Mô tả:** Như M4-01, cho UC03, UC04. Mục 4.x.1 và 4.x.2 trong báo cáo của Hoàng.
+- **Mô tả:** Như M4-01, cho UC05, UC06, Đăng nhập. Mục 4.x.1 và 4.x.2 trong báo cáo của Hoàng.
 - **Input:** Code thật trên `main`; biểu đồ lớp phân tích (M3-04); M1-02, M1-03; `docs/hung/4-lop-thiet-ke.md` để tham khảo.
-- **Output:** `docs/hoang/4-lop-thiet-ke.md` + PNG. Với mỗi UC:
-  - Thiết kế giao diện: ảnh app thật và bảng thành phần.
-  - Biểu đồ lớp chi tiết (chỉ phía app):
-    - Boundary: `MainActivity`, `DifficultyActivity`, `GameActivity`, `SettingsActivity`.
-    - Control: `DAO` ← `GameRecordDAO`; `GameConfigDAO`; `DatabaseHelper`; `ProblemDAO`; `SoundManager`.
-    - Entity: `Player`, `GameRecord`, `GameConfig`, `MathProblem`, `GameSession`.
+- **Output:** `docs/hoang/4-lop-thiet-ke.md` + PNG:
+  - Chơi với máy (1 package): `DifficultyActivity`, `BotGameActivity`; `DAO` ← `BotGameDAO`; `ProblemDAO`; `SessionDAO`; `Player`, `BotGame`, `MathProblem`.
+  - Quản lý thông tin người chơi (2 package): `AdminActivity`, `PlayerDetailActivity`; `ApiDAO` ← `PlayerApiDAO`; server `PlayerRestController`, `DAO` ← `PlayerDAO`; `Player`, `Match`, `MatchPlayer`.
   - Mô tả từng lớp 1–2 dòng.
 - **Requirement:** Giống M4-01.
 - **Constraint:** Tên lớp và hàm trùng với code.
 
-### [M4-03] Kịch bản v3 + biểu đồ tuần tự chi tiết: Chơi online, Xem lịch sử đấu · @HungNguyenBa1811
+### [M4-03] Kịch bản v3 + biểu đồ tuần tự chi tiết: Chơi online, Xem bảng xếp hạng, Đăng nhập · @HungNguyenBa1811
 - **Phụ thuộc:** M3-05, M4-01.
 - **Mô tả:** Bước D4 trong `REPORT_CONVENTION.md`. Mục 4.x.3 trong báo cáo của Hùng.
 - **Input:** Kịch bản v2 (M3-05); biểu đồ lớp chi tiết (M4-01); code thật.
-- **Output:** `docs/hung/5-kich-ban-v3.md` + PNG. Với mỗi UC:
-  - Kịch bản v3 đánh số, tên hàm thật (`onClick`, `createRoom`, `joinMatch`, `onDataChange`, `finishMatch`, `POST /api/matches/{roomCode}/finish`…).
-  - Biểu đồ tuần tự đủ boundary – control – entity ở cả client và server, khớp 1-1 với kịch bản.
-  - Ngoại lệ thoát trận, mất kết nối vẽ bằng khung `alt`.
+- **Output:** `docs/hung/5-kich-ban-v3.md` + PNG. UC03 chia 4 đoạn như v2; kịch bản v3 đánh số, tên hàm thật; biểu đồ đủ boundary – control – entity ở cả client và server.
 - **Requirement:** Số bước bằng số thông điệp, cùng thứ tự.
-- **Constraint:** Mỗi lời gọi REST vẽ là **một** thông điệp từ `MatchApiDAO` tới `MatchRestController`; callback Firebase theo quy ước ở `REPORT_CONVENTION.md`.
+- **Constraint:** Mỗi lời gọi REST vẽ là **một** thông điệp từ `XxxApiDAO` tới `XxxRestController`; callback Firebase theo quy ước ở `REPORT_CONVENTION.md`.
 
-### [M4-04] Kịch bản v3 + biểu đồ tuần tự chi tiết: Chơi offline, Cài đặt cấu hình game · @Minahn210
+### [M4-04] Kịch bản v3 + biểu đồ tuần tự chi tiết: Chơi với máy, Quản lý thông tin người chơi, Đăng nhập · @Minahn210
 - **Phụ thuộc:** M3-06, M4-02.
-- **Mô tả:** Như M4-03, cho UC03, UC04. Mục 4.x.3 trong báo cáo của Hoàng.
+- **Mô tả:** Như M4-03, cho UC05, UC06, Đăng nhập. Mục 4.x.3 trong báo cáo của Hoàng.
 - **Input:** Kịch bản v2 (M3-06); biểu đồ lớp chi tiết (M4-02); code thật; `docs/hung/5-kich-ban-v3.md` để tham khảo.
 - **Output:** `docs/hoang/5-kich-ban-v3.md` + PNG. `CountDownTimer` và `Thread` vẽ theo quy ước ở `REPORT_CONVENTION.md`.
 - **Requirement:** Giống M4-03.
 - **Constraint:** Mọi hàm trên biểu đồ có trong M4-02.
 
-### [M4-05] Báo cáo cá nhân – Hùng (Chơi online, Xem lịch sử đấu) · @HungNguyenBa1811
+### [M4-05] Báo cáo cá nhân – Hùng (Chơi online, Xem bảng xếp hạng, Đăng nhập) · @HungNguyenBa1811
 - **Phụ thuộc:** M1-02, M1-03, M3-01, M4-01, M4-03.
-- **Mô tả:** Báo cáo thiết kế cá nhân của Hùng, đúng khung ở `REPORT_CONVENTION.md` mục 2. Mỗi mục dán vào ngay khi issue nguồn được đóng. Nếu trình bày thêm Đăng ký / Đăng nhập thì thêm mục 4.3 cùng format.
+- **Mô tả:** Báo cáo thiết kế cá nhân của Hùng, đúng khung ở `REPORT_CONVENTION.md` mục 2. Bản nháp Markdown: `docs/hung/BaoCao_Hung.md`.
 - **Input:** `REPORT_CONVENTION.md`; tài liệu trong `docs/chung/` và `docs/hung/`.
 - **Output:**
   - Một file báo cáo online của riêng Hùng (dán link vào issue); bản cuối `docs/BaoCao_Hung.docx`.
@@ -722,19 +652,22 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
     | Mục | Nội dung | Lấy từ |
     |---|---|---|
     | 1 | Mô tả chi tiết các chức năng bằng ngôn ngữ tự nhiên | M3-01 |
-    | 2 | Thiết kế CSDL: MySQL `tblPlayer`, `tblMatch`, `tblMatchPlayer` và cây `matches` trên Firebase | M1-03 |
-    | 3 | Thiết kế lớp thực thể: `Player`, `Match`, `MatchPlayer`, `MathProblem`, `GameSession` | M1-02 |
+    | 2 | Thiết kế CSDL: MySQL `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer` và cây Firebase | M1-03 |
+    | 3 | Thiết kế lớp thực thể: `Player`, `Challenge`, `Match`, `MatchPlayer`, `MathProblem` | M1-02 |
     | 4.1.1 | Chơi online: thiết kế giao diện | M4-01 |
     | 4.1.2 | Chơi online: biểu đồ lớp chi tiết (client + server) | M4-01 |
     | 4.1.3 | Chơi online: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
-    | 4.2.1 | Xem lịch sử đấu: thiết kế giao diện | M4-01 |
-    | 4.2.2 | Xem lịch sử đấu: biểu đồ lớp chi tiết (client + server) | M4-01 |
-    | 4.2.3 | Xem lịch sử đấu: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
+    | 4.2.1 | Xem bảng xếp hạng: thiết kế giao diện | M4-01 |
+    | 4.2.2 | Xem bảng xếp hạng: biểu đồ lớp chi tiết (client + server) | M4-01 |
+    | 4.2.3 | Xem bảng xếp hạng: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
+    | 4.3.1 | Đăng nhập, đăng ký: thiết kế giao diện | M4-01 |
+    | 4.3.2 | Đăng nhập, đăng ký: biểu đồ lớp chi tiết (client + server) | M4-01 |
+    | 4.3.3 | Đăng nhập, đăng ký: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
 
 - **Requirement:** Mọi mục đã tick; tick đủ checklist `REPORT_CONVENTION.md` mục 5; Hoàng đã đọc lại.
 - **Constraint:** Bài cá nhân, tự viết; phần CSDL và lớp thực thể chỉ lấy phần liên quan chức năng của mình.
 
-### [M4-06] Báo cáo cá nhân – Hoàng (Chơi offline, Cài đặt cấu hình game) · @Minahn210
+### [M4-06] Báo cáo cá nhân – Hoàng (Chơi với máy, Quản lý thông tin người chơi, Đăng nhập) · @Minahn210
 - **Phụ thuộc:** M1-02, M1-03, M3-02, M4-02, M4-04.
 - **Mô tả:** Báo cáo thiết kế cá nhân của Hoàng, đúng khung ở `REPORT_CONVENTION.md` mục 2.
 - **Input:** `REPORT_CONVENTION.md`; tài liệu trong `docs/chung/` và `docs/hoang/`.
@@ -745,14 +678,17 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
     | Mục | Nội dung | Lấy từ |
     |---|---|---|
     | 1 | Mô tả chi tiết các chức năng bằng ngôn ngữ tự nhiên | M3-02 |
-    | 2 | Thiết kế CSDL: SQLite `tblPlayer`, `tblGameRecord`; cấu hình trong SharedPreferences | M1-03 |
-    | 3 | Thiết kế lớp thực thể: `Player`, `GameRecord`, `GameConfig`, `MathProblem`, `GameSession` | M1-02 |
-    | 4.1.1 | Chơi offline: thiết kế giao diện | M4-02 |
-    | 4.1.2 | Chơi offline: biểu đồ lớp chi tiết | M4-02 |
-    | 4.1.3 | Chơi offline: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-04 |
-    | 4.2.1 | Cài đặt cấu hình game: thiết kế giao diện | M4-02 |
-    | 4.2.2 | Cài đặt cấu hình game: biểu đồ lớp chi tiết | M4-02 |
-    | 4.2.3 | Cài đặt cấu hình game: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-04 |
+    | 2 | Thiết kế CSDL: SQLite `tblPlayer`, `tblBotGame`; MySQL `tblPlayer` | M1-03 |
+    | 3 | Thiết kế lớp thực thể: `Player`, `BotGame`, `MathProblem`, `Match`, `MatchPlayer` | M1-02 |
+    | 4.1.1 | Chơi với máy: thiết kế giao diện | M4-02 |
+    | 4.1.2 | Chơi với máy: biểu đồ lớp chi tiết | M4-02 |
+    | 4.1.3 | Chơi với máy: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-04 |
+    | 4.2.1 | Quản lý thông tin người chơi: thiết kế giao diện | M4-02 |
+    | 4.2.2 | Quản lý thông tin người chơi: biểu đồ lớp chi tiết (client + server) | M4-02 |
+    | 4.2.3 | Quản lý thông tin người chơi: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-04 |
+    | 4.3.1 | Đăng nhập: thiết kế giao diện | M4-02 |
+    | 4.3.2 | Đăng nhập: biểu đồ lớp chi tiết (client + server) | M4-02 |
+    | 4.3.3 | Đăng nhập: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-04 |
 
 - **Requirement:** Giống M4-05; Hùng đã đọc lại.
 - **Constraint:** Giống M4-05.
@@ -773,23 +709,19 @@ Sau demo: M3-01/02 ─> M3-03/04 ─> M3-05/06 ─> M4-01/02 ─> M4-03/04 ─> 
 
 | Ngày | Hùng | Hoàng |
 |---|---|---|
-| 22/10 | M1-01, M1-02, M1-03 (tài liệu), M1-04 (khung server) | — |
-| 23/10 | M1-05 (khung app), M1-07 (lõi), M1-06 (đăng ký, đăng nhập) | — |
-| 24/10 | M2-01 (Firebase), M2-02 (tạo / tìm phòng) | — |
-| 25/10 (CN) | M2-03 (thi đấu + trọng tài) | **Duyệt toàn bộ PR của M1** |
-| 26/10 | M2-05 (lịch sử), M2-04 (thoát trận) | M2-06 Chơi offline |
-| 27/10 | Sửa lỗi; tối: M2-08 | M2-07 Cài đặt; tối: M2-08 |
+| 26/10 | Tài liệu bản 5 (M1-01 → M1-03, M3, M4 phần UC03, UC04); M1-04, M1-05, M1-07 theo entity mới; M2-01 | Duyệt tài liệu chung; M2-06 Chơi với máy |
+| 27/10 | M2-02, M2-03, M2-05, M2-04; tối: M2-08 | M2-07 Quản lý thông tin người chơi; tối: M2-08 |
 | **28/10** | **DEMO** | **DEMO** |
-| 29/10 – 04/11 | M3-01, M3-03, M3-05 | M3-02, M3-04, M3-06 |
-| 05/11 – 11/11 | M4-01, M4-03 | M4-02, M4-04 |
+| 29/10 – 04/11 | M3-01, M3-03, M3-05 phần Đăng nhập; đối chiếu UC03, UC04 với code | M3-02, M3-04, M3-06 |
+| 05/11 – 11/11 | M4-01, M4-03 (ảnh app thật, phần Đăng nhập) | M4-02, M4-04 |
 | 12/11 – 15/11 | M4-05, đọc báo cáo của Hoàng | M4-06, đọc báo cáo của Hùng → **nộp 15/11** |
 
 **Nếu phải cắt phạm vi để kịp demo, bỏ theo thứ tự:**
-1. Mức 4 của câu hỏi và lựa chọn thời gian 4 / 10 giây (giữ 6 / 8).
-2. Test case "mất mạng" của M2-04 (giữ "bấm Back thì bị xử thua").
-3. Security Rules kiểm tra mức tăng điểm (giữ "chỉ sửa node của mình").
+1. Đối thủ mất kết nối tự xử thua (giữ "bấm Thoát thì bị xử thua").
+2. Security Rules chi tiết (giữ "app không ghi được `matches`").
+3. Tìm theo tên ở màn quản trị.
 
-Không cắt: backend trọng tài (M2-03) và `MatchTest` / `MatchResultTest`, vì đây là bằng chứng logic online nằm trong code của nhóm.
+Không cắt: server sinh đề + chấm + trọng tài, chơi tiếp, bảng xếp hạng 3 tiêu chí, vì đây là yêu cầu nguyên văn của đề.
 
 ---
 
@@ -800,27 +732,27 @@ Không cắt: backend trọng tài (M2-03) và `MatchTest` / `MatchResultTest`, 
 | M1-01 | Phạm vi + use case tổng quát | Hùng | ooad, chung |
 | M1-02 | Lớp thực thể phân tích + thiết kế | Hùng | ooad, chung |
 | M1-03 | Thiết kế CSDL | Hùng | ooad, chung |
-| M1-04 | Khung backend Spring Boot | Hùng | chung |
+| M1-04 | Khung server theo entity mới | Hùng | chung |
 | M1-05 | Khung app Android | Hùng | chung |
 | M1-06 | Đăng ký + Đăng nhập | Hùng | uc-tai-khoan |
-| M1-07 | Lõi câu hỏi và luật điểm | Hùng | chung |
+| M1-07 | Lõi câu hỏi và luật thắng thua | Hùng | chung |
 | M2-01 | Hạ tầng Firebase | Hùng | uc-choi-online |
-| M2-02 | Tạo phòng, Tìm phòng | Hùng | uc-choi-online |
-| M2-03 | Thi đấu + trọng tài | Hùng | uc-choi-online |
-| M2-04 | Thoát trận, mất kết nối | Hùng | uc-choi-online |
-| M2-05 | Xem lịch sử đấu | Hùng | uc-lich-su |
-| M2-06 | Chơi offline | Hoàng | uc-choi-offline |
-| M2-07 | Cài đặt cấu hình game | Hoàng | uc-cai-dat |
+| M2-02 | Danh sách online, thách đấu | Hùng | uc-choi-online |
+| M2-03 | Thi đấu, nộp bài, trọng tài | Hùng | uc-choi-online |
+| M2-04 | Thoát trận, mất kết nối, chơi tiếp | Hùng | uc-choi-online |
+| M2-05 | Xem bảng xếp hạng | Hùng | uc-bxh |
+| M2-06 | Chơi với máy | Hoàng | uc-choi-voi-may |
+| M2-07 | Quản lý thông tin người chơi | Hoàng | uc-quan-tri |
 | M2-08 | Tổng duyệt demo | Cả 2 | chung |
-| M3-01 | Kịch bản v1 UC05, UC06 | Hùng | ooad, uc-choi-online, uc-lich-su |
-| M3-02 | Kịch bản v1 UC03, UC04 | Hoàng | ooad, uc-choi-offline, uc-cai-dat |
-| M3-03 | Lớp phân tích UC05, UC06 | Hùng | ooad, uc-choi-online, uc-lich-su |
-| M3-04 | Lớp phân tích UC03, UC04 | Hoàng | ooad, uc-choi-offline, uc-cai-dat |
-| M3-05 | Kịch bản v2 + tuần tự UC05, UC06 | Hùng | ooad, uc-choi-online, uc-lich-su |
-| M3-06 | Kịch bản v2 + tuần tự UC03, UC04 | Hoàng | ooad, uc-choi-offline, uc-cai-dat |
-| M4-01 | Giao diện + lớp chi tiết UC05, UC06 | Hùng | ooad, uc-choi-online, uc-lich-su |
-| M4-02 | Giao diện + lớp chi tiết UC03, UC04 | Hoàng | ooad, uc-choi-offline, uc-cai-dat |
-| M4-03 | Kịch bản v3 + tuần tự UC05, UC06 | Hùng | ooad, uc-choi-online, uc-lich-su |
-| M4-04 | Kịch bản v3 + tuần tự UC03, UC04 | Hoàng | ooad, uc-choi-offline, uc-cai-dat |
+| M3-01 | Kịch bản v1 UC03, UC04, Đăng nhập | Hùng | ooad, uc-choi-online, uc-bxh, uc-tai-khoan |
+| M3-02 | Kịch bản v1 UC05, UC06, Đăng nhập | Hoàng | ooad, uc-choi-voi-may, uc-quan-tri, uc-tai-khoan |
+| M3-03 | Lớp phân tích UC03, UC04, Đăng nhập | Hùng | ooad, uc-choi-online, uc-bxh, uc-tai-khoan |
+| M3-04 | Lớp phân tích UC05, UC06, Đăng nhập | Hoàng | ooad, uc-choi-voi-may, uc-quan-tri, uc-tai-khoan |
+| M3-05 | Kịch bản v2 + tuần tự UC03, UC04, Đăng nhập | Hùng | ooad, uc-choi-online, uc-bxh, uc-tai-khoan |
+| M3-06 | Kịch bản v2 + tuần tự UC05, UC06, Đăng nhập | Hoàng | ooad, uc-choi-voi-may, uc-quan-tri, uc-tai-khoan |
+| M4-01 | Giao diện + lớp chi tiết UC03, UC04, Đăng nhập | Hùng | ooad, uc-choi-online, uc-bxh, uc-tai-khoan |
+| M4-02 | Giao diện + lớp chi tiết UC05, UC06, Đăng nhập | Hoàng | ooad, uc-choi-voi-may, uc-quan-tri, uc-tai-khoan |
+| M4-03 | Kịch bản v3 + tuần tự UC03, UC04, Đăng nhập | Hùng | ooad, uc-choi-online, uc-bxh, uc-tai-khoan |
+| M4-04 | Kịch bản v3 + tuần tự UC05, UC06, Đăng nhập | Hoàng | ooad, uc-choi-voi-may, uc-quan-tri, uc-tai-khoan |
 | M4-05 | Báo cáo cá nhân Hùng | Hùng | docs |
 | M4-06 | Báo cáo cá nhân Hoàng | Hoàng | docs |
