@@ -6,25 +6,25 @@
 
 | STT | Thuật ngữ | Định nghĩa / Giải thích |
 |---|---|---|
-| 1 | Người chơi | Người có tài khoản (tên đăng nhập, mật khẩu, tên hiển thị) và đã đăng nhập vào ứng dụng |
-| 2 | Câu hỏi | Một phép tính gồm 2 toán hạng và 1 toán tử (+, −, ×), kèm 4 phương án trả lời, trong đó có đúng 1 phương án đúng. Chơi offline thì chọn 1 trong 4 phương án; chơi online thì người chơi tự nhập đáp án bằng bàn phím số |
-| 3 | Mức (level) | Mức 1 đến 4, quyết định toán tử và khoảng số của câu hỏi; tăng 1 mức sau mỗi 5 câu, tối đa mức 4 |
-| 4 | Độ khó | Dễ, Trung bình hoặc Khó; người chơi chọn trước khi chơi offline. Ván bắt đầu ở mức 1, 2 hoặc 3 tương ứng |
-| 5 | Ván chơi | Một lượt chơi offline của một người chơi, kết thúc khi hết mạng |
-| 6 | Mạng | Số lần được phép trả lời sai (hoặc hết giờ) trong ván offline; mỗi ván có 3 mạng |
-| 7 | Chuỗi đúng (combo) | Số câu trả lời đúng liên tiếp; trả lời sai hoặc hết giờ thì chuỗi về 0 |
-| 8 | Điểm | Mỗi câu đúng được 10 + chuỗi đúng × 2 điểm; câu sai được 0 điểm |
-| 9 | Kết quả ván | Thông tin được lưu khi ván offline kết thúc: độ khó, điểm, chuỗi đúng dài nhất, số câu đúng, số câu sai, thời điểm chơi |
-| 10 | Kỷ lục | Điểm cao nhất của một người chơi ở một độ khó trong chế độ offline. Chỉ hiển thị ở màn chơi, không có màn xem riêng |
-| 11 | Cấu hình game | Âm thanh bật / tắt, rung bật / tắt, thời gian trả lời mỗi câu trong chế độ offline |
-| 12 | Phòng đấu | Nơi 2 người chơi gặp nhau để thi đấu online, được nhận diện bằng **mã phòng** gồm 6 chữ số |
-| 13 | Tạo phòng | Người chơi tạo phòng mới, nhận mã phòng để gửi cho bạn, rồi chờ người thứ hai vào |
-| 14 | Tìm phòng | Người chơi nhập mã phòng do bạn gửi để vào phòng đó |
-| 15 | Trận đấu | Một lượt thi đấu online 60 giây giữa 2 người chơi trong cùng một phòng; trạng thái waiting (đang chờ), playing (đang đấu), finished (đã xong) |
-| 16 | Mã đồng bộ câu hỏi (seed) | Một số nguyên được tạo khi tạo phòng; 2 người chơi dùng cùng mã này nên nhận cùng một dãy câu hỏi |
-| 17 | Bỏ trận | Người chơi rời trận khi chưa hết giờ, hoặc bị mất kết nối; người bỏ trận bị xử thua |
-| 18 | Kết quả trận | Thắng, thua hoặc hòa. Người bỏ trận thua; nếu không ai bỏ trận thì so điểm khi hết giờ |
-| 19 | Lịch sử đấu | Danh sách các trận online đã đấu của một người chơi |
+| 1 | Người chơi | Người có tài khoản gồm tên đăng nhập, mật khẩu, tên hiển thị, và đã đăng nhập vào ứng dụng từ một máy client |
+| 2 | Quản trị viên | Người có tài khoản quản trị, dùng để quản lý thông tin các người chơi. Tài khoản quản trị được tạo sẵn trên server, không đăng ký từ ứng dụng. Quản trị viên không thi đấu, không có trong danh sách online và bảng xếp hạng |
+| 3 | Server | Máy chủ duy nhất của hệ thống. Server lưu toàn bộ thông tin tài khoản và trận đấu, sinh đề bài và làm trọng tài cho các trận đối kháng |
+| 4 | Câu hỏi | Một phép tính gồm 2 toán hạng và 1 toán tử (+, −, ×), kèm 4 phương án trả lời, trong đó có đúng 1 phương án đúng. Người chơi chọn 1 trong 4 phương án |
+| 5 | Đề bài | Danh sách N = 10 câu hỏi. Trong một trận đối kháng, server sinh một đề và gửi cùng đề đó cho cả 2 người chơi |
+| 6 | Danh sách người chơi online | Danh sách các người chơi đang mở ứng dụng và đã đăng nhập. Mỗi dòng có tên, tổng điểm, trạng thái |
+| 7 | Trạng thái | Rỗi: người chơi không chơi với ai. Bận: người chơi đang trong một trận đối kháng. Chỉ thách đấu được người đang rỗi |
+| 8 | Lời mời thách đấu | Lời mời người chơi gửi tới một người chơi khác đang rỗi bằng cách bấm vào tên người đó. Người được mời chọn Đồng ý hoặc Từ chối |
+| 9 | Trận đấu | Một ván đối kháng giữa 2 người chơi trên cùng một đề bài, thời gian tối đa 60 giây |
+| 10 | Bài làm | Các phương án người chơi đã chọn cho 10 câu hỏi. Bài làm được nộp bằng nút Nộp bài. Hết 60 giây mà chưa nộp thì hệ thống tự nộp, câu chưa chọn tính là sai |
+| 11 | Thời gian làm bài | Khoảng thời gian từ lúc trận bắt đầu đến lúc server nhận được bài làm của người chơi |
+| 12 | Kết quả trận | Thắng, thua hoặc hòa, do server xác định:<br>- Người bỏ trận thua.<br>- Người đúng hết 10 câu thắng người có ít nhất 1 câu sai.<br>- Cả 2 đúng hết thì ai có thời gian làm bài ngắn hơn thắng; bằng nhau thì hòa.<br>- Cả 2 đều có ít nhất 1 câu sai thì hòa |
+| 13 | Điểm trận | Thắng được 1 điểm, hòa 0,5 điểm, thua 0 điểm |
+| 14 | Tổng điểm | Tổng điểm trận của một người chơi qua mọi trận đối kháng đã kết thúc |
+| 15 | Bỏ trận | Người chơi nhấn nút Thoát khi trận chưa kết thúc, hoặc máy bị mất kết nối. Người bỏ trận bị xử thua |
+| 16 | Chơi tiếp | Sau mỗi trận, hệ thống hỏi từng người có muốn chơi tiếp không. Cả 2 đồng ý thì server sinh đề mới cho trận tiếp theo; một người dừng thì cả 2 thoát ra và server báo cho người còn lại |
+| 17 | Chơi với máy | Người chơi thi đấu với một đối thủ do ứng dụng giả lập, theo cùng luật của trận đối kháng. Chơi được khi không có mạng; kết quả lưu trên máy, không tính vào tổng điểm |
+| 18 | Độ khó của máy | Dễ, Trung bình hoặc Khó. Độ khó quyết định khả năng trả lời đúng mỗi câu và thời gian làm bài của máy |
+| 19 | Bảng xếp hạng | Danh sách mọi người chơi trong hệ thống, sắp lần lượt theo 3 tiêu chí:<br>1. Tổng điểm, giảm dần.<br>2. Trung bình tổng điểm của các đối thủ đã gặp, giảm dần.<br>3. Trung bình thời gian làm bài trong các trận thắng, tăng dần |
 
 ---
 
@@ -32,103 +32,152 @@
 
 ### 2.1. Mục tiêu và phạm vi hệ thống
 
-Math Dash 1v1 là ứng dụng giúp người chơi luyện tính nhẩm nhanh bằng các câu hỏi cộng, trừ, nhân có độ khó tăng dần. Ứng dụng giải quyết việc luyện tập đơn điệu bằng 2 hình thức có tính thi đua: chơi một mình để phá kỷ lục, và thi đấu trực tiếp với bạn bè.
+Math Dash 1v1 là trò chơi giải toán nhanh trên điện thoại Android. Người chơi thi xem ai giải đúng và nhanh hơn một đề gồm 10 câu cộng, trừ, nhân trắc nghiệm, với người chơi khác hoặc với máy.
+
+Hệ thống gồm một server và nhiều client. Server lưu toàn bộ thông tin và dữ liệu, sinh đề bài và làm trọng tài cho mọi trận đối kháng. Mỗi điện thoại cài ứng dụng là một client.
 
 Phạm vi:
 - Người chơi phải có tài khoản và đăng nhập trước khi dùng các chức năng khác.
-- **Chơi offline:** người chơi chọn độ khó rồi chơi một mình. Mỗi ván được lưu lại để tính kỷ lục; kỷ lục hiển thị ngay ở màn chơi.
-- **Chơi online:** một người tạo phòng và gửi mã phòng cho bạn; người kia nhập mã để vào phòng. Mỗi trận có đúng 2 người.
-- Người chơi xem được lịch sử các trận online của mình.
-- Ngoài phạm vi: sửa thông tin cá nhân, quản lý người dùng, quản lý lịch sử đấu (vai trò quản trị viên), xem danh sách các ván offline đã chơi, bảng xếp hạng, ghép trận ngẫu nhiên với người lạ, trận nhiều hơn 2 người.
+- **Chơi online:** thách đấu và đấu đối kháng.
+  - Sau khi đăng nhập, người chơi thấy danh sách người chơi đang online và thách đấu một người đang rỗi.
+  - Hai người làm cùng một đề do server sinh ra; server chấm bài và cộng điểm.
+  - Sau mỗi trận, hai người chọn chơi tiếp hoặc dừng.
+- **Chơi với máy:** người chơi chọn độ khó của máy rồi thi đấu theo cùng luật. Chức năng này chạy được khi không có mạng.
+- **Xem bảng xếp hạng:** người chơi xem thứ hạng của mọi người chơi trong hệ thống, tính từ kết quả các trận chơi online.
+- **Quản lý thông tin người chơi:** quản trị viên xem danh sách người chơi, sửa tên hiển thị, đặt lại mật khẩu, xóa tài khoản người chơi.
+- Ngoài phạm vi:
+  - Người chơi tự sửa thông tin cá nhân.
+  - Xem lại danh sách các trận đã đấu.
+  - Trận nhiều hơn 2 người.
+  - Ghép trận ngẫu nhiên.
+  - Trò chuyện giữa các người chơi.
 
 ### 2.2. Ai có thể sử dụng phần mềm?
 
-Chỉ có một nhóm người dùng là **Người chơi**. Ai muốn dùng ứng dụng thì tự đăng ký tài khoản. Trong trận online, đối thủ cũng là một người chơi đang dùng ứng dụng trên một máy khác.
+Có 2 nhóm người dùng:
+- **Người chơi:** ai muốn chơi thì tự đăng ký tài khoản. Trong trận đối kháng, đối thủ cũng là một người chơi đang dùng ứng dụng trên một máy client khác.
+- **Quản trị viên:** quản lý thông tin các người chơi. Tài khoản quản trị được tạo sẵn trên server.
 
 ### 2.3. Người dùng có những chức năng gì?
 
 Người chơi có thể:
 - **Đăng ký:** tạo tài khoản mới bằng tên đăng nhập, mật khẩu và tên hiển thị.
 - **Đăng nhập:** đăng nhập bằng tên đăng nhập và mật khẩu; lần sau mở ứng dụng không phải đăng nhập lại.
-- **Chơi offline:** chọn độ khó, chơi một mình với 3 mạng, xem kỷ lục và biết khi nào phá kỷ lục.
-- **Cài đặt cấu hình game:** bật / tắt âm thanh, bật / tắt rung, chọn thời gian trả lời mỗi câu.
-- **Chơi online:** tạo phòng hoặc tìm phòng bằng mã, thi đấu 60 giây với bạn trên cùng một dãy câu hỏi, thấy điểm của bạn mỗi khi bạn ghi điểm, nhận kết quả thắng / thua / hòa. Có thể thoát trận giữa chừng và bị xử thua.
-- **Xem lịch sử đấu:** xem danh sách các trận online đã đấu.
+- **Chơi online:**
+  - Xem danh sách người chơi online.
+  - Thách đấu một người đang rỗi, hoặc đồng ý / từ chối lời thách đấu của người khác.
+  - Làm đề 10 câu trong tối đa 60 giây rồi nộp bài; được thoát giữa chừng nhưng bị xử thua.
+  - Nhận kết quả và điểm trận, rồi chọn chơi tiếp hoặc dừng.
+- **Chơi với máy:** chọn độ khó của máy, làm đề 10 câu và nhận kết quả thắng / thua / hòa với máy.
+- **Xem bảng xếp hạng:** xem thứ hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng của mọi người chơi.
+
+Quản trị viên có thể:
+- **Đăng nhập:** dùng chung giao diện đăng nhập với người chơi; hệ thống nhận ra tài khoản quản trị và mở giao diện quản lý người chơi.
+- **Quản lý thông tin người chơi:** xem danh sách người chơi, tìm theo tên, sửa tên hiển thị, đặt lại mật khẩu, xóa tài khoản người chơi.
 
 ### 2.4. Mỗi chức năng hoạt động như thế nào?
 
-Chức năng "Đăng ký":
-Người chơi nhấn "Đăng ký" ở màn hình đăng nhập → Hệ thống hiển thị giao diện đăng ký: ô tên đăng nhập, ô mật khẩu, ô nhập lại mật khẩu, ô tên hiển thị, nút Đăng ký → Người chơi nhập thông tin và nhấn Đăng ký → Hệ thống kiểm tra thông tin → Hệ thống tạo tài khoản → Thông báo "Đăng ký thành công" → Quay về màn hình đăng nhập
+**Chức năng "Đăng ký":**
 
-- Nếu tên đăng nhập đã tồn tại: Hệ thống thông báo "Tên đăng nhập đã được dùng" → Người chơi nhập tên khác
-- Nếu mật khẩu nhập lại không khớp hoặc có ô bỏ trống: Hệ thống thông báo lỗi tương ứng
+Người chơi nhấn "Đăng ký" ở giao diện đăng nhập → Hệ thống hiển thị giao diện đăng ký gồm: ô tên đăng nhập, ô mật khẩu, ô nhập lại mật khẩu, ô tên hiển thị, nút Đăng ký → Người chơi nhập thông tin và nhấn Đăng ký → Hệ thống kiểm tra thông tin → Hệ thống tạo tài khoản → Thông báo "Đăng ký thành công" → Quay về giao diện đăng nhập.
 
+- Tên đăng nhập đã tồn tại: Hệ thống thông báo "Tên đăng nhập đã được dùng" → Người chơi nhập tên khác.
+- Mật khẩu nhập lại không khớp hoặc có ô bỏ trống: Hệ thống thông báo lỗi tương ứng.
 
-Chức năng "Đăng nhập":
-Người chơi mở ứng dụng → Hệ thống hiển thị giao diện đăng nhập: ô tên đăng nhập, ô mật khẩu, nút Đăng nhập, nút Đăng ký → Người chơi nhập tên đăng nhập, mật khẩu và nhấn Đăng nhập → Hệ thống kiểm tra tài khoản → Hệ thống ghi nhớ phiên đăng nhập → Hiển thị màn hình chính: tên hiển thị, các nút Chơi offline, Chơi online, Lịch sử đấu, Cài đặt, Đăng xuất
+**Chức năng "Đăng nhập":**
 
-- Nếu sai tên đăng nhập hoặc mật khẩu: Hệ thống thông báo "Sai tên đăng nhập hoặc mật khẩu"
-- Nếu đã đăng nhập từ lần trước: Hệ thống vào thẳng màn hình chính
+Người chơi mở ứng dụng → Hệ thống hiển thị giao diện đăng nhập gồm: ô tên đăng nhập, ô mật khẩu, nút Đăng nhập, nút Đăng ký → Người chơi nhập tên đăng nhập, mật khẩu và nhấn Đăng nhập → Hệ thống kiểm tra tài khoản → Hệ thống ghi nhớ phiên đăng nhập → Hiển thị giao diện chính.
 
+Giao diện chính gồm:
+- Dòng thông tin của mình: tên hiển thị, tổng điểm.
+- Danh sách người chơi online, mỗi dòng có tên, tổng điểm, trạng thái Rỗi / Bận.
+- Các nút Chơi với máy, Bảng xếp hạng, Đăng xuất.
 
-Chức năng "Chơi offline":
-Người chơi nhấn "Chơi offline" ở màn hình chính → Hệ thống hiển thị giao diện chọn độ khó: Dễ, Trung bình, Khó, mỗi nút kèm kỷ lục hiện tại ở độ khó đó → Người chơi chọn một độ khó → Hệ thống hiển thị màn hình chơi: tên, kỷ lục, điểm, chuỗi đúng, 3 mạng, thanh thời gian, câu hỏi, 4 nút đáp án → Người chơi chọn một đáp án
+Ngoại lệ:
+- Sai tên đăng nhập hoặc mật khẩu: Hệ thống thông báo "Sai tên đăng nhập hoặc mật khẩu".
+- Đã đăng nhập từ lần trước: Hệ thống vào thẳng giao diện chính.
+- Tài khoản là tài khoản quản trị: Hệ thống mở giao diện quản lý người chơi thay cho giao diện chính.
 
-- Nếu đúng: Hệ thống cộng điểm, tăng chuỗi đúng, hiển thị "+12 PTS!" → Hiển thị câu hỏi tiếp theo
-- Nếu sai hoặc hết thời gian của câu: Hệ thống trừ 1 mạng, đưa chuỗi đúng về 0, hiển thị "MISS!" → Hiển thị câu hỏi tiếp theo
+**Chức năng "Chơi online":**
 
-→ (lặp lại, cứ 5 câu thì tăng 1 mức) → Hết 3 mạng: Hệ thống lưu kết quả ván → Hiển thị màn hình Game Over: điểm cuối, kỷ lục, "KỶ LỤC MỚI" nếu vượt kỷ lục → Người chơi chọn "Chơi lại" hoặc "Về menu"
+Người chơi đang ở giao diện chính → Danh sách người chơi online tự cập nhật khi có người vào, người thoát, hoặc người đổi trạng thái → Người chơi bấm vào tên một người đang rỗi → Hệ thống gửi lời mời tới máy của người đó → Hiển thị "Đang chờ <tên> trả lời...".
 
+Trên máy người được mời: hiện hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" với 2 nút Đồng ý, Từ chối.
+- Đồng ý: Server sinh đề 10 câu, tạo trận, chuyển cả 2 người sang trạng thái bận và gửi đề cho cả 2 máy → Cả 2 máy chuyển sang giao diện thi đấu.
+- Từ chối: Máy người mời thông báo "<tên> đã từ chối lời mời".
 
-Chức năng "Cài đặt cấu hình game":
-Người chơi nhấn "Cài đặt" ở màn hình chính → Hệ thống hiển thị cấu hình đang dùng: công tắc Âm thanh, công tắc Rung, lựa chọn thời gian mỗi câu (4, 6, 8 hoặc 10 giây) → Người chơi thay đổi cấu hình → Nhấn Lưu → Hệ thống lưu cấu hình → Thông báo "Đã lưu" → Từ ván offline tiếp theo, hệ thống dùng cấu hình mới
+Thi đấu: Giao diện thi đấu gồm:
+- Ô thời gian đếm ngược 60 giây.
+- Dòng trạng thái đối thủ: "Đối thủ đang làm bài" / "Đối thủ đã nộp bài".
+- Danh sách 10 câu hỏi, mỗi câu có 4 phương án để chọn.
+- Nút Nộp bài, nút Thoát.
 
+→ Người chơi chọn đáp án cho các câu, có thể đổi lựa chọn trước khi nộp → Nhấn Nộp bài → Server ghi nhận thời gian làm bài và chấm bài → Màn hình hiện "Đã nộp bài, đang chờ đối thủ..." → Khi cả 2 đã nộp bài, server xác định kết quả, cộng điểm trận vào tổng điểm của cả 2 người và báo kết quả về cả 2 máy.
 
-Chức năng "Chơi online":
-Người chơi nhấn "Chơi online" ở màn hình chính → Hệ thống hiển thị 2 lựa chọn: Tạo phòng, Tìm phòng
+Giao diện kết quả gồm:
+- Dòng THẮNG / THUA / HÒA.
+- Số câu đúng và thời gian làm bài của mình và của đối thủ.
+- Điểm trận được cộng và tổng điểm mới.
+- Câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng.
 
-- Tạo phòng: Người chơi nhấn "Tạo phòng" → Hệ thống tạo phòng với mã phòng mới → Hiển thị mã phòng và "Đang chờ đối thủ..." → Người chơi gửi mã cho bạn → Khi bạn vào phòng: Hệ thống hiển thị tên đối thủ → Chuyển sang màn hình thi đấu
-  - Nếu người chơi nhấn "Hủy" khi đang chờ: Hệ thống xóa phòng → Quay về màn hình chính
-- Tìm phòng: Người chơi nhấn "Tìm phòng" → Hệ thống hiển thị ô nhập mã phòng và nút Vào phòng → Người chơi nhập mã và nhấn Vào phòng → Hệ thống kiểm tra phòng → Đưa người chơi vào phòng → Hiển thị tên chủ phòng → Chuyển sang màn hình thi đấu
-  - Nếu mã phòng không tồn tại: Hệ thống thông báo "Không tìm thấy phòng"
-  - Nếu phòng đã đủ 2 người hoặc đã bắt đầu: Hệ thống thông báo "Phòng đã đầy"
+Sau khi trả lời:
+- Cả 2 chọn Chơi tiếp: Server sinh đề mới → Cả 2 vào trận tiếp theo.
+- Một người chọn Dừng: Cả 2 về giao diện chính, trạng thái trở lại rỗi; máy người còn lại thông báo "Đối thủ đã dừng chơi".
 
-Thi đấu: Hệ thống hiển thị điểm của mình (nổi bật) VS điểm của đối thủ, đồng hồ 60 giây, câu hỏi, bàn phím số 0–9 kèm nút xóa và nút OK → Người chơi nhập đáp án và nhấn OK → Hệ thống chấm điểm, ghi nhận điểm mới để đối thủ thấy → Hiển thị câu hỏi tiếp theo → (lặp lại đến khi hết giờ) → Mỗi khi đối thủ ghi điểm, hệ thống cập nhật điểm đối thủ trên màn hình → Hết 60 giây: Hệ thống xác định kết quả → Lưu trận vào lịch sử đấu → Hiển thị THẮNG / THUA / HÒA kèm tỉ số → Người chơi nhấn "Về menu"
+Ngoại lệ:
+- Bấm vào người đang bận: Hệ thống thông báo "<tên> đang bận".
+- Người được mời vừa bận hoặc vừa thoát trước khi đồng ý: Hệ thống thông báo "Không bắt đầu được trận đấu".
+- Hết 60 giây mà chưa nộp bài: Hệ thống tự nộp bài, câu chưa chọn tính là sai.
+- Nhấn Thoát khi đang thi đấu: Hệ thống hỏi "Thoát sẽ bị xử thua?" → Đồng ý: người chơi bị xử thua, cả 2 về giao diện chính; máy đối thủ thông báo "Đối thủ đã thoát, bạn thắng".
+- Đối thủ mất kết nối khi đang thi đấu: Đối thủ bị xử thua như khi nhấn Thoát.
 
-- Nếu người chơi nhấn Back: Hệ thống hỏi "Thoát sẽ bị xử thua?" → Đồng ý: người chơi bị xử thua, quay về màn hình chính
-- Nếu đối thủ thoát hoặc mất kết nối: Hệ thống thông báo "Đối thủ đã thoát" → Người chơi được tính thắng
+**Chức năng "Xem bảng xếp hạng":**
 
+Người chơi nhấn "Bảng xếp hạng" ở giao diện chính → Hệ thống lấy thông tin mọi người chơi và các trận đã kết thúc → Sắp xếp theo 3 tiêu chí → Hiển thị giao diện bảng xếp hạng: mỗi dòng gồm hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng. Dòng của chính người chơi được làm nổi bật → Người chơi nhấn Back để về giao diện chính.
 
-Chức năng "Xem lịch sử đấu":
-Người chơi nhấn "Lịch sử đấu" ở màn hình chính → Hệ thống hiển thị danh sách các trận của người chơi, mới nhất ở trên: thời gian, tên đối thủ, tỉ số, kết quả → Người chơi nhấn Back để về màn hình chính
+- Người chơi chưa thắng trận nào: cột trung bình thời gian thắng hiện "—", và người đó đứng sau những người cùng 2 tiêu chí đầu nhưng đã có trận thắng.
 
-- Nếu chưa có trận nào: Hệ thống hiển thị "Chưa có trận nào"
+**Chức năng "Chơi với máy":**
 
+Người chơi nhấn "Chơi với máy" ở giao diện chính → Hệ thống hiển thị giao diện chọn độ khó gồm 3 nút Dễ, Trung bình, Khó → Người chơi chọn một độ khó → Hệ thống sinh đề 10 câu → Hiển thị giao diện thi đấu giống trận đối kháng, đối thủ là Máy → Người chơi chọn đáp án và nhấn Nộp bài → Hệ thống chấm bài của người chơi, giả lập bài làm của máy theo độ khó → Xác định kết quả theo cùng luật → Lưu kết quả ván trên máy → Hiển thị giao diện kết quả gồm THẮNG / THUA / HÒA, số câu đúng và thời gian của mình và của máy, 2 nút Chơi lại, Về menu.
+
+- Hết 60 giây mà chưa nộp bài: Hệ thống tự nộp bài.
+- Máy có thể nộp bài trước người chơi: dòng trạng thái đối thủ đổi thành "Máy đã nộp bài".
+
+**Chức năng "Quản lý thông tin người chơi":**
+
+Quản trị viên đăng nhập → Hệ thống hiển thị giao diện quản lý người chơi gồm: ô tìm theo tên, danh sách người chơi (tên đăng nhập, tên hiển thị, tổng điểm, ngày tạo tài khoản), nút Đăng xuất → Quản trị viên bấm vào một người chơi → Hệ thống hiển thị giao diện thông tin người chơi gồm: tên đăng nhập, ô tên hiển thị, tổng điểm, số trận thắng / hòa / thua, các nút Lưu, Đặt lại mật khẩu, Xóa tài khoản → Quản trị viên sửa tên hiển thị và nhấn Lưu → Hệ thống cập nhật thông tin → Thông báo "Đã lưu" → Quay về danh sách người chơi.
+
+- Nhấn Đặt lại mật khẩu: Hệ thống hiển thị ô mật khẩu mới → Quản trị viên nhập và xác nhận → Hệ thống cập nhật mật khẩu.
+- Nhấn Xóa tài khoản: Hệ thống hỏi xác nhận → Đồng ý: Hệ thống xóa tài khoản.
+- Người chơi đã tham gia trận đối kháng: Hệ thống không xóa, để giữ kết quả của các đối thủ, và thông báo "Không xóa được người chơi đã có trận đấu".
+- Tên hiển thị bỏ trống: Hệ thống thông báo lỗi.
 
 ### 2.5. Những thông tin / đối tượng mà hệ thống cần xử lý
 
-- **Người chơi:** tên đăng nhập, mật khẩu, tên hiển thị, thời điểm tạo tài khoản.
+- **Người chơi:** tên đăng nhập, mật khẩu, tên hiển thị, thời điểm tạo tài khoản, vai trò (người chơi hoặc quản trị viên), tổng điểm, trạng thái rỗi / bận khi đang online.
 - **Câu hỏi:** toán hạng thứ nhất, toán hạng thứ hai, toán tử, đáp án đúng, 4 phương án trả lời.
-- **Ván chơi:** người chơi, độ khó, điểm, chuỗi đúng hiện tại, chuỗi đúng dài nhất, số mạng còn lại, số câu đúng, số câu sai, câu hỏi hiện tại.
-- **Kết quả ván:** người chơi, độ khó, điểm, chuỗi đúng dài nhất, số câu đúng, số câu sai, thời điểm chơi.
-- **Cấu hình game:** âm thanh bật / tắt, rung bật / tắt, thời gian mỗi câu.
-- **Trận đấu:** mã phòng, trạng thái, mã đồng bộ câu hỏi, thời điểm tạo, thời điểm kết thúc, 2 người chơi tham gia.
-- **Người chơi trong trận:** người chơi, điểm, đã bỏ trận hay chưa.
+- **Lời mời thách đấu:** người mời, người được mời, trạng thái (đang chờ, đã đồng ý, đã từ chối), thời điểm gửi.
+- **Trận đấu:** đề bài gồm 10 câu hỏi, thời điểm bắt đầu, thời điểm kết thúc, trạng thái (đang đấu, đã xong), 2 người chơi tham gia.
+- **Người chơi trong trận:** người chơi, bài làm, số câu đúng, thời điểm nộp bài, đã bỏ trận hay chưa.
+- **Ván đấu với máy:** người chơi, độ khó của máy, đề bài, số câu đúng và thời gian làm bài của người chơi, số câu đúng và thời gian làm bài của máy, thời điểm chơi.
 
 ### 2.6. Quan hệ giữa các đối tượng
 
-- Một người chơi chơi nhiều ván chơi; một ván chơi thuộc về một người chơi (1-n).
-- Một ván chơi lần lượt có nhiều câu hỏi; mỗi câu hỏi được sinh ra cho một ván chơi (1-n). Ván chơi chỉ giữ câu hỏi hiện tại.
-- Một ván chơi khi kết thúc sinh ra đúng một kết quả ván; một kết quả ván ứng với một ván chơi (1-1).
-- Một người chơi có nhiều kết quả ván; một kết quả ván thuộc về một người chơi (1-n).
-- Kỷ lục của người chơi ở một độ khó là điểm cao nhất trong các kết quả ván của người đó ở độ khó đó (quan hệ dẫn xuất, không lưu riêng).
-- Cấu hình game áp dụng cho các ván chơi offline trên máy: thời gian mỗi câu quyết định đồng hồ của mỗi câu hỏi trong ván.
-- Một người chơi tham gia nhiều trận đấu; một trận đấu có đúng 2 người chơi (n-n), thể hiện qua đối tượng trung gian "người chơi trong trận" giữ điểm và trạng thái bỏ trận của từng người.
-- Người tạo phòng là người chơi thứ nhất của trận; mã phòng và mã đồng bộ câu hỏi được tạo cùng lúc với trận.
-- Hai người chơi trong cùng một trận nhận cùng một dãy câu hỏi, sinh ra từ mã đồng bộ của trận.
-- Kết quả thắng / thua / hòa của một người chơi trong trận được suy ra từ điểm của 2 người và trạng thái bỏ trận (quan hệ dẫn xuất, không lưu riêng).
-- Lịch sử đấu của một người chơi là các trận đã kết thúc mà người đó tham gia (quan hệ dẫn xuất).
-- Ràng buộc: chỉ vào được trận đang ở trạng thái waiting và chưa đủ 2 người; người chơi không tự vào trận do chính mình tạo; mã phòng là duy nhất trong các trận chưa kết thúc.
+- Một người chơi gửi nhiều lời mời và nhận nhiều lời mời. Mỗi lời mời có đúng một người mời và một người được mời (1-n ở mỗi vai trò).
+- Một lời mời được đồng ý thì sinh ra trận đầu tiên giữa 2 người; các trận chơi tiếp sau đó không cần lời mời mới.
+- Một người chơi tham gia nhiều trận đấu; một trận đấu có đúng 2 người chơi (n-n). Quan hệ này được thể hiện qua đối tượng trung gian "người chơi trong trận", nơi giữ bài làm, số câu đúng, thời điểm nộp bài và trạng thái bỏ trận của từng người.
+- Một trận đấu có đúng 10 câu hỏi; mỗi câu hỏi thuộc về đúng một trận (1-n). Hai người trong trận làm chung đề này.
+- Một người chơi chơi nhiều ván với máy; mỗi ván thuộc về một người chơi (1-n). Mỗi ván có 10 câu hỏi do ứng dụng sinh ra (1-n).
+- Các thông tin dẫn xuất, không lưu riêng:
+  - Kết quả trận và điểm trận của một người chơi: suy ra từ số câu đúng, thời gian làm bài và trạng thái bỏ trận của 2 người.
+  - Tổng điểm: tổng điểm trận của người đó qua các trận đã kết thúc.
+  - Các tiêu chí của bảng xếp hạng: tính từ các trận đã kết thúc.
+  - Kết quả ván đấu với máy: suy ra từ số câu đúng và thời gian của người và của máy.
+- Ràng buộc:
+  - Chỉ thách đấu được người đang online và đang rỗi; không tự thách đấu chính mình.
+  - Mỗi người chỉ ở trong tối đa một trận chưa kết thúc.
+  - Mỗi người chỉ nộp bài một lần trong một trận.
 
 ---
 
@@ -138,28 +187,29 @@ Người chơi nhấn "Lịch sử đấu" ở màn hình chính → Hệ thốn
 
 | STT | Tên Actor | Mô tả |
 |---|---|---|
-| 1 | Người chơi | Người dùng ứng dụng, khởi phát mọi chức năng. Trong trận online, đối thủ cũng là một Người chơi trên máy khác |
+| 1 | Người chơi | Người dùng ứng dụng để chơi. Trong trận đối kháng, người được mời và đối thủ cũng là một Người chơi trên máy client khác |
+| 2 | Quản trị viên | Người quản lý thông tin các người chơi |
 
 ### 3.2. Các Use Case cho từng Actor
 
-| Mã UC | Actor | Use case | Module | Người code, demo, vẽ |
-|---|---|---|---|---|
-| UC01 | Người chơi | Đăng ký | Tài khoản | Chung (Hùng làm, Hoàng duyệt) |
-| UC02 | Người chơi | Đăng nhập | Tài khoản | Chung (Hùng làm, Hoàng duyệt) |
-| UC03 | Người chơi | Chơi offline | Chơi offline | Hoàng |
-| UC04 | Người chơi | Cài đặt cấu hình game | Chơi offline | Hoàng |
-| UC05 | Người chơi | Chơi online | Chơi online | Hùng |
-| UC06 | Người chơi | Xem lịch sử đấu | Chơi online | Hùng |
+| Mã UC | Actor | Use case | Module |
+|---|---|---|---|
+| UC01 | Người chơi | Đăng ký | Tài khoản |
+| UC02 | Người chơi, Quản trị viên | Đăng nhập | Tài khoản |
+| UC03 | Người chơi | Chơi online | Chơi online |
+| UC04 | Người chơi | Xem bảng xếp hạng | Chơi online |
+| UC05 | Người chơi | Chơi với máy | Chơi với máy |
+| UC06 | Quản trị viên | Quản lý thông tin người chơi | Quản trị |
 
 Mô tả các use case:
 1. "Đăng ký" (UC01): cho phép người chơi tạo tài khoản mới.
 2. "Đăng nhập" (UC02): cho phép người chơi đăng nhập để dùng các chức năng khác; ứng dụng ghi nhớ phiên đăng nhập.
-3. "Chơi offline" (UC03): cho phép người chơi chọn độ khó, chơi một mình với 3 mạng và phá kỷ lục ở độ khó đó.
-4. "Cài đặt cấu hình game" (UC04): cho phép người chơi bật / tắt âm thanh, rung và chọn thời gian trả lời mỗi câu.
-5. "Chơi online" (UC05): cho phép người chơi tạo phòng hoặc tìm phòng bằng mã, thi đấu 60 giây với một người chơi khác và nhận kết quả.
-6. "Xem lịch sử đấu" (UC06): cho phép người chơi xem các trận online đã đấu.
+3. "Chơi online" (UC03): cho phép người chơi xem danh sách người chơi online, thách đấu hoặc nhận lời thách đấu, làm cùng một đề với đối thủ, nhận kết quả do server xác định và chọn chơi tiếp.
+4. "Xem bảng xếp hạng" (UC04): cho phép người chơi xem thứ hạng của mọi người chơi theo 3 tiêu chí, tính từ kết quả các trận chơi online.
+5. "Chơi với máy" (UC05): cho phép người chơi chọn độ khó của máy và thi đấu với máy theo cùng luật, kể cả khi không có mạng.
+6. "Quản lý thông tin người chơi" (UC06): cho phép quản trị viên xem danh sách người chơi, sửa tên hiển thị, đặt lại mật khẩu và xóa tài khoản người chơi.
 
-Các bước con của từng UC (ví dụ Tạo phòng, Tìm phòng, Thi đấu, Thoát trận của UC05; Chọn độ khó của UC03) được phân rã ở **biểu đồ use case chi tiết của từng module** trong tài liệu phân tích cá nhân, không đưa vào biểu đồ tổng quát.
+Các bước con của từng UC được phân rã ở **biểu đồ use case chi tiết của từng module** trong tài liệu phân tích cá nhân, không đưa vào biểu đồ tổng quát. Ví dụ, UC03 có Xem danh sách người chơi online, Gửi lời thách đấu, Nhận lời thách đấu, Thi đấu, Thoát trận, Chơi tiếp.
 
 ### 3.3. Biểu đồ use case tổng quát
 
@@ -167,9 +217,14 @@ Các bước con của từng UC (ví dụ Tạo phòng, Tìm phòng, Thi đấu
 
 *Hình 1: Biểu đồ use case tổng quát của Math Dash 1v1.*
 
-Biểu đồ có một tác nhân là Người chơi, khởi phát trực tiếp 6 use case. Các use case được nhóm theo 3 module:
-- **Tài khoản** (UC01, UC02): phần chung, mọi chức năng khác cần người chơi đã đăng nhập.
-- **Chơi offline** (UC03, UC04): Hoàng phụ trách; chạy được khi không có mạng.
-- **Chơi online** (UC05, UC06): Hùng phụ trách.
+Biểu đồ có 2 tác nhân:
+- Người chơi khởi phát 5 use case, từ UC01 đến UC05.
+- Quản trị viên khởi phát 2 use case: UC02 và UC06.
+
+Các use case được nhóm theo 4 module:
+- **Tài khoản** (UC01, UC02): mọi chức năng khác cần đã đăng nhập.
+- **Chơi online** (UC03, UC04): cần kết nối tới server. Server sinh đề, làm trọng tài; bảng xếp hạng tính từ các trận chơi online.
+- **Chơi với máy** (UC05): chạy hoàn toàn trên ứng dụng, chơi được khi không có mạng.
+- **Quản trị** (UC06): quản trị viên đọc và sửa dữ liệu người chơi lưu trên server.
 
 Mã nguồn PlantUML: [uc-tong-quat.puml](uc-tong-quat.puml).

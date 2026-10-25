@@ -24,12 +24,12 @@ class Player {
   - username
   - password
   - displayName
+  - role
   - createdAt
-}
-class GameConfig {
-  - soundEnabled
-  - vibrationEnabled
-  - secondsPerQuestion
+  - totalPoints
+  - avgOpponentPoints
+  - avgWinTime
+  - status
 }
 class MathProblem {
   - operand1
@@ -38,44 +38,35 @@ class MathProblem {
   - correctAnswer
   - answerOptions
 }
-class GameSession {
-  - difficulty
-  - score
-  - currentStreak
-  - maxStreak
-  - livesLeft
-  - correctCount
-  - wrongCount
-  - gameOver
-}
-class GameRecord {
-  - difficulty
-  - score
-  - maxStreak
-  - correctCount
-  - wrongCount
-  - playedAt
+class Challenge {
+  - status
+  - createdAt
 }
 class Match {
-  - roomCode
   - status
-  - questionSeed
-  - createdAt
+  - startedAt
   - endedAt
 }
 class MatchPlayer {
-  - score
+  - answers
+  - correctCount
+  - submittedAt
   - forfeited
 }
+class BotGame {
+  - difficulty
+  - correctCount
+  - finishTime
+  - botCorrectCount
+  - botFinishTime
+  - playedAt
+}
 
-' Thông tin A nằm trong B: hình thoi rỗng đặt ở B
-GameSession "n" o-- "1" Player
-GameRecord "n" o-- "1" Player
-GameSession "n" o-- "1" GameConfig
-' Câu hỏi chỉ tồn tại trong ván chơi: hình thoi đặc
-GameSession "1" *-- "n" MathProblem
-
-' Quan hệ n-n Người chơi – Trận đấu (mỗi trận đúng 2 người), lớp liên kết MatchPlayer
-Player "n" -- "2" Match
+Challenge "n" o-- "1" Player : người mời
+Challenge "n" o-- "1" Player : người được mời
+Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
+Match "1" *-- "10" MathProblem
+BotGame "n" o-- "1" Player
+BotGame "1" *-- "10" MathProblem
 @enduml
