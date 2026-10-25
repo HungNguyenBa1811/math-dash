@@ -1,136 +1,126 @@
-@startuml lop-thiet-ke-uc06
+@startuml lop-thiet-ke-uc04
 !include _theme.iuml
-title Biểu đồ lớp chi tiết – Xem lịch sử đấu
+title Biểu đồ lớp chi tiết – Xem bảng xếp hạng
 
 package "Client (Android)" {
   class MainActivity <<boundary>> {
-    - txtDisplayName : TextView
-    - btnHistory : Button
+    - txtMyName : TextView
+    - txtMyPoints : TextView
+    - btnRanking : Button
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
-  class HistoryActivity <<boundary>> {
-    - rvHistory : RecyclerView
-    - txtEmpty : TextView
-    - adapter : HistoryAdapter
-    - matchApiDAO : MatchApiDAO
+  class RankingActivity <<boundary>> {
+    - rvRanking : RecyclerView
+    - me : Player
+    - playerApiDAO : PlayerApiDAO
     + onCreate(savedInstanceState : Bundle) : void
-    - loadHistory(playerId : int) : void
+    - loadRanking() : void
   }
-  class HistoryAdapter <<boundary>> {
-    - listMatch : List<Match>
-    - playerId : int
-    + HistoryAdapter(listMatch : List<Match>, playerId : int)
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : HistoryViewHolder
-    + onBindViewHolder(holder : HistoryViewHolder, position : int) : void
+  class RankingAdapter <<boundary>> {
+    - listPlayer : List<Player>
+    - myId : int
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : RankingViewHolder
+    + onBindViewHolder(holder : RankingViewHolder, position : int) : void
     + getItemCount() : int
   }
-  class HistoryViewHolder <<boundary>> {
-    - txtPlayedAt : TextView
-    - txtOpponent : TextView
-    - txtScore : TextView
-    - txtResult : TextView
-    + HistoryViewHolder(itemView : View)
+  class RankingViewHolder <<boundary>> {
+    - txtRank : TextView
+    - txtName : TextView
+    - txtPoints : TextView
+    - txtAvgOpponent : TextView
+    - txtAvgWinTime : TextView
   }
   class "activity_main.xml" as xmlMain
-  class "activity_history.xml" as xmlHistory
-  class "item_history.xml" as xmlItemHistory
+  class "activity_ranking.xml" as xmlRanking
+  class "item_ranking.xml" as xmlItemRanking
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
-    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
     # {static} BASE_URL : String
-    # post(path : String, body : JSONObject) : JSONObject
     # getArray(path : String) : JSONArray
   }
-  class MatchApiDAO <<control>> {
-    + getHistory(playerId : int) : List<Match>
-    - toMatch(json : JSONObject) : Match
+  class PlayerApiDAO <<control>> {
+    + getRanking() : List<Player>
+    - toPlayer(json : JSONObject) : Player
   }
   class Player <<entity>> {
     - id : int
-    - username : String
     - displayName : String
-  }
-  class Match <<entity>> {
-    - id : int
-    - roomCode : String
-    - status : String
-    - questionSeed : long
-    - createdAt : Date
-    - endedAt : Date
-    - players : List<MatchPlayer>
-    + getResult(playerId : int) : String
-  }
-  class MatchPlayer <<entity>> {
-    - id : int
-    - score : int
-    - forfeited : boolean
-    - timeUp : boolean
-    - player : Player
+    - totalPoints : double
+    - avgOpponentPoints : double
+    - avgWinTime : double
   }
 }
 
 package "Server (Spring Boot)" {
-  class MatchRestController <<boundary>> {
-    - matchDAO : MatchDAO
-    + getByPlayer(playerId : int) : List<Match>
+  class PlayerRestController <<boundary>> {
+    - playerDAO : PlayerDAO
+    + getRanking() : List<Player>
   }
   abstract class "DAO" as SDAO <<control>> {
     # {static} conn : Connection
     + DAO()
   }
+  class PlayerDAO <<control>> {
+    - matchDAO : MatchDAO
+    + getRanking() : List<Player>
+  }
   class MatchDAO <<control>> {
-    + findByPlayer(playerId : int) : List<Match>
-  }
-  class "Match" as SMatch <<entity>> {
-    - id : int
-    - roomCode : String
-    - status : String
-    - questionSeed : long
-    - createdAt : Date
-    - endedAt : Date
-    - players : List<MatchPlayer>
-  }
-  class "MatchPlayer" as SMatchPlayer <<entity>> {
-    - id : int
-    - score : int
-    - forfeited : boolean
-    - timeUp : boolean
-    - player : Player
+    + findFinished() : List<Match>
   }
   class "Player" as SPlayer <<entity>> {
     - id : int
     - username : String
-    - passwordHash : String
     - displayName : String
-    - createdAt : Date
+    - role : String
+    - totalPoints : double
+    - avgOpponentPoints : double
+    - avgWinTime : double
+  }
+  class Match <<entity>> {
+    - id : int
+    - startedAt : Date
+    - endedAt : Date
+    - players : List<MatchPlayer>
+    + getFinishTime(playerId : int) : long
+    + getResult(playerId : int) : String
+    + getPoints(playerId : int) : double
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - correctCount : int
+    - submittedAt : Date
+    - forfeited : boolean
+    - player : Player
   }
 }
 
-MainActivity -- HistoryActivity
+MainActivity -- RankingActivity
+RankingActivity -- RankingAdapter
+RankingAdapter -- RankingViewHolder
 MainActivity -- xmlMain
-HistoryActivity -- xmlHistory
-MainActivity -- SessionDAO
-HistoryActivity -- SessionDAO
-HistoryActivity -- MatchApiDAO
-HistoryActivity -- HistoryAdapter
-HistoryAdapter -- HistoryViewHolder
-HistoryViewHolder -- xmlItemHistory
-HistoryAdapter o-- "n" Match
-MatchApiDAO --|> ApiDAO
-MatchApiDAO -- Match
+RankingActivity -- xmlRanking
+RankingViewHolder -- xmlItemRanking
+RankingActivity o-- "1" Player
+RankingAdapter o-- "n" Player
+RankingActivity -- SessionDAO
+RankingActivity -- PlayerApiDAO
+PlayerApiDAO --|> ApiDAO
 SessionDAO -- Player
-Match "1" *-- "2" MatchPlayer
-MatchPlayer "n" o-- "1" Player
+PlayerApiDAO -- Player
 
-MatchRestController -- MatchDAO
+PlayerRestController -- PlayerDAO
+PlayerDAO -- MatchDAO
+PlayerDAO --|> SDAO
 MatchDAO --|> SDAO
-MatchDAO -- SMatch
-SMatch "1" *-- "2" SMatchPlayer
-SMatchPlayer "n" o-- "1" SPlayer
+PlayerDAO -- SPlayer
+PlayerDAO -- Match
+MatchDAO -- Match
+Match "1" *-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" SPlayer
 
-MatchApiDAO -- MatchRestController : HTTP/JSON
+PlayerApiDAO -- PlayerRestController : HTTP/JSON
 @enduml

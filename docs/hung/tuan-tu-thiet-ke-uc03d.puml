@@ -1,0 +1,45 @@
+@startuml tuan-tu-thiet-ke-uc03d
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn D: Chơi tiếp
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary MatchActivity as GA
+control MatchFirebaseDAO as MFD
+control MatchApiDAO as MAD
+entity Match as M
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "MatchRestController" as MRC
+control "MatchDAO" as MD
+control "ProblemDAO" as PRD
+control "FirebaseAdminDAO" as FAD
+entity "Match" as SM
+entity "MathProblem" as SQ
+end box
+
+U -> GA : nhấn Chơi tiếp
+GA -> GA : onClick(): sendChoice()
+GA -> MAD : continueMatch() {Thread}
+MAD -> MRC : POST /api/matches/{id}/continue → continueMatch()
+MRC -> FAD : writeChoice()
+MRC --> MAD : Match (JSON)
+MAD -> M : toMatch(): đóng gói Match
+M --> MAD : Match
+MAD --> GA : Match
+GA --> U : hiển thị đang chờ đối thủ
+MRC -> MRC : startMatch()
+MRC -> PRD : generateProblems()
+PRD -> SQ : đóng gói MathProblem
+SQ --> PRD : MathProblem
+PRD --> MRC : List<MathProblem>
+MRC -> SM : đóng gói Match
+SM --> MRC : Match
+MRC -> MD : insert()
+MD --> MRC : true
+MRC -> FAD : writeMatch()
+MRC -> FAD : writeNextMatch()
+MFD -> GA : onDataChange(): onNextMatch()
+GA -> MFD : stopWatching()
+GA -> GA : openNextMatch(): startActivity()
+@enduml

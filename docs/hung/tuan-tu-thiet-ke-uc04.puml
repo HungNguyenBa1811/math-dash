@@ -1,0 +1,55 @@
+@startuml tuan-tu-thiet-ke-uc04
+!include _seq.iuml
+title Tuần tự thiết kế – Xem bảng xếp hạng
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary MainActivity as MA
+boundary RankingActivity as RA
+boundary RankingAdapter as RAD
+control SessionDAO as SD
+control PlayerApiDAO as PAD
+entity Player as P
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "PlayerRestController" as PRC
+control "PlayerDAO" as PD
+control "MatchDAO" as MD
+entity "Player" as SP
+entity "Match" as SM
+end box
+
+U -> MA : nhấn Bảng xếp hạng
+MA -> RA : onClick(): startActivity()
+RA -> SD : onCreate(): getPlayer()
+SD -> P : đóng gói Player
+P --> SD : Player
+SD --> RA : Player
+RA -> RA : loadRanking()
+RA -> PAD : getRanking() {Thread}
+PAD -> PRC : GET /api/players/ranking → getRanking()
+PRC -> PD : getRanking()
+PD -> MD : findFinished()
+MD -> SM : đóng gói Match
+SM --> MD : Match
+MD --> PD : List<Match>
+PD -> SP : đóng gói Player
+SP --> PD : Player
+PD -> SM : getPoints()
+SM --> PD : điểm trận
+PD -> SM : getResult()
+SM --> PD : kết quả trận
+PD -> SM : getFinishTime()
+SM --> PD : thời gian làm bài
+PD -> PD : tính trung bình, sắp xếp theo 3 tiêu chí
+PD --> PRC : List<Player>
+PRC --> PAD : List<Player> (JSON)
+PAD -> P : toPlayer(): đóng gói Player
+P --> PAD : Player
+PAD --> RA : List<Player>
+RA -> RAD : runOnUiThread(): tạo RankingAdapter
+RAD --> U : hiển thị bảng xếp hạng
+U -> RA : nhấn Back
+RA -> MA : finish()
+MA --> U : hiển thị giao diện chính
+@enduml

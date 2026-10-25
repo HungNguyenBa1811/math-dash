@@ -1,59 +1,61 @@
-@startsalt giao-dien-uc05
+@startsalt giao-dien-uc03
 title Phác thảo giao diện – Chơi online
 {
   {+
-  <b>OnlineActivity
+  <b>MainActivity
+  ==
+  <b>HUNG</b> · 12,5 điểm
+  ==
+  NGƯỜI CHƠI ONLINE
+  {#
+  MINH | 15 | <color:gray>Bận</color>
+  HOANG | 9 | <color:green>Rỗi</color>
+  LAN | 4,5 | <color:green>Rỗi</color>
+  }
+  .
+  [    CHƠI VỚI MÁY    ]
+  [    BẢNG XẾP HẠNG   ]
+  [      ĐĂNG XUẤT     ]
+  } | . | {+
+  <b>Hộp thoại lời mời (máy 2)
   ==
   .
-  <b>CHƠI ONLINE
+  HUNG (12,5 điểm)
+  thách đấu bạn
   .
-  [        TẠO PHÒNG        ]
-  .
-  ---- hoặc ----
-  .
-  "Nhập mã 6 chữ số  "
-  [        VÀO PHÒNG        ]
-  .
+  { [ TỪ CHỐI ] | [ <b>ĐỒNG Ý</b> ] }
   .
   } | . | {+
-  <b>LobbyActivity
+  <b>MatchActivity
   ==
-  .
-  MÃ PHÒNG
-  <size:22><b>482915</b></size>
-  Gửi mã này cho bạn để vào phòng
-  .
-  Đang chờ đối thủ...
-  Đối thủ: —
-  .
-  [          HỦY          ]
-  .
-  } | . | {+
-  <b>OnlineGameActivity
+  { <b>00:42</b> | . | HOANG đang làm bài }
   ==
-  {  <color:green>+12</color> | . | . }
-  { <size:18><b><color:blue>36</color></b></size> | VS | 24 }
-  .
-  <b>         00:42
-  .
-  <size:20><b> 12 + 7 = 19</b></size>
-  .
-  { [  1  ] | [  2  ] | [  3  ] }
-  { [  4  ] | [  5  ] | [  6  ] }
-  { [  7  ] | [  8  ] | [  9  ] }
-  { [  ⌫  ] | [  0  ] | [ <b>OK</b> ] }
+  {+
+  <b>1.  12 + 7 = ?
+  { (X) 19 | () 17 }
+  { () 21 | () 18 }
+  }
+  {+
+  <b>2.  9 × 6 = ?
+  { () 48 | (X) 54 }
+  { () 56 | () 63 }
+  }
+  ...
+  ==
+  { [ Thoát ] | . | [   <b>NỘP BÀI</b>   ] }
   } | . | {+
   <b>Overlay layoutResult
   ==
   .
-  <size:22><b>THẮNG!</b></size>
+  <size:22><b><color:green>THẮNG!</color></b></size>
   .
-  120 - 96
+  Bạn:   10/10 câu đúng · 38,2 giây
+  HOANG: 10/10 câu đúng · 45,6 giây
   .
+  +1 điểm · Tổng điểm: 13,5
   .
-  [        VỀ MENU        ]
-  .
-  .
+  Chơi tiếp?
+  { [  DỪNG  ] | [ <b>CHƠI TIẾP</b> ] }
   }
 }
 @endsalt

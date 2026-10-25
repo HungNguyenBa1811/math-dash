@@ -1,0 +1,37 @@
+@startuml lop-phan-tich-tai-khoan
+!include _theme.iuml
+title Biểu đồ lớp pha phân tích – Đăng nhập, đăng ký
+
+class LoginView <<boundary>> {
+  - inUsername
+  - inPassword
+  - subLogin
+  - subRegister
+}
+class RegisterView <<boundary>> {
+  - inUsername
+  - inPassword
+  - inConfirmPassword
+  - inDisplayName
+  - subRegister
+}
+class MainView <<boundary>> {
+  - outMyInfo
+}
+class Player <<entity>> {
+  - username
+  - password
+  - displayName
+  - role
+  - createdAt
+  + register()
+  + checkLogin()
+  + saveSession()
+  + getSession()
+}
+
+LoginView -- RegisterView
+LoginView -- MainView
+LoginView -- Player
+RegisterView -- Player
+@enduml

@@ -1,0 +1,21 @@
+@startuml tuan-tu-phan-tich-uc03d
+!include _seq.iuml
+title Tuần tự phân tích – Chơi online, đoạn D: Chơi tiếp
+
+actor "Người chơi" as U
+boundary MatchView as GV
+boundary MatchResultView as RV
+entity Match as M
+entity MathProblem as Q
+
+U -> RV : nhấn Chơi tiếp
+RV -> M : continueMatch()
+M --> RV : đã ghi nhận lựa chọn
+RV --> U : hiển thị đang chờ đối thủ
+RV -> M : watchMatch()
+M -> Q : generateProblem()
+Q --> M : câu hỏi
+M --> RV : trận mới
+RV -> GV : gọi
+GV --> U : hiển thị đề mới
+@enduml

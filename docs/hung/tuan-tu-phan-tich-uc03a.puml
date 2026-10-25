@@ -1,0 +1,22 @@
+@startuml tuan-tu-phan-tich-uc03a
+!include _seq.iuml
+title Tuần tự phân tích – Chơi online, đoạn A: Gửi lời thách đấu
+
+actor "Người chơi" as U
+boundary MainView as MV
+boundary MatchView as GV
+entity Player as P
+entity Challenge as C
+
+MV -> P : goOnline()
+MV -> P : getOnlinePlayers()
+P --> MV : danh sách người chơi online
+MV --> U : hiển thị thông tin của mình, danh sách online
+U -> MV : bấm vào tên đối thủ đang rỗi
+MV -> C : sendChallenge()
+C --> MV : lời mời đang chờ
+MV --> U : hiển thị đang chờ đối thủ trả lời
+MV -> C : watchChallenge()
+C --> MV : lời mời đã được đồng ý
+MV -> GV : gọi
+@enduml

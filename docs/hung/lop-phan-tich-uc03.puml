@@ -1,74 +1,64 @@
-@startuml lop-phan-tich-uc05
+@startuml lop-phan-tich-uc03
 !include _theme.iuml
 title Biểu đồ lớp pha phân tích – Chơi online
 
 class MainView <<boundary>> {
-  - outDisplayName
-  - subPlayOnline
+  - outMyInfo
+  - outsubListPlayer
 }
-class OnlineView <<boundary>> {
-  - subCreateRoom
-  - inRoomCode
-  - subJoinRoom
-}
-class LobbyView <<boundary>> {
-  - outRoomCode
-  - outStatus
-  - outOpponentName
-  - subCancel
-}
-class OnlineGameView <<boundary>> {
-  - outMyScore
-  - outOpponentScore
-  - outScorePopup
+class MatchView <<boundary>> {
   - outTimer
-  - outProblem
-  - inAnswer
-  - subDigits
-  - subBackspace
+  - outOpponentStatus
+  - inoutListQuestion
   - subSubmit
+  - subExit
 }
 class MatchResultView <<boundary>> {
   - outResult
-  - outScoreLine
-  - subBackToMenu
+  - outMyResult
+  - outOpponentResult
+  - outPoints
+  - subContinue
+  - subStop
 }
 
 class Player <<entity>> {
   - username
   - password
   - displayName
+  - role
   - createdAt
+  - totalPoints
+  - status
+  + goOnline()
+  + getOnlinePlayers()
+}
+class Challenge <<entity>> {
+  - status
+  - createdAt
+  + sendChallenge()
+  + watchChallenge()
+  + rejectChallenge()
 }
 class Match <<entity>> {
-  - roomCode
   - status
-  - questionSeed
-  - createdAt
+  - startedAt
   - endedAt
   + createMatch()
-  + joinMatch()
-  + canJoin()
   + watchMatch()
-  + deleteMatch()
-  + finishMatch()
+  + submitAnswers()
+  + isOver()
   + getResult()
+  + getFinishTime()
+  + getPoints()
+  + forfeit()
+  + continueMatch()
 }
 class MatchPlayer <<entity>> {
-  - score
-  - forfeited
-  + updateScore()
-  + forfeit()
-}
-class GameSession <<entity>> {
-  - difficulty
-  - score
-  - currentStreak
-  - maxStreak
+  - answers
   - correctCount
-  - wrongCount
-  - gameOver
-  + submitAnswer()
+  - submittedAt
+  - forfeited
 }
 class MathProblem <<entity>> {
   - operand1
@@ -77,25 +67,20 @@ class MathProblem <<entity>> {
   - correctAnswer
   - answerOptions
   + generateProblem()
+  + isCorrect()
 }
 
-MainView -- OnlineView
-OnlineView -- LobbyView
-LobbyView -- OnlineGameView
-OnlineGameView -- MatchResultView
+MainView -- MatchView
+MatchView -- MatchResultView
 MatchResultView -- MainView
-
-OnlineView -- Match
-LobbyView -- Match
-OnlineGameView -- Match
-OnlineGameView -- MatchPlayer
-OnlineGameView -- GameSession
-OnlineGameView -- MathProblem
-MatchResultView -- Match
 MainView -- Player
-
-Player "n" -- "2" Match
+MainView -- Challenge
+MainView -- Match
+MatchView -- Match
+MatchResultView -- Match
+Challenge "n" o-- "1" Player : người mời
+Challenge "n" o-- "1" Player : người được mời
+Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
-GameSession "n" o-- "1" Player
-GameSession "1" *-- "n" MathProblem
+Match "1" *-- "10" MathProblem
 @enduml

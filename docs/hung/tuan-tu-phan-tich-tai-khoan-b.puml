@@ -1,0 +1,20 @@
+@startuml tuan-tu-phan-tich-tai-khoan-b
+!include _seq.iuml
+title Tuần tự phân tích – Đăng nhập, đăng ký, đoạn B: Đăng nhập
+
+actor "Người chơi" as U
+boundary MainView as MV
+boundary LoginView as LV
+entity Player as P
+
+LV -> P : getSession()
+P --> LV : chưa có phiên
+LV --> U : hiển thị giao diện đăng nhập
+U -> LV : nhập tên đăng nhập, mật khẩu, nhấn Đăng nhập
+LV -> P : checkLogin()
+P --> LV : người chơi
+LV -> P : saveSession()
+P --> LV : đã ghi nhớ
+LV -> MV : gọi
+MV --> U : hiển thị giao diện chính
+@enduml

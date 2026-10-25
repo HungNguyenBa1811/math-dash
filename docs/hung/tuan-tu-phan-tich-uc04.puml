@@ -1,0 +1,25 @@
+@startuml tuan-tu-phan-tich-uc04
+!include _seq.iuml
+title Tuần tự phân tích – Xem bảng xếp hạng
+
+actor "Người chơi" as U
+boundary MainView as MV
+boundary RankingView as KV
+entity Player as P
+entity Match as M
+
+U -> MV : nhấn Bảng xếp hạng
+MV -> KV : gọi
+KV -> P : getRanking()
+P -> M : getPoints()
+M --> P : điểm trận
+P -> M : getResult()
+M --> P : kết quả trận
+P -> M : getFinishTime()
+M --> P : thời gian làm bài
+P --> KV : danh sách người chơi đã xếp hạng
+KV --> U : hiển thị bảng xếp hạng
+U -> KV : nhấn Back
+KV -> MV : gọi
+MV --> U : hiển thị giao diện chính
+@enduml

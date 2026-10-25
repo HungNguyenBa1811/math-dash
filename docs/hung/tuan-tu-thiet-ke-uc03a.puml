@@ -1,0 +1,62 @@
+@startuml tuan-tu-thiet-ke-uc03a
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn A: Gửi lời thách đấu
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary MainActivity as MA
+boundary PlayerAdapter as PA
+boundary MatchActivity as GA
+control SessionDAO as SD
+control PresenceFirebaseDAO as PFD
+control ChallengeFirebaseDAO as CFD
+control PlayerApiDAO as PAD
+entity Player as P
+entity Challenge as C
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "PlayerRestController" as PRC
+control "PlayerDAO" as PD
+entity "Player" as SP
+end box
+
+U -> MA : mở giao diện chính
+MA -> SD : onCreate(): getPlayer()
+SD -> P : đóng gói Player
+P --> SD : Player
+SD --> MA : Player
+MA -> PAD : getById() {Thread}
+PAD -> PRC : GET /api/players/{id} → getById()
+PRC -> PD : findById()
+PD -> SP : đóng gói Player
+SP --> PD : Player
+PD --> PRC : Player
+PRC -> PD : getTotalPoints()
+PD --> PRC : tổng điểm
+PRC --> PAD : Player (JSON)
+PAD -> P : toPlayer(): đóng gói Player
+P --> PAD : Player
+PAD --> MA : Player
+MA -> PFD : runOnUiThread(): goOnline()
+MA -> PFD : watchOnlinePlayers()
+MA -> CFD : watchIncoming()
+PFD -> PFD : onDataChange(): toPlayer()
+PFD -> P : đóng gói Player
+P --> PFD : Player
+PFD -> MA : onPlayersChanged()
+MA -> PA : setPlayers()
+PA --> U : hiển thị danh sách người chơi online
+U -> PA : bấm vào tên đối thủ
+PA -> MA : onClick(): onPlayerClick()
+MA -> CFD : sendChallenge()
+CFD -> C : đóng gói Challenge
+C --> CFD : Challenge
+CFD --> MA : Challenge
+MA -> CFD : watchChallenge()
+MA --> U : hiển thị đang chờ đối thủ trả lời
+CFD -> CFD : onDataChange(): toChallenge()
+CFD -> C : đóng gói Challenge
+C --> CFD : Challenge
+CFD -> MA : onChallengeChanged()
+MA -> GA : openMatch(): startActivity()
+@enduml

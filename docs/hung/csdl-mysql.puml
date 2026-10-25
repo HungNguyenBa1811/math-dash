@@ -14,34 +14,50 @@ skinparam class {
   AttributeFontSize 10
 }
 skinparam packageStyle rectangle
-left to right direction
-title Biểu đồ thiết kế CSDL MySQL – phần Chơi online
-package "MySQL (backend)" {
+title Biểu đồ thiết kế CSDL MySQL – phần Chơi online, Xem bảng xếp hạng
+
+package "MySQL (server)" {
   entity "tblPlayer" as SP {
     * id : integer(10) <<PK>>
     --
     * username : varchar(255) <<UNIQUE>>
     * passwordHash : varchar(255)
     * displayName : varchar(255)
+    * role : varchar(10)
     * createdAt : datetime
   }
   entity "tblMatch" as SM {
     * id : integer(10) <<PK>>
     --
-    * roomCode : varchar(6)
-    * questionSeed : bigint(20)
-    * createdAt : datetime
-    * endedAt : datetime
+    * startedAt : datetime(3)
+    endedAt : datetime(3)
+  }
+  entity "tblMathProblem" as SQ {
+    * id : integer(10) <<PK>>
+    --
+    * operand1 : integer(10)
+    * operand2 : integer(10)
+    * operator : varchar(1)
+    * correctAnswer : integer(10)
+    * option1 : integer(10)
+    * option2 : integer(10)
+    * option3 : integer(10)
+    * option4 : integer(10)
+    * tblMatchId : integer(10) <<FK>>
   }
   entity "tblMatchPlayer" as SMP {
     * id : integer(10) <<PK>>
     --
-    * score : integer(10)
+    * correctCount : integer(10)
+    submittedAt : datetime(3)
     * forfeited : tinyint(1)
     * tblMatchId : integer(10) <<FK>>
     * tblPlayerId : integer(10) <<FK>>
   }
 }
+
+
 SM ||--|{ SMP : "1 - 2"
+SM ||--|{ SQ : "1 - 10"
 SP ||--o{ SMP : "1 - n"
 @enduml

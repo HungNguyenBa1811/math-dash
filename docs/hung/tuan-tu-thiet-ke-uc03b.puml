@@ -1,0 +1,56 @@
+@startuml tuan-tu-thiet-ke-uc03b
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn B: Nhận lời thách đấu
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary MainActivity as MA
+boundary MatchActivity as GA
+control ChallengeFirebaseDAO as CFD
+control MatchApiDAO as MAD
+entity Challenge as C
+entity Match as M
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "MatchRestController" as MRC
+control "MatchDAO" as MD
+control "ProblemDAO" as PRD
+control "FirebaseAdminDAO" as FAD
+entity "Player" as SP
+entity "Match" as SM
+entity "MathProblem" as SQ
+end box
+
+CFD -> CFD : onDataChange(): toChallenge()
+CFD -> C : đóng gói Challenge
+C --> CFD : Challenge
+CFD -> MA : onChallengeChanged()
+MA -> MA : showChallengeDialog()
+MA --> U : hiển thị hộp thoại lời mời
+U -> MA : nhấn Đồng ý
+MA -> MA : onClick(): acceptChallenge()
+MA -> MAD : createMatch() {Thread}
+MAD -> MRC : POST /api/matches → create()
+MRC -> FAD : readPresence()
+FAD -> SP : đóng gói Player
+SP --> FAD : Player
+FAD --> MRC : Player
+MRC -> MRC : startMatch()
+MRC -> PRD : generateProblems()
+PRD -> SQ : đóng gói MathProblem
+SQ --> PRD : MathProblem
+PRD --> MRC : List<MathProblem>
+MRC -> SM : đóng gói Match
+SM --> MRC : Match
+MRC -> MD : insert()
+MD -> MD : lưu trận, đề, 2 người chơi trong một transaction
+MD --> MRC : true
+MRC -> FAD : writeMatch()
+MRC -> FAD : updateStatus()
+MRC -> FAD : updateChallenge()
+MRC --> MAD : Match (JSON)
+MAD -> M : toMatch(): đóng gói Match
+M --> MAD : Match
+MAD --> MA : Match
+MA -> GA : runOnUiThread(): openMatch()
+@enduml

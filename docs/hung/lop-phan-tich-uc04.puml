@@ -1,38 +1,37 @@
-@startuml lop-phan-tich-uc06
+@startuml lop-phan-tich-uc04
 !include _theme.iuml
-left to right direction
-title Biểu đồ lớp pha phân tích – Xem lịch sử đấu
+title Biểu đồ lớp pha phân tích – Xem bảng xếp hạng
 
 class MainView <<boundary>> {
-  - outDisplayName
-  - subHistory
+  - outMyInfo
+  - subRanking
 }
-class HistoryView <<boundary>> {
-  - outListMatch
+class RankingView <<boundary>> {
+  - outListRanking
 }
 class Player <<entity>> {
   - username
-  - password
   - displayName
-  - createdAt
+  - totalPoints
+  - avgOpponentPoints
+  - avgWinTime
+  + getRanking()
 }
 class Match <<entity>> {
-  - roomCode
-  - status
-  - questionSeed
-  - createdAt
+  - startedAt
   - endedAt
-  + getHistory()
   + getResult()
+  + getFinishTime()
+  + getPoints()
 }
 class MatchPlayer <<entity>> {
-  - score
+  - correctCount
+  - submittedAt
   - forfeited
 }
 
-MainView -- HistoryView
-MainView -- Player
-HistoryView -- Match
-Player "n" -- "2" Match
+MainView -- RankingView
+RankingView -- Player
+Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
 @enduml

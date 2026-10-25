@@ -24,23 +24,27 @@ title Biểu đồ use case chi tiết module Chơi online – Math Dash 1v1
 actor "Người chơi" as A1
 
 rectangle "Module Chơi online" {
-  usecase "Chơi online" as UC05
-  usecase "Xem lịch sử đấu" as UC06
-  usecase "//Vào phòng đấu//" as VPD
-  usecase "Tạo phòng" as TP
-  usecase "Tìm phòng" as TIM
-  usecase "Hủy phòng" as HP
+  usecase "Chơi online" as UC03
+  usecase "Xem bảng xếp hạng" as UC04
+  usecase "Xem danh sách người chơi online" as DS
+  usecase "//Vào trận đấu//" as VTD
+  usecase "Gửi lời thách đấu" as GUI
+  usecase "Nhận lời thách đấu" as NHAN
+  usecase "Từ chối lời thách đấu" as TC
   usecase "Thi đấu" as TD
   usecase "Thoát trận" as TT
+  usecase "Chơi tiếp" as CT
 }
 
-A1 --> UC05
-A1 --> UC06
+A1 --> UC03
+A1 --> UC04
 
-UC05 ..> VPD : <<include>>
-UC05 ..> TD : <<include>>
-TP --|> VPD
-TIM --|> VPD
-HP ..> TP : <<extend>>
+UC03 ..> DS : <<include>>
+UC03 ..> VTD : <<include>>
+UC03 ..> TD : <<include>>
+GUI --|> VTD
+NHAN --|> VTD
+TC ..> NHAN : <<extend>>
 TT ..> TD : <<extend>>
+CT ..> TD : <<extend>>
 @enduml

@@ -1,36 +1,34 @@
-@startsalt giao-dien-uc06
-title Phác thảo giao diện – Xem lịch sử đấu
+@startsalt giao-dien-uc04
+title Phác thảo giao diện – Xem bảng xếp hạng
 {
   {+
   <b>MainActivity
   ==
-  Xin chào, HUNG
-  .
-  [     CHƠI OFFLINE     ]
-  [      CHƠI ONLINE     ]
-  [      LỊCH SỬ ĐẤU     ]
-  [        CÀI ĐẶT       ]
-  [       ĐĂNG XUẤT      ]
-  } | . | {+
-  <b>HistoryActivity
+  <b>HUNG</b> · 13,5 điểm
   ==
-  <b>LỊCH SỬ ĐẤU
+  NGƯỜI CHƠI ONLINE
   {#
-  23/10/2026 20:16 | vs HOANG | 120 - 96 | <color:green><b>THẮNG</b></color>
-  22/10/2026 21:42 | vs HOANG | 84 - 84 | <color:orange><b>HÒA</b></color>
-  22/10/2026 21:35 | vs HOANG | 60 - 132 | <color:red><b>THUA</b></color>
-  21/10/2026 19:05 | vs MINH | 36 - 72 | <color:green><b>THẮNG</b></color>
+  MINH | 15 | <color:gray>Bận</color>
+  LAN | 13,5 | <color:green>Rỗi</color>
   }
   .
+  [    CHƠI VỚI MÁY    ]
+  [  <b>BẢNG XẾP HẠNG</b>  ]
+  [      ĐĂNG XUẤT     ]
   } | . | {+
-  <b>HistoryActivity (rỗng)
+  <b>RankingActivity
   ==
-  <b>LỊCH SỬ ĐẤU
-  .
-  .
-  Chưa có trận nào
-  .
-  .
+  <b>BẢNG XẾP HẠNG
+  {#
+  <b>#</b> | <b>Tên</b> | <b>Điểm</b> | <b>TB đối thủ</b> | <b>TB thắng</b>
+  <color:orange>1</color> | MINH | 15 | 10,5 | 41,3 s
+  <color:gray>2</color> | <b><color:blue>HUNG</color></b> | <b>13,5</b> | <b>11</b> | <b>39,8 s</b>
+  <color:brown>3</color> | LAN | 13,5 | 9 | 44,0 s
+  4 | HOANG | 9 | 13,5 | 47,2 s
+  5 | AN | 4,5 | 12 | 49,0 s
+  6 | NAM | 4,5 | 12 | 52,1 s
+  7 | TUAN | 0 | 13,5 | —
+  }
   }
 }
 @endsalt

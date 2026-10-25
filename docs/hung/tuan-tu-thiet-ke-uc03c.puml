@@ -1,0 +1,99 @@
+@startuml tuan-tu-thiet-ke-uc03c
+!include _seq.iuml
+title Tuần tự thiết kế – Chơi online, đoạn C: Thi đấu
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary MatchActivity as GA
+boundary QuestionAdapter as QA
+control CountDownTimer as T
+control SessionDAO as SD
+control MatchFirebaseDAO as MFD
+control MatchApiDAO as MAD
+entity Match as M
+entity MathProblem as Q
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "MatchRestController" as MRC
+control "PlayerDAO" as PD
+control "MatchDAO" as MD
+control "FirebaseAdminDAO" as FAD
+entity "Match" as SM
+entity "MathProblem" as SQ
+end box
+
+GA -> SD : onCreate(): getPlayer()
+SD --> GA : Player
+GA -> MFD : watchMatch()
+MFD -> MFD : onDataChange(): toMatch()
+MFD -> M : đóng gói Match
+M --> MFD : Match
+MFD -> GA : onSuccess()
+GA -> GA : startMatch()
+GA -> QA : setQuestions()
+QA -> Q : onBindViewHolder(): getExpression()
+Q --> QA : chuỗi phép tính
+GA -> T : start()
+GA --> U : hiển thị ô thời gian, trạng thái đối thủ, 10 câu hỏi
+T -> GA : onTick()
+U -> QA : chọn phương án cho từng câu
+QA -> QA : onCheckedChanged(): lưu phương án
+U -> GA : nhấn Nộp bài
+GA -> GA : onClick(): submitAnswers()
+GA -> QA : getAnswers()
+QA --> GA : bài làm
+GA -> MAD : submit() {Thread}
+MAD -> MRC : POST /api/matches/{id}/submit → submit()
+MRC -> MD : findById()
+MD -> SM : đóng gói Match
+SM --> MD : Match
+MD --> MRC : Match
+MRC -> SM : countCorrect()
+SM -> SQ : isCorrect()
+SQ --> SM : đúng / sai
+SM --> MRC : số câu đúng
+MRC -> MD : updateSubmission()
+MD --> MRC : true
+MRC -> FAD : writeSubmitted()
+MRC -> SM : isOver()
+SM --> MRC : false
+MRC --> MAD : Match (JSON)
+MAD -> M : toMatch(): đóng gói Match
+M --> MAD : Match
+MAD --> GA : Match
+GA -> T : runOnUiThread(): cancel()
+GA --> U : hiển thị đã nộp bài, đang chờ đối thủ
+MRC -> SM : isOver()
+SM --> MRC : true
+MRC -> MD : updateEndedAt()
+MD --> MRC : true
+MRC -> PD : getTotalPoints()
+PD --> MRC : tổng điểm
+MRC -> FAD : updatePoints()
+MRC -> FAD : writeFinished()
+MFD -> MFD : onDataChange(): toMatch()
+MFD -> M : đóng gói Match
+M --> MFD : Match
+MFD -> GA : onSuccess()
+GA -> GA : loadResult()
+GA -> MAD : getById() {Thread}
+MAD -> MRC : GET /api/matches/{id} → getById()
+MRC -> MD : findById()
+MD -> SM : đóng gói Match
+SM --> MD : Match
+MD --> MRC : Match
+MRC -> PD : getTotalPoints()
+PD --> MRC : tổng điểm
+MRC --> MAD : Match (JSON)
+MAD -> M : toMatch(): đóng gói Match
+M --> MAD : Match
+MAD --> GA : Match
+GA -> GA : runOnUiThread(): showResult()
+GA -> M : getResult()
+M --> GA : kết quả trận
+GA -> M : getFinishTime()
+M --> GA : thời gian làm bài
+GA -> M : getPoints()
+M --> GA : điểm trận
+GA --> U : hiển thị kết quả, điểm, câu hỏi Chơi tiếp?
+@enduml
