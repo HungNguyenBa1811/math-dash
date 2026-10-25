@@ -34,7 +34,7 @@ public class PlayerRestController {
 
     // GET /api/players/ranking: mọi người chơi kèm 3 tiêu chí, đã xếp hạng
     @GetMapping("/ranking")
-    public List<Player> getRanking() {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Chưa làm: M2-05");
+    public List<Player> getRanking() throws SQLException {
+        return playerDAO.getRanking();
     }
 }

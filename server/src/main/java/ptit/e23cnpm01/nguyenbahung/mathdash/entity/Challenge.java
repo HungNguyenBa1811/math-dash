@@ -12,6 +12,8 @@ public class Challenge {
     private Date createdAt;
     private Player challenger;
     private Player opponent;
+    // Trận được tạo khi lời mời được đồng ý; 0 khi chưa có
+    private int matchId;
 
     public Challenge() {
     }
@@ -54,5 +56,13 @@ public class Challenge {
 
     public void setOpponent(Player opponent) {
         this.opponent = opponent;
+    }
+
+    public int getMatchId() {
+        return matchId;
+    }
+
+    public void setMatchId(int matchId) {
+        this.matchId = matchId;
     }
 }
