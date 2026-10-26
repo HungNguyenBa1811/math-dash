@@ -1,34 +1,43 @@
 {
   "rules": {
-    "matches": {
-      "$roomCode": {
-        ".read": true,
-        ".write": "((!data.exists() || data.child('status').val() === 'finished') && newData.child('status').val() === 'waiting' && newData.child('players').exists()) || (data.child('status').val() === 'waiting' && newData.child('status').val() === 'playing' && newData.child('players').exists()) || (data.child('status').val() === 'waiting' && !newData.exists()) || (data.child('status').val() === 'playing' && newData.child('status').val() === 'finished')",
-        "status": {
-          ".validate": "newData.val() === 'waiting' || newData.val() === 'playing' || newData.val() === 'finished'"
+    "presence": {
+      ".read": true,
+      "$playerId": {
+        ".write": true,
+        ".validate": "!newData.exists() || newData.hasChildren(['displayName', 'status'])",
+        "displayName": {
+          ".validate": "newData.isString()"
         },
-        "questionSeed": {
+        "totalPoints": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        },
+        "status": {
+          ".validate": "newData.val() === 'free' || newData.val() === 'busy'"
+        }
+      }
+    },
+    "challenges": {
+      ".read": true,
+      ".indexOn": ["opponentId"],
+      "$challengeId": {
+        ".write": true,
+        "status": {
+          ".validate": "newData.val() === 'pending' || newData.val() === 'accepted' || newData.val() === 'rejected'"
+        },
+        "challengerId": {
           ".validate": "newData.isNumber()"
         },
-        "players": {
-          "$playerId": {
-            ".write": "data.exists()",
-            "displayName": {
-              ".validate": "newData.isString()"
-            },
-            "score": {
-              ".validate": "newData.isNumber() && newData.val() >= 0 && (!data.exists() || (newData.val() >= data.val() && newData.val() - data.val() <= 200))"
-            },
-            "forfeited": {
-              ".validate": "newData.isBoolean()"
-            },
-            "connected": {
-              ".validate": "newData.isBoolean()"
-            },
-            "timeUp": {
-              ".validate": "newData.isBoolean()"
-            }
-          }
+        "opponentId": {
+          ".validate": "newData.isNumber() && newData.val() !== newData.parent().child('challengerId').val()"
+        }
+      }
+    },
+    "matches": {
+      ".read": true,
+      "$matchId": {
+        ".write": true,
+        "status": {
+          ".validate": "newData.val() === 'playing' || newData.val() === 'finished'"
         }
       }
     }

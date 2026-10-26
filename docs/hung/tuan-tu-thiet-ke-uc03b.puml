@@ -31,6 +31,7 @@ U -> MA : nhấn Đồng ý
 MA -> MA : onClick(): acceptChallenge()
 MA -> MAD : createMatch() {Thread}
 MAD -> MRC : POST /api/matches → create()
+MRC -> FAD : readChallengeStatus()
 MRC -> FAD : readPresence()
 FAD -> SP : đóng gói Player
 SP --> FAD : Player

@@ -33,7 +33,15 @@ public abstract class ApiDAO {
         return text.isEmpty() ? new JSONObject() : new JSONObject(text);
     }
 
+    protected JSONObject get(String path) throws IOException, JSONException {
+        return new JSONObject(readGet(path));
+    }
+
     protected JSONArray getArray(String path) throws IOException, JSONException {
+        return new JSONArray(readGet(path));
+    }
+
+    private String readGet(String path) throws IOException, JSONException {
         HttpURLConnection conn = open(path, "GET");
         int code;
         try {
@@ -41,7 +49,7 @@ public abstract class ApiDAO {
         } catch (IOException e) {
             throw new IOException(NETWORK_ERROR, e);
         }
-        return new JSONArray(read(conn, code));
+        return read(conn, code);
     }
 
     private HttpURLConnection open(String path, String method) throws IOException {

@@ -8,6 +8,8 @@ Spring Boot (Java 17, Maven), JDBC thuần tới MySQL, đăng nhập bằng tê
 mysql -u root -p < db/schema.sql
 ```
 
+Script **xóa và tạo lại** 4 bảng `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, rồi chèn sẵn tài khoản quản trị `admin` / `admin123`.
+
 ## 2. Cấu hình
 
 Sao chép `src/main/resources/application-local.properties.example` thành `application-local.properties`, điền mật khẩu MySQL. File này có trong `.gitignore`, không commit.
@@ -54,6 +56,13 @@ db.password=<mật khẩu MySQL>
 | Phương thức | Đường dẫn | Kết quả |
 |---|---|---|
 | POST | /api/auth/register | 201, hoặc 409 nếu trùng tên đăng nhập |
-| POST | /api/auth/login | Player, hoặc 401 nếu sai tên đăng nhập / mật khẩu |
-| POST | /api/matches/{roomCode}/finish | Trận đã lưu; 409 nếu trận chưa kết thúc |
-| GET | /api/matches?playerId={id} | Các trận đã kết thúc của người chơi, mới nhất trước |
+| POST | /api/auth/login | Player (có `role`), hoặc 401 nếu sai tên đăng nhập / mật khẩu |
+| GET | /api/players/{id} | Player kèm `totalPoints` |
+| GET | /api/players/ranking | Danh sách Player đã xếp hạng theo 3 tiêu chí |
+| POST | /api/matches | Tạo trận từ lời mời đã đồng ý; 409 nếu một người không online hoặc đang bận |
+| POST | /api/matches/{id}/submit | Nộp bài làm, server chấm |
+| POST | /api/matches/{id}/forfeit?playerId= | Bỏ trận |
+| POST | /api/matches/{id}/continue?playerId=&choice= | Chơi tiếp hoặc dừng |
+| GET | /api/matches/{id} | Trận đầy đủ, có đáp án khi trận đã xong |
+
+Các API quản trị (UC06) bổ sung ở M2-07. Danh sách đầy đủ: `ISSUES_PLAN.md` mục 2.4.

@@ -35,35 +35,33 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Chơi offline, Cài đặt cấu hình game -->
+        <!-- Chơi online, Xem bảng xếp hạng -->
+        <activity
+            android:name=".view.MatchActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.RankingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Chơi với máy -->
         <activity
             android:name=".view.DifficultyActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.GameActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.SettingsActivity"
+            android:name=".view.BotGameActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Chơi online, Xem lịch sử đấu -->
+        <!-- Quản lý thông tin người chơi -->
         <activity
-            android:name=".view.OnlineActivity"
+            android:name=".view.AdminActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.LobbyActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.OnlineGameActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.HistoryActivity"
+            android:name=".view.PlayerDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 

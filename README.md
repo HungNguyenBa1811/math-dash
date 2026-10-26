@@ -1,225 +1,105 @@
-# Math Dash - Retro Arcade Speed Math (Android Java)
+# Math Dash 1v1 - Game giải toán nhanh (Android Java + Spring Boot)
 
-> **Math Dash** là ứng dụng game giải toán nhanh sinh tồn (Speed Arithmetic Survival) trên nền tảng **Android Native (Java)**, được thiết kế theo phong cách đồ họa **Retro Arcade cổ điển**, độ tương phản cao và kiến trúc **MVC 3 tầng: View (Activity) / DAO / Entity** tuân thủ nguyên lý **Single Responsibility Principle (SRP)**.
+> Bài tập lớn môn Phân tích thiết kế hệ thống, **đề 9 "Game giải toán nhanh"**. Hệ thống gồm một server và nhiều client: người chơi đăng nhập, thấy danh sách người chơi online, thách đấu nhau trên cùng một đề 10 câu trắc nghiệm do server sinh và chấm, hoặc chơi với máy; xem bảng xếp hạng toàn hệ thống. Giao diện phong cách **Retro Arcade**, app theo **MVC 3 tầng entity – dao – view**.
 
 ---
 
 ## Mục lục
-1. [Giới thiệu & Lối chơi](#-giới-thiệu--lối-chơi)
-2. [Kiến trúc ứng dụng (MVC: View - DAO - Entity)](#-kiến-trúc-ứng-dụng)
-3. [Mô hình dữ liệu (ERD)](#-mô-hình-dữ-liệu-erd)
-4. [Giao diện & Phong cách Retro (UI/UX)](#-giao-diện--phong-cách-retro)
-5. [Cấu trúc thư mục dự án](#-cấu-trúc-thư-mục-dự-án)
-6. [Hướng dẫn cài đặt & Chạy ứng dụng](#-hướng-dẫn-cài-đặt--chạy-ứng-dụng)
+1. [Luật chơi](#luật-chơi)
+2. [Chức năng và phân công](#chức-năng-và-phân-công)
+3. [Kiến trúc](#kiến-trúc)
+4. [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+5. [Cài đặt và chạy](#cài-đặt-và-chạy)
 
 ---
 
-## Giới thiệu & Lối chơi
+## Luật chơi
 
-Người chơi sẽ hóa thân vào một thử thách tính nhẩm phản xạ cao:
-* **Thời gian giới hạn:** Mỗi câu hỏi có đúng **6 giây** đếm ngược. Nếu thanh thời gian về 0, tính là mất lượt!
-* **Hệ thống Máu (Lives):** Bắt đầu với **3 mạng (`♥ ♥ ♥`)**. Trả lời sai hoặc hết giờ bị trừ 1 mạng. Hết 3 mạng kết thúc ván chơi.
-* **Hệ thống Điểm & Combo:**
-  * Điểm cơ bản: `+10 PTS` mỗi câu đúng.
-  * Thưởng chuỗi (Streak Combo): Cộng thêm `combo * 2 PTS` (ví dụ chuỗi 5 được `+20 PTS`).
-  * Trả lời sai sẽ reset Combo về `x0`.
-* **Kỷ lục theo độ khó:** Mỗi ván offline được lưu vào SQLite; kỷ lục cao nhất ở từng độ khó hiện ngay ở màn chơi.
+- **Đề bài:** 10 câu cộng, trừ, nhân, mỗi câu 4 phương án. Tối đa 60 giây; hết giờ thì tự nộp, câu chưa chọn tính là sai.
+- **Kết quả trận** (server xác định, đồng hồ server đo thời gian làm bài):
+  1. Người bỏ trận (nhấn Thoát hoặc mất kết nối) thua.
+  2. Chỉ một người đúng hết 10 câu thì người đó thắng.
+  3. Cả 2 đều có câu sai thì hòa.
+  4. Cả 2 đúng hết thì ai nộp nhanh hơn thắng; bằng nhau thì hòa.
+- **Điểm trận:** thắng 1, hòa 0,5, thua 0. Tổng điểm là tổng điểm trận qua mọi trận đã xong.
+- **Chơi tiếp:** sau mỗi trận, cả 2 chọn Chơi tiếp thì vào trận mới với đề mới; một người Dừng thì cả 2 về màn chính.
+- **Bảng xếp hạng:** tổng điểm ↓, trung bình tổng điểm các đối thủ đã gặp ↓, trung bình thời gian làm bài trong các trận thắng ↑.
+- **Chơi với máy:** cùng luật; máy có 3 độ khó (Dễ / Trung bình / Khó) quyết định tỉ lệ đúng và tốc độ. Chạy offline, không tính điểm.
 
 ---
 
-## Kiến trúc ứng dụng
+## Chức năng và phân công
 
-Dự án áp dụng mô hình phân lớp rõ ràng, phân định trách nhiệm đơn nhất (**Single Responsibility**):
+| UC | Chức năng | Tác nhân | Người làm |
+|---|---|---|---|
+| UC01, UC02 | Đăng ký, Đăng nhập | Người chơi, Quản trị viên | Code chung; cả 2 trình bày |
+| UC03 | Chơi online: danh sách online, thách đấu, thi đấu, chơi tiếp | Người chơi | Hùng |
+| UC04 | Xem bảng xếp hạng | Người chơi | Hùng |
+| UC05 | Chơi với máy | Người chơi | Hoàng |
+| UC06 | Quản lý thông tin người chơi | Quản trị viên | Hoàng |
+
+Phạm vi và luồng chi tiết: [`docs/chung/01-pham-vi-use-case.md`](docs/chung/01-pham-vi-use-case.md). Kế hoạch issue: [`ISSUES_PLAN.md`](ISSUES_PLAN.md).
+
+---
+
+## Kiến trúc
 
 ```
-                        +-----------------------------+
-                        |      Activities (View)      |  <- Giao diện, sự kiện, điều phối
-                        +-------------+---------------+     (đồng hồ, gọi DAO, hiển thị)
-                                      |
-             +------------------------+------------------------+
-             v                                                 v
-+--------------------------+                     +--------------------------+
-|          Entity          |                     |           DAO            |
-| (Player, MathProblem,    |                     | (SQLite, REST, Firebase, |
-|  GameSession, Match...)  |                     |  sinh câu hỏi)           |
-|  + luật nghiệp vụ        |                     |                          |
-+--------------------------+                     +--------------------------+
+ App Android (client)                 Server Spring Boot                 MySQL
+ entity – dao – view   ── REST ──>    RestController → DAO → Entity ──>  tblPlayer, tblMatch,
+                                      (sinh đề, chấm, trọng tài)         tblMathProblem, tblMatchPlayer
+        │                                     │
+        └──── Firebase Realtime Database <────┘
+              presence (online, rỗi / bận), challenges (lời mời), matches (trận đang đấu)
 ```
 
-Không có lớp Controller riêng: Activity gọi thẳng DAO và dùng các hàm nghiệp vụ của Entity. Package `util` chỉ chứa lớp tiện ích không thuộc nghiệp vụ (ví dụ `SoundManager`), mỗi file dưới 200 dòng.
+- **App** (`app/`): Activity xử lý sự kiện và gọi thẳng DAO, không có lớp Controller. Luật nghiệp vụ là hàm Java thuần trên entity (`Match.getResult`, `Match.getPoints`, `BotGame.getResult`…). SQLite giữ bản sao người chơi và các ván chơi với máy; SharedPreferences giữ phiên đăng nhập.
+- **Server** (`server/`): `RestController → DAO (JDBC) → Entity`, không có tầng Service, không dùng JPA. Server sinh đề, lưu đề cùng đáp án, chấm bài và xác định kết quả.
+- **Firebase Realtime Database:** chỉ là kênh báo tức thời giữa các máy. Đề trên Firebase **không có đáp án**; mọi ghi vào `matches` do server làm.
 
-### 1. Tầng Entity (`ptit.e23cnpm01.nguyenbahung.math_dash.entity`)
-Các JavaBean / POJO thuần túy, đóng gói dữ liệu:
-* [`Player.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/entity/Player.java): Thông tin người chơi (ID, tên người dùng, kỷ lục cá nhân `high_score`).
-* [`MathProblem.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/entity/MathProblem.java): Đại diện cho phép toán (toán hạng, toán tử `+`, `-`, `×`, đáp án đúng và danh sách 4 lựa chọn).
-* [`GameSession.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/entity/GameSession.java): Trạng thái ván đấu đang diễn ra (điểm số, chuỗi combo, số mạng còn lại, câu hỏi hiện tại).
-* [`GameRecord.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/entity/GameRecord.java): Bản ghi tổng kết ván chơi để lưu vào bảng xếp hạng.
-
-### 2. Tầng DAO (`ptit.e23cnpm01.nguyenbahung.math_dash.dao`)
-Đảm nhiệm truy xuất và quản lý dữ liệu SQLite:
-* [`DatabaseHelper.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/dao/DatabaseHelper.java): Kế thừa `SQLiteOpenHelper`, khởi tạo database `math_dash.db` và bảng `players`, `game_records`.
-* [`PlayerDAO.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/dao/PlayerDAO.java): Tìm kiếm hoặc tạo mới người chơi theo tên gọi, cập nhật kỷ lục điểm cao nhất.
-* [`GameRecordDAO.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/dao/GameRecordDAO.java): Thêm lịch sử trận đấu, truy vấn Top 10 / Top 20 điểm cao nhất.
-* [`ProblemDAO.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/dao/ProblemDAO.java): Sinh ngẫu nhiên các câu hỏi số học hợp lý kèm 4 phương án không trùng lặp.
-
-### 3. Tầng View / Activity (`ptit.e23cnpm01.nguyenbahung.math_dash.view`)
-* [`FrmMainActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmMainActivity.java): Màn hình Menu chính, nhập tên nhân vật, xem trước Top 5 kỷ lục, nút bắt đầu.
-* [`FrmGameActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmGameActivity.java): Màn hình thi đấu chính (bảng điểm, thanh thời gian chạy mượt, phép toán to bản, lưới 2x2 nút bấm xúc giác, modal Game Over).
-* [`FrmLeaderboardActivity.java`](app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/frm/FrmLeaderboardActivity.java): Bảng vàng hiển thị đầy đủ thứ hạng, tỉ lệ chính xác và ngày chơi.
+Thiết kế chi tiết: lớp thực thể [`docs/chung/02-lop-thuc-the.md`](docs/chung/02-lop-thuc-the.md), CSDL [`docs/chung/03-csdl.md`](docs/chung/03-csdl.md), lớp chi tiết phần online [`docs/hung/4-lop-thiet-ke.md`](docs/hung/4-lop-thiet-ke.md).
 
 ---
 
-## Mô hình dữ liệu (ERD)
-
-Cơ sở dữ liệu SQLite cục bộ được thiết kế theo sơ đồ quan hệ:
-
-```mermaid
-erDiagram
-    PLAYERS ||--o{ GAME_RECORDS : achieves
-
-    PLAYERS {
-        INTEGER id PK "Tự tăng (Auto-increment)"
-        TEXT username "Tên người chơi (Unique)"
-        INTEGER high_score "Kỷ lục điểm cao nhất"
-        TIMESTAMP created_at "Thời điểm tạo tài khoản"
-    }
-
-    GAME_RECORDS {
-        INTEGER id PK "Tự tăng (Auto-increment)"
-        INTEGER player_id FK "Liên kết PLAYERS(id)"
-        INTEGER score "Điểm số đạt được"
-        INTEGER max_streak "Chuỗi combo dài nhất"
-        INTEGER total_correct "Số câu trả lời đúng"
-        INTEGER total_wrong "Số câu trả lời sai"
-        TIMESTAMP played_at "Thời điểm kết thúc ván đấu"
-    }
-```
-
----
-
-## Giao diện & Phong cách Retro
-
-Lấy cảm hứng từ máy game thùng **Arcade 80s** và màn hình **CRT xanh Phosphor**:
-
-* **Màu nền chủ đạo:** Đen carbon CRT (`#101419`) và xám khối bảng điều khiển (`#18202A`).
-* **Hệ thống màu chỉ báo độ tương phản cao:**
-  *  **Xanh Neon Phosphor (`#00FF66`):** Điểm số hiện tại, thông báo đúng `+ PTS`.
-  *  **Vàng Hổ Phách (`#FFB800`):** Chuỗi Combo streak, kỷ lục cá nhân.
-  *  **Xanh Cyan Neon (`#00E5FF`):** Thanh thời gian đếm ngược 6s, viền tiêu đề.
-  *  **Đỏ Arcade (`#FF3344`):** Biểu tượng trái tim sinh mệnh `♥ ♥ ♥`, cảnh báo Game Over.
-* **Touch Targets lớn:** 4 nút bấm phương án (lưới 2x2) có chiều cao tối thiểu **72dp**, chữ số monospace cỡ lớn `26sp`, viền nổi vật lý phản hồi xúc giác khi chạm.
-
----
-
-## Cấu trúc thư mục dự án
+## Cấu trúc thư mục
 
 ```
 math-dash/
-├── app/
-│   ├── build.gradle.kts
-│   ├── proguard-rules.pro
-│   └── src/
-│       ├── main/
-│       │   ├── AndroidManifest.xml
-│       │   ├── java/ptit/e23cnpm01/nguyenbahung/math_dash/
-│       │   │   ├── dao/
-│       │   │   │   ├── DatabaseHelper.java
-│       │   │   │   ├── GameRecordDAO.java
-│       │   │   │   ├── PlayerDAO.java
-│       │   │   │   └── ProblemDAO.java
-│       │   │   ├── entity/
-│       │   │   │   ├── GameRecord.java
-│       │   │   │   ├── GameSession.java
-│       │   │   │   ├── MathProblem.java
-│       │   │   │   └── Player.java
-│       │   │   └── frm/
-│       │   │       ├── FrmGameActivity.java
-│       │   │       ├── FrmLeaderboardActivity.java
-│       │   │       └── FrmMainActivity.java
-│       │   └── res/
-│       │       ├── drawable/
-│       │       │   ├── bg_retro_button.xml
-│       │       │   ├── bg_retro_button_accent.xml
-│       │       │   ├── bg_retro_button_secondary.xml
-│       │       │   ├── bg_retro_card.xml
-│       │       │   ├── bg_retro_input.xml
-│       │       │   ├── bg_retro_timer_progress.xml
-│       │       │   └── ic_launcher.xml
-│       │       ├── layout/
-│       │       │   ├── activity_frm_game.xml
-│       │       │   ├── activity_frm_leaderboard.xml
-│       │       │   └── activity_frm_main.xml
-│       │       └── values/
-│       │           ├── colors.xml
-│       │           ├── strings.xml
-│       │           └── themes.xml
-│       └── test/java/ptit/e23cnpm01/nguyenbahung/math_dash/
-│           ├── GameSessionTest.java
-│           └── ProblemDAOTest.java
-├── build.gradle.kts
-├── settings.gradle.kts
-└── README.md
+├── app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/
+│   ├── entity/   Player, MathProblem, Challenge, Match, MatchPlayer, BotGame
+│   ├── dao/      DAO (SQLite), ApiDAO (REST), FirebaseDAO + các DAO con, SessionDAO, ProblemDAO
+│   ├── view/     LoginActivity, RegisterActivity, MainActivity, MatchActivity, RankingActivity,
+│   │             DifficultyActivity, BotGameActivity, AdminActivity, PlayerDetailActivity
+│   └── util/     PointFormat
+├── server/       Spring Boot (xem server/README.md)
+├── docs/
+│   ├── chung/    phạm vi + use case, lớp thực thể, CSDL
+│   └── hung/     tài liệu phân tích, thiết kế, báo cáo của Hùng
+├── database.rules.json   Security Rules của Realtime Database
+├── ISSUES_PLAN.md · CONVENTION.md · REPORT_CONVENTION.md
 ```
 
 ---
 
-## Hướng dẫn cài đặt & Chạy ứng dụng
+## Cài đặt và chạy
 
-### Yêu cầu môi trường
-* **Hệ điều hành:** Windows / macOS / Linux.
-* **JDK:** Java 11 hoặc Java 17.
-* **Android Studio:** Bản Iguana / Jellyfish / Koala / Ladybug trở lên.
-* **SDK Tools:** `minSdk = 24` (Android 7.0+), `compileSdk = 36` (Android 15+).
+**Yêu cầu:** JDK 17, Android Studio (minSdk 24), Maven, MySQL.
 
-### Chạy bằng Android Studio
-1. Mở Android Studio, chọn **Open** và trỏ đến thư mục `D:\Code\Android\math-dash`.
-2. Đợi Gradle đồng bộ (Sync Project with Gradle Files).
-3. Chọn máy ảo (Emulator) hoặc cắm thiết bị thật (bật USB Debugging).
-4. Nhấn nút **Run 'app'** (`Shift + F10`) để khởi chạy game.
+1. **Server:** làm theo [`server/README.md`](server/README.md) (tạo CSDL bằng `server/db/schema.sql`, cấu hình, chạy hoặc deploy lên Render).
+2. **App:** đặt `google-services.json` vào `app/`, mở thư mục gốc bằng Android Studio và Run. `BASE_URL` trong `ApiDAO` trỏ tới server trên Render; chạy server local thì đổi thành `http://10.0.2.2:8080/api`.
+3. **Tài khoản quản trị** tạo sẵn: `admin` / `admin123`.
 
-### Chạy kiểm thử & Build qua dòng lệnh (Terminal / PowerShell)
+Dòng lệnh:
 
-* **Chạy bộ Unit Test tự động:**
-  ```powershell
-  .\gradlew.bat test
-  ```
-
-* **Build file APK Debug:**
-  ```powershell
-  .\gradlew.bat assembleDebug
-  ```
-  File APK đầu ra nằm tại:
-  `app/build/outputs/apk/debug/app-debug.apk`
-
----
-
-## Kiến trúc Math Dash 1v1 (phạm vi MVP)
-
-Dự án hiện tại mới là **khung stub** (đủ class và chữ ký hàm, phần thân để `// TODO`). Phạm vi MVP gồm 6 chức năng: Đăng ký, Đăng nhập, Chơi offline, Cài đặt cấu hình game, Chơi online (Tạo phòng / Tìm phòng bằng mã), Xem lịch sử đấu. Chi tiết ở [`docs/chung/01-pham-vi-use-case.md`](docs/chung/01-pham-vi-use-case.md).
-
-* **App Android** (`app/`): giao diện, luật chơi, SQLite cho chế độ offline (kỷ lục theo độ khó), SharedPreferences cho cấu hình game và phiên đăng nhập.
-* **Backend Spring Boot + MySQL** (`server/`): tài khoản, lịch sử đấu. Cấu trúc mỏng `RestController → DAO (JDBC) → Entity`. Khi trận online kết thúc, backend làm **trọng tài**: đọc trận từ Firebase, xác định thắng / thua / hòa rồi lưu MySQL.
-* **Firebase Realtime Database:** chỉ giữ trận **đang diễn ra** để 2 máy thấy điểm của nhau. Backend đọc và ghi trận qua REST API của Firebase.
-* **Đồng bộ câu hỏi bằng seed:** khi tạo phòng sinh một `questionSeed`, cả 2 máy sinh cùng một dãy câu bằng `new ProblemDAO(new Random(questionSeed))`.
-
-Cấu trúc trận đang diễn ra trên Realtime Database:
-
+```powershell
+.\gradlew.bat test            # unit test của app
+.\gradlew.bat assembleDebug   # app/build/outputs/apk/debug/app-debug.apk
+cd server; mvn test           # unit test của server
 ```
-matches/{roomCode}                  // mã phòng 6 chữ số
-    status       : "waiting" | "playing" | "finished"
-    questionSeed : long
-    createdAt    : ServerValue.TIMESTAMP
-    players/
-        {playerId} : { displayName: String, score: int, forfeited: bool, connected: bool, timeUp: bool }
-```
-
-Chi tiết từng nhiệm vụ: **[ISSUES_PLAN.md](ISSUES_PLAN.md)** · Quy ước code: **[CONVENTION.md](CONVENTION.md)** · Quy ước báo cáo OOAD: **[REPORT_CONVENTION.md](REPORT_CONVENTION.md)**
 
 ---
 
 ## Tác giả
-* **Lớp:** E23CNPM01
-* **Sinh viên thực hiện:**
-  * Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Đăng ký, Đăng nhập, Chơi online, Xem lịch sử đấu, backend
-  * Hoàng ([@Minahn210](https://github.com/Minahn210)) - Chơi offline, Cài đặt cấu hình game
-* **Học viện Công nghệ Bưu chính Viễn thông (PTIT)**
+* **Lớp:** E23CNPM01 · **Học viện Công nghệ Bưu chính Viễn thông (PTIT)**
+* Nguyễn Bá Hùng ([@HungNguyenBa1811](https://github.com/HungNguyenBa1811)) - Nhóm trưởng: Chơi online, Xem bảng xếp hạng, Đăng nhập – đăng ký, server
+* Hoàng ([@Minahn210](https://github.com/Minahn210)) - Chơi với máy, Quản lý thông tin người chơi, Đăng nhập – đăng ký

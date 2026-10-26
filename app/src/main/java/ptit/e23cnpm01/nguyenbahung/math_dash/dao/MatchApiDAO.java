@@ -1,7 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 
-import android.os.SystemClock;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,61 +9,89 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
 /**
- * Gọi API trận đấu. Các hàm chạy đồng bộ nên phải gọi trong Thread.
+ * Gọi API trận đấu, mỗi hàm một API. Các hàm chạy đồng bộ nên phải gọi trong Thread.
  */
 public class MatchApiDAO extends ApiDAO {
-    private static final int FINISH_ATTEMPTS = 3;
 
-    // POST /api/matches/{roomCode}/finish: server kiểm tra, lưu trận và trả trận đã lưu.
-    // Lần ghi timeUp / forfeited của máy này có thể chưa tới Firebase khi server đọc, nên thử lại cách nhau 1 giây
-    public Match finishMatch(String roomCode) throws IOException, JSONException {
-        IOException lastError = null;
-        for (int attempt = 0; attempt < FINISH_ATTEMPTS; attempt++) {
-            try {
-                return toMatch(post("/matches/" + roomCode + "/finish", new JSONObject()));
-            } catch (IOException e) {
-                lastError = e;
-                SystemClock.sleep(1000);
-            }
-        }
-        throw lastError;
+    // POST /api/matches: tạo trận từ lời mời đã đồng ý
+    public Match createMatch(Challenge challenge) throws IOException, JSONException {
+        JSONObject body = new JSONObject();
+        body.put("id", challenge.getId());
+        body.put("challenger", new JSONObject().put("id", challenge.getChallenger().getId()));
+        body.put("opponent", new JSONObject().put("id", challenge.getOpponent().getId()));
+        return toMatch(post("/matches", body));
     }
 
-    // GET /api/matches?playerId={id}: các trận đã kết thúc của người chơi, mới nhất trước
-    public List<Match> getHistory(int playerId) throws IOException, JSONException {
-        JSONArray array = getArray("/matches?playerId=" + playerId);
-        List<Match> list = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++) {
-            list.add(toMatch(array.getJSONObject(i)));
-        }
-        return list;
+    // POST /api/matches/{id}/submit: nộp bài làm
+    public Match submit(int matchId, int playerId, List<Integer> answers) throws IOException, JSONException {
+        JSONObject body = new JSONObject();
+        body.put("player", new JSONObject().put("id", playerId));
+        body.put("answers", new JSONArray(answers));
+        return toMatch(post("/matches/" + matchId + "/submit", body));
     }
 
-    // Đóng gói JSON thành Match + 2 MatchPlayer + 2 Player
+    // POST /api/matches/{id}/forfeit: bỏ trận
+    public Match forfeit(int matchId, int playerId) throws IOException, JSONException {
+        return toMatch(post("/matches/" + matchId + "/forfeit?playerId=" + playerId, new JSONObject()));
+    }
+
+    // POST /api/matches/{id}/continue: chơi tiếp (true) hoặc dừng (false)
+    public Match continueMatch(int matchId, int playerId, boolean choice) throws IOException, JSONException {
+        String path = "/matches/" + matchId + "/continue?playerId=" + playerId + "&choice=" + choice;
+        return toMatch(post(path, new JSONObject()));
+    }
+
+    // GET /api/matches/{id}: trận đầy đủ, có đáp án khi trận đã xong
+    public Match getById(int matchId) throws IOException, JSONException {
+        return toMatch(get("/matches/" + matchId));
+    }
+
+    // Đóng gói JSON thành Match + MathProblem + 2 MatchPlayer + 2 Player
     private Match toMatch(JSONObject json) throws JSONException {
         Match match = new Match();
         match.setId(json.getInt("id"));
-        match.setRoomCode(json.getString("roomCode"));
-        match.setStatus(json.getString("status"));
-        match.setQuestionSeed(json.getLong("questionSeed"));
-        match.setCreatedAt(new Date(json.getLong("createdAt")));
-        match.setEndedAt(new Date(json.getLong("endedAt")));
+        match.setStatus(json.optString("status", Match.PLAYING));
+        match.setStartedAt(new Date(json.getLong("startedAt")));
+        match.setEndedAt(json.isNull("endedAt") ? null : new Date(json.getLong("endedAt")));
+        JSONArray questions = json.getJSONArray("questions");
+        for (int i = 0; i < questions.length(); i++) {
+            match.getQuestions().add(toProblem(questions.getJSONObject(i)));
+        }
         JSONArray players = json.getJSONArray("players");
         for (int i = 0; i < players.length(); i++) {
-            JSONObject item = players.getJSONObject(i);
-            JSONObject p = item.getJSONObject("player");
-            MatchPlayer mp = new MatchPlayer(new Player(p.getInt("id"), p.optString("username"), p.getString("displayName")));
-            mp.setId(item.getInt("id"));
-            mp.setScore(item.getInt("score"));
-            mp.setForfeited(item.getBoolean("forfeited"));
-            mp.setTimeUp(item.getBoolean("timeUp"));
-            match.getPlayers().add(mp);
+            match.getPlayers().add(toMatchPlayer(players.getJSONObject(i)));
         }
         return match;
+    }
+
+    private MathProblem toProblem(JSONObject json) throws JSONException {
+        List<Integer> options = new ArrayList<>();
+        JSONArray array = json.getJSONArray("answerOptions");
+        for (int i = 0; i < array.length(); i++) {
+            options.add(array.getInt(i));
+        }
+        MathProblem p = new MathProblem(json.getInt("operand1"), json.getInt("operand2"),
+                json.getString("operator"), json.getInt("correctAnswer"), options);
+        p.setId(json.getInt("id"));
+        return p;
+    }
+
+    private MatchPlayer toMatchPlayer(JSONObject json) throws JSONException {
+        JSONObject p = json.getJSONObject("player");
+        Player player = new Player(p.getInt("id"), p.optString("username"), p.getString("displayName"));
+        player.setTotalPoints(p.optDouble("totalPoints", 0));
+        MatchPlayer mp = new MatchPlayer(player);
+        mp.setId(json.getInt("id"));
+        mp.setCorrectCount(json.getInt("correctCount"));
+        mp.setSubmittedAt(json.isNull("submittedAt") ? null : new Date(json.getLong("submittedAt")));
+        mp.setForfeited(json.getBoolean("forfeited"));
+        return mp;
     }
 }

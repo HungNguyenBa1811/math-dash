@@ -12,29 +12,60 @@
     <string name="btn_register">ĐĂNG KÝ</string>
 
     <!-- Màn chính -->
-    <string name="btn_play_offline">CHƠI OFFLINE</string>
-    <string name="btn_play_online">CHƠI ONLINE</string>
-    <string name="btn_history">LỊCH SỬ ĐẤU</string>
-    <string name="btn_settings">CÀI ĐẶT</string>
+    <string name="title_online_players">NGƯỜI CHƠI ONLINE</string>
+    <string name="label_points">%1$s điểm</string>
+    <string name="btn_play_bot">CHƠI VỚI MÁY</string>
+    <string name="btn_ranking">BẢNG XẾP HẠNG</string>
     <string name="btn_logout">ĐĂNG XUẤT</string>
 
-    <!-- Chơi online -->
-    <string name="title_online">CHƠI ONLINE</string>
-    <string name="btn_create_room">TẠO PHÒNG</string>
-    <string name="label_or">hoặc</string>
-    <string name="hint_room_code">Nhập mã 6 chữ số</string>
-    <string name="btn_join_room">VÀO PHÒNG</string>
-    <string name="label_room_code">MÃ PHÒNG</string>
-    <string name="label_share_code">Gửi mã này cho bạn để vào phòng</string>
-    <string name="status_waiting">Đang chờ đối thủ...</string>
-    <string name="label_no_opponent">Đối thủ: —</string>
+    <!-- Chơi online: danh sách online, lời mời -->
+    <string name="status_free">Rỗi</string>
+    <string name="status_busy">Bận</string>
+    <string name="msg_busy">%1$s đang bận</string>
+    <string name="msg_waiting_answer">Đang chờ %1$s trả lời...</string>
+    <string name="msg_rejected">%1$s đã từ chối lời mời</string>
+    <string name="msg_challenge">%1$s (%2$s điểm) thách đấu bạn</string>
+    <string name="btn_accept">ĐỒNG Ý</string>
+    <string name="btn_reject">TỪ CHỐI</string>
     <string name="btn_cancel">HỦY</string>
-    <string name="label_vs">VS</string>
-    <string name="btn_ok">OK</string>
-    <string name="desc_backspace">Xóa</string>
-    <string name="btn_back_to_menu">VỀ MENU</string>
 
-    <!-- Lịch sử đấu -->
-    <string name="title_history">LỊCH SỬ ĐẤU</string>
-    <string name="label_empty_history">Chưa có trận nào</string>
+    <!-- Chơi online: thi đấu, kết quả -->
+    <string name="title_match">THI ĐẤU</string>
+    <string name="time_full">01:00</string>
+    <string name="time_zero">00:00</string>
+    <string name="status_opponent_working">%1$s đang làm bài</string>
+    <string name="status_opponent_submitted">%1$s đã nộp bài</string>
+    <string name="btn_submit">NỘP BÀI</string>
+    <string name="btn_exit">THOÁT</string>
+    <string name="msg_submitted">Đã nộp bài, đang chờ đối thủ...</string>
+    <string name="msg_confirm_leave">Thoát sẽ bị xử thua?</string>
+    <string name="btn_stay">Ở LẠI</string>
+    <string name="btn_leave">THOÁT</string>
+    <string name="result_win">THẮNG!</string>
+    <string name="result_lose">THUA!</string>
+    <string name="result_draw">HÒA!</string>
+    <string name="label_my_result">Bạn: %1$d/10 câu đúng · %2$s</string>
+    <string name="label_opponent_result">%1$s: %2$d/10 câu đúng · %3$s</string>
+    <string name="label_match_points">+%1$s điểm · Tổng điểm: %2$s</string>
+    <string name="label_seconds">%1$s giây</string>
+    <string name="label_seconds_short">%1$s s</string>
+    <string name="label_no_time">—</string>
+    <string name="label_continue">Chơi tiếp?</string>
+    <string name="btn_continue">CHƠI TIẾP</string>
+    <string name="btn_stop">DỪNG</string>
+    <string name="btn_back_to_menu">VỀ MENU</string>
+    <string name="msg_waiting_opponent">Đang chờ đối thủ...</string>
+    <string name="msg_opponent_left">Đối thủ đã thoát, bạn thắng</string>
+    <string name="msg_opponent_stopped">Đối thủ đã dừng chơi</string>
+
+    <!-- Bảng xếp hạng -->
+    <string name="title_ranking">BẢNG XẾP HẠNG</string>
+    <string name="msg_ranking_error">Không tải được bảng xếp hạng, kiểm tra kết nối mạng</string>
+
+    <!-- Chơi với máy -->
+    <string name="title_bot_game">CHƠI VỚI MÁY</string>
+
+    <!-- Quản trị -->
+    <string name="title_admin">QUẢN LÝ NGƯỜI CHƠI</string>
+    <string name="title_player_detail">THÔNG TIN NGƯỜI CHƠI</string>
 </resources>

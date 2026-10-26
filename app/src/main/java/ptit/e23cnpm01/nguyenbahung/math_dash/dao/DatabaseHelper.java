@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "math_dash.db";
-    private static final int DB_VERSION = 2;
+    // Bản 3: thay tblGameRecord (chơi offline 3 mạng) bằng tblBotGame (chơi với máy)
+    private static final int DB_VERSION = 3;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -23,21 +24,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "id INTEGER PRIMARY KEY, "
                 + "username TEXT NOT NULL, "
                 + "displayName TEXT NOT NULL)");
-        db.execSQL("CREATE TABLE tblGameRecord ("
+        db.execSQL("CREATE TABLE tblBotGame ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "difficulty INTEGER NOT NULL CHECK (difficulty BETWEEN 1 AND 3), "
-                + "score INTEGER NOT NULL, "
-                + "maxStreak INTEGER NOT NULL, "
                 + "correctCount INTEGER NOT NULL, "
-                + "wrongCount INTEGER NOT NULL, "
+                + "finishTime INTEGER NOT NULL, "
+                + "botCorrectCount INTEGER NOT NULL, "
+                + "botFinishTime INTEGER NOT NULL, "
                 + "playedAt TEXT NOT NULL, "
                 + "tblPlayerId INTEGER NOT NULL REFERENCES tblPlayer(id))");
-        db.execSQL("CREATE INDEX idx_gamerecord_best ON tblGameRecord (tblPlayerId, difficulty, score)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS tblGameRecord");
+        db.execSQL("DROP TABLE IF EXISTS tblBotGame");
         db.execSQL("DROP TABLE IF EXISTS tblPlayer");
         onCreate(db);
     }

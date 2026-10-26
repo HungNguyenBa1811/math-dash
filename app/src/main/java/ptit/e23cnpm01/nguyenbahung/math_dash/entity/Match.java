@@ -4,72 +4,97 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 public class Match {
-    public static final String WAITING = "waiting";
-    public static final String PLAYING = "playing";
-    public static final String FINISHED = "finished";
-
     public static final String WIN = "WIN";
     public static final String LOSE = "LOSE";
     public static final String DRAW = "DRAW";
+    public static final String PLAYING = "playing";
+    public static final String FINISHED = "finished";
+    public static final int QUESTION_COUNT = 10;
 
     private int id;
-    private String roomCode;
     private String status;
-    private long questionSeed;
-    private Date createdAt;
+    private Date startedAt;
     private Date endedAt;
+    private List<MathProblem> questions = new ArrayList<>();
     private List<MatchPlayer> players = new ArrayList<>();
 
-    // Vào được trận khi trận đang chờ, chưa đủ 2 người và người này chưa có trong trận
-    public boolean canJoin(int playerId) {
-        if (!WAITING.equals(status) || players.size() >= 2) {
-            return false;
-        }
-        for (MatchPlayer mp : players) {
-            if (mp.getPlayer().getId() == playerId) {
-                return false;
+    // Chấm một bài làm: số câu có phương án đã chọn trùng đáp án đúng
+    public int countCorrect(List<Integer> answers) {
+        int count = 0;
+        for (int i = 0; i < questions.size() && i < answers.size(); i++) {
+            if (questions.get(i).isCorrect(answers.get(i))) {
+                count++;
             }
         }
-        return true;
+        return count;
     }
 
-    // Trận đã xong: có người bỏ trận, hoặc cả 2 người đã hết giờ
+    // Trận đã xong: có người bỏ trận, hoặc cả 2 người đã nộp bài
     public boolean isOver() {
-        int timeUpCount = 0;
+        int submitted = 0;
         for (MatchPlayer mp : players) {
             if (mp.isForfeited()) {
                 return true;
             }
-            if (mp.isTimeUp()) {
-                timeUpCount++;
+            if (mp.getSubmittedAt() != null) {
+                submitted++;
             }
         }
-        return players.size() == 2 && timeUpCount == 2;
+        return players.size() == 2 && submitted == 2;
     }
 
-    // Kết quả của playerId: ai bỏ trận thì thua, không ai bỏ thì so điểm
-    public String getResult(int playerId) {
-        MatchPlayer me = null;
-        MatchPlayer opponent = null;
-        for (MatchPlayer mp : players) {
-            if (mp.getPlayer().getId() == playerId) {
-                me = mp;
-            } else {
-                opponent = mp;
-            }
+    // Thời gian làm bài (mili giây) theo đồng hồ server; chưa nộp thì coi như chậm nhất
+    public long getFinishTime(int playerId) {
+        MatchPlayer mp = find(playerId, true);
+        if (mp.getSubmittedAt() == null) {
+            return Long.MAX_VALUE;
         }
+        return mp.getSubmittedAt().getTime() - startedAt.getTime();
+    }
+
+    // WIN / LOSE / DRAW của playerId: bỏ trận thì thua, còn lại xét đúng hết và thời gian
+    public String getResult(int playerId) {
+        MatchPlayer me = find(playerId, true);
+        MatchPlayer opponent = find(playerId, false);
         if (me.isForfeited()) {
             return LOSE;
         }
         if (opponent.isForfeited()) {
             return WIN;
         }
-        if (me.getScore() == opponent.getScore()) {
+        return judge(me.getCorrectCount(), getFinishTime(playerId),
+                opponent.getCorrectCount(), getFinishTime(opponent.getPlayer().getId()));
+    }
+
+    // Điểm trận: thắng 1, hòa 0,5, thua 0
+    public double getPoints(int playerId) {
+        String result = getResult(playerId);
+        return WIN.equals(result) ? 1 : DRAW.equals(result) ? 0.5 : 0;
+    }
+
+    // Luật của đề: chỉ một người đúng hết thì người đó thắng; cả 2 có câu sai thì hòa;
+    // cả 2 đúng hết thì ai nhanh hơn thắng, bằng nhau thì hòa. Dùng chung cho chơi với máy
+    public static String judge(int myCorrect, long myTime, int otherCorrect, long otherTime) {
+        boolean meAll = myCorrect == QUESTION_COUNT;
+        boolean otherAll = otherCorrect == QUESTION_COUNT;
+        if (meAll != otherAll) {
+            return meAll ? WIN : LOSE;
+        }
+        if (!meAll || myTime == otherTime) {
             return DRAW;
         }
-        return me.getScore() > opponent.getScore() ? WIN : LOSE;
+        return myTime < otherTime ? WIN : LOSE;
+    }
+
+    // mine = true: người chơi có id playerId; mine = false: đối thủ của người đó
+    private MatchPlayer find(int playerId, boolean mine) {
+        for (MatchPlayer mp : players) {
+            if ((mp.getPlayer().getId() == playerId) == mine) {
+                return mp;
+            }
+        }
+        throw new IllegalArgumentException("Người chơi " + playerId + " không có trong trận " + id);
     }
 
     public int getId() {
@@ -80,14 +105,6 @@ public class Match {
         this.id = id;
     }
 
-    public String getRoomCode() {
-        return roomCode;
-    }
-
-    public void setRoomCode(String roomCode) {
-        this.roomCode = roomCode;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -96,20 +113,12 @@ public class Match {
         this.status = status;
     }
 
-    public long getQuestionSeed() {
-        return questionSeed;
+    public Date getStartedAt() {
+        return startedAt;
     }
 
-    public void setQuestionSeed(long questionSeed) {
-        this.questionSeed = questionSeed;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setStartedAt(Date startedAt) {
+        this.startedAt = startedAt;
     }
 
     public Date getEndedAt() {
@@ -118,6 +127,14 @@ public class Match {
 
     public void setEndedAt(Date endedAt) {
         this.endedAt = endedAt;
+    }
+
+    public List<MathProblem> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<MathProblem> questions) {
+        this.questions = questions;
     }
 
     public List<MatchPlayer> getPlayers() {

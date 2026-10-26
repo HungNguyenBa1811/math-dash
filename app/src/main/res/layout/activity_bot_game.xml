@@ -5,15 +5,15 @@
     android:layout_height="match_parent"
     android:background="@color/arcade_bg"
     android:fitsSystemWindows="true"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="24dp"
-    tools:context=".view.SettingsActivity">
+    tools:context=".view.BotGameActivity">
 
     <TextView
-        style="@style/RetroText"
+        style="@style/RetroTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SettingsActivity" />
+        android:text="@string/title_bot_game" />
 
 </LinearLayout>
