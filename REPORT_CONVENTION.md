@@ -138,7 +138,7 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 - Viết theo dạng luồng nghiệp vụ, nối các bước bằng `→`.
 - Mỗi lần có giao diện hiện ra thì liệt kê đủ thành phần của giao diện đó.
 
-> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, danh sách 10 câu hỏi mỗi câu 4 phương án, nút Nộp bài, nút Thoát → …
+> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D, nút Thoát → Người chơi bấm một ô, câu tiếp theo hiện ra → Làm xong 10 câu, nút Nộp bài hiện ra → …
 
 **Kịch bản chuẩn v1:**
 - Các bước đánh số, xen kẽ hành động của Người chơi và phản hồi của Hệ thống.

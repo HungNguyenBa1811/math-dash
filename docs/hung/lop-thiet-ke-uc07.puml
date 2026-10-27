@@ -36,6 +36,8 @@ package "Client (Android)" {
     - deleteFriendship(friendship : Friendship) : void
     - refreshTitles() : void
     - enableAddButton() : void
+    - bindViews() : void
+    - showToast(message : String) : void
   }
   class FriendRequestAdapter <<boundary>> {
     - listFriendship : List<Friendship>

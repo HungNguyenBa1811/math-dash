@@ -528,7 +528,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Input:** `SessionDAO`; `ProblemDAO`, `MathProblem`, `BotGame.getResult` (M1-07); bố cục màn thi đấu ở `docs/hung/4-lop-thiet-ke.md` mục 1.1 để thống nhất giao diện.
 - **Output:**
   - **`DifficultyActivity`:** 3 nút Dễ / Trung bình / Khó.
-  - **`BotGameActivity`** + layout: ô thời gian 60 s, dòng "Máy đang làm bài" / "Máy đã nộp bài" (đổi khi tới thời gian nộp của máy), danh sách 10 câu 4 phương án, nút Nộp bài, nút Thoát; overlay kết quả THẮNG / THUA / HÒA, số câu đúng và thời gian của mình và của máy, nút Chơi lại / Về menu.
+  - **`BotGameActivity`** + layout: ô thời gian 60 s, dòng "Máy đang làm bài" / "Máy đã nộp bài" (đổi khi tới thời gian nộp của máy), mỗi lần một câu với 4 ô A, B, C, D như `MatchActivity` (bấm một ô là sang câu sau), làm xong 10 câu mới hiện nút Nộp bài, nút Thoát; overlay kết quả THẮNG / THUA / HÒA, số câu đúng và thời gian của mình và của máy, nút Chơi lại / Về menu.
   - Giả lập máy: số câu đúng theo xác suất, thời gian nộp ngẫu nhiên theo D8.
   - **`BotGameDAO extends DAO`:** `insert(BotGame)`.
 - **Requirement:**
