@@ -21,9 +21,9 @@ title Phác thảo giao diện – Xem bảng xếp hạng
   <b>BẢNG XẾP HẠNG
   {#
   <b>#</b> | <b>Tên</b> | <b>Điểm</b> | <b>TB đối thủ</b> | <b>TB thắng</b>
-  <color:orange>1</color> | MINH | 15 | 10,5 | 41,3 s
-  <color:gray>2</color> | <b><color:blue>HUNG</color></b> | <b>13,5</b> | <b>11</b> | <b>39,8 s</b>
-  <color:brown>3</color> | LAN | 13,5 | 9 | 44,0 s
+  1 | MINH | 15 | 10,5 | 41,3 s
+  2 | <b><color:blue>HUNG</color></b> | <b>13,5</b> | <b>11</b> | <b>39,8 s</b>
+  3 | LAN | 13,5 | 9 | 44,0 s
   4 | HOANG | 9 | 13,5 | 47,2 s
   5 | AN | 4,5 | 12 | 49,0 s
   6 | NAM | 4,5 | 12 | 52,1 s

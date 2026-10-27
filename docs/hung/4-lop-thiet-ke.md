@@ -69,7 +69,7 @@ Chức năng có 2 màn, 1 hộp thoại lời mời và 1 overlay, đi theo th�
   - Bên dưới là danh sách người chơi online. Mỗi dòng có tên, tổng điểm và nhãn trạng thái: Rỗi nền xanh, Bận nền xám. Dòng Bận vẫn bấm được nhưng chỉ hiện thông báo.
 - **Màn thi đấu** chia 3 tầng từ trên xuống:
   1. Hàng trên: ô thời gian đếm ngược bên trái, dòng trạng thái đối thủ bên phải.
-  2. Danh sách 10 câu cuộn được. Mỗi câu là một thẻ gồm số thứ tự, phép tính chữ lớn, 4 phương án dạng RadioButton xếp 2 x 2.
+  2. Danh sách 10 câu cuộn được. Mỗi câu là một thẻ gồm số thứ tự, phép tính chữ lớn, 4 phương án dạng RadioButton xếp thành một hàng ngang.
   3. Hàng dưới: nút Thoát nhỏ bên trái, nút Nộp bài lớn bên phải.
 - **Overlay kết quả** che màn thi đấu. Bảng so sánh 2 cột (Bạn, đối thủ) giúp người chơi thấy vì sao thắng: đúng hết hay nhanh hơn.
 
@@ -83,7 +83,7 @@ Chức năng có 2 màn, 1 hộp thoại lời mời và 1 overlay, đi theo th�
 | item_player.xml | txtName | TextView | Tên người chơi | một dòng của outsubListPlayer |
 | | txtPoints | TextView | Tổng điểm | một dòng của outsubListPlayer |
 | | txtStatus | TextView | Rỗi (xanh) / Bận (xám) | một dòng của outsubListPlayer |
-| MatchActivity | txtTimer | TextView | Ô thời gian 00:60 → 00:00 | outTimer |
+| MatchActivity | txtTimer | TextView | Ô thời gian 01:00 → 00:00; nộp xong thì hiện "Đã nộp bài, đang chờ đối thủ..." | outTimer |
 | | txtOpponentStatus | TextView | "HOANG đang làm bài" / "HOANG đã nộp bài" | outOpponentStatus |
 | | rvQuestions | RecyclerView | Danh sách 10 câu hỏi | inoutListQuestion |
 | | btnSubmit | Button | Nộp bài | subSubmit |
@@ -96,7 +96,7 @@ Chức năng có 2 màn, 1 hộp thoại lời mời và 1 overlay, đi theo th�
 | | txtOpponentResult | TextView | "HOANG: 10/10 câu đúng · 45,6 giây" | outOpponentResult |
 | | txtPoints | TextView | "+1 điểm · Tổng điểm: 13,5" | outPoints |
 | | btnContinue | Button | Chơi tiếp | subContinue |
-| | btnStop | Button | Dừng | subStop |
+| | btnStop | Button | Dừng; khi có người bỏ trận thì đổi thành Về menu | subStop |
 
 Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời", "Đối thủ đã dừng chơi") dùng Toast. Hộp thoại lời mời, hộp thoại chờ trả lời và hộp thoại "Thoát sẽ bị xử thua?" dùng AlertDialog. Cả hai đều không phải thành phần của layout.
 
@@ -164,7 +164,6 @@ Firebase không phải một lớp trên biểu đồ: các FirebaseDAO ở app 
 Màn Bảng xếp hạng là một danh sách cuộn, mỗi dòng là một item_ranking.xml.
 - Hàng tiêu đề cột cố định ở trên.
 - Dòng của người xem có nền màu nhấn, để thấy ngay hạng của mình.
-- 3 hạng đầu có số hạng màu vàng, bạc, đồng.
 
 **Bảng thành phần:**
 

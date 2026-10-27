@@ -22,6 +22,13 @@
 
 - 5a.1. MainView hiển thị thông báo đối thủ đang bận, không gọi sendChallenge().
 
+**Ngoại lệ 9a: Người chơi hủy lời mời khi đang chờ.**
+
+- 9a.1. Người chơi nhấn Hủy trên MainView.
+- 9a.2. MainView gọi hàm rejectChallenge() của lớp Challenge.
+- 9a.3. Lớp Challenge đánh dấu lời mời đã hủy và trả về cho MainView.
+- 9a.4. MainView đóng thông báo chờ và giữ nguyên giao diện chính.
+
 **Ngoại lệ 10a: Đối thủ từ chối lời mời.**
 
 - 10a.1. Lớp Challenge trả về lời mời đã bị từ chối cho MainView.
