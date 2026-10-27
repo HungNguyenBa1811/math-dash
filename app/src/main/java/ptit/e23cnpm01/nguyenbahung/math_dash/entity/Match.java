@@ -19,10 +19,12 @@ public class Match {
     private List<MathProblem> questions = new ArrayList<>();
     private List<MatchPlayer> players = new ArrayList<>();
 
-    public int countCorrect(List<Integer> answers) {
+    // Gắn câu thứ i của đề vào bài làm câu thứ i rồi đếm số câu đúng
+    public int countCorrect(List<Answer> answers) {
         int count = 0;
         for (int i = 0; i < questions.size() && i < answers.size(); i++) {
-            if (questions.get(i).isCorrect(answers.get(i))) {
+            answers.get(i).setProblem(questions.get(i));
+            if (answers.get(i).isCorrect()) {
                 count++;
             }
         }

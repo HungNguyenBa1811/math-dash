@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ProblemDAO;
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.BotGame;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
@@ -97,15 +98,19 @@ public class MatchTest {
     public void countCorrectChamTheoDapAnDung() {
         Match m = new Match();
         m.setQuestions(new ProblemDAO(new Random(37)).generateProblems(Match.QUESTION_COUNT));
-        List<Integer> answers = new ArrayList<>();
+        List<Answer> answers = new ArrayList<>();
         for (MathProblem p : m.getQuestions()) {
-            answers.add(p.getCorrectAnswer());
+            answers.add(new Answer(p.getCorrectAnswer(), 2_000));
         }
         assertEquals(10, m.countCorrect(answers));
-        answers.set(3, -1);
-        answers.set(7, answers.get(7) + 1);
+        answers.get(3).setSelectedOption(Answer.NONE);
+        answers.get(7).setSelectedOption(answers.get(7).getSelectedOption() + 1);
         assertEquals(8, m.countCorrect(answers));
-        assertEquals(0, m.countCorrect(Arrays.asList(-1, -1)));
+        assertFalse(answers.get(3).isAnswered());
+        assertFalse(answers.get(7).isCorrect());
+        assertTrue(answers.get(0).isCorrect());
+        assertEquals(m.getQuestions().get(5), answers.get(5).getProblem());
+        assertEquals(0, m.countCorrect(Arrays.asList(new Answer(), new Answer())));
     }
 
     @Test
