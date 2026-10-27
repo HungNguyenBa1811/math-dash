@@ -25,7 +25,10 @@ MA -> SD : onCreate(): getPlayer()
 SD -> P : đóng gói Player
 P --> SD : Player
 SD --> MA : Player
+MA -> MA : goOnline()
 MA -> PAD : getById() {Thread}
+MA -> PFD : watchOnlinePlayers(this)
+MA -> CFD : watchIncoming(this)
 PAD -> PRC : GET /api/players/{id} → getById()
 PRC -> PD : findById()
 PD -> SP : đóng gói Player
@@ -38,12 +41,10 @@ PAD -> P : toPlayer(): đóng gói Player
 P --> PAD : Player
 PAD --> MA : Player
 MA -> PFD : runOnUiThread(): goOnline()
-MA -> PFD : watchOnlinePlayers()
-MA -> CFD : watchIncoming()
 PFD -> PFD : onDataChange(): toPlayer()
 PFD -> P : đóng gói Player
 P --> PFD : Player
-PFD -> MA : onPlayersChanged()
+PFD -> MA : onPlayersChanged() {PlayerListCallback}
 MA -> PA : setPlayers()
 PA --> U : hiển thị danh sách người chơi online
 U -> PA : bấm vào tên đối thủ
@@ -52,11 +53,13 @@ MA -> CFD : sendChallenge()
 CFD -> C : đóng gói Challenge
 C --> CFD : Challenge
 CFD --> MA : Challenge
-MA -> CFD : watchChallenge()
-MA --> U : hiển thị đang chờ đối thủ trả lời
+MA -> CFD : watchChallenge(this)
+MA --> U : showWaitingDialog(): hiển thị đang chờ đối thủ trả lời
 CFD -> CFD : onDataChange(): toChallenge()
 CFD -> C : đóng gói Challenge
 C --> CFD : Challenge
-CFD -> MA : onChallengeChanged()
+CFD -> MA : onChallengeChanged() {ChallengeCallback}
+MA -> MA : closeSentChallenge()
+MA -> CFD : stopWatchingSent()
 MA -> GA : openMatch(): startActivity()
 @enduml

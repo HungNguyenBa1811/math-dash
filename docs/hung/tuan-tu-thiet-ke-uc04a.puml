@@ -58,6 +58,7 @@ SD --> MDA : Player
 MDA -> MDA : loadMatch()
 MDA -> MAD : getById() {Thread}
 MAD -> MRC : GET /api/matches/{id} → getById()
+MRC -> MRC : findMatch()
 MRC -> MD : findById()
 MD -> SM : đóng gói Match
 SM --> MD : Match
@@ -69,12 +70,13 @@ MAD -> M : toMatch(): đóng gói Match
 M --> MAD : Match
 MAD --> MDA : Match
 MDA -> MDA : runOnUiThread(): showMatch()
+MDA -> M : getOpponent()
+M --> MDA : đối thủ trong trận
 MDA -> M : getResult()
 M --> MDA : kết quả trận
 MDA -> M : getPoints()
 M --> MDA : điểm trận
-MDA -> M : getOpponent()
-M --> MDA : đối thủ trong trận
+MDA -> MDA : stats()
 MDA -> M : getFinishTime()
 M --> MDA : thời gian làm bài
 MDA -> PA : tạo ProblemAdapter

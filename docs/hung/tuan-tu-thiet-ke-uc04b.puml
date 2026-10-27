@@ -23,25 +23,28 @@ HA -> HA : onTabSelected(): loadRanking()
 HA -> PAD : getRanking() {Thread}
 PAD -> PRC : GET /api/players/ranking → getRanking()
 PRC -> PD : getRanking()
+PD -> PD : findAllPlayers()
+PD -> SP : đóng gói Player
+SP --> PD : Player
 PD -> MD : findFinished()
 MD -> SM : đóng gói Match
 SM --> MD : Match
 MD --> PD : List<Match>
-PD -> SP : đóng gói Player
-SP --> PD : Player
+PD -> PD : rank()
+PD -> PD : addMatch()
 PD -> SM : getPoints()
 SM --> PD : điểm trận
-PD -> SM : getResult()
-SM --> PD : kết quả trận
 PD -> SM : getFinishTime()
 SM --> PD : thời gian làm bài
-PD -> PD : rank(): tính trung bình, sắp xếp theo 3 tiêu chí
+PD -> SM : getResult()
+SM --> PD : kết quả trận
+PD -> PD : averagePoints(), averageSeconds(), sắp xếp
 PD --> PRC : List<Player>
 PRC --> PAD : List<Player> (JSON)
 PAD -> P : toPlayer(): đóng gói Player
 P --> PAD : Player
 PAD --> HA : List<Player>
-HA -> RAD : runOnUiThread(): tạo RankingAdapter
+HA -> RAD : runOnUiThread(): new RankingAdapter()
 RAD --> U : hiển thị bảng xếp hạng
 U -> HA : nhấn Back
 HA -> MA : finish()

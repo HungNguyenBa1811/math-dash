@@ -11,6 +11,7 @@ package "Client (Android)" {
     + onClick(v : View) : void
   }
   class HistoryActivity <<boundary>> {
+    + {static} EXTRA_MATCH_ID : String
     - me : Player
     - matches : List<Match>
     - tabLayout : TabLayout
@@ -22,7 +23,9 @@ package "Client (Android)" {
     - txtTotal : TextView
     - txtEmpty : TextView
     - rvMatches : RecyclerView
+    - layoutRanking : LinearLayout
     - rvRanking : RecyclerView
+    - rankingLoaded : boolean
     - matchApiDAO : MatchApiDAO
     - playerApiDAO : PlayerApiDAO
     + onCreate(savedInstanceState : Bundle) : void
@@ -31,15 +34,22 @@ package "Client (Android)" {
     + onTabSelected(tab : TabLayout.Tab) : void
     - loadRanking() : void
     + onMatchClick(match : Match) : void
+    - showError(messageRes : int) : void
   }
   class PieChartView <<boundary>> {
     - wins : int
     - draws : int
     - losses : int
+    - arcPaint : Paint
+    - percentPaint : Paint
+    - labelPaint : Paint
+    - oval : RectF
     + setData(wins : int, draws : int, losses : int) : void
     # onDraw(canvas : Canvas) : void
+    - drawPart(canvas : Canvas, start : float, count : int, total : int, colorRes : int) : float
   }
   class MatchHistoryAdapter <<boundary>> {
+    - timeFormat : SimpleDateFormat
     - listMatch : List<Match>
     - myId : int
     - activity : HistoryActivity
@@ -72,6 +82,7 @@ package "Client (Android)" {
   class MatchDetailActivity <<boundary>> {
     - me : Player
     - match : Match
+    - matchId : int
     - txtTitle : TextView
     - txtResult : TextView
     - txtPoints : TextView
@@ -84,6 +95,7 @@ package "Client (Android)" {
     + onCreate(savedInstanceState : Bundle) : void
     - loadMatch() : void
     - showMatch(match : Match) : void
+    - stats(mp : MatchPlayer) : String
   }
   class ProblemAdapter <<boundary>> {
     - listProblem : List<MathProblem>
@@ -107,13 +119,19 @@ package "Client (Android)" {
   }
   abstract class ApiDAO <<control>> {
     # {static} BASE_URL : String
+    # {static} NETWORK_ERROR : String
     # get(path : String) : JSONObject
     # getArray(path : String) : JSONArray
+    - readGet(path : String) : String
+    - open(path : String, method : String) : HttpURLConnection
+    - read(conn : HttpURLConnection, code : int) : String
   }
   class MatchApiDAO <<control>> {
     + getHistory(playerId : int) : List<Match>
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
+    - toProblem(json : JSONObject) : MathProblem
+    - toMatchPlayer(json : JSONObject) : MatchPlayer
   }
   class PlayerApiDAO <<control>> {
     + getRanking() : List<Player>
@@ -170,15 +188,26 @@ package "Server (Spring Boot)" {
     + DAO()
   }
   class MatchDAO <<control>> {
+    - {static} SELECT_PLAYERS : String
     + findByPlayer(playerId : int) : List<Match>
     + findById(id : int) : Match
     + findFinished() : List<Match>
+    - query(sql : String, key : Integer) : List<Match>
+    - findProblems(matchId : int) : List<MathProblem>
+    - toMatch(rs : ResultSet) : Match
+    - toMatchPlayer(rs : ResultSet) : MatchPlayer
+    - toProblem(rs : ResultSet) : MathProblem
   }
   class PlayerDAO <<control>> {
-    - matchDAO : MatchDAO
+    - {static} COLUMNS : String
     + getTotalPoints(playerId : int) : double
     + getRanking() : List<Player>
     + {static} rank(players : List<Player>, matches : List<Match>) : List<Player>
+    - {static} addMatch(match : Match, byId : Map<Integer, Player>, opponents : Map<Integer, Set<Integer>>, winTimes : Map<Integer, List<Long>>) : void
+    - {static} averagePoints(ids : Set<Integer>, byId : Map<Integer, Player>) : double
+    - {static} averageSeconds(times : List<Long>) : double
+    - findAllPlayers() : List<Player>
+    - toPlayer(rs : ResultSet) : Player
   }
   class "Player" as SPlayer <<entity>> {
     - id : int

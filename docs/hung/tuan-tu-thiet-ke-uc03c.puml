@@ -9,6 +9,7 @@ boundary QuestionAdapter as QA
 control CountDownTimer as T
 control SessionDAO as SD
 control MatchFirebaseDAO as MFD
+control PresenceFirebaseDAO as PFD
 control MatchApiDAO as MAD
 entity Match as M
 entity MathProblem as Q
@@ -24,26 +25,31 @@ end box
 
 GA -> SD : onCreate(): getPlayer()
 SD --> GA : Player
-GA -> MFD : watchMatch()
+GA -> MFD : watchMatch(this)
 MFD -> MFD : onDataChange(): toMatch()
 MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> GA : onSuccess()
+MFD -> GA : onSuccess() {MatchCallback}
 GA -> GA : startMatch()
 GA -> QA : setQuestions()
 QA -> Q : onBindViewHolder(): getExpression()
 Q --> QA : chuỗi phép tính
+GA -> T ** : createTimer()
 GA -> T : start()
+GA -> PFD : watchOnlinePlayers(this)
 GA --> U : hiển thị ô thời gian, trạng thái đối thủ, 10 câu hỏi
+PFD -> GA : onDataChange(): onPlayersChanged() {PlayerListCallback}
 T -> GA : onTick()
 U -> QA : chọn phương án cho từng câu
 QA -> QA : onCheckedChanged(): lưu phương án
 U -> GA : nhấn Nộp bài
 GA -> GA : onClick(): submitAnswers()
+GA -> QA : setLocked()
 GA -> QA : getAnswers()
 QA --> GA : bài làm
 GA -> MAD : submit() {Thread}
 MAD -> MRC : POST /api/matches/{id}/submit → submit()
+MRC -> MRC : findMatch()
 MRC -> MD : findById()
 MD -> SM : đóng gói Match
 SM --> MD : Match
@@ -57,14 +63,17 @@ MD --> MRC : true
 MRC -> FAD : writeSubmitted()
 MRC -> SM : isOver()
 SM --> MRC : false
+MRC -> MRC : hideAnswers()
 MRC --> MAD : Match (JSON)
 MAD -> M : toMatch(): đóng gói Match
 M --> MAD : Match
 MAD --> GA : Match
-GA -> T : runOnUiThread(): cancel()
+GA -> GA : runOnUiThread(): onSubmitted()
+GA -> T : cancel()
 GA --> U : hiển thị đã nộp bài, đang chờ đối thủ
 MRC -> SM : isOver()
 SM --> MRC : true
+MRC -> MRC : endMatch()
 MRC -> MD : updateEndedAt()
 MD --> MRC : true
 MRC -> PD : getTotalPoints()
@@ -74,10 +83,11 @@ MRC -> FAD : writeFinished()
 MFD -> MFD : onDataChange(): toMatch()
 MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> GA : onSuccess()
+MFD -> GA : onSuccess() {MatchCallback}
 GA -> GA : loadResult()
 GA -> MAD : getById() {Thread}
 MAD -> MRC : GET /api/matches/{id} → getById()
+MRC -> MRC : findMatch()
 MRC -> MD : findById()
 MD -> SM : đóng gói Match
 SM --> MD : Match
@@ -91,6 +101,7 @@ MAD --> GA : Match
 GA -> GA : runOnUiThread(): showResult()
 GA -> M : getResult()
 M --> GA : kết quả trận
+GA -> GA : showScores()
 GA -> M : getFinishTime()
 M --> GA : thời gian làm bài
 GA -> M : getPoints()

@@ -33,6 +33,9 @@ package "Client (Android)" {
     + onUnfriend(friendship : Friendship) : void
     - loadFriendships() : void
     - showFriendships(list : List<Friendship>) : void
+    - deleteFriendship(friendship : Friendship) : void
+    - refreshTitles() : void
+    - enableAddButton() : void
   }
   class FriendRequestAdapter <<boundary>> {
     - listFriendship : List<Friendship>
@@ -83,16 +86,22 @@ package "Client (Android)" {
     + FirebaseDAO()
   }
   class PresenceFirebaseDAO <<control>> {
+    - watcher : ValueEventListener
     + watchOnlinePlayers(callback : PlayerListCallback) : void
     + stopWatching() : void
     - toPlayer(id : String, data : DataSnapshot) : Player
+    - presenceRef() : DatabaseReference
   }
   abstract class ApiDAO <<control>> {
     # {static} BASE_URL : String
+    # {static} NETWORK_ERROR : String
     # get(path : String) : JSONObject
     # getArray(path : String) : JSONArray
     # post(path : String, body : JSONObject) : JSONObject
     # delete(path : String) : void
+    - readGet(path : String) : String
+    - open(path : String, method : String) : HttpURLConnection
+    - read(conn : HttpURLConnection, code : int) : String
   }
   class FriendshipApiDAO <<control>> {
     + getFriendships(playerId : int) : List<Friendship>
@@ -128,12 +137,15 @@ package "Server (Spring Boot)" {
     + sendRequest(body : Map<String, String>) : Friendship
     + accept(id : int, playerId : int) : Friendship
     + delete(id : int, playerId : int) : void
+    - findFriendship(id : int) : Friendship
+    - parseId(value : String) : int
   }
   abstract class "DAO" as SDAO <<control>> {
     # {static} conn : Connection
     + DAO()
   }
   class FriendshipDAO <<control>> {
+    - {static} SELECT : String
     + findByPlayer(playerId : int) : List<Friendship>
     + findById(id : int) : Friendship
     + existsBetween(playerId1 : int, playerId2 : int) : boolean
@@ -143,9 +155,12 @@ package "Server (Spring Boot)" {
     - toFriendship(rs : ResultSet) : Friendship
   }
   class PlayerDAO <<control>> {
+    - {static} COLUMNS : String
     + findById(id : int) : Player
     + findByUsername(username : String) : Player
     + getTotalPoints(playerId : int) : double
+    - findOne(sql : String, key : Object) : Player
+    - toPlayer(rs : ResultSet) : Player
   }
   class "Friendship" as SFriendship <<entity>> {
     - id : int

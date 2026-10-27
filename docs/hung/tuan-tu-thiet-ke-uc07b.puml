@@ -21,6 +21,7 @@ U -> FRA : nhấn Đồng ý ở một lời mời
 FRA -> FA : onClick(): onAccept()
 FA -> FSAD : accept() {Thread}
 FSAD -> FRC : POST /api/friendships/{id}/accept?playerId={id} → accept()
+FRC -> FRC : findFriendship()
 FRC -> FD : findById()
 FD -> SF : đóng gói Friendship
 SF --> FD : Friendship

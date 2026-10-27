@@ -20,26 +20,32 @@ end box
 
 U -> GA : nhấn Chơi tiếp
 GA -> GA : onClick(): sendChoice()
+GA --> U : hiển thị đang chờ đối thủ
 GA -> MAD : continueMatch() {Thread}
 MAD -> MRC : POST /api/matches/{id}/continue → continueMatch()
+MRC -> MRC : findMatch()
+MRC -> MD : findById()
+MD --> MRC : Match
 MRC -> FAD : writeChoice()
 MRC --> MAD : Match (JSON)
 MAD -> M : toMatch(): đóng gói Match
 M --> MAD : Match
 MAD --> GA : Match
-GA --> U : hiển thị đang chờ đối thủ
 MRC -> MRC : startMatch()
+MRC -> SM : đóng gói Match
+SM --> MRC : Match
 MRC -> PRD : generateProblems()
 PRD -> SQ : đóng gói MathProblem
 SQ --> PRD : MathProblem
 PRD --> MRC : List<MathProblem>
-MRC -> SM : đóng gói Match
-SM --> MRC : Match
 MRC -> MD : insert()
 MD --> MRC : true
 MRC -> FAD : writeMatch()
+MRC -> MRC : setStatus()
+MRC -> FAD : updateStatus()
 MRC -> FAD : writeNextMatch()
-MFD -> GA : onDataChange(): onNextMatch()
+MFD -> GA : onDataChange(): onNextMatch() {MatchCallback}
+GA -> GA : openNextMatch()
 GA -> MFD : stopWatching()
-GA -> GA : openNextMatch(): startActivity()
+GA -> GA : startActivity(), finish()
 @enduml

@@ -28,7 +28,7 @@ FA -> SD : onCreate(): getPlayer()
 SD -> P : đóng gói Player
 P --> SD : Player
 SD --> FA : Player
-FA -> PFD : watchOnlinePlayers()
+FA -> PFD : watchOnlinePlayers(this)
 FA -> FA : loadFriendships()
 FA -> FSAD : getFriendships() {Thread}
 FSAD -> FRC : GET /api/friendships?playerId={id} → getFriendships()
@@ -54,7 +54,7 @@ FAD --> U : hiển thị danh sách bạn bè
 PFD -> PFD : onDataChange(): toPlayer()
 PFD -> P : đóng gói Player
 P --> PFD : Player
-PFD -> FA : onPlayersChanged()
+PFD -> FA : onPlayersChanged() {PlayerListCallback}
 FA -> FAD : setOnlineIds()
 FAD --> U : hiển thị trạng thái Online / Offline
 U -> FA : nhập tên đăng nhập, nhấn Kết bạn
@@ -74,6 +74,8 @@ FRC -> SF : tạo lời mời đang chờ
 SF --> FRC : Friendship
 FRC -> FD : insert()
 FD --> FRC : true
+FRC -> PD : getTotalPoints()
+PD --> FRC : tổng điểm
 FRC --> FSAD : Friendship (JSON)
 FSAD -> F : toFriendship(): đóng gói Friendship
 F --> FSAD : Friendship

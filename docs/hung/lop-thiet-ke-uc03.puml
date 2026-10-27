@@ -7,20 +7,30 @@ package "Client (Android)" {
     - txtMyName : TextView
     - txtMyPoints : TextView
     - rvPlayers : RecyclerView
+    - btnLogout : Button
     - me : Player
     - playerAdapter : PlayerAdapter
     - waitingDialog : AlertDialog
+    - sentChallenge : Challenge
+    - shownChallenges : Set<String>
+    - sessionDAO : SessionDAO
     - playerApiDAO : PlayerApiDAO
     - presenceFirebaseDAO : PresenceFirebaseDAO
     - challengeFirebaseDAO : ChallengeFirebaseDAO
     - matchApiDAO : MatchApiDAO
     + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+    + onDestroy() : void
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
+    - goOnline() : void
+    - showWaitingDialog(opponent : Player) : void
     - showChallengeDialog(challenge : Challenge) : void
     - acceptChallenge(challenge : Challenge) : void
+    - closeSentChallenge() : void
     - openMatch(matchId : int) : void
+    - logout() : void
   }
   class PlayerAdapter <<boundary>> {
     - listPlayer : List<Player>
@@ -36,6 +46,8 @@ package "Client (Android)" {
     - txtStatus : TextView
   }
   class MatchActivity <<boundary>> {
+    + {static} EXTRA_MATCH_ID : String
+    - {static} MATCH_MILLIS : long
     - txtTimer : TextView
     - txtOpponentStatus : TextView
     - rvQuestions : RecyclerView
@@ -46,18 +58,27 @@ package "Client (Android)" {
     - txtMyResult : TextView
     - txtOpponentResult : TextView
     - txtPoints : TextView
+    - txtContinue : TextView
     - btnContinue : Button
     - btnStop : Button
     - me : Player
     - matchId : int
+    - opponentId : int
     - timer : CountDownTimer
     - questionAdapter : QuestionAdapter
     - matchFirebaseDAO : MatchFirebaseDAO
     - presenceFirebaseDAO : PresenceFirebaseDAO
     - matchApiDAO : MatchApiDAO
+    - started : boolean
+    - submitted : boolean
+    - resultLoading : boolean
+    - resultShown : boolean
+    - opponentLeft : boolean
+    - leaving : boolean
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
     + onBackPressed() : void
+    + onDestroy() : void
     + onPlayersChanged(players : List<Player>) : void
     + onSuccess(match : Match) : void
     + onNextMatch(nextMatchId : int) : void
@@ -66,12 +87,20 @@ package "Client (Android)" {
     + onTick(millisLeft : long) : void
     + onFinish() : void
     - startMatch(match : Match) : void
+    - createTimer() : CountDownTimer
     - submitAnswers() : void
+    - onSubmitted() : void
+    - onSubmitFailed(message : String) : void
+    - confirmLeave() : void
     - leaveMatch() : void
     - forfeit(playerId : int) : void
     - loadResult() : void
     - showResult(match : Match) : void
+    - showResultTitle(result : String) : void
+    - showScores(match : Match) : void
     - showOpponentStatus(match : Match) : void
+    - mineOf(match : Match) : MatchPlayer
+    - opponentOf(match : Match) : MatchPlayer
     - sendChoice(choice : boolean) : void
     - openNextMatch(nextMatchId : int) : void
   }
@@ -113,19 +142,26 @@ package "Client (Android)" {
     - prefs : SharedPreferences
     + SessionDAO(context : Context)
     + getPlayer() : Player
+    + clear() : void
   }
   abstract class FirebaseDAO <<control>> {
     # {static} con : DatabaseReference
     + FirebaseDAO()
   }
   class PresenceFirebaseDAO <<control>> {
+    - watcher : ValueEventListener
     + goOnline(player : Player) : void
     + goOffline(playerId : int) : void
     + watchOnlinePlayers(callback : PlayerListCallback) : void
     + stopWatching() : void
     - toPlayer(id : String, data : DataSnapshot) : Player
+    - presenceRef() : DatabaseReference
   }
   class ChallengeFirebaseDAO <<control>> {
+    - incomingQuery : Query
+    - incomingWatcher : ValueEventListener
+    - sentRef : DatabaseReference
+    - sentWatcher : ValueEventListener
     + sendChallenge(challenger : Player, opponent : Player) : Challenge
     + watchIncoming(playerId : int, callback : ChallengeCallback) : void
     + watchChallenge(challengeId : String, callback : ChallengeCallback) : void
@@ -133,16 +169,27 @@ package "Client (Android)" {
     + stopWatching() : void
     + stopWatchingSent() : void
     - toChallenge(id : String, data : DataSnapshot) : Challenge
+    - toPlayer(data : DataSnapshot, idKey : String, nameKey : String) : Player
+    - challengesRef() : DatabaseReference
   }
   class MatchFirebaseDAO <<control>> {
+    - {static} NETWORK_ERROR : String
+    - matchRef : DatabaseReference
+    - watcher : ValueEventListener
     + watchMatch(matchId : int, callback : MatchCallback) : void
     + stopWatching(matchId : int) : void
     - toMatch(matchId : int, data : DataSnapshot) : Match
+    - toProblem(q : DataSnapshot) : MathProblem
+    - toMatchPlayer(playerId : int, p : DataSnapshot) : MatchPlayer
   }
   abstract class ApiDAO <<control>> {
     # {static} BASE_URL : String
+    # {static} NETWORK_ERROR : String
     # get(path : String) : JSONObject
     # post(path : String, body : JSONObject) : JSONObject
+    - readGet(path : String) : String
+    - open(path : String, method : String) : HttpURLConnection
+    - read(conn : HttpURLConnection, code : int) : String
   }
   class PlayerApiDAO <<control>> {
     + getById(id : int) : Player
@@ -155,6 +202,8 @@ package "Client (Android)" {
     + continueMatch(matchId : int, playerId : int, choice : boolean) : Match
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
+    - toProblem(json : JSONObject) : MathProblem
+    - toMatchPlayer(json : JSONObject) : MatchPlayer
   }
   class Player <<entity>> {
     - id : int
@@ -220,29 +269,57 @@ package "Server (Spring Boot)" {
     + getById(id : int) : Match
     - startMatch(p1 : Player, p2 : Player) : Match
     - endMatch(match : Match) : void
+    - setStatus(match : Match, status : String) : void
+    - isFree(player : Player) : boolean
+    - findMatch(id : int) : Match
+    - findPlayer(match : Match, playerId : int) : MatchPlayer
+    - hideAnswers(match : Match) : Match
   }
   abstract class "DAO" as SDAO <<control>> {
     # {static} conn : Connection
     + DAO()
+    + {static} loadConfig() : Properties
   }
   class PlayerDAO <<control>> {
+    - {static} COLUMNS : String
     + findById(id : int) : Player
     + getTotalPoints(playerId : int) : double
+    - hasPlayer(match : Match, playerId : int) : boolean
+    - findOne(sql : String, key : Object) : Player
+    - toPlayer(rs : ResultSet) : Player
   }
   class MatchDAO <<control>> {
+    - {static} SELECT_PLAYERS : String
     + insert(match : Match) : boolean
     + findById(id : int) : Match
+    + findFinished() : List<Match>
     + updateSubmission(matchId : int, matchPlayer : MatchPlayer) : boolean
     + updateForfeit(matchId : int, playerId : int) : boolean
     + updateEndedAt(matchId : int, endedAt : Date) : boolean
+    - query(sql : String, key : Integer) : List<Match>
+    - findProblems(matchId : int) : List<MathProblem>
+    - insertMatch(match : Match) : void
+    - insertProblem(p : MathProblem, matchId : int) : void
+    - insertMatchPlayer(mp : MatchPlayer, matchId : int) : void
+    - toMatch(rs : ResultSet) : Match
+    - toMatchPlayer(rs : ResultSet) : MatchPlayer
+    - toProblem(rs : ResultSet) : MathProblem
   }
   class ProblemDAO <<control>> {
+    - {static} OPERATORS : String[]
+    - {static} OPTION_COUNT : int
+    - {static} MAX_OFFSET : int
     - random : Random
     + generateProblems(count : int) : List<MathProblem>
     + generateProblem() : MathProblem
+    - createOptions(answer : int) : List<Integer>
+    - nextInt(min : int, max : int) : int
   }
   class FirebaseAdminDAO <<control>> {
     - dbUrl : String
+    - secret : String
+    - client : HttpClient
+    - mapper : ObjectMapper
     + readChallengeStatus(challengeId : String) : String
     + readPresence(playerId : int) : Player
     + updateStatus(playerId : int, status : String) : void
@@ -254,6 +331,10 @@ package "Server (Spring Boot)" {
     + writeChoice(matchId : int, playerId : int, choice : boolean) : void
     + writeNextMatch(matchId : int, nextMatchId : int) : void
     + writeStopped(matchId : int, playerId : int) : void
+    - updatePresence(playerId : int, field : String, value : Object) : void
+    - toQuestions(questions : List<MathProblem>) : List<Map<String, Object>>
+    - toPlayers(players : List<MatchPlayer>) : Map<String, Object>
+    - send(method : String, path : String, body : Object) : String
   }
   class "Player" as SPlayer <<entity>> {
     - id : int
