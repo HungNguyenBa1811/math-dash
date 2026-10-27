@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
@@ -53,6 +54,9 @@ public class MatchDAO extends DAO {
         }
         Match match = list.get(0);
         match.setQuestions(findProblems(id));
+        for (MatchPlayer mp : match.getPlayers()) {
+            mp.setAnswers(findAnswers(mp.getId(), match.getQuestions()));
+        }
         return match;
     }
 
@@ -68,16 +72,28 @@ public class MatchDAO extends DAO {
                 + " ORDER BY m.endedAt DESC, m.id DESC, mp.id", playerId);
     }
 
-    // Chỉ nộp được một lần
-    public boolean updateSubmission(int matchId, MatchPlayer mp) throws SQLException {
-        String sql = "UPDATE tblMatchPlayer SET correctCount = ?, submittedAt = ?"
-                + " WHERE tblMatchId = ? AND tblPlayerId = ? AND submittedAt IS NULL";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, mp.getCorrectCount());
-            ps.setTimestamp(2, new Timestamp(mp.getSubmittedAt().getTime()));
-            ps.setInt(3, matchId);
-            ps.setInt(4, mp.getPlayer().getId());
-            return ps.executeUpdate() == 1;
+    // Chỉ nộp được một lần; ghi kết quả và bài làm từng câu trong một transaction
+    public boolean updateSubmission(int matchId, MatchPlayer mp) {
+        synchronized (conn) {
+            try {
+                conn.setAutoCommit(false);
+                if (!updateMatchPlayer(matchId, mp)) {
+                    conn.rollback();
+                    return false;
+                }
+                for (Answer answer : mp.getAnswers()) {
+                    if (answer.getProblem() != null) {
+                        insertAnswer(answer, mp.getId());
+                    }
+                }
+                conn.commit();
+                return true;
+            } catch (SQLException e) {
+                rollback();
+                return false;
+            } finally {
+                resetAutoCommit();
+            }
         }
     }
 
@@ -130,6 +146,45 @@ public class MatchDAO extends DAO {
             }
         }
         return list;
+    }
+
+    // Câu thứ i của bài làm ứng với câu thứ i của đề (id câu tăng dần)
+    private List<Answer> findAnswers(int matchPlayerId, List<MathProblem> questions) throws SQLException {
+        String sql = "SELECT * FROM tblAnswer WHERE tblMatchPlayerId = ? ORDER BY tblMathProblemId";
+        List<Answer> list = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, matchPlayerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(toAnswer(rs, questions));
+            }
+        }
+        return list;
+    }
+
+    private boolean updateMatchPlayer(int matchId, MatchPlayer mp) throws SQLException {
+        String sql = "UPDATE tblMatchPlayer SET correctCount = ?, submittedAt = ?"
+                + " WHERE tblMatchId = ? AND tblPlayerId = ? AND submittedAt IS NULL";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, mp.getCorrectCount());
+            ps.setTimestamp(2, new Timestamp(mp.getSubmittedAt().getTime()));
+            ps.setInt(3, matchId);
+            ps.setInt(4, mp.getPlayer().getId());
+            return ps.executeUpdate() == 1;
+        }
+    }
+
+    private void insertAnswer(Answer answer, int matchPlayerId) throws SQLException {
+        String sql = "INSERT INTO tblAnswer (selectedOption, answerTime, tblMatchPlayerId, tblMathProblemId)"
+                + " VALUES (?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, answer.getSelectedOption());
+            ps.setLong(2, answer.getAnswerTime());
+            ps.setInt(3, matchPlayerId);
+            ps.setInt(4, answer.getProblem().getId());
+            ps.executeUpdate();
+            answer.setId(generatedId(ps));
+        }
     }
 
     private void insertMatch(Match match) throws SQLException {
@@ -191,6 +246,17 @@ public class MatchDAO extends DAO {
         mp.setSubmittedAt(rs.getTimestamp("submittedAt"));
         mp.setForfeited(rs.getBoolean("forfeited"));
         return mp;
+    }
+
+    private Answer toAnswer(ResultSet rs, List<MathProblem> questions) throws SQLException {
+        Answer answer = new Answer(rs.getInt("selectedOption"), rs.getLong("answerTime"));
+        answer.setId(rs.getInt("id"));
+        for (MathProblem p : questions) {
+            if (p.getId() == rs.getInt("tblMathProblemId")) {
+                answer.setProblem(p);
+            }
+        }
+        return answer;
     }
 
     private MathProblem toProblem(ResultSet rs) throws SQLException {

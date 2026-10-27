@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,9 +62,12 @@ public class MatchRestController {
         Match match = findMatch(id);
         MatchPlayer me = findPlayer(match, matchPlayer.getPlayer().getId());
         if (match.getEndedAt() == null && me.getSubmittedAt() == null) {
-            me.setCorrectCount(match.countCorrect(matchPlayer.getAnswers()));
+            me.setAnswers(matchPlayer.getAnswers());
+            me.setCorrectCount(match.countCorrect(me.getAnswers()));
             me.setSubmittedAt(receivedAt);
-            matchDAO.updateSubmission(id, me);
+            if (!matchDAO.updateSubmission(id, me)) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Không lưu được bài làm");
+            }
             firebaseAdminDAO.writeSubmitted(id, me.getPlayer().getId());
             if (match.isOver()) {
                 endMatch(match);
@@ -176,10 +180,14 @@ public class MatchRestController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Người chơi không ở trong trận");
     }
 
+    // Trận chưa xong: ẩn đáp án và bài làm để không ai xem được của đối thủ
     private Match hideAnswers(Match match) {
         if (match.getEndedAt() == null) {
             for (MathProblem p : match.getQuestions()) {
                 p.setCorrectAnswer(-1);
+            }
+            for (MatchPlayer mp : match.getPlayers()) {
+                mp.setAnswers(new ArrayList<>());
             }
         }
         return match;
