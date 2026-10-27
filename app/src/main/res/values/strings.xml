@@ -64,8 +64,40 @@
 
     <!-- Chơi với máy -->
     <string name="title_bot_game">CHƠI VỚI MÁY</string>
+    <string name="title_difficulty">CHỌN ĐỘ KHÓ CỦA MÁY</string>
+    <string name="btn_easy">DỄ</string>
+    <string name="btn_medium">TRUNG BÌNH</string>
+    <string name="btn_hard">KHÓ</string>
+    <string name="status_bot_working">Máy đang làm bài</string>
+    <string name="status_bot_submitted">Máy đã nộp bài</string>
+    <string name="label_bot_result">Máy: %1$d/10 câu đúng · %2$s</string>
+    <string name="btn_play_again">CHƠI LẠI</string>
+    <string name="msg_confirm_exit_bot">Thoát sẽ hủy ván đang chơi?</string>
+    <string name="msg_save_failed">Không lưu được ván, kết quả vẫn hiển thị</string>
 
     <!-- Quản trị -->
     <string name="title_admin">QUẢN LÝ NGƯỜI CHƠI</string>
     <string name="title_player_detail">THÔNG TIN NGƯỜI CHƠI</string>
+    <string name="hint_search">Tìm theo tên hiển thị</string>
+    <string name="btn_search">TÌM</string>
+    <string name="label_col_username">Tên đăng nhập</string>
+    <string name="label_col_display_name">Tên hiển thị</string>
+    <string name="label_col_points">Điểm</string>
+    <string name="label_col_created_at">Ngày tạo</string>
+    <string name="msg_no_players">Không có người chơi nào</string>
+    <string name="label_username">Tên đăng nhập: %1$s</string>
+    <string name="label_total_points">Tổng điểm: %1$s</string>
+    <string name="label_results">Thắng %1$d · Hòa %2$d · Thua %3$d</string>
+    <string name="btn_save">LƯU</string>
+    <string name="btn_reset_password">ĐẶT LẠI MẬT KHẨU</string>
+    <string name="btn_delete_account">XÓA TÀI KHOẢN</string>
+    <string name="btn_delete">XÓA</string>
+    <string name="hint_new_password">Mật khẩu mới</string>
+    <string name="msg_saved">Đã lưu</string>
+    <string name="msg_password_reset">Đã đặt lại mật khẩu</string>
+    <string name="msg_deleted">Đã xóa</string>
+    <string name="msg_display_name_empty">Tên hiển thị không được để trống</string>
+    <string name="msg_password_empty">Vui lòng nhập mật khẩu mới</string>
+    <string name="msg_password_mismatch">Mật khẩu nhập lại không khớp</string>
+    <string name="msg_confirm_delete">Xóa tài khoản %1$s?</string>
 </resources>

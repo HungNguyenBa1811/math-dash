@@ -10,10 +10,36 @@
     android:padding="24dp"
     tools:context=".view.DifficultyActivity">
 
+    <!-- Chọn độ khó của máy: Dễ, Trung bình, Khó -->
     <TextView
-        style="@style/RetroText"
+        style="@style/RetroTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DifficultyActivity" />
+        android:gravity="center"
+        android:text="@string/title_difficulty" />
+
+    <Button
+        android:id="@+id/btnEasy"
+        style="@style/RetroButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/btn_easy" />
+
+    <Button
+        android:id="@+id/btnMedium"
+        style="@style/RetroButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/btn_medium" />
+
+    <Button
+        android:id="@+id/btnHard"
+        style="@style/RetroButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/btn_hard" />
 
 </LinearLayout>
