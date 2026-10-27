@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity
     private TextView txtMyPoints;
     private RecyclerView rvPlayers;
     private Button btnPlayBot;
-    private Button btnRanking;
+    private Button btnHistory;
+    private Button btnFriends;
     private Button btnLogout;
     private Player me;
     private PlayerAdapter playerAdapter;
@@ -76,13 +77,15 @@ public class MainActivity extends AppCompatActivity
         txtMyPoints = findViewById(R.id.txtMyPoints);
         rvPlayers = findViewById(R.id.rvPlayers);
         btnPlayBot = findViewById(R.id.btnPlayBot);
-        btnRanking = findViewById(R.id.btnRanking);
+        btnHistory = findViewById(R.id.btnHistory);
+        btnFriends = findViewById(R.id.btnFriends);
         btnLogout = findViewById(R.id.btnLogout);
         playerAdapter = new PlayerAdapter(this);
         rvPlayers.setLayoutManager(new LinearLayoutManager(this));
         rvPlayers.setAdapter(playerAdapter);
         btnPlayBot.setOnClickListener(this);
-        btnRanking.setOnClickListener(this);
+        btnHistory.setOnClickListener(this);
+        btnFriends.setOnClickListener(this);
         btnLogout.setOnClickListener(this);
     }
 
@@ -90,8 +93,10 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View v) {
         if (v == btnPlayBot) {
             startActivity(new Intent(this, DifficultyActivity.class));
-        } else if (v == btnRanking) {
-            startActivity(new Intent(this, RankingActivity.class));
+        } else if (v == btnHistory) {
+            startActivity(new Intent(this, HistoryActivity.class));
+        } else if (v == btnFriends) {
+            startActivity(new Intent(this, FriendActivity.class));
         } else if (v == btnLogout) {
             logout();
         }

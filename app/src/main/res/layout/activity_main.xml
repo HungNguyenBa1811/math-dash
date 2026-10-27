@@ -60,13 +60,31 @@
         android:layout_marginTop="12dp"
         android:text="@string/btn_play_bot" />
 
-    <Button
-        android:id="@+id/btnRanking"
-        style="@style/RetroButton"
+    <!-- Lịch sử đấu và Bạn bè đặt cạnh nhau cho gọn -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="@string/btn_ranking" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnHistory"
+            style="@style/RetroButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="@string/btn_history" />
+
+        <Button
+            android:id="@+id/btnFriends"
+            style="@style/RetroButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="@string/btn_friends" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnLogout"

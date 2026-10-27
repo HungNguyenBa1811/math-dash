@@ -48,6 +48,16 @@ public class MatchApiDAO extends ApiDAO {
         return toMatch(post(path, new JSONObject()));
     }
 
+    // GET /api/matches?playerId=: các trận đã xong của người chơi, mới nhất trước, không kèm đề
+    public List<Match> getHistory(int playerId) throws IOException, JSONException {
+        JSONArray array = getArray("/matches?playerId=" + playerId);
+        List<Match> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            list.add(toMatch(array.getJSONObject(i)));
+        }
+        return list;
+    }
+
     // GET /api/matches/{id}: trận đầy đủ, có đáp án khi trận đã xong
     public Match getById(int matchId) throws IOException, JSONException {
         return toMatch(get("/matches/" + matchId));

@@ -40,10 +40,23 @@
             android:name=".view.MatchActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
+        <!-- Xem lịch sử đấu -->
         <activity
-            android:name=".view.RankingActivity"
+            android:name=".view.HistoryActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.MatchDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Quản lý bạn bè -->
+        <activity
+            android:name=".view.FriendActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Chơi với máy -->
         <activity
