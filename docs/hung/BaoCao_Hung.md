@@ -476,7 +476,53 @@ Ba chức năng dùng 2 nơi lưu trữ:
 
 ### 2.2. Dữ liệu trên Firebase Realtime Database
 
-Firebase là cây JSON, ánh xạ từ lớp thực thể theo cùng tinh thần: mỗi lớp là một node, thuộc tính cơ bản là field, quan hệ hợp thành là node con.
+Firebase lưu dữ liệu dạng cây JSON nên không có bảng. Thiết kế đi theo đúng 5 bước như MySQL, với bảng thay bằng node, cột thay bằng field.
+
+**Bước 1: Mỗi lớp thực thể cần đồng bộ tức thời giữa các máy đề xuất một node gốc.**
+- Player, phần trạng thái online → presence: các máy cần thấy ngay ai vào, ai rời giao diện chơi online và ai đang bận.
+- Challenge → challenges: người được mời phải nhận lời mời ngay, người mời phải biết ngay lời mời được đồng ý hay bị từ chối.
+- Match, phần trận đang đấu → matches: 2 máy cần nhận cùng đề, biết đối thủ đã nộp bài, biết trận đã xong và lựa chọn chơi tiếp của đối thủ.
+- Không có node gốc:
+  - MathProblem và MatchPlayer: là thành phần của Match nên thành node con của matches (bước 3).
+  - Answer: bài làm chỉ gửi qua REST lúc nộp và chỉ đọc lại khi trận đã xong, không cần đồng bộ tức thời.
+  - Friendship: quan hệ bạn bè không đổi trong lúc chơi; giao diện bạn bè chỉ đọc presence để biết bạn nào đang online.
+
+**Bước 2: Thuộc tính kiểu cơ bản thành field.**
+- Bỏ thuộc tính kiểu đối tượng: Match.questions, Match.players, MatchPlayer.player, Challenge.challenger, Challenge.opponent.
+- Kiểu dữ liệu: String → chuỗi; int, double → số; boolean → true / false; Date → số mili giây (startedAt do server ghi, createdAt lấy giờ của Firebase).
+- Firebase không nối được 2 node như khóa ngoại, nên những gì giao diện cần hiện thì chép thẳng vào node: lời mời giữ tên và tổng điểm của người mời, người chơi trong trận giữ tên hiển thị.
+- Kết quả:
+  - presence: displayName, totalPoints, status.
+  - challenges: challengerId, challengerName, challengerPoints, opponentId, opponentName, status, createdAt, matchId.
+  - matches: status, startedAt.
+  - câu hỏi trong trận: operand1, operand2, operator, answerOptions.
+  - người chơi trong trận: displayName, submitted, forfeited.
+
+**Bước 3: Chuyển quan hệ giữa các lớp thành quan hệ giữa các node.**
+- Hợp thành thành node con:
+  - Match có 10 MathProblem → matches/{matchId}/questions/{i}.
+  - Match có 2 MatchPlayer → matches/{matchId}/players/{playerId}.
+- Kết tập không lồng node mà giữ khóa của node kia:
+  - Challenge chứa thông tin 2 Player → challengerId, opponentId.
+  - Lời mời được đồng ý dẫn tới một trận → matchId.
+- Diễn biến sau trận ghi thêm vào node trận: players/{playerId}/choice (continue / stop), nextMatchId (trận mới khi cả 2 chơi tiếp), stoppedBy (người dừng hoặc bỏ trận).
+
+**Bước 4: Khóa.**
+- presence/{playerId}: khóa là id người chơi trong MySQL, nên mỗi người có tối đa một node.
+- challenges/{challengeId}: khóa là push id do Firebase sinh, kiểu String; Challenge.id lấy đúng giá trị này.
+- matches/{matchId}: khóa là id trận trong MySQL, để app theo dõi trên Firebase và gọi REST bằng cùng một id.
+- questions/{i}: chỉ số 0 – 9 theo thứ tự đề. players/{playerId}: id người chơi.
+- challenges có chỉ mục trên opponentId, để máy người được mời chỉ lọc ra lời mời gửi cho mình.
+
+**Bước 5: Loại thuộc tính gây dư thừa và thuộc tính không được đưa lên.**
+- Không đưa lên Firebase:
+  - correctAnswer: người chơi đọc được dữ liệu trận của mình, nên đáp án chỉ nằm ở MySQL.
+  - Bài làm từng câu, correctCount, thời điểm nộp thật, kết quả và điểm trận: server tính và lưu ở MySQL; Firebase chỉ có cờ submitted để báo đối thủ đã nộp.
+  - avgOpponentPoints, avgWinTime: chỉ dùng cho bảng xếp hạng, đọc qua REST.
+- Giữ lại có chủ đích: totalPoints trong presence là bản sao của tổng điểm tính từ MySQL, để danh sách online hiện điểm ngay; server ghi lại sau mỗi trận.
+- Dữ liệu chỉ sống trong lúc chơi: node presence bị xóa khi người chơi rời giao diện chơi online hoặc mất kết nối; lời mời bị xóa khi máy người mời mất kết nối.
+
+Cây dữ liệu thu được:
 
 ```
 presence/{playerId}            displayName, totalPoints, status ("free" | "busy")
@@ -489,11 +535,9 @@ matches/{matchId}              status ("playing" | "finished"), startedAt,
     nextMatchId, stoppedBy
 ```
 
-- **presence**: app ghi khi vào giao diện chơi online, xóa khi rời giao diện này, và đăng ký onDisconnect().removeValue() để tự xóa khi app tắt hoặc mất mạng. Server đổi status và cập nhật totalPoints.
+- **presence**: app ghi khi vào giao diện chơi online, xóa khi rời giao diện này, và đăng ký tự xóa khi app tắt hoặc mất mạng. Server đổi status sang busy / free khi trận bắt đầu, kết thúc và cập nhật totalPoints.
 - **challenges**: app người mời tạo, app người được mời ghi rejected, server ghi accepted kèm matchId.
-- Quản lý bạn bè chỉ đọc presence để biết bạn nào đang online, không thêm node mới.
-- **matches**: chỉ server ghi. Đề trên Firebase **không có correctAnswer**, để người chơi không đọc được đáp án trước khi nộp bài.
-- **Bài làm từng câu không đưa lên Firebase.** App gửi bài làm qua REST lúc nộp bài và chỉ đọc lại bài làm của 2 người qua REST khi trận đã xong, nên đối thủ không xem được bài làm của mình giữa trận.
+- **matches**: chỉ server ghi: đề và 2 người chơi lúc tạo trận, submitted khi một người nộp, status finished khi trận xong, choice, nextMatchId, stoppedBy sau trận.
 
 ---
 
