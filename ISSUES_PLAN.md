@@ -597,9 +597,10 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 - **Mô tả:** Mục 1 trong báo cáo của Hùng. Làm theo `REPORT_CONVENTION.md` bước A1.
 - **Input:** M1-01; đề bài.
 - **Output:** `docs/hung/1-kich-ban-v1.md`:
-  - **Biểu đồ use case chi tiết module Đấu đối kháng:** UC03 include "Xem danh sách người chơi online", include "Vào trận đấu" (trừu tượng, 2 con "Gửi lời thách đấu", "Nhận lời thách đấu"), include "Thi đấu"; "Từ chối lời thách đấu" extend "Nhận lời thách đấu"; "Thoát trận", "Chơi tiếp" extend "Thi đấu".
-  - **Biểu đồ use case chi tiết module Xem lịch sử đấu:** UC04 include "Xem trận của tôi"; "Xem chi tiết trận" extend "Xem trận của tôi"; "Xem bảng xếp hạng" extend UC04.
-  - **Biểu đồ use case chi tiết module Bạn bè:** UC07 include "Xem danh sách bạn bè"; "Gửi lời mời kết bạn", "Đồng ý lời mời kết bạn", "Từ chối lời mời kết bạn", "Hủy kết bạn" extend UC07.
+  - **Biểu đồ use case chi tiết module Đấu đối kháng:** UC03 include "Đăng nhập", include "Thách đấu", include "Thi đấu".
+  - **Biểu đồ use case chi tiết module Xem lịch sử đấu:** UC04 include "Đăng nhập"; "Xem chi tiết trận", "Xem bảng xếp hạng" extend UC04.
+  - **Biểu đồ use case chi tiết module Bạn bè:** UC07 include "Đăng nhập"; "Kết bạn", "Hủy kết bạn" extend UC07.
+  - Use case con ứng với giao diện có tương tác; nút bấm, hộp thoại, bước trong luồng (từ chối, thoát trận, chơi tiếp, đồng ý) không phải use case.
   - **Đặc tả + kịch bản chuẩn v1 + ngoại lệ** cho UC03, UC04, UC07. Ngoại lệ tối thiểu: mời người bận; từ chối; hết giờ tự nộp; thoát trận; đối thủ mất kết nối; một người đúng hết; hòa; dừng chơi; chưa có trận nào; trận có người bỏ; sai tên đăng nhập; tự kết bạn; đã có lời mời; từ chối; hủy kết bạn.
 - **Requirement:** Không có tên lớp, tên hàm trong kịch bản v1; mỗi bước của hệ thống ghi rõ giao diện gồm thành phần gì.
 - **Constraint:** Dùng đúng tên UC ở M1-01.

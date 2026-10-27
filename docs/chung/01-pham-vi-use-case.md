@@ -109,82 +109,15 @@ Ngoại lệ:
 
 **Chức năng "Chơi online":**
 
-Người chơi nhấn "Chơi online" ở giao diện chính → Hệ thống đưa người chơi vào danh sách người chơi online → Hiển thị giao diện chơi online gồm:
-- Tên hiển thị và tổng điểm của mình.
-- Danh sách người chơi online, mỗi dòng có tên, tổng điểm, trạng thái Rỗi / Bận.
-- Các biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc trên.
-
-→ Danh sách người chơi online tự cập nhật khi có người vào hoặc rời giao diện chơi online, hoặc có người đổi trạng thái → Người chơi bấm vào tên một người đang rỗi → Hệ thống gửi lời mời tới máy của người đó → Hiển thị "Đang chờ <tên> trả lời...".
-
-Trên máy người được mời: hiện hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" với 2 nút Đồng ý, Từ chối.
-- Đồng ý: Server sinh đề 10 câu, tạo trận, chuyển cả 2 người sang trạng thái bận và gửi đề cho cả 2 máy → Cả 2 máy chuyển sang giao diện thi đấu.
-- Từ chối: Máy người mời thông báo "<tên> đã từ chối lời mời".
-
-Thi đấu: Giao diện thi đấu hiện mỗi lần một câu, gồm:
-- Ô thời gian đếm ngược 60 giây.
-- Dòng trạng thái đối thủ: "<tên> đang làm bài" / "<tên> đã nộp bài".
-- Câu đang làm: số thứ tự câu ("Câu 1/10") và phép tính.
-- 4 ô phương án A, B, C, D.
-- Nút Thoát; nút Nộp bài chỉ hiện khi đã làm xong 10 câu.
-
-→ Người chơi bấm một ô phương án → Hệ thống ghi phương án đã chọn và thời gian làm câu, chưa báo đúng hay sai → Chuyển sang câu tiếp theo → Lặp lại cho đến câu thứ 10 → Hệ thống báo "Đã làm xong 10 câu" và hiện nút Nộp bài → Người chơi nhấn Nộp bài → Server ghi nhận thời gian làm bài, chấm bài và lưu bài làm từng câu → Màn hình hiện "Đã nộp bài, đang chờ đối thủ..." → Khi cả 2 đã nộp bài, server xác định kết quả, cộng điểm trận vào tổng điểm của cả 2 người và báo kết quả về cả 2 máy.
-
-Giao diện kết quả gồm:
-- Dòng THẮNG / THUA / HÒA.
-- Số câu đúng và thời gian làm bài của mình và của đối thủ.
-- Điểm trận được cộng và tổng điểm mới.
-- Câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng.
-
-Sau khi trả lời:
-- Cả 2 chọn Chơi tiếp: Server sinh đề mới → Cả 2 vào trận tiếp theo.
-- Một người chọn Dừng: Cả 2 về giao diện chơi online, trạng thái trở lại rỗi; máy người còn lại thông báo "Đối thủ đã dừng chơi".
-
-Ngoại lệ:
-- Bấm vào người đang bận: Hệ thống thông báo "<tên> đang bận".
-- Người được mời vừa bận hoặc vừa thoát trước khi đồng ý: Hệ thống thông báo "Không bắt đầu được trận đấu".
-- Hết 60 giây mà chưa nộp bài: Hệ thống báo "Hết giờ" và tự nộp bài, câu chưa làm là câu bỏ trống và tính là sai.
-- Nhấn Thoát khi đang thi đấu: Hệ thống hỏi "Thoát sẽ bị xử thua?" với 2 nút Ở lại, Thoát → Thoát: người chơi bị xử thua và về giao diện chơi online; máy đối thủ thông báo "Đối thủ đã thoát, bạn thắng".
-- Đối thủ mất kết nối khi đang thi đấu: Đối thủ bị xử thua như khi nhấn Thoát.
+Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với: chữ MATH DASH, lời chào "Xin chào, <tên>", 2 nút Chơi với máy, Chơi online, nút biểu tượng Đăng xuất ở góc phải trên → Người chơi nhấn Chơi online → Hệ thống ghi người chơi vào danh sách online với trạng thái Rỗi → Giao diện chơi online xuất hiện với: tiêu đề Chơi online, 3 nút biểu tượng ở góc phải trên là Bạn bè, Lịch sử đấu, Bảng xếp hạng, thẻ tên và tổng điểm của mình, danh sách những người khác đang ở giao diện chơi online xếp theo tổng điểm giảm dần, mỗi dòng gồm: tên, tổng điểm, trạng thái Rỗi màu xanh hoặc Bận màu xám, danh sách tự cập nhật khi có người vào, người rời hoặc đổi trạng thái → Người chơi bấm vào tên một người đang rỗi → Hệ thống gửi lời mời tới máy người đó và hiện hộp thoại "Đang chờ <tên> trả lời..." với nút Hủy → Máy người được mời hiện hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" với 2 nút Đồng ý, Từ chối → Người được mời nhấn Đồng ý → Server kiểm tra cả 2 vẫn online và rỗi, sinh đề 10 câu, tạo trận, chuyển cả 2 sang Bận và gửi đề cho cả 2 máy → Giao diện thi đấu xuất hiện trên cả 2 máy, mỗi lần một câu, với: ô thời gian đếm ngược từ 01:00, dòng trạng thái "<tên đối thủ> đang làm bài", dòng "Câu 1/10", phép tính chữ lớn, 4 ô phương án xếp 2 × 2 là A màu đỏ, B màu xanh dương, C màu vàng, D màu xanh lá, nút Thoát → Người chơi bấm một ô → Hệ thống ghi phương án đã chọn và thời gian làm câu tính từ lúc câu hiện ra, chưa báo đúng hay sai, rồi hiện câu tiếp theo → Người chơi làm lần lượt tới câu thứ 10 → Giao diện ẩn 4 ô, hiện dòng "Đã làm xong 10 câu" và nút Nộp bài → Người chơi nhấn Nộp bài → Server ghi thời điểm nộp, lưu bài làm từng câu và chấm bài → Giao diện hiện "Đã nộp bài, đang chờ đối thủ...", máy đối thủ đổi dòng trạng thái thành "<tên> đã nộp bài" → Khi cả 2 đã nộp, server xác định kết quả, cộng điểm trận, cập nhật tổng điểm và báo cả 2 máy → Giao diện kết quả hiện đè lên giao diện thi đấu với: dòng THẮNG! màu xanh, THUA! màu đỏ hoặc HÒA! màu vàng, số câu đúng và thời gian làm bài của 2 người, điểm trận được cộng và tổng điểm mới, câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng → Người chơi nhấn Chơi tiếp → Giao diện hiện "Đang chờ đối thủ..." → Đối thủ cũng nhấn Chơi tiếp → Server sinh đề mới, tạo trận mới → Cả 2 máy vào giao diện thi đấu của trận mới.
 
 **Chức năng "Xem lịch sử đấu":**
 
-Người chơi nhấn biểu tượng "Lịch sử đấu" ở giao diện chơi online → Hệ thống lấy các trận đối kháng đã kết thúc của người chơi → Hiển thị giao diện lịch sử đấu gồm 2 thẻ Trận của tôi, Bảng xếp hạng; thẻ Trận của tôi được mở sẵn.
-
-Thẻ Trận của tôi gồm:
-- Biểu đồ tròn tỉ lệ thắng / hòa / thua, giữa biểu đồ ghi tỉ lệ thắng; bên cạnh ghi số trận thắng, hòa, thua và tổng số trận.
-- Danh sách trận, mới nhất đứng đầu. Mỗi dòng có tên đối thủ, THẮNG / HÒA / THUA, điểm trận, số câu đúng của 2 bên, thời điểm kết thúc.
-
-→ Người chơi bấm vào một trận → Hệ thống lấy đề, kết quả và bài làm từng câu của 2 người trong trận → Hiển thị giao diện chi tiết trận gồm:
-- Tên đối thủ, THẮNG / HÒA / THUA, điểm trận.
-- Số câu đúng và thời gian làm bài của mình và của đối thủ.
-- Danh sách 10 câu. Mỗi câu có phép tính kèm đáp án đúng, và với mỗi người: đúng hay sai, phương án đã chọn, thời gian làm câu.
-
-→ Người chơi nhấn Back để về giao diện lịch sử đấu.
-
-→ Người chơi chọn thẻ Bảng xếp hạng → Hệ thống lấy thông tin mọi người chơi và các trận đã kết thúc → Sắp xếp theo 3 tiêu chí → Hiển thị bảng xếp hạng: mỗi dòng gồm hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng. Dòng của chính người chơi được làm nổi bật → Người chơi nhấn Back để về giao diện chơi online.
-
-- Người chơi nhấn biểu tượng "Bảng xếp hạng" ở giao diện chơi online: giao diện lịch sử đấu mở sẵn thẻ Bảng xếp hạng.
-- Người chơi chưa đấu trận nào: biểu đồ để trống, danh sách hiện "Bạn chưa đấu trận nào".
-- Trận có người bỏ trận: dòng của trận ghi thêm "Bỏ trận" cạnh kết quả.
-- Câu người chơi chưa làm: ô bài làm của câu đó ghi "Bỏ trống". Người bỏ trận khi chưa nộp bài thì không có bài làm, các ô bài làm của người đó ghi "—".
-- Người chơi chưa thắng trận nào: cột trung bình thời gian thắng trên bảng xếp hạng hiện "—", và người đó đứng sau những người cùng 2 tiêu chí đầu nhưng đã có trận thắng.
+Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với 2 nút Chơi với máy, Chơi online → Người chơi nhấn Chơi online → Giao diện chơi online xuất hiện với: 3 nút biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của mình, danh sách người chơi online → Người chơi nhấn nút Lịch sử đấu → Hệ thống lấy các trận chơi online đã kết thúc mà người chơi tham gia, trận mới nhất đứng đầu → Giao diện lịch sử đấu xuất hiện với: tiêu đề Lịch sử đấu, 2 thẻ Trận của tôi và Bảng xếp hạng, thẻ Trận của tôi mở sẵn gồm biểu đồ tròn chia 3 phần Thắng màu xanh lá, Hòa màu vàng, Thua màu đỏ, giữa biểu đồ ghi tỉ lệ thắng, bên cạnh ghi số trận thắng, hòa, thua và tổng số trận, dưới là danh sách trận, mỗi dòng gồm: dải màu theo kết quả, tên đối thủ, số trận, THẮNG / HÒA / THUA, điểm trận, số câu đúng của mình và của đối thủ, thời điểm kết thúc → Người chơi bấm vào một trận → Hệ thống lấy trận kèm đề, đáp án đúng và bài làm từng câu của 2 người → Giao diện chi tiết trận xuất hiện với: tiêu đề Chi tiết trận, dòng "Trận #<số trận> · <ngày giờ kết thúc>", dòng kết quả THẮNG! / THUA! / HÒA! và điểm trận, khung so sánh tên, số câu đúng, thời gian làm bài của mình và của đối thủ, mục Từng câu gồm hàng tiêu đề cột #, Câu, tên mình, tên đối thủ và 10 dòng, mỗi dòng gồm: số thứ tự, phép tính kèm đáp án đúng, với mỗi người chơi một ô ghi ✓ màu xanh hoặc ✗ màu đỏ kèm phương án đã chọn và thời gian làm câu, câu bỏ trống ghi "Bỏ trống" → Người chơi nhấn Back → Giao diện lịch sử đấu hiện lại → Người chơi chọn thẻ Bảng xếp hạng, hoặc từ giao diện chơi online nhấn nút Bảng xếp hạng để mở thẳng thẻ này → Hệ thống lấy mọi người chơi và các trận đã kết thúc, xếp hạng theo tổng điểm giảm dần, cùng tổng điểm thì theo trung bình tổng điểm các đối thủ đã gặp giảm dần, cùng cả 2 thì theo trung bình thời gian làm bài trong các trận thắng tăng dần, người chưa thắng trận nào ghi "—" và đứng sau → Thẻ Bảng xếp hạng hiện danh sách mọi người chơi, mỗi dòng gồm: hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng, dòng của chính người chơi được tô nổi bật → Người chơi nhấn Back → Hệ thống quay về giao diện chơi online.
 
 **Chức năng "Quản lý bạn bè":**
 
-Người chơi nhấn biểu tượng "Bạn bè" ở giao diện chơi online → Hệ thống lấy các lời mời kết bạn và danh sách bạn bè của người chơi → Hiển thị giao diện bạn bè gồm:
-- Ô nhập tên đăng nhập và nút Kết bạn.
-- Danh sách lời mời kết bạn đã nhận, mỗi dòng có tên người gửi, nút Đồng ý, nút Từ chối.
-- Danh sách bạn bè, mỗi dòng có tên, tổng điểm, trạng thái Online / Offline, nút Hủy kết bạn. Lời mời mình đã gửi mà chưa được trả lời nằm cuối danh sách với dòng "Đang chờ trả lời".
-
-→ Người chơi nhập tên đăng nhập của một người và nhấn Kết bạn → Hệ thống tạo lời mời kết bạn → Thông báo "Đã gửi lời mời kết bạn" → Lời mời hiện trong danh sách với dòng "Đang chờ trả lời".
-
-→ Người chơi nhấn Đồng ý ở một lời mời đã nhận → Hệ thống ghi nhận hai người là bạn bè → Người gửi chuyển sang danh sách bạn bè.
-
-- Nhấn Từ chối: Hệ thống xóa lời mời.
-- Nhấn Hủy kết bạn: Hệ thống hỏi "Hủy kết bạn với <tên>?" với 2 nút Không, Hủy kết bạn → Hủy kết bạn: Hệ thống xóa quan hệ bạn bè.
-- Tên đăng nhập không tồn tại: Hệ thống thông báo "Không tìm thấy người chơi".
-- Nhập tên đăng nhập của chính mình: Hệ thống thông báo "Không thể kết bạn với chính mình".
-- Hai người đã là bạn bè hoặc đã có lời mời giữa hai người: Hệ thống thông báo "Đã có lời mời hoặc đã là bạn bè".
+Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với 2 nút Chơi với máy, Chơi online → Người chơi nhấn Chơi online → Giao diện chơi online xuất hiện với: 3 nút biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của mình, danh sách người chơi online → Người chơi nhấn nút Bạn bè → Hệ thống lấy các lời mời kết bạn, các quan hệ bạn bè của người chơi và danh sách người đang online → Giao diện bạn bè xuất hiện với: tiêu đề Bạn bè, ô nhập tên đăng nhập và nút Kết bạn, mục "Lời mời kết bạn (số lời mời)" chỉ hiện khi có lời mời đã nhận, mỗi dòng gồm tên người gửi, nút Đồng ý, nút Từ chối, mục "Bạn bè (số người)" mỗi dòng gồm chấm trạng thái xanh Online hoặc xám Offline, tên, tổng điểm, nút Hủy kết bạn dạng biểu tượng ×, các lời mời mình đã gửi nằm cuối mục với chữ xám "Đang chờ trả lời", trạng thái Online / Offline tự cập nhật → Người chơi nhập tên đăng nhập của một người và nhấn Kết bạn → Hệ thống tìm người chơi theo tên đăng nhập, kiểm tra giữa 2 người chưa có lời mời hay quan hệ bạn bè nào và tạo lời mời đang chờ → Hệ thống thông báo "Đã gửi lời mời kết bạn tới <tên>", xóa trống ô tên đăng nhập và thêm dòng "<tên> · Đang chờ trả lời" vào cuối mục Bạn bè → Người nhận mở giao diện bạn bè trên máy của mình, thấy lời mời ở mục Lời mời kết bạn và nhấn Đồng ý → Hệ thống kiểm tra lời mời vẫn đang chờ, ghi nhận 2 người là bạn bè → Lời mời biến khỏi mục Lời mời kết bạn, người gửi hiện trong mục Bạn bè với tổng điểm và trạng thái → Người chơi nhấn × ở một người bạn → Hệ thống hỏi "Hủy kết bạn với <tên>?" với 2 nút Không, Hủy kết bạn → Người chơi nhấn Hủy kết bạn → Hệ thống xóa quan hệ bạn bè, dòng đó biến khỏi danh sách → Người chơi nhấn Back → Hệ thống quay về giao diện chơi online.
 
 **Chức năng "Chơi với máy":**
 

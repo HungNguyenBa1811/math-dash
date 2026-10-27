@@ -134,8 +134,10 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 
 ### A1. Đặc tả + kịch bản v1 (Người chơi ↔ Hệ thống)
 
+**Biểu đồ use case chi tiết:** use case con là một (hoặc vài) giao diện có tương tác với tác nhân, nối với use case chính bằng include, extend hoặc kế thừa; có include "Đăng nhập" như bài mẫu. Nút bấm, hộp thoại, bước trong luồng không phải use case (chức năng ≠ use case). Ví dụ UC03 chỉ có Đăng nhập, Thách đấu, Thi đấu; Từ chối, Thoát trận, Chơi tiếp là bước bên trong.
+
 **Đặc tả** (mục 1 của báo cáo):
-- Viết theo dạng luồng nghiệp vụ, nối các bước bằng `→`.
+- Mỗi chức năng viết **trong 1 dòng** (1 đoạn liền), theo dạng luồng nghiệp vụ, nối các bước bằng `→`, bắt đầu từ "Người chơi đăng nhập vào hệ thống", như bài mẫu "Sửa thông tin phòng". Không xuống dòng, không gạch đầu dòng; nhánh ngoại lệ để ở kịch bản ngoại lệ.
 - Mỗi lần có giao diện hiện ra thì liệt kê đủ thành phần của giao diện đó.
 
 > *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D, nút Thoát → Người chơi bấm một ô, câu tiếp theo hiện ra → Làm xong 10 câu, nút Nộp bài hiện ra → …
@@ -359,7 +361,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
   - Không nêu dữ liệu cụ thể: mã phòng, câu hỏi, điểm của ai bao nhiêu, kết quả WIN/LOSE. Viết "hiển thị điểm", "trả về kết quả trận".
   - Hàm ghi đầy đủ dạng "hàm onFinish()", không ghi tham số truyền vào.
   - Biểu đồ tuần tự đi kèm cũng vậy: tác nhân "Người chơi", thông điệp ghi hàm không tham số, không có dữ liệu cụ thể.
-- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành đoạn văn và danh sách lồng nhau, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL và cây dữ liệu Firebase. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
+- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành 1 dòng, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL và cây dữ liệu Firebase. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
 - **Kịch bản v1** chỉ có Người chơi và Hệ thống, không có tên lớp, tên hàm, thuật ngữ kỹ thuật.
 
 ---

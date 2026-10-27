@@ -25,18 +25,14 @@ actor "Người chơi" as A1
 
 rectangle "Module Bạn bè" {
   usecase "Quản lý bạn bè" as UC07
-  usecase "Xem danh sách bạn bè" as DS
-  usecase "Gửi lời mời kết bạn" as GUI
-  usecase "Đồng ý lời mời kết bạn" as DY
-  usecase "Từ chối lời mời kết bạn" as TC
+  usecase "Kết bạn" as KB
   usecase "Hủy kết bạn" as HUY
 }
+usecase "Đăng nhập" as DN
 
 A1 --> UC07
 
-UC07 ..> DS : <<include>>
-GUI ..> UC07 : <<extend>>
-DY ..> UC07 : <<extend>>
-TC ..> UC07 : <<extend>>
+UC07 ..> DN : <<include>>
+KB ..> UC07 : <<extend>>
 HUY ..> UC07 : <<extend>>
 @enduml

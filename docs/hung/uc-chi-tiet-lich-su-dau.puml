@@ -25,14 +25,14 @@ actor "Người chơi" as A1
 
 rectangle "Module Xem lịch sử đấu" {
   usecase "Xem lịch sử đấu" as UC04
-  usecase "Xem trận của tôi" as TCT
   usecase "Xem chi tiết trận" as CT
   usecase "Xem bảng xếp hạng" as BXH
 }
+usecase "Đăng nhập" as DN
 
 A1 --> UC04
 
-UC04 ..> TCT : <<include>>
-CT ..> TCT : <<extend>>
+UC04 ..> DN : <<include>>
+CT ..> UC04 : <<extend>>
 BXH ..> UC04 : <<extend>>
 @enduml

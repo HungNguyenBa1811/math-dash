@@ -27,124 +27,34 @@ Phạm vi hệ thống:
 
 Hình 1: Biểu đồ use case chi tiết module Đấu đối kháng.
 
-Người chơi khởi phát trực tiếp use case "Chơi online" (UC03) của module. UC03 được phân rã như sau:
-- include "Xem danh sách người chơi online": danh sách tên, tổng điểm, trạng thái của những người đang ở giao diện chơi online, tự cập nhật.
-- include "Vào trận đấu": use case trừu tượng (chữ nghiêng), có 2 use case con kế thừa:
-  - "Gửi lời thách đấu": bấm vào tên một người đang rỗi và chờ người đó trả lời.
-  - "Nhận lời thách đấu": đồng ý lời mời của người khác.
-- "Từ chối lời thách đấu" extend "Nhận lời thách đấu": người được mời có thể từ chối.
-- include "Thi đấu": làm lần lượt 10 câu, mỗi câu chọn một trong 4 ô phương án, nộp bài, nhận kết quả và điểm trận.
-- "Thoát trận" extend "Thi đấu": người chơi thoát giữa trận và bị xử thua.
-- "Chơi tiếp" extend "Thi đấu": sau mỗi trận, cả 2 chọn chơi tiếp thì vào trận mới.
+Người chơi khởi phát trực tiếp use case "Chơi online" (UC03) của module. Mỗi use case con ứng với giao diện mà người chơi tương tác:
+- include "Đăng nhập": người chơi phải đăng nhập trước khi chơi online; use case này thuộc module Tài khoản.
+- include "Thách đấu": ở giao diện chơi online, người chơi xem danh sách người chơi online và bấm vào tên một người đang rỗi để mời; người được mời đồng ý hoặc từ chối trên hộp thoại lời mời.
+- include "Thi đấu": ở giao diện thi đấu, 2 người làm lần lượt 10 câu và nộp bài; giao diện kết quả hiện kết quả, điểm trận và hỏi chơi tiếp.
+
+Các thao tác Hủy lời mời, Từ chối, Thoát trận, Chơi tiếp, Dừng là bước trong 2 use case con trên, không phải use case riêng.
 
 | Use case | Mô tả |
 |---|---|
 | Chơi online (UC03) | Vào giao diện chơi online, thách đấu một người chơi online, thi đấu trên cùng đề do server sinh, nhận kết quả do server xác định |
-| Xem danh sách người chơi online | Hiển thị những người chơi đang ở giao diện chơi online kèm tổng điểm, trạng thái rỗi / bận; cập nhật ngay khi có thay đổi |
-| Vào trận đấu | Use case trừu tượng: đưa 2 người chơi vào cùng một trận |
-| Gửi lời thách đấu | Người chơi bấm vào tên một người đang rỗi; hệ thống gửi lời mời và chờ trả lời |
-| Nhận lời thách đấu | Người được mời đồng ý; server sinh đề, tạo trận và gửi đề cho cả 2 máy |
-| Từ chối lời thách đấu | Người được mời từ chối; người mời nhận thông báo |
-| Thi đấu | Hai người làm cùng đề 10 câu, mỗi lần một câu, trong tối đa 60 giây, nộp bài; server lưu bài làm từng câu, chấm, xác định kết quả, cộng điểm |
-| Thoát trận | Người chơi rời trận trước khi trận kết thúc (hoặc mất kết nối) và bị xử thua |
-| Chơi tiếp | Cả 2 người chọn chơi tiếp sau trận; server sinh đề mới và tạo trận tiếp theo |
+| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
+| Thách đấu | Người chơi chọn một người đang rỗi trong danh sách online và gửi lời mời; người được mời đồng ý thì server sinh đề, tạo trận và đưa cả 2 vào trận, từ chối thì người mời nhận thông báo |
+| Thi đấu | Hai người làm cùng đề 10 câu, mỗi lần một câu, trong tối đa 60 giây, nộp bài; server lưu bài làm từng câu, chấm, xác định kết quả, cộng điểm; sau trận hai người chọn chơi tiếp hoặc dừng |
 
 #### 1.1.2. Mô tả chi tiết chức năng "Chơi online"
 
-Người chơi đã đăng nhập → Giao diện chính hiện lên với:
-- Chữ MATH DASH và lời chào "Xin chào, <tên>".
-- 2 nút chọn chế độ chơi: Chơi với máy, Chơi online.
-- Nút Đăng xuất dạng biểu tượng ở góc phải trên.
-
-→ Người chơi nhấn Chơi online → Hệ thống ghi người chơi vào danh sách online với trạng thái Rỗi → Giao diện chơi online hiện lên với:
-- Thanh trên: tiêu đề Chơi online bên trái; 3 nút biểu tượng ở góc phải trên, từ trái sang phải: Bạn bè, Lịch sử đấu, Bảng xếp hạng.
-- Thẻ thông tin của mình: tên hiển thị, tổng điểm.
-- Mục Người chơi online: danh sách những người khác đang ở giao diện chơi online, xếp theo tổng điểm giảm dần; mỗi dòng có tên, tổng điểm, trạng thái Rỗi (màu xanh) / Bận (màu xám). Chưa có ai khác thì hiện "Chưa có ai khác online".
-
-→ Danh sách tự cập nhật khi có người vào, người rời giao diện chơi online hoặc người đổi trạng thái → Người chơi bấm vào tên một người đang rỗi → Hệ thống gửi lời mời tới máy người đó → Hộp thoại "Đang chờ <tên> trả lời..." hiện lên với nút Hủy.
-
-Trên máy người được mời, đang ở giao diện chơi online: hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" hiện lên với 2 nút Đồng ý, Từ chối → Người được mời nhấn Đồng ý → Server kiểm tra cả 2 vẫn online và rỗi → Sinh đề 10 câu, tạo trận, chuyển cả 2 sang Bận, gửi đề cho cả 2 máy → Cả 2 máy chuyển sang giao diện thi đấu.
-
-- Nhấn Back ở giao diện chơi online: về giao diện chính; người chơi rời danh sách online, không nhận lời thách đấu nữa.
-- Bấm vào người đang bận: "<tên> đang bận", không gửi lời mời.
-- Người được mời nhấn Từ chối: máy người mời đóng hộp thoại chờ và báo "<tên> đã từ chối lời mời".
-- Người mời nhấn Hủy khi đang chờ: lời mời bị hủy; người được mời có nhấn Đồng ý sau đó thì báo "Không bắt đầu được trận đấu".
-- Người mời đã rời giao diện chơi online, tắt ứng dụng hoặc đã vào trận khác khi người được mời nhấn Đồng ý: "Không bắt đầu được trận đấu".
-
-Thi đấu: Giao diện thi đấu hiện lên, mỗi lần một câu, với:
-- Hàng trên: ô thời gian đếm ngược từ 01:00 bên trái; dòng trạng thái đối thủ "<tên đối thủ> đang làm bài" bên phải.
-- Thẻ câu hỏi: dòng số thứ tự "Câu 1/10" và phép tính chữ lớn, ví dụ "12 + 7 = ?".
-- 4 ô phương án lớn xếp 2 × 2: A màu đỏ, B màu xanh dương, C màu vàng, D màu xanh lá; mỗi ô có chữ cái nhỏ ở trên và giá trị phương án lớn ở dưới.
-- Nút Thoát.
-
-→ Người chơi bấm một ô → Hệ thống ghi phương án đã chọn và thời gian làm câu, tính từ lúc câu hiện ra tới lúc bấm; ô đã chọn giữ nguyên, 3 ô còn lại mờ đi, chưa báo đúng hay sai → Câu tiếp theo hiện ra, dòng số thứ tự thành "Câu 2/10" → Lặp lại cho đến câu thứ 10; câu đã chọn thì không quay lại sửa được → Làm xong câu thứ 10: thẻ câu hỏi chỉ còn dòng "Đã làm xong 10 câu", 4 ô ẩn đi, nút Nộp bài hiện cạnh nút Thoát → Người chơi nhấn Nộp bài → Dòng thông báo đổi thành "Đang nộp bài..." → Server ghi nhận thời điểm nộp, lưu phương án và thời gian làm từng câu, chấm bài → Nút Nộp bài ẩn, hiện "Đã nộp bài, đang chờ đối thủ..." → Khi đối thủ nộp bài, dòng trạng thái đối thủ trên máy còn lại đổi thành "<tên đối thủ> đã nộp bài" → Khi cả 2 đã nộp, server xác định kết quả, cộng điểm trận, cập nhật tổng điểm, báo cả 2 máy.
-
-Giao diện kết quả hiện đè lên giao diện thi đấu với:
-- Dòng kết quả THẮNG! (xanh) / THUA! (đỏ) / HÒA! (vàng).
-- Bảng so sánh 2 người: số câu đúng, thời gian làm bài.
-- Điểm trận được cộng và tổng điểm mới.
-- Câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng.
-
-→ Người chơi nhấn Chơi tiếp → Hiện "Đang chờ đối thủ..." → Khi đối thủ cũng chọn Chơi tiếp: server sinh đề mới, tạo trận mới → Cả 2 máy vào giao diện thi đấu của trận mới.
-
-- Hết 60 giây mà chưa nộp: dòng thông báo hiện "Hết giờ", hệ thống tự nộp; câu chưa làm ghi là bỏ trống và tính là sai.
-- Nhấn Thoát hoặc Back khi đang thi đấu: hỏi "Thoát sẽ bị xử thua?" với 2 nút Ở lại / Thoát → Thoát: bị xử thua, về giao diện chơi online.
-- Đối thủ thoát hoặc mất kết nối: báo "Đối thủ đã thoát, bạn thắng" → giao diện kết quả THẮNG!, không có nút Chơi tiếp.
-- Một trong 2 người nhấn Dừng: cả 2 về giao diện chơi online, trạng thái trở lại Rỗi; máy người còn lại báo "Đối thủ đã dừng chơi".
-- Không kết nối được server khi nộp bài: "Không kết nối được máy chủ, kiểm tra kết nối mạng", nút Nộp bài hiện lại để nộp lại.
-
-Dữ liệu mẫu:
-
-| Người chơi | Tên đăng nhập | Tên hiển thị | Tổng điểm | Trạng thái | Máy |
-|---|---|---|---|---|---|
-| Hùng | hung | HUNG | 12,5 | Rỗi | Máy 1, người mời |
-| Hoàng | hoang | HOANG | 9 | Rỗi | Máy 2, người được mời |
-| Minh | minh | MINH | 15 | Bận | Máy 3, đang đấu với người khác |
-| Lan | lan | LAN | 4,5 | Rỗi | Máy 4 |
-
-Trận số 37 bắt đầu lúc 20:15:03,0 ngày 25/10/2026. Đề bài server sinh cho trận 37:
-
-| Câu | Phép tính | Ô A | Ô B | Ô C | Ô D | Đáp án đúng |
-|---|---|---|---|---|---|---|
-| 1 | 12 + 7 | 17 | 19 | 21 | 18 | B · 19 |
-| 2 | 9 × 6 | 48 | 54 | 56 | 63 | B · 54 |
-| 3 | 45 − 18 | 27 | 23 | 33 | 37 | A · 27 |
-| 4 | 8 × 7 | 54 | 56 | 48 | 64 | B · 56 |
-| 5 | 36 + 25 | 51 | 61 | 59 | 71 | B · 61 |
-| 6 | 72 − 39 | 33 | 43 | 31 | 37 | A · 33 |
-| 7 | 7 × 12 | 74 | 84 | 82 | 96 | B · 84 |
-| 8 | 58 + 27 | 75 | 85 | 83 | 95 | B · 85 |
-| 9 | 91 − 46 | 45 | 55 | 35 | 47 | A · 45 |
-| 10 | 6 × 15 | 80 | 90 | 96 | 75 | B · 90 |
-
-Bài làm của HUNG và HOANG trong trận 37. Thời gian làm câu tính từ lúc câu hiện ra tới lúc người chơi bấm chọn:
-
-| Câu | HUNG chọn | Thời gian | HOANG chọn | Thời gian |
-|---|---|---|---|---|
-| 1 | 19 | 3,1 giây | 19 | 4,0 giây |
-| 2 | 54 | 4,0 giây | 54 | 4,4 giây |
-| 3 | 27 | 3,4 giây | 27 | 4,0 giây |
-| 4 | 56 | 3,8 giây | 56 | 4,7 giây |
-| 5 | 61 | 3,7 giây | 61 | 4,3 giây |
-| 6 | 33 | 3,5 giây | 33 | 4,1 giây |
-| 7 | 84 | 4,1 giây | 84 | 4,9 giây |
-| 8 | 85 | 3,2 giây | 85 | 3,8 giây |
-| 9 | 45 | 3,6 giây | 45 | 4,4 giây |
-| 10 | 90 | 2,8 giây | 90 | 3,7 giây |
-| Tổng | 10/10 câu đúng | 35,2 giây | 10/10 câu đúng | 42,3 giây |
-
-HUNG nhấn Nộp bài ở giây 38,2, HOANG ở giây 45,6, tính từ lúc trận bắt đầu.
+Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với: chữ MATH DASH, lời chào "Xin chào, <tên>", 2 nút Chơi với máy, Chơi online, nút biểu tượng Đăng xuất ở góc phải trên → Người chơi nhấn Chơi online → Hệ thống ghi người chơi vào danh sách online với trạng thái Rỗi → Giao diện chơi online xuất hiện với: tiêu đề Chơi online, 3 nút biểu tượng ở góc phải trên là Bạn bè, Lịch sử đấu, Bảng xếp hạng, thẻ tên và tổng điểm của mình, danh sách những người khác đang ở giao diện chơi online xếp theo tổng điểm giảm dần, mỗi dòng gồm: tên, tổng điểm, trạng thái Rỗi màu xanh hoặc Bận màu xám, danh sách tự cập nhật khi có người vào, người rời hoặc đổi trạng thái → Người chơi bấm vào tên một người đang rỗi → Hệ thống gửi lời mời tới máy người đó và hiện hộp thoại "Đang chờ <tên> trả lời..." với nút Hủy → Máy người được mời hiện hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" với 2 nút Đồng ý, Từ chối → Người được mời nhấn Đồng ý → Server kiểm tra cả 2 vẫn online và rỗi, sinh đề 10 câu, tạo trận, chuyển cả 2 sang Bận và gửi đề cho cả 2 máy → Giao diện thi đấu xuất hiện trên cả 2 máy, mỗi lần một câu, với: ô thời gian đếm ngược từ 01:00, dòng trạng thái "<tên đối thủ> đang làm bài", dòng "Câu 1/10", phép tính chữ lớn, 4 ô phương án xếp 2 × 2 là A màu đỏ, B màu xanh dương, C màu vàng, D màu xanh lá, nút Thoát → Người chơi bấm một ô → Hệ thống ghi phương án đã chọn và thời gian làm câu tính từ lúc câu hiện ra, chưa báo đúng hay sai, rồi hiện câu tiếp theo → Người chơi làm lần lượt tới câu thứ 10 → Giao diện ẩn 4 ô, hiện dòng "Đã làm xong 10 câu" và nút Nộp bài → Người chơi nhấn Nộp bài → Server ghi thời điểm nộp, lưu bài làm từng câu và chấm bài → Giao diện hiện "Đã nộp bài, đang chờ đối thủ...", máy đối thủ đổi dòng trạng thái thành "<tên> đã nộp bài" → Khi cả 2 đã nộp, server xác định kết quả, cộng điểm trận, cập nhật tổng điểm và báo cả 2 máy → Giao diện kết quả hiện đè lên giao diện thi đấu với: dòng THẮNG! màu xanh, THUA! màu đỏ hoặc HÒA! màu vàng, số câu đúng và thời gian làm bài của 2 người, điểm trận được cộng và tổng điểm mới, câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng → Người chơi nhấn Chơi tiếp → Giao diện hiện "Đang chờ đối thủ..." → Đối thủ cũng nhấn Chơi tiếp → Server sinh đề mới, tạo trận mới → Cả 2 máy vào giao diện thi đấu của trận mới.
 
 #### 1.1.3. Kịch bản UC03 "Chơi online"
 
 | | |
 |---|---|
-| Use case | Chơi online (UC03), gồm Xem danh sách người chơi online, Gửi lời thách đấu, Nhận lời thách đấu, Thi đấu, Chơi tiếp |
+| Use case | Chơi online (UC03), gồm Thách đấu, Thi đấu |
 | Actor | Người chơi: Hùng ở máy 1 là người mời, Hoàng ở máy 2 là người được mời; mỗi người là actor trên máy của mình |
 | Tiền điều kiện | Cả 2 người chơi đã đăng nhập, máy có kết nối mạng; Hùng đang ở giao diện chính trên máy 1; Hoàng đã vào giao diện chơi online trên máy 2 |
 | Hậu điều kiện | Trận đấu được lưu trên server cùng đề, bài làm từng câu, số câu đúng và thời gian nộp bài của 2 người; tổng điểm của 2 người được cập nhật; cả 2 thấy cùng một kết quả |
 
-Kịch bản chuẩn chia 4 đoạn, khớp với các use case con:
+Kịch bản chuẩn chia 4 đoạn; đoạn A, B thuộc use case con Thách đấu, đoạn C, D thuộc use case con Thi đấu:
 - A. Gửi lời thách đấu (máy 1).
 - B. Nhận lời thách đấu (máy 2).
 - C. Thi đấu (máy 1; máy 2 diễn ra tương tự).
@@ -257,58 +167,32 @@ Kịch bản ngoại lệ
 
 Hình 2: Biểu đồ use case chi tiết module Xem lịch sử đấu.
 
-Người chơi khởi phát trực tiếp use case "Xem lịch sử đấu" (UC04). UC04 được phân rã như sau:
-- include "Xem trận của tôi": thẻ được mở sẵn khi vào từ nút Lịch sử đấu, gồm biểu đồ tròn tỉ lệ thắng / hòa / thua và danh sách các trận đã đấu.
-- "Xem chi tiết trận" extend "Xem trận của tôi": người chơi bấm vào một trận để xem lại đề, đáp án, bài làm từng câu của 2 bên và kết quả của trận đó.
-- "Xem bảng xếp hạng" extend "Xem lịch sử đấu": người chơi nhấn nút Bảng xếp hạng ở giao diện chơi online để mở thẳng thẻ Bảng xếp hạng, hoặc chọn thẻ này khi đang xem lịch sử đấu, để xem thứ hạng mọi người chơi.
+Người chơi khởi phát trực tiếp use case "Xem lịch sử đấu" (UC04). Mỗi use case con ứng với giao diện mà người chơi tương tác:
+- include "Đăng nhập": người chơi phải đăng nhập trước khi xem lịch sử đấu; use case này thuộc module Tài khoản.
+- "Xem chi tiết trận" extend "Xem lịch sử đấu": ở giao diện lịch sử đấu, người chơi có thể bấm vào một trận để mở giao diện chi tiết trận.
+- "Xem bảng xếp hạng" extend "Xem lịch sử đấu": người chơi có thể mở thẻ Bảng xếp hạng, bằng nút Bảng xếp hạng ở giao diện chơi online hoặc chọn thẻ khi đang xem lịch sử đấu.
 
 | Use case | Mô tả |
 |---|---|
-| Xem lịch sử đấu (UC04) | Xem kết quả các trận chơi online mình đã đấu và thứ hạng của mọi người chơi |
-| Xem trận của tôi | Xem tỉ lệ thắng / hòa / thua dạng biểu đồ tròn và danh sách các trận đã kết thúc, trận mới nhất đứng đầu |
+| Xem lịch sử đấu (UC04) | Xem tỉ lệ thắng / hòa / thua dạng biểu đồ tròn và danh sách các trận chơi online mình đã đấu, trận mới nhất đứng đầu |
+| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
 | Xem chi tiết trận | Xem đối thủ, kết quả, điểm trận, số câu đúng và thời gian làm bài của 2 bên; 10 câu của đề, mỗi câu có phép tính kèm đáp án đúng và bài làm của từng người: đúng / sai, phương án đã chọn, thời gian làm câu |
 | Xem bảng xếp hạng | Xem thứ hạng mọi người chơi theo tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng |
 
 #### 1.2.2. Mô tả chi tiết chức năng "Xem lịch sử đấu"
 
-Người chơi đã đăng nhập, đang ở giao diện chơi online → Người chơi nhấn nút biểu tượng Lịch sử đấu ở góc phải trên → Hệ thống lấy các trận chơi online đã kết thúc mà người chơi tham gia, trận mới nhất đứng đầu → Giao diện lịch sử đấu hiện lên với:
-- Thanh trên: tiêu đề Lịch sử đấu.
-- 2 thẻ Trận của tôi, Bảng xếp hạng; thẻ Trận của tôi được mở sẵn.
-- Khối tóm tắt: biểu đồ tròn dạng vành khuyên chia 3 phần Thắng (xanh lá), Hòa (vàng), Thua (đỏ), giữa biểu đồ ghi tỉ lệ thắng; bên cạnh ghi số trận thắng, hòa, thua và tổng số trận.
-- Danh sách trận cuộn được. Mỗi dòng có dải màu theo kết quả, tên đối thủ, số trận, THẮNG / HÒA / THUA, điểm trận, số câu đúng của mình và của đối thủ, thời điểm kết thúc.
-
-→ Người chơi bấm vào một trận → Hệ thống lấy trận kèm đề, đáp án đúng và bài làm từng câu của 2 người → Giao diện chi tiết trận hiện lên với:
-- Thanh trên: tiêu đề Chi tiết trận.
-- Dòng "Trận #<số trận> · <ngày giờ kết thúc>".
-- Dòng kết quả THẮNG! (xanh) / THUA! (đỏ) / HÒA! (vàng) và điểm trận.
-- Khung so sánh 2 cột: tên, số câu đúng, thời gian làm bài của mình và của đối thủ; người bỏ trận ghi "Bỏ trận".
-- Mục Từng câu: hàng tiêu đề cột gồm #, Câu, tên mình, tên đối thủ; dưới là danh sách 10 câu. Mỗi dòng có số thứ tự, phép tính kèm đáp án đúng, và với mỗi người chơi một ô bài làm 2 dòng: dòng trên là ✓ kèm phương án đã chọn (màu xanh) nếu đúng, ✗ kèm phương án đã chọn (màu đỏ) nếu sai; dòng dưới là thời gian làm câu. Câu bỏ trống ghi "Bỏ trống" (màu xám); người bỏ trận trước khi nộp bài không có bài làm, ô ghi "—".
-
-→ Người chơi nhấn Back → Giao diện lịch sử đấu hiện lại ở thẻ Trận của tôi → Người chơi nhấn Back → Quay về giao diện chơi online.
-
-Xem bảng xếp hạng: Người chơi nhấn nút biểu tượng Bảng xếp hạng ở góc phải ngoài cùng của giao diện chơi online → Hệ thống lấy mọi người chơi và các trận đã kết thúc, tính 3 tiêu chí rồi sắp xếp → Giao diện lịch sử đấu hiện lên với thẻ Bảng xếp hạng được mở sẵn; thẻ hiện danh sách mọi người chơi, mỗi dòng gồm hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng; dòng của chính người chơi được tô nổi bật → Người chơi vẫn chọn qua lại được 2 thẻ Trận của tôi và Bảng xếp hạng → Người chơi nhấn Back → Quay về giao diện chơi online.
-
-Thứ tự xếp hạng:
-1. Tổng điểm, giảm dần.
-2. Cùng tổng điểm thì xét trung bình tổng điểm của các đối thủ đã gặp, giảm dần.
-3. Cùng cả 2 tiêu chí trên thì xét trung bình thời gian làm bài trong các trận thắng, tăng dần. Người chưa thắng trận nào hiện "—" và đứng sau.
-
-- Người chơi chưa đấu trận nào: biểu đồ để trống, danh sách hiện "Bạn chưa đấu trận nào".
-- Trận có người bỏ trận: dòng của trận ghi thêm "Đối thủ bỏ trận" hoặc "Bạn bỏ trận".
-- Không kết nối được server khi mở lịch sử đấu: "Không tải được lịch sử đấu, kiểm tra kết nối mạng", danh sách để trống.
-- Không kết nối được server khi mở chi tiết trận: "Không tải được chi tiết trận, kiểm tra kết nối mạng"; giao diện chi tiết trận chỉ có tiêu đề trận, người chơi nhấn Back để quay lại giao diện lịch sử đấu.
-- Không kết nối được server khi mở thẻ Bảng xếp hạng: "Không tải được bảng xếp hạng, kiểm tra kết nối mạng", danh sách để trống.
+Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với 2 nút Chơi với máy, Chơi online → Người chơi nhấn Chơi online → Giao diện chơi online xuất hiện với: 3 nút biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của mình, danh sách người chơi online → Người chơi nhấn nút Lịch sử đấu → Hệ thống lấy các trận chơi online đã kết thúc mà người chơi tham gia, trận mới nhất đứng đầu → Giao diện lịch sử đấu xuất hiện với: tiêu đề Lịch sử đấu, 2 thẻ Trận của tôi và Bảng xếp hạng, thẻ Trận của tôi mở sẵn gồm biểu đồ tròn chia 3 phần Thắng màu xanh lá, Hòa màu vàng, Thua màu đỏ, giữa biểu đồ ghi tỉ lệ thắng, bên cạnh ghi số trận thắng, hòa, thua và tổng số trận, dưới là danh sách trận, mỗi dòng gồm: dải màu theo kết quả, tên đối thủ, số trận, THẮNG / HÒA / THUA, điểm trận, số câu đúng của mình và của đối thủ, thời điểm kết thúc → Người chơi bấm vào một trận → Hệ thống lấy trận kèm đề, đáp án đúng và bài làm từng câu của 2 người → Giao diện chi tiết trận xuất hiện với: tiêu đề Chi tiết trận, dòng "Trận #<số trận> · <ngày giờ kết thúc>", dòng kết quả THẮNG! / THUA! / HÒA! và điểm trận, khung so sánh tên, số câu đúng, thời gian làm bài của mình và của đối thủ, mục Từng câu gồm hàng tiêu đề cột #, Câu, tên mình, tên đối thủ và 10 dòng, mỗi dòng gồm: số thứ tự, phép tính kèm đáp án đúng, với mỗi người chơi một ô ghi ✓ màu xanh hoặc ✗ màu đỏ kèm phương án đã chọn và thời gian làm câu, câu bỏ trống ghi "Bỏ trống" → Người chơi nhấn Back → Giao diện lịch sử đấu hiện lại → Người chơi chọn thẻ Bảng xếp hạng, hoặc từ giao diện chơi online nhấn nút Bảng xếp hạng để mở thẳng thẻ này → Hệ thống lấy mọi người chơi và các trận đã kết thúc, xếp hạng theo tổng điểm giảm dần, cùng tổng điểm thì theo trung bình tổng điểm các đối thủ đã gặp giảm dần, cùng cả 2 thì theo trung bình thời gian làm bài trong các trận thắng tăng dần, người chưa thắng trận nào ghi "—" và đứng sau → Thẻ Bảng xếp hạng hiện danh sách mọi người chơi, mỗi dòng gồm: hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng, dòng của chính người chơi được tô nổi bật → Người chơi nhấn Back → Hệ thống quay về giao diện chơi online.
 
 #### 1.2.3. Kịch bản UC04 "Xem lịch sử đấu"
 
 | | |
 |---|---|
-| Use case | Xem lịch sử đấu (UC04), gồm Xem trận của tôi, Xem chi tiết trận, Xem bảng xếp hạng |
+| Use case | Xem lịch sử đấu (UC04), gồm Xem chi tiết trận, Xem bảng xếp hạng |
 | Actor | Người chơi (Hùng) |
 | Tiền điều kiện | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online; Hùng đã đấu 20 trận online, trận gần nhất là trận số 37 |
 | Hậu điều kiện | Hùng thấy tỉ lệ thắng / hòa / thua, các trận đã đấu, chi tiết một trận và thứ hạng của mọi người chơi; dữ liệu không thay đổi |
 
-Kịch bản chuẩn chia 2 đoạn, khớp với các use case con:
+Kịch bản chuẩn chia 2 đoạn; đoạn A gồm phần chính của use case và use case con Xem chi tiết trận, đoạn B là use case con Xem bảng xếp hạng:
 - A. Xem trận của tôi và chi tiết trận.
 - B. Xem bảng xếp hạng.
 
@@ -426,56 +310,34 @@ Quan hệ bạn bè có sẵn trước khi bắt đầu:
 
 Hình 3: Biểu đồ use case chi tiết module Bạn bè.
 
-Người chơi khởi phát trực tiếp use case "Quản lý bạn bè" (UC07). UC07 được phân rã như sau:
-- include "Xem danh sách bạn bè": mỗi lần mở giao diện bạn bè, hệ thống luôn hiện lời mời đã nhận và danh sách bạn bè kèm trạng thái online.
-- "Gửi lời mời kết bạn" extend "Quản lý bạn bè": người chơi nhập tên đăng nhập của một người và gửi lời mời.
-- "Đồng ý lời mời kết bạn" extend "Quản lý bạn bè": người nhận đồng ý, hai người thành bạn bè.
-- "Từ chối lời mời kết bạn" extend "Quản lý bạn bè": người nhận từ chối, lời mời bị xóa.
-- "Hủy kết bạn" extend "Quản lý bạn bè": một trong hai người xóa quan hệ bạn bè; người gửi cũng dùng nó để rút lại lời mời chưa được trả lời.
+Người chơi khởi phát trực tiếp use case "Quản lý bạn bè" (UC07). Cả module chỉ có một giao diện bạn bè; use case con là các việc làm thay đổi quan hệ bạn bè:
+- include "Đăng nhập": người chơi phải đăng nhập trước khi quản lý bạn bè; use case này thuộc module Tài khoản.
+- "Kết bạn" extend "Quản lý bạn bè": người chơi gửi lời mời bằng tên đăng nhập của một người; người nhận đồng ý thì 2 người thành bạn bè, từ chối thì lời mời bị xóa.
+- "Hủy kết bạn" extend "Quản lý bạn bè": một trong 2 người xóa quan hệ bạn bè; người gửi cũng rút lại lời mời chưa được trả lời theo cách này.
+
+Đồng ý, Từ chối là bước của use case Kết bạn, không phải use case riêng.
 
 | Use case | Mô tả |
 |---|---|
-| Quản lý bạn bè (UC07) | Mở giao diện bạn bè để xem, gửi, trả lời lời mời kết bạn và hủy kết bạn |
-| Xem danh sách bạn bè | Hiển thị lời mời đã nhận, các bạn bè kèm tổng điểm và trạng thái Online / Offline, các lời mời mình đã gửi đang chờ trả lời |
-| Gửi lời mời kết bạn | Người chơi nhập tên đăng nhập của người khác; hệ thống tạo lời mời đang chờ |
-| Đồng ý lời mời kết bạn | Người nhận đồng ý; hai người trở thành bạn bè |
-| Từ chối lời mời kết bạn | Người nhận từ chối; lời mời bị xóa |
+| Quản lý bạn bè (UC07) | Mở giao diện bạn bè để xem lời mời đã nhận, các bạn bè kèm tổng điểm và trạng thái Online / Offline, các lời mời mình đã gửi |
+| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
+| Kết bạn | Người chơi gửi lời mời bằng tên đăng nhập; người nhận đồng ý thì hai người trở thành bạn bè, từ chối thì lời mời bị xóa |
 | Hủy kết bạn | Xóa quan hệ bạn bè, hoặc rút lại lời mời mình đã gửi |
 
 #### 1.3.2. Mô tả chi tiết chức năng "Quản lý bạn bè"
 
-Người chơi đã đăng nhập, đang ở giao diện chơi online → Người chơi nhấn nút biểu tượng Bạn bè ở góc phải trên → Hệ thống lấy các lời mời kết bạn và các quan hệ bạn bè của người chơi, cùng danh sách người chơi đang online → Giao diện bạn bè hiện lên với:
-- Thanh trên: tiêu đề Bạn bè.
-- Hàng dưới thanh trên: ô nhập tên đăng nhập và nút Kết bạn.
-- Mục "Lời mời kết bạn (số lời mời)", chỉ hiện khi có lời mời đã nhận: mỗi dòng có tên người gửi, nút Đồng ý, nút Từ chối.
-- Mục "Bạn bè (số người)": mỗi dòng có chấm trạng thái xanh (Online) hoặc xám (Offline), tên, tổng điểm, nút Hủy kết bạn dạng biểu tượng ×. Các lời mời mình đã gửi nằm cuối mục, chữ xám "Đang chờ trả lời" thay cho tổng điểm. Chưa có ai thì hiện "Chưa có bạn bè".
-
-→ Trạng thái Online / Offline tự cập nhật khi bạn bè vào hoặc rời giao diện chơi online → Người chơi nhấn Back → Quay về giao diện chơi online.
-
-Gửi lời mời: Người chơi nhập tên đăng nhập của một người và nhấn Kết bạn → Hệ thống tìm người chơi theo tên đăng nhập, kiểm tra giữa 2 người chưa có lời mời hay quan hệ bạn bè nào → Tạo lời mời đang chờ → Thông báo "Đã gửi lời mời kết bạn tới <tên>" → Ô tên đăng nhập được xóa trống, cuối mục Bạn bè thêm dòng "<tên> · Đang chờ trả lời".
-
-Đồng ý: Trên máy người nhận, người chơi nhấn Đồng ý ở một lời mời → Hệ thống kiểm tra lời mời vẫn đang chờ và người chơi là người nhận → Ghi nhận 2 người là bạn bè → Lời mời biến khỏi mục Lời mời kết bạn; người gửi hiện trong mục Bạn bè với tổng điểm và trạng thái.
-
-- Nhấn Từ chối: hệ thống xóa lời mời; dòng biến khỏi mục Lời mời kết bạn.
-- Nhấn × ở một người bạn: hỏi "Hủy kết bạn với <tên>?" với 2 nút Không / Hủy kết bạn → Hủy kết bạn: hệ thống xóa quan hệ, dòng biến khỏi danh sách trên máy mình; máy người kia thấy thay đổi khi mở lại giao diện bạn bè.
-- Nhấn × ở một lời mời mình đã gửi: lời mời bị rút lại theo cách như trên.
-- Tên đăng nhập không tồn tại: "Không tìm thấy người chơi".
-- Nhập tên đăng nhập của chính mình: "Không thể kết bạn với chính mình".
-- Hai người đã là bạn bè hoặc đã có lời mời giữa 2 người, theo bất kỳ chiều nào: "Đã có lời mời hoặc đã là bạn bè".
-- Ô tên đăng nhập bỏ trống: "Vui lòng nhập tên đăng nhập".
-- Lời mời đã bị người gửi rút lại khi người nhận nhấn Đồng ý: "Lời mời không còn"; dòng biến khỏi mục Lời mời kết bạn.
-- Không kết nối được server: "Không kết nối được máy chủ, kiểm tra kết nối mạng", danh sách giữ nguyên.
+Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với 2 nút Chơi với máy, Chơi online → Người chơi nhấn Chơi online → Giao diện chơi online xuất hiện với: 3 nút biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của mình, danh sách người chơi online → Người chơi nhấn nút Bạn bè → Hệ thống lấy các lời mời kết bạn, các quan hệ bạn bè của người chơi và danh sách người đang online → Giao diện bạn bè xuất hiện với: tiêu đề Bạn bè, ô nhập tên đăng nhập và nút Kết bạn, mục "Lời mời kết bạn (số lời mời)" chỉ hiện khi có lời mời đã nhận, mỗi dòng gồm tên người gửi, nút Đồng ý, nút Từ chối, mục "Bạn bè (số người)" mỗi dòng gồm chấm trạng thái xanh Online hoặc xám Offline, tên, tổng điểm, nút Hủy kết bạn dạng biểu tượng ×, các lời mời mình đã gửi nằm cuối mục với chữ xám "Đang chờ trả lời", trạng thái Online / Offline tự cập nhật → Người chơi nhập tên đăng nhập của một người và nhấn Kết bạn → Hệ thống tìm người chơi theo tên đăng nhập, kiểm tra giữa 2 người chưa có lời mời hay quan hệ bạn bè nào và tạo lời mời đang chờ → Hệ thống thông báo "Đã gửi lời mời kết bạn tới <tên>", xóa trống ô tên đăng nhập và thêm dòng "<tên> · Đang chờ trả lời" vào cuối mục Bạn bè → Người nhận mở giao diện bạn bè trên máy của mình, thấy lời mời ở mục Lời mời kết bạn và nhấn Đồng ý → Hệ thống kiểm tra lời mời vẫn đang chờ, ghi nhận 2 người là bạn bè → Lời mời biến khỏi mục Lời mời kết bạn, người gửi hiện trong mục Bạn bè với tổng điểm và trạng thái → Người chơi nhấn × ở một người bạn → Hệ thống hỏi "Hủy kết bạn với <tên>?" với 2 nút Không, Hủy kết bạn → Người chơi nhấn Hủy kết bạn → Hệ thống xóa quan hệ bạn bè, dòng đó biến khỏi danh sách → Người chơi nhấn Back → Hệ thống quay về giao diện chơi online.
 
 #### 1.3.3. Kịch bản UC07 "Quản lý bạn bè"
 
 | | |
 |---|---|
-| Use case | Quản lý bạn bè (UC07), gồm Xem danh sách bạn bè, Gửi lời mời kết bạn, Đồng ý lời mời kết bạn |
+| Use case | Quản lý bạn bè (UC07), gồm Kết bạn |
 | Actor | Người chơi: Hùng ở máy 1 là người gửi lời mời, Hoàng ở máy 2 là người nhận; mỗi người là actor trên máy của mình |
 | Tiền điều kiện | Cả 2 người chơi đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online; giữa HUNG và HOANG chưa có lời mời hay quan hệ bạn bè nào |
 | Hậu điều kiện | Server lưu quan hệ bạn bè giữa HUNG và HOANG; mỗi người thấy người kia trong danh sách bạn bè |
 
-Kịch bản chuẩn chia 2 đoạn, khớp với các use case con:
+Kịch bản chuẩn chia 2 đoạn, cùng thuộc use case con Kết bạn:
 - A. Gửi lời mời kết bạn (máy 1).
 - B. Đồng ý lời mời kết bạn (máy 2).
 
