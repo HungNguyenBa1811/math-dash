@@ -6,8 +6,8 @@ import java.util.List;
 
 public class MatchPlayer {
     private int id;
-    // Bài làm: phương án đã chọn cho từng câu, -1 là câu chưa chọn. Chỉ dùng để chấm, không lưu
-    private List<Integer> answers = new ArrayList<>();
+    // Câu thứ i của bài làm ứng với câu thứ i của đề
+    private List<Answer> answers = new ArrayList<>();
     private int correctCount;
     private Date submittedAt;
     private boolean forfeited;
@@ -28,11 +28,11 @@ public class MatchPlayer {
         this.id = id;
     }
 
-    public List<Integer> getAnswers() {
+    public List<Answer> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<Integer> answers) {
+    public void setAnswers(List<Answer> answers) {
         this.answers = answers;
     }
 

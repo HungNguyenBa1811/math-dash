@@ -5,13 +5,14 @@ title Tuần tự thiết kế – Chơi online, đoạn C: Thi đấu
 actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
 boundary MatchActivity as GA
-boundary QuestionAdapter as QA
 control CountDownTimer as T
 control SessionDAO as SD
 control MatchFirebaseDAO as MFD
+control PresenceFirebaseDAO as PFD
 control MatchApiDAO as MAD
 entity Match as M
 entity MathProblem as Q
+entity Answer as A
 end box
 box "Server (Spring Boot)" #FFFFFF
 boundary "MatchRestController" as MRC
@@ -19,6 +20,7 @@ control "PlayerDAO" as PD
 control "MatchDAO" as MD
 control "FirebaseAdminDAO" as FAD
 entity "Match" as SM
+entity "Answer" as SA
 entity "MathProblem" as SQ
 end box
 
@@ -28,43 +30,70 @@ GA -> MFD : watchMatch()
 MFD -> MFD : onDataChange(): toMatch()
 MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> GA : onSuccess()
+MFD -> GA : onSuccess() {MatchCallback}
 GA -> GA : startMatch()
-GA -> QA : setQuestions()
-QA -> Q : onBindViewHolder(): getExpression()
-Q --> QA : chuỗi phép tính
+GA -> A ** : tạo bài làm rỗng
+A --> GA : Answer
+GA -> GA : showQuestion()
+GA -> Q : getExpression()
+Q --> GA : chuỗi phép tính
+GA -> Q : getAnswerOptions()
+Q --> GA : 4 phương án
+GA -> GA : optionText()
+GA -> T ** : createTimer()
 GA -> T : start()
-GA --> U : hiển thị ô thời gian, trạng thái đối thủ, 10 câu hỏi
+GA -> PFD : watchOnlinePlayers()
+GA --> U : hiển thị ô thời gian, trạng thái đối thủ, nút Thoát
+PFD -> GA : onDataChange(): onPlayersChanged() {PlayerListCallback}
 T -> GA : onTick()
-U -> QA : chọn phương án cho từng câu
-QA -> QA : onCheckedChanged(): lưu phương án
+loop 10 câu
+  GA --> U : hiển thị câu đang làm và 4 ô A, B, C, D
+  U -> GA : bấm một ô phương án
+  GA -> GA : onClick(): chooseOption()
+  GA -> A : setSelectedOption()
+  GA -> A : setAnswerTime()
+  GA -> GA : showQuestion() sau NEXT_DELAY
+end
+GA -> GA : showQuestion(): showMessage()
+GA --> U : hiển thị đã làm xong 10 câu, nút Nộp bài
 U -> GA : nhấn Nộp bài
 GA -> GA : onClick(): submitAnswers()
-GA -> QA : getAnswers()
-QA --> GA : bài làm
+GA -> GA : showMessage()
 GA -> MAD : submit() {Thread}
 MAD -> MRC : POST /api/matches/{id}/submit → submit()
+MRC -> MRC : findMatch()
 MRC -> MD : findById()
 MD -> SM : đóng gói Match
 SM --> MD : Match
 MD --> MRC : Match
 MRC -> SM : countCorrect()
-SM -> SQ : isCorrect()
-SQ --> SM : đúng / sai
+loop 10 câu
+  SM -> SA : setProblem()
+  SM -> SA : isCorrect()
+  SA -> SQ : isCorrect()
+  SQ --> SA : kết quả so sánh
+  SA --> SM : đúng / sai
+end
 SM --> MRC : số câu đúng
 MRC -> MD : updateSubmission()
+MD -> MD : updateMatchPlayer()
+MD -> MD : insertAnswer()
 MD --> MRC : true
 MRC -> FAD : writeSubmitted()
 MRC -> SM : isOver()
 SM --> MRC : false
+MRC -> MRC : hideAnswers()
 MRC --> MAD : Match (JSON)
 MAD -> M : toMatch(): đóng gói Match
 M --> MAD : Match
 MAD --> GA : Match
-GA -> T : runOnUiThread(): cancel()
+GA -> GA : runOnUiThread(): onSubmitted()
+GA -> T : cancel()
+GA -> GA : showMessage()
 GA --> U : hiển thị đã nộp bài, đang chờ đối thủ
 MRC -> SM : isOver()
 SM --> MRC : true
+MRC -> MRC : endMatch()
 MRC -> MD : updateEndedAt()
 MD --> MRC : true
 MRC -> PD : getTotalPoints()
@@ -74,10 +103,11 @@ MRC -> FAD : writeFinished()
 MFD -> MFD : onDataChange(): toMatch()
 MFD -> M : đóng gói Match
 M --> MFD : Match
-MFD -> GA : onSuccess()
+MFD -> GA : onSuccess() {MatchCallback}
 GA -> GA : loadResult()
 GA -> MAD : getById() {Thread}
 MAD -> MRC : GET /api/matches/{id} → getById()
+MRC -> MRC : findMatch()
 MRC -> MD : findById()
 MD -> SM : đóng gói Match
 SM --> MD : Match
@@ -91,6 +121,7 @@ MAD --> GA : Match
 GA -> GA : runOnUiThread(): showResult()
 GA -> M : getResult()
 M --> GA : kết quả trận
+GA -> GA : showScores()
 GA -> M : getFinishTime()
 M --> GA : thời gian làm bài
 GA -> M : getPoints()

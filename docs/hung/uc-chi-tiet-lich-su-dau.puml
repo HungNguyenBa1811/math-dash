@@ -1,0 +1,38 @@
+@startuml uc-chi-tiet-lich-su-dau
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+
+skinparam usecase {
+  BackgroundColor #7ACFF5
+  BorderColor Black
+  FontColor Black
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor Black
+}
+
+left to right direction
+title Biểu đồ use case chi tiết module Xem lịch sử đấu – Math Dash 1v1
+
+actor "Người chơi" as A1
+
+rectangle "Module Xem lịch sử đấu" {
+  usecase "Xem lịch sử đấu" as UC04
+  usecase "Xem trận của tôi" as TCT
+  usecase "Xem chi tiết trận" as CT
+  usecase "Xem bảng xếp hạng" as BXH
+}
+
+A1 --> UC04
+
+UC04 ..> TCT : <<include>>
+CT ..> TCT : <<extend>>
+BXH ..> UC04 : <<extend>>
+@enduml

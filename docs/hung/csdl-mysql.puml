@@ -14,7 +14,7 @@ skinparam class {
   AttributeFontSize 10
 }
 skinparam packageStyle rectangle
-title Biểu đồ thiết kế CSDL MySQL – phần Chơi online, Xem bảng xếp hạng
+title Biểu đồ thiết kế CSDL MySQL – phần Chơi online, Xem lịch sử đấu, Quản lý bạn bè
 
 package "MySQL (server)" {
   entity "tblPlayer" as SP {
@@ -54,10 +54,30 @@ package "MySQL (server)" {
     * tblMatchId : integer(10) <<FK>>
     * tblPlayerId : integer(10) <<FK>>
   }
+  entity "tblAnswer" as SA {
+    * id : integer(10) <<PK>>
+    --
+    * selectedOption : integer(10)
+    * answerTime : bigint(20)
+    * tblMatchPlayerId : integer(10) <<FK>>
+    * tblMathProblemId : integer(10) <<FK>>
+  }
+  entity "tblFriendship" as SF {
+    * id : integer(10) <<PK>>
+    --
+    * status : varchar(10)
+    * createdAt : datetime
+    * tblPlayerSenderId : integer(10) <<FK>>
+    * tblPlayerReceiverId : integer(10) <<FK>>
+  }
 }
 
 
 SM ||--|{ SMP : "1 - 2"
 SM ||--|{ SQ : "1 - 10"
 SP ||--o{ SMP : "1 - n"
+SMP ||--o{ SA : "1 - n"
+SQ ||--o{ SA : "1 - n"
+SP ||--o{ SF : "1 - n người gửi"
+SP ||--o{ SF : "1 - n người nhận"
 @enduml

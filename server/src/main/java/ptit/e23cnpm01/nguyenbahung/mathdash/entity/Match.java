@@ -21,18 +21,18 @@ public class Match {
     private List<MathProblem> questions = new ArrayList<>();
     private List<MatchPlayer> players = new ArrayList<>();
 
-    // Chấm một bài làm: số câu có phương án đã chọn trùng đáp án đúng
-    public int countCorrect(List<Integer> answers) {
+    // Gắn câu thứ i của đề vào bài làm câu thứ i rồi đếm số câu đúng
+    public int countCorrect(List<Answer> answers) {
         int count = 0;
         for (int i = 0; i < questions.size() && i < answers.size(); i++) {
-            if (questions.get(i).isCorrect(answers.get(i))) {
+            answers.get(i).setProblem(questions.get(i));
+            if (answers.get(i).isCorrect()) {
                 count++;
             }
         }
         return count;
     }
 
-    // Trận đã xong: có người bỏ trận, hoặc cả 2 người đã nộp bài
     @JsonIgnore
     public boolean isOver() {
         int submitted = 0;
@@ -47,7 +47,7 @@ public class Match {
         return players.size() == 2 && submitted == 2;
     }
 
-    // Thời gian làm bài (mili giây) theo đồng hồ server; chưa nộp thì coi như chậm nhất
+    // Chưa nộp thì coi như chậm nhất
     public long getFinishTime(int playerId) {
         MatchPlayer mp = find(playerId, true);
         if (mp.getSubmittedAt() == null) {
@@ -56,7 +56,6 @@ public class Match {
         return mp.getSubmittedAt().getTime() - startedAt.getTime();
     }
 
-    // WIN / LOSE / DRAW của playerId: bỏ trận thì thua, còn lại xét đúng hết và thời gian
     public String getResult(int playerId) {
         MatchPlayer me = find(playerId, true);
         MatchPlayer opponent = find(playerId, false);
@@ -70,14 +69,16 @@ public class Match {
                 opponent.getCorrectCount(), getFinishTime(opponent.getPlayer().getId()));
     }
 
-    // Điểm trận: thắng 1, hòa 0,5, thua 0
     public double getPoints(int playerId) {
         String result = getResult(playerId);
         return WIN.equals(result) ? 1 : DRAW.equals(result) ? 0.5 : 0;
     }
 
-    // Luật của đề: chỉ một người đúng hết thì người đó thắng; cả 2 có câu sai thì hòa;
-    // cả 2 đúng hết thì ai nhanh hơn thắng, bằng nhau thì hòa. Dùng chung cho chơi với máy
+    public MatchPlayer getOpponent(int playerId) {
+        return find(playerId, false);
+    }
+
+    // Luật thắng thua của đề, dùng chung cho chơi với máy
     public static String judge(int myCorrect, long myTime, int otherCorrect, long otherTime) {
         boolean meAll = myCorrect == QUESTION_COUNT;
         boolean otherAll = otherCorrect == QUESTION_COUNT;
@@ -90,7 +91,7 @@ public class Match {
         return myTime < otherTime ? WIN : LOSE;
     }
 
-    // mine = true: người chơi có id playerId; mine = false: đối thủ của người đó
+    // mine = false: lấy đối thủ của playerId
     private MatchPlayer find(int playerId, boolean mine) {
         for (MatchPlayer mp : players) {
             if ((mp.getPlayer().getId() == playerId) == mine) {

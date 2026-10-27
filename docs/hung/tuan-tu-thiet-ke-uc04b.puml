@@ -1,0 +1,60 @@
+@startuml tuan-tu-thiet-ke-uc04b
+!include _seq.iuml
+title Tuần tự thiết kế – Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary OnlineActivity as OA
+boundary HistoryActivity as HA
+boundary TabLayout as TL
+boundary RankingAdapter as RAD
+control SessionDAO as SD
+control PlayerApiDAO as PAD
+entity Player as P
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "PlayerRestController" as PRC
+control "PlayerDAO" as PD
+control "MatchDAO" as MD
+entity "Player" as SP
+entity "Match" as SM
+end box
+
+U -> OA : nhấn biểu tượng Bảng xếp hạng
+OA -> HA : onClick(): startActivity() kèm EXTRA_TAB
+HA -> SD : onCreate(): getPlayer()
+SD --> HA : Player
+HA -> HA : loadHistory()
+HA -> TL : selectTab()
+TL -> HA : onTabSelected()
+HA -> HA : loadRanking()
+HA -> PAD : getRanking() {Thread}
+PAD -> PRC : GET /api/players/ranking → getRanking()
+PRC -> PD : getRanking()
+PD -> PD : findAllPlayers()
+PD -> SP : đóng gói Player
+SP --> PD : Player
+PD -> MD : findFinished()
+MD -> SM : đóng gói Match
+SM --> MD : Match
+MD --> PD : List<Match>
+PD -> PD : rank()
+PD -> PD : addMatch()
+PD -> SM : getPoints()
+SM --> PD : điểm trận
+PD -> SM : getFinishTime()
+SM --> PD : thời gian làm bài
+PD -> SM : getResult()
+SM --> PD : kết quả trận
+PD -> PD : averagePoints(), averageSeconds(), sắp xếp
+PD --> PRC : List<Player>
+PRC --> PAD : List<Player> (JSON)
+PAD -> P : toPlayer(): đóng gói Player
+P --> PAD : Player
+PAD --> HA : List<Player>
+HA -> RAD : runOnUiThread(): new RankingAdapter()
+RAD --> U : hiển thị bảng xếp hạng
+U -> HA : nhấn Back
+HA -> OA : finish()
+OA --> U : hiển thị lại màn Chơi online
+@enduml

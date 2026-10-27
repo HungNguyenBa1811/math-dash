@@ -1,21 +1,70 @@
 @startuml lop-thiet-ke-uc04
 !include _theme.iuml
-title Biểu đồ lớp chi tiết – Xem bảng xếp hạng
+title Biểu đồ lớp chi tiết – Xem lịch sử đấu
 
 package "Client (Android)" {
-  class MainActivity <<boundary>> {
-    - txtMyName : TextView
-    - txtMyPoints : TextView
-    - btnRanking : Button
+  class OnlineActivity <<boundary>> {
+    - btnHistory : ImageButton
+    - btnRanking : ImageButton
     + onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
-  class RankingActivity <<boundary>> {
-    - rvRanking : RecyclerView
+  class HistoryActivity <<boundary>> {
+    + {static} EXTRA_MATCH_ID : String
+    + {static} EXTRA_TAB : String
+    + {static} TAB_RANKING : int
     - me : Player
+    - matches : List<Match>
+    - tabLayout : TabLayout
+    - layoutMyMatches : LinearLayout
+    - pieChart : PieChartView
+    - txtWins : TextView
+    - txtDraws : TextView
+    - txtLosses : TextView
+    - txtTotal : TextView
+    - txtEmpty : TextView
+    - rvMatches : RecyclerView
+    - layoutRanking : LinearLayout
+    - rvRanking : RecyclerView
+    - rankingLoaded : boolean
+    - matchApiDAO : MatchApiDAO
     - playerApiDAO : PlayerApiDAO
     + onCreate(savedInstanceState : Bundle) : void
+    - loadHistory() : void
+    - showSummary(matches : List<Match>) : void
+    + onTabSelected(tab : TabLayout.Tab) : void
     - loadRanking() : void
+    + onMatchClick(match : Match) : void
+    - showError(messageRes : int) : void
+  }
+  class PieChartView <<boundary>> {
+    - wins : int
+    - draws : int
+    - losses : int
+    - arcPaint : Paint
+    - percentPaint : Paint
+    - labelPaint : Paint
+    - oval : RectF
+    + setData(wins : int, draws : int, losses : int) : void
+    # onDraw(canvas : Canvas) : void
+    - drawPart(canvas : Canvas, start : float, count : int, total : int, colorRes : int) : float
+  }
+  class MatchHistoryAdapter <<boundary>> {
+    - timeFormat : SimpleDateFormat
+    - listMatch : List<Match>
+    - myId : int
+    - activity : HistoryActivity
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : MatchHistoryViewHolder
+    + onBindViewHolder(holder : MatchHistoryViewHolder, position : int) : void
+    + getItemCount() : int
+  }
+  class MatchHistoryViewHolder <<boundary>> {
+    - viewResultBar : View
+    - txtOpponent : TextView
+    - txtResult : TextView
+    - txtPoints : TextView
+    - txtScore : TextView
+    - txtEndedAt : TextView
   }
   class RankingAdapter <<boundary>> {
     - listPlayer : List<Player>
@@ -31,16 +80,70 @@ package "Client (Android)" {
     - txtAvgOpponent : TextView
     - txtAvgWinTime : TextView
   }
-  class "activity_main.xml" as xmlMain
-  class "activity_ranking.xml" as xmlRanking
+  class MatchDetailActivity <<boundary>> {
+    - me : Player
+    - match : Match
+    - matchId : int
+    - txtTitle : TextView
+    - txtResult : TextView
+    - txtPoints : TextView
+    - txtMyName : TextView
+    - txtMyStats : TextView
+    - txtOpponentName : TextView
+    - txtOpponentStats : TextView
+    - txtMyColumn : TextView
+    - txtOpponentColumn : TextView
+    - rvProblems : RecyclerView
+    - matchApiDAO : MatchApiDAO
+    + onCreate(savedInstanceState : Bundle) : void
+    - loadMatch() : void
+    - showMatch(m : Match) : void
+    - showResult(result : String) : void
+    - stats(mp : MatchPlayer) : String
+  }
+  class ProblemAdapter <<boundary>> {
+    - listProblem : List<MathProblem>
+    - myAnswers : List<Answer>
+    - opponentAnswers : List<Answer>
+    + ProblemAdapter(problems : List<MathProblem>, myAnswers : List<Answer>, opponentAnswers : List<Answer>)
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ProblemViewHolder
+    + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
+    + getItemCount() : int
+    - answerAt(answers : List<Answer>, position : int) : Answer
+    - showAnswer(view : TextView, answer : Answer) : void
+  }
+  class ProblemViewHolder <<boundary>> {
+    - txtIndex : TextView
+    - txtExpression : TextView
+    - txtMyAnswer : TextView
+    - txtOpponentAnswer : TextView
+  }
+  class "activity_online.xml" as xmlOnline
+  class "activity_history.xml" as xmlHistory
+  class "item_match_history.xml" as xmlItemMatch
   class "item_ranking.xml" as xmlItemRanking
+  class "activity_match_detail.xml" as xmlDetail
+  class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
     # {static} BASE_URL : String
+    # {static} NETWORK_ERROR : String
+    # get(path : String) : JSONObject
     # getArray(path : String) : JSONArray
+    - readGet(path : String) : String
+    - open(path : String, method : String) : HttpURLConnection
+    - read(conn : HttpURLConnection, code : int) : String
+  }
+  class MatchApiDAO <<control>> {
+    + getHistory(playerId : int) : List<Match>
+    + getById(matchId : int) : Match
+    - toMatch(json : JSONObject) : Match
+    - toProblem(json : JSONObject) : MathProblem
+    - toMatchPlayer(json : JSONObject, questions : List<MathProblem>) : MatchPlayer
+    - toAnswers(array : JSONArray, questions : List<MathProblem>) : List<Answer>
   }
   class PlayerApiDAO <<control>> {
     + getRanking() : List<Player>
@@ -53,9 +156,52 @@ package "Client (Android)" {
     - avgOpponentPoints : double
     - avgWinTime : double
   }
+  class Match <<entity>> {
+    - id : int
+    - startedAt : Date
+    - endedAt : Date
+    - questions : List<MathProblem>
+    - players : List<MatchPlayer>
+    + getOpponent(playerId : int) : MatchPlayer
+    + getFinishTime(playerId : int) : long
+    + getResult(playerId : int) : String
+    + getPoints(playerId : int) : double
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - answers : List<Answer>
+    - correctCount : int
+    - submittedAt : Date
+    - forfeited : boolean
+    - player : Player
+  }
+  class Answer <<entity>> {
+    + {static} NONE : int
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
+    + isAnswered() : boolean
+    + isCorrect() : boolean
+  }
+  class MathProblem <<entity>> {
+    - id : int
+    - operand1 : int
+    - operand2 : int
+    - operator : String
+    - correctAnswer : int
+    + isCorrect(answer : int) : boolean
+    + getExpression() : String
+  }
 }
 
 package "Server (Spring Boot)" {
+  class MatchRestController <<boundary>> {
+    - matchDAO : MatchDAO
+    - playerDAO : PlayerDAO
+    + getHistory(playerId : int) : List<Match>
+    + getById(id : int) : Match
+  }
   class PlayerRestController <<boundary>> {
     - playerDAO : PlayerDAO
     + getRanking() : List<Player>
@@ -64,13 +210,29 @@ package "Server (Spring Boot)" {
     # {static} conn : Connection
     + DAO()
   }
+  class MatchDAO <<control>> {
+    - {static} SELECT_PLAYERS : String
+    + findByPlayer(playerId : int) : List<Match>
+    + findById(id : int) : Match
+    + findFinished() : List<Match>
+    - query(sql : String, key : Integer) : List<Match>
+    - findProblems(matchId : int) : List<MathProblem>
+    - findAnswers(matchPlayerId : int, questions : List<MathProblem>) : List<Answer>
+    - toMatch(rs : ResultSet) : Match
+    - toMatchPlayer(rs : ResultSet) : MatchPlayer
+    - toAnswer(rs : ResultSet, questions : List<MathProblem>) : Answer
+    - toProblem(rs : ResultSet) : MathProblem
+  }
   class PlayerDAO <<control>> {
-    - matchDAO : MatchDAO
+    - {static} COLUMNS : String
+    + getTotalPoints(playerId : int) : double
     + getRanking() : List<Player>
     + {static} rank(players : List<Player>, matches : List<Match>) : List<Player>
-  }
-  class MatchDAO <<control>> {
-    + findFinished() : List<Match>
+    - {static} addMatch(match : Match, byId : Map<Integer, Player>, opponents : Map<Integer, Set<Integer>>, winTimes : Map<Integer, List<Long>>) : void
+    - {static} averagePoints(ids : Set<Integer>, byId : Map<Integer, Player>) : double
+    - {static} averageSeconds(times : List<Long>) : double
+    - findAllPlayers() : List<Player>
+    - toPlayer(rs : ResultSet) : Player
   }
   class "Player" as SPlayer <<entity>> {
     - id : int
@@ -81,47 +243,94 @@ package "Server (Spring Boot)" {
     - avgOpponentPoints : double
     - avgWinTime : double
   }
-  class Match <<entity>> {
+  class "Match" as SMatch <<entity>> {
     - id : int
     - startedAt : Date
     - endedAt : Date
+    - questions : List<MathProblem>
     - players : List<MatchPlayer>
     + getFinishTime(playerId : int) : long
     + getResult(playerId : int) : String
     + getPoints(playerId : int) : double
   }
-  class MatchPlayer <<entity>> {
+  class "MatchPlayer" as SMatchPlayer <<entity>> {
     - id : int
+    - answers : List<Answer>
     - correctCount : int
     - submittedAt : Date
     - forfeited : boolean
     - player : Player
   }
+  class "Answer" as SAnswer <<entity>> {
+    + {static} NONE : int
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
+  }
+  class "MathProblem" as SMathProblem <<entity>> {
+    - id : int
+    - operand1 : int
+    - operand2 : int
+    - operator : String
+    - correctAnswer : int
+  }
 }
 
-MainActivity -- RankingActivity
-RankingActivity -- RankingAdapter
+OnlineActivity -- HistoryActivity
+HistoryActivity -- MatchDetailActivity
+HistoryActivity -- PieChartView
+HistoryActivity -- MatchHistoryAdapter
+HistoryActivity -- RankingAdapter
+MatchHistoryAdapter -- MatchHistoryViewHolder
 RankingAdapter -- RankingViewHolder
-MainActivity -- xmlMain
-RankingActivity -- xmlRanking
+MatchDetailActivity -- ProblemAdapter
+ProblemAdapter -- ProblemViewHolder
+OnlineActivity -- xmlOnline
+HistoryActivity -- xmlHistory
+MatchHistoryViewHolder -- xmlItemMatch
 RankingViewHolder -- xmlItemRanking
-RankingActivity o-- "1" Player
+MatchDetailActivity -- xmlDetail
+ProblemViewHolder -- xmlItemProblem
+HistoryActivity o-- "1" Player
+HistoryActivity o-- "n" Match
+MatchHistoryAdapter o-- "n" Match
 RankingAdapter o-- "n" Player
-RankingActivity -- SessionDAO
-RankingActivity -- PlayerApiDAO
+MatchDetailActivity o-- "1" Player
+MatchDetailActivity o-- "1" Match
+ProblemAdapter o-- "10" MathProblem
+ProblemAdapter o-- "n" Answer
+HistoryActivity -- SessionDAO
+HistoryActivity -- MatchApiDAO
+HistoryActivity -- PlayerApiDAO
+MatchDetailActivity -- SessionDAO
+MatchDetailActivity -- MatchApiDAO
+MatchApiDAO --|> ApiDAO
 PlayerApiDAO --|> ApiDAO
 SessionDAO -- Player
+MatchApiDAO -- Match
 PlayerApiDAO -- Player
+Match "1" *-- "2" MatchPlayer
+Match "1" *-- "10" MathProblem
+MatchPlayer "n" o-- "1" Player
+MatchPlayer "1" *-- "n" Answer
+MathProblem "1" --o "n" Answer
 
+MatchRestController -- MatchDAO
+MatchRestController -- PlayerDAO
 PlayerRestController -- PlayerDAO
 PlayerDAO -- MatchDAO
-PlayerDAO --|> SDAO
 MatchDAO --|> SDAO
+PlayerDAO --|> SDAO
+MatchDAO -- SMatch
 PlayerDAO -- SPlayer
-PlayerDAO -- Match
-MatchDAO -- Match
-Match "1" *-- "2" MatchPlayer
-MatchPlayer "n" o-- "1" SPlayer
+PlayerDAO -- SMatch
+SMatch "1" *-- "2" SMatchPlayer
+SMatch "1" *-- "10" SMathProblem
+SMatchPlayer "n" o-- "1" SPlayer
+SMatchPlayer "1" *-- "n" SAnswer
+SMathProblem "1" --o "n" SAnswer
 
+MatchApiDAO -- MatchRestController : HTTP/JSON
 PlayerApiDAO -- PlayerRestController : HTTP/JSON
 @enduml

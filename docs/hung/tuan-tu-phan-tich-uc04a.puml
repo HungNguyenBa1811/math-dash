@@ -1,0 +1,44 @@
+@startuml tuan-tu-phan-tich-uc04a
+!include _seq.iuml
+title Tuần tự phân tích – Xem lịch sử đấu, đoạn A: Xem trận của tôi
+
+actor "Người chơi" as U
+boundary OnlineView as OV
+boundary HistoryView as HV
+boundary MatchDetailView as DV
+entity Match as M
+entity Answer as A
+entity MathProblem as Q
+
+U -> OV : nhấn Lịch sử đấu
+OV -> HV : gọi
+HV -> M : getHistory()
+M --> HV : danh sách trận đã kết thúc
+HV -> M : getResult()
+M --> HV : kết quả trận
+HV -> M : getPoints()
+M --> HV : điểm trận
+HV -> M : getOpponent()
+M --> HV : đối thủ trong trận
+HV --> U : hiển thị biểu đồ tỉ lệ thắng, hòa, thua và danh sách trận
+U -> HV : bấm vào một trận
+HV -> DV : gọi
+DV -> M : getMatch()
+M --> DV : trận kèm đề, 2 người chơi và bài làm từng câu
+DV -> M : getResult()
+M --> DV : kết quả trận
+DV -> M : getPoints()
+M --> DV : điểm trận
+DV -> M : getOpponent()
+M --> DV : đối thủ trong trận
+DV -> M : getFinishTime()
+M --> DV : thời gian làm bài
+DV -> A : isCorrect()
+A -> Q : isCorrect()
+Q --> A : đúng / sai
+A --> DV : câu đúng / sai
+DV --> U : hiển thị chi tiết trận và bài làm từng câu
+U -> DV : nhấn Back
+DV -> HV : gọi
+HV --> U : hiển thị lại danh sách trận
+@enduml

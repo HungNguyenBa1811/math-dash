@@ -4,7 +4,7 @@ title Tuần tự thiết kế – Chơi online, đoạn B: Nhận lời thách 
 
 actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
-boundary MainActivity as MA
+boundary OnlineActivity as OA
 boundary MatchActivity as GA
 control ChallengeFirebaseDAO as CFD
 control MatchApiDAO as MAD
@@ -24,34 +24,36 @@ end box
 CFD -> CFD : onDataChange(): toChallenge()
 CFD -> C : đóng gói Challenge
 C --> CFD : Challenge
-CFD -> MA : onChallengeChanged()
-MA -> MA : showChallengeDialog()
-MA --> U : hiển thị hộp thoại lời mời
-U -> MA : nhấn Đồng ý
-MA -> MA : onClick(): acceptChallenge()
-MA -> MAD : createMatch() {Thread}
+CFD -> OA : onChallengeChanged() {ChallengeCallback}
+OA -> OA : showChallengeDialog()
+OA --> U : hiển thị hộp thoại lời mời
+U -> OA : nhấn Đồng ý
+OA -> OA : onClick(): acceptChallenge()
+OA -> MAD : createMatch() {Thread}
 MAD -> MRC : POST /api/matches → create()
-MRC -> FAD : readChallengeStatus()
 MRC -> FAD : readPresence()
 FAD -> SP : đóng gói Player
 SP --> FAD : Player
 FAD --> MRC : Player
+MRC -> FAD : readChallengeStatus()
 MRC -> MRC : startMatch()
+MRC -> SM : đóng gói Match
+SM --> MRC : Match
 MRC -> PRD : generateProblems()
 PRD -> SQ : đóng gói MathProblem
 SQ --> PRD : MathProblem
 PRD --> MRC : List<MathProblem>
-MRC -> SM : đóng gói Match
-SM --> MRC : Match
 MRC -> MD : insert()
 MD -> MD : lưu trận, đề, 2 người chơi trong một transaction
 MD --> MRC : true
 MRC -> FAD : writeMatch()
+MRC -> MRC : setStatus()
 MRC -> FAD : updateStatus()
 MRC -> FAD : updateChallenge()
+MRC -> MRC : hideAnswers()
 MRC --> MAD : Match (JSON)
 MAD -> M : toMatch(): đóng gói Match
 M --> MAD : Match
-MAD --> MA : Match
-MA -> GA : runOnUiThread(): openMatch()
+MAD --> OA : Match
+OA -> GA : runOnUiThread(): openMatch()
 @enduml

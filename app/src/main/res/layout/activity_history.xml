@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/arcade_bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:layout_margin="16dp"
+    tools:context=".view.HistoryActivity">
+
+    <LinearLayout style="@style/TopBar">
+
+        <TextView
+            style="@style/TopBarTitle"
+            android:text="@string/title_history" />
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_retro_card"
+        app:tabIndicatorColor="@color/arcade_cyan"
+        app:tabIndicatorFullWidth="true"
+        app:tabSelectedTextColor="@color/arcade_cyan"
+        app:tabTextColor="@color/arcade_text_dim" />
+
+    <!-- Thẻ Trận của tôi: tóm tắt + danh sách trận -->
+    <LinearLayout
+        android:id="@+id/layoutMyMatches"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_retro_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ptit.e23cnpm01.nguyenbahung.math_dash.view.PieChartView
+                android:id="@+id/pieChart"
+                android:layout_width="120dp"
+                android:layout_height="120dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtWins"
+                    style="@style/RetroText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:textColor="@color/arcade_green"
+                    tools:text="● Thắng   12" />
+
+                <TextView
+                    android:id="@+id/txtDraws"
+                    style="@style/RetroText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/arcade_amber"
+                    tools:text="● Hòa      3" />
+
+                <TextView
+                    android:id="@+id/txtLosses"
+                    style="@style/RetroText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/arcade_red"
+                    tools:text="● Thua     5" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/arcade_panel_stroke" />
+
+                <TextView
+                    android:id="@+id/txtTotal"
+                    style="@style/RetroText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    tools:text="20 trận" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtEmpty"
+            style="@style/RetroText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="@string/msg_no_matches"
+            android:textColor="@color/arcade_text_dim"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMatches"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!-- Thẻ Bảng xếp hạng: hàng tiêu đề cột + danh sách -->
+    <LinearLayout
+        android:id="@+id/layoutRanking"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp">
+
+            <TextView
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:text="#"
+                android:textColor="@color/arcade_cyan"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/col_name"
+                android:textColor="@color/arcade_cyan"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="@string/col_points"
+                android:textColor="@color/arcade_cyan"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:gravity="end"
+                android:text="@string/col_avg_opponent"
+                android:textColor="@color/arcade_cyan"
+                android:textSize="13sp" />
+
+            <TextView
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.3"
+                android:gravity="end"
+                android:text="@string/col_avg_win_time"
+                android:textColor="@color/arcade_cyan"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRanking"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</LinearLayout>

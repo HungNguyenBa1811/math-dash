@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_retro_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="horizontal">
+
+    <!-- Dải màu theo kết quả: xanh thắng, vàng hòa, đỏ thua -->
+    <View
+        android:id="@+id/viewResultBar"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="2dp"
+        tools:background="@color/arcade_green" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtOpponent"
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textStyle="bold"
+                tools:text="vs HOANG · #37" />
+
+            <TextView
+                android:id="@+id/txtPoints"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/arcade_amber"
+                tools:text="+1" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtResult"
+            style="@style/RetroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="THẮNG" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtScore"
+                style="@style/RetroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/arcade_text_dim"
+                android:textSize="13sp"
+                tools:text="10 – 10 câu" />
+
+            <TextView
+                android:id="@+id/txtEndedAt"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/arcade_text_dim"
+                android:textSize="13sp"
+                tools:text="25/10 20:15" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

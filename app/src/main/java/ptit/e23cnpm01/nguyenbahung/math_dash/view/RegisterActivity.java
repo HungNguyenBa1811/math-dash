@@ -34,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         btnRegister.setOnClickListener(this);
     }
 
-    // Kiểm tra ô trống và mật khẩu nhập lại ở app, không gọi server nếu sai
     @Override
     public void onClick(View v) {
         String username = edtUsername.getText().toString().trim();
@@ -52,7 +51,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         register(username, password, displayName);
     }
 
-    // Gọi server trong Thread, báo kết quả trên luồng giao diện
     private void register(final String username, final String password, final String displayName) {
         new Thread(new Runnable() {
             @Override

@@ -3,13 +3,18 @@
 title Biểu đồ lớp pha phân tích – Chơi online
 
 class MainView <<boundary>> {
+  - subPlayBot
+  - subPlayOnline
+}
+class OnlineView <<boundary>> {
   - outMyInfo
   - outsubListPlayer
 }
 class MatchView <<boundary>> {
   - outTimer
   - outOpponentStatus
-  - inoutListQuestion
+  - outQuestion
+  - subOptions
   - subSubmit
   - subExit
 }
@@ -55,10 +60,14 @@ class Match <<entity>> {
   + continueMatch()
 }
 class MatchPlayer <<entity>> {
-  - answers
   - correctCount
   - submittedAt
   - forfeited
+}
+class Answer <<entity>> {
+  - selectedOption
+  - answerTime
+  + isCorrect()
 }
 class MathProblem <<entity>> {
   - operand1
@@ -70,12 +79,13 @@ class MathProblem <<entity>> {
   + isCorrect()
 }
 
-MainView -- MatchView
+MainView -- OnlineView
+OnlineView -- MatchView
 MatchView -- MatchResultView
-MatchResultView -- MainView
-MainView -- Player
-MainView -- Challenge
-MainView -- Match
+MatchResultView -- OnlineView
+OnlineView -- Player
+OnlineView -- Challenge
+OnlineView -- Match
 MatchView -- Match
 MatchResultView -- Match
 Challenge "n" o-- "1" Player : người mời
@@ -83,4 +93,6 @@ Challenge "n" o-- "1" Player : người được mời
 Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
 Match "1" *-- "10" MathProblem
+MatchPlayer "n" -- "n" MathProblem
+(MatchPlayer, MathProblem) .. Answer
 @enduml

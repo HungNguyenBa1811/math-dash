@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Một câu: số thứ tự, phép tính kèm đáp án đúng, đúng / sai và thời gian của mỗi người -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_retro_card"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/txtIndex"
+        style="@style/RetroText"
+        android:layout_width="28dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/arcade_text_dim"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/txtExpression"
+        style="@style/RetroText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:textSize="16sp"
+        tools:text="12 + 7 = 19" />
+
+    <TextView
+        android:id="@+id/txtMyAnswer"
+        style="@style/RetroText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="14sp"
+        tools:text="✓ 19
+2,3 s"
+        tools:textColor="@color/arcade_green" />
+
+    <TextView
+        android:id="@+id/txtOpponentAnswer"
+        style="@style/RetroText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="14sp"
+        tools:text="✗ 18
+4,1 s"
+        tools:textColor="@color/arcade_red" />
+
+</LinearLayout>

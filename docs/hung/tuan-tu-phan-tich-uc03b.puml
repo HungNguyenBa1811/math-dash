@@ -3,19 +3,19 @@
 title Tuần tự phân tích – Chơi online, đoạn B: Nhận lời thách đấu
 
 actor "Người chơi" as U
-boundary MainView as MV
+boundary OnlineView as OV
 boundary MatchView as GV
 entity Challenge as C
 entity Match as M
 entity MathProblem as Q
 
-MV -> C : watchChallenge()
-C --> MV : lời mời mới
-MV --> U : hiển thị hộp thoại lời mời
-U -> MV : nhấn Đồng ý
-MV -> M : createMatch()
+OV -> C : watchChallenge()
+C --> OV : lời mời mới
+OV --> U : hiển thị hộp thoại lời mời
+U -> OV : nhấn Đồng ý
+OV -> M : createMatch()
 M -> Q : generateProblem()
 Q --> M : câu hỏi
-M --> MV : trận đấu
-MV -> GV : gọi
+M --> OV : trận đấu
+OV -> GV : gọi
 @enduml

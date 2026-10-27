@@ -1,0 +1,85 @@
+@startuml tuan-tu-thiet-ke-uc07a
+!include _seq.iuml
+title Tuần tự thiết kế – Quản lý bạn bè, đoạn A: Gửi lời mời kết bạn
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary OnlineActivity as OA
+boundary FriendActivity as FA
+boundary FriendRequestAdapter as FRA
+boundary FriendAdapter as FAD
+control SessionDAO as SD
+control PresenceFirebaseDAO as PFD
+control FriendshipApiDAO as FSAD
+entity Player as P
+entity Friendship as F
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "FriendshipRestController" as FRC
+control "FriendshipDAO" as FD
+control "PlayerDAO" as PD
+entity "Friendship" as SF
+entity "Player" as SP
+end box
+
+U -> OA : nhấn biểu tượng Bạn bè
+OA -> FA : onClick(): startActivity()
+FA -> SD : onCreate(): getPlayer()
+SD -> P : đóng gói Player
+P --> SD : Player
+SD --> FA : Player
+FA -> PFD : watchOnlinePlayers()
+FA -> FA : loadFriendships()
+FA -> FSAD : getFriendships() {Thread}
+FSAD -> FRC : GET /api/friendships?playerId={id} → getFriendships()
+FRC -> FD : findByPlayer()
+FD -> SF : đóng gói Friendship
+SF --> FD : Friendship
+FD --> FRC : List<Friendship>
+FRC -> PD : getTotalPoints()
+PD --> FRC : tổng điểm
+FRC --> FSAD : List<Friendship> (JSON)
+FSAD -> F : toFriendship(): đóng gói Friendship
+F --> FSAD : Friendship
+FSAD --> FA : List<Friendship>
+FA -> FA : runOnUiThread(): showFriendships()
+FA -> F : canAccept()
+F --> FA : kết quả kiểm tra
+FA -> FRA : setFriendships()
+FRA --> U : hiển thị lời mời đã nhận
+FA -> FAD : setFriendships()
+FAD -> F : getFriend()
+F --> FAD : Player
+FAD --> U : hiển thị danh sách bạn bè
+PFD -> PFD : onDataChange(): toPlayer()
+PFD -> P : đóng gói Player
+P --> PFD : Player
+PFD -> FA : onPlayersChanged() {PlayerListCallback}
+FA -> FAD : setOnlineIds()
+FAD --> U : hiển thị trạng thái Online / Offline
+U -> FA : nhập tên đăng nhập, nhấn Kết bạn
+FA -> FSAD : onClick(): sendRequest() {Thread}
+FSAD -> FRC : POST /api/friendships → sendRequest()
+FRC -> PD : findById()
+PD -> SP : đóng gói Player
+SP --> PD : Player
+PD --> FRC : Player
+FRC -> PD : findByUsername()
+PD -> SP : đóng gói Player
+SP --> PD : Player
+PD --> FRC : Player
+FRC -> FD : existsBetween()
+FD --> FRC : false
+FRC -> SF : tạo lời mời đang chờ
+SF --> FRC : Friendship
+FRC -> FD : insert()
+FD --> FRC : true
+FRC -> PD : getTotalPoints()
+PD --> FRC : tổng điểm
+FRC --> FSAD : Friendship (JSON)
+FSAD -> F : toFriendship(): đóng gói Friendship
+F --> FSAD : Friendship
+FSAD --> FA : Friendship
+FA -> FAD : runOnUiThread(): setFriendships()
+FAD --> U : hiển thị dòng đang chờ trả lời, thông báo đã gửi lời mời
+@enduml

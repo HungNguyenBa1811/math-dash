@@ -18,7 +18,7 @@ skinparam class {
   BorderThickness 1
 }
 left to right direction
-title Lớp thực thể pha thiết kế – phần Chơi online, Xem bảng xếp hạng
+title Lớp thực thể pha thiết kế – phần Chơi online, Xem lịch sử đấu, Quản lý bạn bè
 
 class Player {
   - id : int
@@ -57,19 +57,37 @@ class Match {
   - endedAt : Date
   - questions : List<MathProblem>
   - players : List<MatchPlayer>
-  + countCorrect(answers : List<Integer>) : int
+  + countCorrect(answers : List<Answer>) : int
   + isOver() : boolean
   + getFinishTime(playerId : int) : long
   + getResult(playerId : int) : String
   + getPoints(playerId : int) : double
+  + getOpponent(playerId : int) : MatchPlayer
 }
 class MatchPlayer {
   - id : int
-  - answers : List<Integer>
+  - answers : List<Answer>
   - correctCount : int
   - submittedAt : Date
   - forfeited : boolean
   - player : Player
+}
+class Answer {
+  - id : int
+  - selectedOption : int
+  - answerTime : long
+  - problem : MathProblem
+  + isAnswered() : boolean
+  + isCorrect() : boolean
+}
+class Friendship {
+  - id : int
+  - status : String
+  - createdAt : Date
+  - sender : Player
+  - receiver : Player
+  + getFriend(playerId : int) : Player
+  + canAccept(playerId : int) : boolean
 }
 
 Challenge "n" o-- "1" Player : challenger
@@ -77,4 +95,8 @@ Challenge "n" o-- "1" Player : opponent
 Match "1" *-- "2" MatchPlayer
 MatchPlayer "n" o-- "1" Player
 Match "1" *-- "10" MathProblem
+MatchPlayer "1" *-- "n" Answer
+Answer "n" o-- "1" MathProblem
+Friendship "n" o-- "1" Player : sender
+Friendship "n" o-- "1" Player : receiver
 @enduml

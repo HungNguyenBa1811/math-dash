@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/arcade_bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:layout_margin="16dp"
+    tools:context=".view.MatchDetailActivity">
+
+    <LinearLayout style="@style/TopBar">
+
+        <TextView
+            style="@style/TopBarTitle"
+            android:text="@string/title_match_detail" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtTitle"
+        style="@style/RetroText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/arcade_text_dim"
+        tools:text="Trận #37 · 25/10/2026 20:15" />
+
+    <TextView
+        android:id="@+id/txtResult"
+        style="@style/RetroTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:textSize="36sp"
+        tools:text="THẮNG!" />
+
+    <TextView
+        android:id="@+id/txtPoints"
+        style="@style/RetroText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/arcade_amber"
+        tools:text="+1 điểm" />
+
+    <!-- So sánh 2 bên: cột trái là mình, cột phải là đối thủ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_retro_card"
+        android:orientation="horizontal"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtMyName"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/arcade_cyan"
+                android:textStyle="bold"
+                tools:text="HUNG" />
+
+            <TextView
+                android:id="@+id/txtMyStats"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="10/10 câu · 38,2 giây" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/arcade_panel_stroke" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtOpponentName"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="HOANG" />
+
+            <TextView
+                android:id="@+id/txtOpponentStats"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/arcade_text_dim"
+                android:textSize="14sp"
+                tools:text="10/10 câu · 45,6 giây" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        style="@style/RetroText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/detail_problems"
+        android:textColor="@color/arcade_cyan" />
+
+    <!-- Tiêu đề cột: câu, phép tính kèm đáp án đúng, bài làm của mình, bài làm của đối thủ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp">
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:text="#"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="13sp" />
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:text="@string/col_question"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtMyColumn"
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/arcade_cyan"
+            android:textSize="13sp"
+            tools:text="HUNG" />
+
+        <TextView
+            android:id="@+id/txtOpponentColumn"
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="13sp"
+            tools:text="HOANG" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProblems"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

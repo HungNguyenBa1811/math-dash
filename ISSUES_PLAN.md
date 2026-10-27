@@ -1,8 +1,14 @@
-# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 6: THEO ĐỀ 9 "GAME GIẢI TOÁN NHANH", DEMO 28/10)
+# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 7: THEO ĐỀ 9 "GAME GIẢI TOÁN NHANH", DEMO 28/10)
 
 > Nguồn: đề bài số 9 (dán nguyên văn ở `REPORT_CONVENTION.md` mục 1), `CONVENTION.md` (quy ước code Android), `REPORT_CONVENTION.md` (yêu cầu báo cáo + quy trình OOAD), `docs/chung/01-pham-vi-use-case.md` (phạm vi).
 > Thành viên: **@HungNguyenBa1811** (Hùng – nhóm trưởng) · **@Minahn210** (Hoàng – thành viên 2).
 > Mỗi mục `[Mx-yy]` bên dưới là 1 GitHub issue. Số thứ tự trong mỗi milestone là thứ tự nên làm.
+
+**Thay đổi ở bản 7** (27/10, sửa giao diện cho đúng luồng chơi):
+- **Giao diện chính chỉ có 2 nút** Chơi với máy, Chơi online (và nút đăng xuất). Danh sách người chơi online, thách đấu, nhận lời mời chuyển sang màn mới `OnlineActivity`; thanh trên của màn này có 3 biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng (góc phải ngoài cùng, mở thẳng thẻ Bảng xếp hạng). Người chơi chỉ online khi đang ở `OnlineActivity`.
+- **Màn thi đấu kiểu Kahoot / Quizizz:** mỗi lần một câu, 4 ô lớn A, B, C, D; chọn một ô là sang câu sau; làm xong 10 câu mới hiện Nộp bài; hết giờ tự nộp. Bỏ `QuestionAdapter`, `QuestionViewHolder`, `item_question.xml`.
+- **Thêm thực thể `Answer` và bảng `tblAnswer`** (phần chung): bài làm từng câu gồm phương án đã chọn và thời gian làm câu. Chi tiết trận hiện đúng / sai và thời gian từng câu của mỗi người. Vẫn giữ `tblMatchPlayer.correctCount`. CSDL đang chạy thêm bảng bằng `server/db/migrate-7-answer.sql`.
+- Thanh trên các màn của Hùng thống nhất một kiểu (tiêu đề căn trái, nút biểu tượng bên phải); lề của mọi màn không còn bị `fitsSystemWindows` xóa.
 
 **Thay đổi ở bản 6** (27/10, chia lại module để 2 người không trùng chức năng):
 - **Đăng nhập / Đăng ký thuộc hẳn Hoàng** (module Tài khoản). Hùng không trình bày phần này nữa; code vẫn là code chung đã merge.
@@ -10,7 +16,7 @@
 - **UC04 đổi thành "Xem lịch sử đấu":** 2 thẻ Trận của tôi (biểu đồ tròn tỉ lệ thắng / hòa / thua + danh sách trận, bấm vào xem chi tiết trận) và Bảng xếp hạng. Chỉ gồm trận online với người, không gồm ván với máy. `RankingActivity` gộp vào `HistoryActivity`.
 - **Thêm UC07 "Quản lý bạn bè":** lớp `Friendship`, bảng `tblFriendship` (khóa ngoại `ON DELETE CASCADE` tới `tblPlayer`, nên xóa người chơi ở UC06 không bị chặn).
 - **Hoàng:** Tài khoản (UC01, UC02), Chơi với máy (UC05), Quản trị (UC06). Không đổi gì ở phần code của Hoàng.
-- **Hoãn sau demo:** bảng `tblAnswer` lưu đáp án đã chọn (để màn chi tiết trận hiện bài làm), khi đó bỏ cột `tblMatchPlayer.correctCount`.
+- **Hoãn sau demo:** bảng `tblAnswer` lưu đáp án đã chọn (để màn chi tiết trận hiện bài làm). Đã làm ở bản 7.
 
 **Thay đổi so với bản 4** (đối chiếu lại với đề, ngày 26/10):
 - **Chơi online theo đề:** danh sách người chơi online (tên, tổng điểm, rỗi / bận) → bấm tên để thách đấu → đồng ý / từ chối → **server sinh cùng một đề N = 10 câu trắc nghiệm** và gửi cho cả 2 → nộp bài → **server chấm và làm trọng tài**: đúng hết và nhanh hơn thì thắng, cả 2 có câu sai thì hòa; thắng 1, hòa 0,5, thua 0 → hỏi chơi tiếp sau mỗi ván.
@@ -79,7 +85,7 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-online` (UC03), `uc-lich-su
 
 | Loại | Lớp | Sở hữu |
 |---|---|---|
-| Entity | `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `BotGame`, `Friendship` | **Chung** |
+| Entity | `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `BotGame`, `Friendship` | **Chung** |
 | DAO SQLite | `DAO` (cha), `DatabaseHelper`, `PlayerDAO` (bản sao người chơi) | **Chung** |
 | DAO SQLite | `BotGameDAO` | Hoàng |
 | DAO HTTP | `ApiDAO` (cha, có `get`, `post`, `getArray`, `delete`), `PlayerApiDAO` (đăng ký, đăng nhập, `getById`), `SessionDAO` (lưu phiên) | **Chung** |
@@ -87,8 +93,8 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-online` (UC03), `uc-lich-su
 | DAO HTTP | `PlayerApiDAO` các hàm quản trị (`search`, `update`, `resetPassword`, `delete`) | Hoàng |
 | DAO Firebase | `FirebaseDAO` (cha), `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO` | Hùng |
 | Sinh câu hỏi | `ProblemDAO` (không truy cập CSDL; app dùng cho Chơi với máy) | **Chung** |
-| Giao diện | `LoginActivity`, `RegisterActivity`, `MainActivity` (khung) | **Chung** |
-| Giao diện | `MainActivity` phần danh sách online + `PlayerAdapter`, `MatchActivity`, `QuestionAdapter` | Hùng |
+| Giao diện | `LoginActivity`, `RegisterActivity`, `MainActivity` (2 nút Chơi với máy, Chơi online) | **Chung** |
+| Giao diện | `OnlineActivity` (danh sách online, thách đấu) + `PlayerAdapter`, `MatchActivity` | Hùng |
 | Giao diện | `HistoryActivity`, `PieChartView`, `MatchHistoryAdapter`, `RankingAdapter`, `MatchDetailActivity`, `ProblemAdapter` | Hùng |
 | Giao diện | `FriendActivity`, `FriendRequestAdapter`, `FriendAdapter` | Hùng |
 | Giao diện | `DifficultyActivity`, `BotGameActivity`, `AdminActivity`, `PlayerDetailActivity` | Hoàng |
@@ -97,7 +103,7 @@ Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-online` (UC03), `uc-lich-su
 
 | Loại | Lớp | Sở hữu |
 |---|---|---|
-| Entity | `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Friendship` (cùng tên, cùng thuộc tính với phía app) | **Chung** |
+| Entity | `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `Friendship` (cùng tên, cùng thuộc tính với phía app) | **Chung** |
 | Controller (REST) | `AuthRestController` (`/api/auth/*`) | **Chung** |
 | Controller (REST) | `MatchRestController` (`/api/matches/*`, có `getHistory`), `PlayerRestController.getById`, `getRanking`, `FriendshipRestController` (`/api/friendships/*`) | Hùng |
 | Controller (REST) | `PlayerRestController` các hàm quản trị | Hoàng |
@@ -145,7 +151,7 @@ public abstract class DAO {
 
 Chi tiết cột, khóa, câu lệnh tạo bảng: `docs/chung/03-csdl.md`.
 
-- **MySQL (server):** `tblPlayer` (có `role`), `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblFriendship`.
+- **MySQL (server):** `tblPlayer` (có `role`), `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, `tblFriendship`.
 - **SQLite (app):** `tblPlayer` (bản sao), `tblBotGame`.
 - **SharedPreferences (app):** `"session"` (phiên đăng nhập).
 - **Firebase Realtime Database:**
@@ -296,7 +302,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Mô tả:** Từ lớp thực thể thiết kế, làm theo 5 bước thiết kế CSDL. Nguồn cho mục 2 trong báo cáo: Hùng dùng phần MySQL + Firebase, Hoàng dùng phần SQLite và `tblPlayer` của MySQL. Hoàng duyệt.
 - **Input:** `docs/chung/02-lop-thuc-the.md`; mục 2.4; `REPORT_CONVENTION.md` mục 3 (bước D2).
 - **Output:** `docs/chung/03-csdl.md` + PNG:
-  - **MySQL, đủ 5 bước:** `tblPlayer` (có `role`), `tblMatch`, `tblMathProblem`, `tblMatchPlayer`.
+  - **MySQL, đủ 5 bước:** `tblPlayer` (có `role`), `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`.
   - **SQLite:** `tblPlayer` (bản sao), `tblBotGame`.
   - **Câu lệnh `CREATE TABLE`** cho cả 2 CSDL và bảng truy vấn chính.
   - **Firebase:** cây `presence`, `challenges`, `matches`; ai ghi node nào; vì sao đề trên Firebase không có đáp án.
@@ -377,7 +383,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 
 **Sản phẩm bàn giao:**
 - Hùng:
-  - App: `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO`, `MatchApiDAO`, `PlayerApiDAO.getById`, `getRanking`, `MainActivity` (danh sách online), `PlayerAdapter`, `MatchActivity`, `QuestionAdapter`; `HistoryActivity`, `PieChartView`, `MatchHistoryAdapter`, `RankingAdapter`, `MatchDetailActivity`, `ProblemAdapter`; `FriendshipApiDAO`, `FriendActivity`, `FriendRequestAdapter`, `FriendAdapter`.
+  - App: `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO`, `MatchApiDAO`, `PlayerApiDAO.getById`, `getRanking`, `OnlineActivity`, `PlayerAdapter`, `MatchActivity`; `HistoryActivity`, `PieChartView`, `MatchHistoryAdapter`, `RankingAdapter`, `MatchDetailActivity`, `ProblemAdapter`; `FriendshipApiDAO`, `FriendActivity`, `FriendRequestAdapter`, `FriendAdapter`.
   - Server: `MatchRestController`, `PlayerRestController.getById`, `getRanking`, `MatchDAO`, `ProblemDAO`, `FirebaseAdminDAO`, `FriendshipRestController`, `FriendshipDAO`.
 - Hoàng:
   - App: `BotGameDAO`, `DifficultyActivity`, `BotGameActivity`, `AdminActivity`, `PlayerDetailActivity`, các hàm quản trị của `PlayerApiDAO`.
@@ -412,7 +418,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Input:** Luồng "Chơi online" trong `docs/chung/01-pham-vi-use-case.md`; `docs/hung/4-lop-thiet-ke.md`.
 - **Output:**
   - **App:**
-    - `MainActivity`: `onPlayersChanged` (thông tin của mình + `PlayerAdapter`), `onPlayerClick`, `onChallengeChanged`, `showChallengeDialog`, `acceptChallenge`, `openMatch`.
+    - `OnlineActivity`: `onPlayersChanged` (thông tin của mình + `PlayerAdapter`), `onPlayerClick`, `onChallengeChanged`, `showChallengeDialog`, `acceptChallenge`, `openMatch`.
     - `PlayerAdapter` + `item_player.xml`: tên, tổng điểm, nhãn Rỗi (xanh) / Bận (xám); sắp tổng điểm giảm dần.
     - `ChallengeFirebaseDAO`: `sendChallenge`, `watchIncoming`, `watchChallenge`, `rejectChallenge`, `toChallenge`.
     - `MatchApiDAO.createMatch`; `PlayerApiDAO.getById`.
@@ -431,10 +437,10 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Output:**
   - **App:**
     - `MatchActivity`: `startMatch`, `CountDownTimer` 60 s (`onTick`, `onFinish` tự nộp), `submitAnswers`, `showOpponentStatus`, `loadResult`, `showResult` (dùng `Match.getResult`, `getFinishTime`, `getPoints` trên bản server trả về).
-    - `QuestionAdapter` + `item_question.xml`: phép tính, `RadioGroup` 4 phương án 2 x 2; `getAnswers` (câu chưa chọn là −1), `setLocked`.
+    - Mỗi lần một câu: `showQuestion` hiện "Câu i/10", phép tính và 4 ô A–D (`btnOptions`); `chooseOption` ghi `Answer` (phương án, thời gian làm câu) rồi sang câu sau; làm xong 10 câu mới hiện Nộp bài.
     - Overlay kết quả: THẮNG / THUA / HÒA, số câu đúng và thời gian của 2 người, điểm trận, tổng điểm mới, nút Chơi tiếp / Dừng.
     - `MatchFirebaseDAO.watchMatch`, `stopWatching`, `toMatch`; `MatchApiDAO.submit`, `getById`.
-  - **Server:** `MatchRestController.submit` (ghi thời điểm nhận, `countCorrect`, `updateSubmission`, `writeSubmitted`; khi `isOver`: `updateEndedAt`, `getTotalPoints`, `updatePoints`, `writeFinished`), `getById`; `MatchDAO.findById`, `updateSubmission`, `updateEndedAt`; `PlayerDAO.getTotalPoints`.
+  - **Server:** `MatchRestController.submit` (ghi thời điểm nhận, `countCorrect`, `updateSubmission` ghi cả `tblAnswer`, `writeSubmitted`; khi `isOver`: `updateEndedAt`, `getTotalPoints`, `updatePoints`, `writeFinished`), `getById`; `MatchDAO.findById`, `updateSubmission`, `updateEndedAt`; `PlayerDAO.getTotalPoints`.
 - **Requirement:**
   - 2 máy thấy cùng đề; máy này nộp thì máy kia hiện "<tên> đã nộp bài" dưới 1 giây.
   - Kết quả 2 máy khớp nhau và đúng luật D5; tổng điểm trên danh sách online cập nhật.
@@ -482,7 +488,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
     - Thẻ Trận của tôi: card tóm tắt có `PieChartView` (vành khuyên 3 màu, giữa ghi tỉ lệ thắng), số trận thắng / hòa / thua / tổng; `MatchHistoryAdapter` + `item_match_history.xml` (dải màu kết quả, đối thủ, THẮNG / HÒA / THUA, điểm trận, số câu đúng 2 bên, thời điểm kết thúc, "Bỏ trận").
     - Thẻ Bảng xếp hạng: dùng lại `RankingAdapter` của M2-05. Xóa `RankingActivity`.
     - `MatchDetailActivity` + `activity_match_detail.xml`: kết quả, điểm trận, số câu đúng và thời gian 2 bên, `ProblemAdapter` + `item_problem.xml` hiện 10 câu kèm đáp án đúng (lấy bằng `MatchApiDAO.getById`).
-    - `MainActivity`: nút Lịch sử đấu thay nút Bảng xếp hạng.
+    - `OnlineActivity`: biểu tượng Lịch sử đấu và biểu tượng Bảng xếp hạng (mở thẳng thẻ Bảng xếp hạng).
 - **Requirement:**
   - Đấu xong 1 trận thì mở lại lịch sử thấy trận mới ở đầu, biểu đồ đổi đúng.
   - Chưa có trận nào thì hiện "Bạn chưa đấu trận nào", không crash.
@@ -508,7 +514,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Input:** `docs/chung/01-pham-vi-use-case.md` chức năng "Quản lý bạn bè"; `docs/hung/4-lop-thiet-ke.md` mục 3; API mục 2.4.
 - **Output:**
   - **Server:** `FriendshipDAO` (`findByPlayer`, `findById`, `existsBetween`, `insert`, `updateStatus`, `delete`); `FriendshipRestController` (4 API ở mục 2.4).
-  - **App:** `FriendshipApiDAO`; `FriendActivity` + `activity_friend.xml` (ô tên đăng nhập, nút Kết bạn, mục Lời mời kết bạn, mục Bạn bè); `FriendRequestAdapter` + `item_friend_request.xml`; `FriendAdapter` + `item_friend.xml` (chấm Online / Offline lấy từ `PresenceFirebaseDAO`, tổng điểm, nút hủy); `MainActivity` thêm nút Bạn bè.
+  - **App:** `FriendshipApiDAO`; `FriendActivity` + `activity_friend.xml` (ô tên đăng nhập, nút Kết bạn, mục Lời mời kết bạn, mục Bạn bè); `FriendRequestAdapter` + `item_friend_request.xml`; `FriendAdapter` + `item_friend.xml` (chấm Online / Offline lấy từ `PresenceFirebaseDAO`, tổng điểm, nút hủy); `OnlineActivity` có biểu tượng Bạn bè.
 - **Requirement:**
   - 2 máy: máy 1 gửi lời mời, máy 2 mở Bạn bè thấy lời mời, đồng ý thì cả 2 thấy nhau trong danh sách bạn bè.
   - Bạn đang mở app thì chấm xanh, tắt app thì chuyển xám.
@@ -522,7 +528,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Input:** `SessionDAO`; `ProblemDAO`, `MathProblem`, `BotGame.getResult` (M1-07); bố cục màn thi đấu ở `docs/hung/4-lop-thiet-ke.md` mục 1.1 để thống nhất giao diện.
 - **Output:**
   - **`DifficultyActivity`:** 3 nút Dễ / Trung bình / Khó.
-  - **`BotGameActivity`** + layout: ô thời gian 60 s, dòng "Máy đang làm bài" / "Máy đã nộp bài" (đổi khi tới thời gian nộp của máy), danh sách 10 câu 4 phương án, nút Nộp bài, nút Thoát; overlay kết quả THẮNG / THUA / HÒA, số câu đúng và thời gian của mình và của máy, nút Chơi lại / Về menu.
+  - **`BotGameActivity`** + layout: ô thời gian 60 s, dòng "Máy đang làm bài" / "Máy đã nộp bài" (đổi khi tới thời gian nộp của máy), mỗi lần một câu với 4 ô A, B, C, D như `MatchActivity` (bấm một ô là sang câu sau), làm xong 10 câu mới hiện nút Nộp bài, nút Thoát; overlay kết quả THẮNG / THUA / HÒA, số câu đúng và thời gian của mình và của máy, nút Chơi lại / Về menu.
   - Giả lập máy: số câu đúng theo xác suất, thời gian nộp ngẫu nhiên theo D8.
   - **`BotGameDAO extends DAO`:** `insert(BotGame)`.
 - **Requirement:**
@@ -612,7 +618,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 - **Phụ thuộc:** M3-01.
 - **Mô tả:** Bước A3 trong `REPORT_CONVENTION.md`. Mỗi UC một biểu đồ gồm các lớp View và lớp thực thể liên quan.
 - **Input:** Kịch bản v1 (M3-01); `docs/chung/02-lop-thuc-the.md`.
-- **Output:** `docs/hung/2-lop-phan-tich.md` + PNG. View: `MainView`, `MatchView`, `MatchResultView`, `HistoryView`, `MatchDetailView`, `FriendView`; thành phần đặt tiền tố `in` / `out` / `sub`.
+- **Output:** `docs/hung/2-lop-phan-tich.md` + PNG. View: `MainView`, `OnlineView`, `MatchView`, `MatchResultView`, `HistoryView`, `MatchDetailView`, `FriendView`; thành phần đặt tiền tố `in` / `out` / `sub`.
 - **Requirement:** Mỗi thành phần giao diện trong kịch bản v1 đều có trong View tương ứng.
 - **Constraint:** Chưa có DAO, Activity, REST.
 
@@ -671,7 +677,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 - **Output:** `docs/hung/4-lop-thiet-ke.md` + PNG. Với mỗi UC:
   - **Thiết kế giao diện:** ảnh app thật; bảng thành phần (`id` trong layout, loại View, chức năng, tên ở bước phân tích).
   - **Biểu đồ lớp chi tiết, 2 package:**
-    - **Client:** `MainActivity`, `PlayerAdapter`, `MatchActivity`, `QuestionAdapter`, `HistoryActivity`, `PieChartView`, `MatchHistoryAdapter`, `RankingAdapter`, `MatchDetailActivity`, `ProblemAdapter`, `FriendActivity`, `FriendRequestAdapter`, `FriendAdapter`; `FirebaseDAO` ← `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO`; `ApiDAO` ← `PlayerApiDAO`, `MatchApiDAO`, `FriendshipApiDAO`; `SessionDAO`; entity.
+    - **Client:** `MainActivity`, `OnlineActivity`, `PlayerAdapter`, `MatchActivity`, `HistoryActivity`, `PieChartView`, `MatchHistoryAdapter`, `RankingAdapter`, `MatchDetailActivity`, `ProblemAdapter`, `FriendActivity`, `FriendRequestAdapter`, `FriendAdapter`; `FirebaseDAO` ← `PresenceFirebaseDAO`, `ChallengeFirebaseDAO`, `MatchFirebaseDAO`; `ApiDAO` ← `PlayerApiDAO`, `MatchApiDAO`, `FriendshipApiDAO`; `SessionDAO`; entity.
     - **Server:** `PlayerRestController`, `MatchRestController`, `FriendshipRestController`; `DAO` ← `PlayerDAO`, `MatchDAO`, `FriendshipDAO`; `ProblemDAO`; `FirebaseAdminDAO`; entity.
     - Nối 2 package bằng liên kết `HTTP/JSON` giữa các cặp `XxxApiDAO` – `XxxRestController`.
   - **Mô tả từng lớp 1–2 dòng.**
@@ -716,8 +722,8 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
     | Mục | Nội dung | Lấy từ |
     |---|---|---|
     | 1 | Mô tả chi tiết các chức năng bằng ngôn ngữ tự nhiên | M3-01 |
-    | 2 | Thiết kế CSDL: MySQL `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblFriendship` và cây Firebase | M1-03 |
-    | 3 | Thiết kế lớp thực thể: `Player`, `Challenge`, `Match`, `MatchPlayer`, `MathProblem`, `Friendship` | M1-02 |
+    | 2 | Thiết kế CSDL: MySQL `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, `tblFriendship` và cây Firebase | M1-03 |
+    | 3 | Thiết kế lớp thực thể: `Player`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `MathProblem`, `Friendship` | M1-02 |
     | 4.1.1 | Chơi online: thiết kế giao diện | M4-01 |
     | 4.1.2 | Chơi online: biểu đồ lớp chi tiết (client + server) | M4-01 |
     | 4.1.3 | Chơi online: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |

@@ -9,18 +9,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Gọi API trận đấu, mỗi hàm một API. Các hàm chạy đồng bộ nên phải gọi trong Thread.
- */
+// Hàm đồng bộ, phải gọi trong Thread
 public class MatchApiDAO extends ApiDAO {
 
-    // POST /api/matches: tạo trận từ lời mời đã đồng ý
     public Match createMatch(Challenge challenge) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("id", challenge.getId());
@@ -29,31 +27,40 @@ public class MatchApiDAO extends ApiDAO {
         return toMatch(post("/matches", body));
     }
 
-    // POST /api/matches/{id}/submit: nộp bài làm
-    public Match submit(int matchId, int playerId, List<Integer> answers) throws IOException, JSONException {
+    public Match submit(int matchId, int playerId, List<Answer> answers) throws IOException, JSONException {
+        JSONArray array = new JSONArray();
+        for (Answer a : answers) {
+            array.put(new JSONObject().put("selectedOption", a.getSelectedOption())
+                    .put("answerTime", a.getAnswerTime()));
+        }
         JSONObject body = new JSONObject();
         body.put("player", new JSONObject().put("id", playerId));
-        body.put("answers", new JSONArray(answers));
+        body.put("answers", array);
         return toMatch(post("/matches/" + matchId + "/submit", body));
     }
 
-    // POST /api/matches/{id}/forfeit: bỏ trận
     public Match forfeit(int matchId, int playerId) throws IOException, JSONException {
         return toMatch(post("/matches/" + matchId + "/forfeit?playerId=" + playerId, new JSONObject()));
     }
 
-    // POST /api/matches/{id}/continue: chơi tiếp (true) hoặc dừng (false)
     public Match continueMatch(int matchId, int playerId, boolean choice) throws IOException, JSONException {
         String path = "/matches/" + matchId + "/continue?playerId=" + playerId + "&choice=" + choice;
         return toMatch(post(path, new JSONObject()));
     }
 
-    // GET /api/matches/{id}: trận đầy đủ, có đáp án khi trận đã xong
+    public List<Match> getHistory(int playerId) throws IOException, JSONException {
+        JSONArray array = getArray("/matches?playerId=" + playerId);
+        List<Match> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            list.add(toMatch(array.getJSONObject(i)));
+        }
+        return list;
+    }
+
     public Match getById(int matchId) throws IOException, JSONException {
         return toMatch(get("/matches/" + matchId));
     }
 
-    // Đóng gói JSON thành Match + MathProblem + 2 MatchPlayer + 2 Player
     private Match toMatch(JSONObject json) throws JSONException {
         Match match = new Match();
         match.setId(json.getInt("id"));
@@ -66,7 +73,7 @@ public class MatchApiDAO extends ApiDAO {
         }
         JSONArray players = json.getJSONArray("players");
         for (int i = 0; i < players.length(); i++) {
-            match.getPlayers().add(toMatchPlayer(players.getJSONObject(i)));
+            match.getPlayers().add(toMatchPlayer(players.getJSONObject(i), match.getQuestions()));
         }
         return match;
     }
@@ -83,7 +90,7 @@ public class MatchApiDAO extends ApiDAO {
         return p;
     }
 
-    private MatchPlayer toMatchPlayer(JSONObject json) throws JSONException {
+    private MatchPlayer toMatchPlayer(JSONObject json, List<MathProblem> questions) throws JSONException {
         JSONObject p = json.getJSONObject("player");
         Player player = new Player(p.getInt("id"), p.optString("username"), p.getString("displayName"));
         player.setTotalPoints(p.optDouble("totalPoints", 0));
@@ -92,6 +99,22 @@ public class MatchApiDAO extends ApiDAO {
         mp.setCorrectCount(json.getInt("correctCount"));
         mp.setSubmittedAt(json.isNull("submittedAt") ? null : new Date(json.getLong("submittedAt")));
         mp.setForfeited(json.getBoolean("forfeited"));
+        mp.setAnswers(toAnswers(json.optJSONArray("answers"), questions));
         return mp;
+    }
+
+    // Lịch sử đấu không kèm đề và bài làm: trả danh sách rỗng
+    private List<Answer> toAnswers(JSONArray array, List<MathProblem> questions) throws JSONException {
+        List<Answer> list = new ArrayList<>();
+        for (int i = 0; array != null && i < array.length(); i++) {
+            JSONObject json = array.getJSONObject(i);
+            Answer answer = new Answer(json.getInt("selectedOption"), json.getLong("answerTime"));
+            answer.setId(json.optInt("id"));
+            if (i < questions.size()) {
+                answer.setProblem(questions.get(i));
+            }
+            list.add(answer);
+        }
+        return list;
     }
 }

@@ -1,0 +1,38 @@
+@startuml lop-phan-tich-uc07
+!include _theme.iuml
+title Biểu đồ lớp pha phân tích – Quản lý bạn bè
+
+class OnlineView <<boundary>> {
+  - outMyInfo
+  - subFriends
+}
+class FriendView <<boundary>> {
+  - inUsername
+  - subAddFriend
+  - outsubListRequest
+  - outsubListFriend
+}
+class Player <<entity>> {
+  - username
+  - displayName
+  - totalPoints
+  - status
+  + getOnlinePlayers()
+}
+class Friendship <<entity>> {
+  - status
+  - createdAt
+  + getFriendships()
+  + sendRequest()
+  + accept()
+  + canAccept()
+  + delete()
+  + getFriend()
+}
+
+OnlineView -- FriendView
+FriendView -- Friendship
+FriendView -- Player
+Friendship "n" o-- "1" Player : người gửi
+Friendship "n" o-- "1" Player : người nhận
+@enduml

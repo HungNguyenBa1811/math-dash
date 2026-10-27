@@ -19,17 +19,15 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 public class PlayerDAO extends DAO {
     private static final String COLUMNS = "id, username, passwordHash, displayName, role, createdAt";
 
-    // Tìm người chơi theo tên đăng nhập, không có thì trả null
     public Player findByUsername(String username) throws SQLException {
         return findOne("SELECT " + COLUMNS + " FROM tblPlayer WHERE username = ?", username);
     }
 
-    // Tìm người chơi theo id, không có thì trả null
     public Player findById(int id) throws SQLException {
         return findOne("SELECT " + COLUMNS + " FROM tblPlayer WHERE id = ?", id);
     }
 
-    // Thêm người chơi mới với vai trò player; trùng tên đăng nhập thì trả false
+    // Trùng tên đăng nhập thì trả false
     public boolean insert(Player player) {
         String sql = "INSERT INTO tblPlayer (username, passwordHash, displayName, role) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -43,7 +41,6 @@ public class PlayerDAO extends DAO {
         }
     }
 
-    // Tổng điểm: cộng điểm trận (1 / 0,5 / 0) qua các trận đã xong mà người chơi tham gia
     public double getTotalPoints(int playerId) throws SQLException {
         List<Match> matches = new MatchDAO().findFinished();
         double total = 0;
@@ -55,12 +52,11 @@ public class PlayerDAO extends DAO {
         return total;
     }
 
-    // Bảng xếp hạng: mọi người chơi (vai trò player) kèm 3 tiêu chí, đã sắp xếp
     public List<Player> getRanking() throws SQLException {
         return rank(findAllPlayers(), new MatchDAO().findFinished());
     }
 
-    // Tính 3 tiêu chí từ các trận đã xong rồi sắp xếp; hàm thuần, không truy cập CSDL
+    // Hàm thuần, không truy cập CSDL
     public static List<Player> rank(List<Player> players, List<Match> matches) {
         Map<Integer, Player> byId = new HashMap<>();
         for (Player p : players) {
@@ -79,7 +75,6 @@ public class PlayerDAO extends DAO {
         return players;
     }
 
-    // Cộng điểm trận, ghi đối thủ đã gặp và thời gian của trận thắng cho cả 2 người
     private static void addMatch(Match match, Map<Integer, Player> byId,
                                  Map<Integer, Set<Integer>> opponents, Map<Integer, List<Long>> winTimes) {
         for (MatchPlayer mp : match.getPlayers()) {
@@ -120,7 +115,7 @@ public class PlayerDAO extends DAO {
         winTimes.get(playerId).add(time);
     }
 
-    // Trung bình tổng điểm của các đối thủ khác nhau đã gặp; chưa gặp ai thì 0
+    // Chưa gặp ai thì 0
     private static double averagePoints(Set<Integer> ids, Map<Integer, Player> byId) {
         if (ids == null || ids.isEmpty()) {
             return 0;
@@ -133,7 +128,7 @@ public class PlayerDAO extends DAO {
         return sum / ids.size();
     }
 
-    // Trung bình thời gian các trận thắng, tính bằng giây; chưa thắng trận nào thì 0
+    // Tính bằng giây; chưa thắng thì 0
     private static double averageSeconds(List<Long> times) {
         if (times == null || times.isEmpty()) {
             return 0;
@@ -145,8 +140,7 @@ public class PlayerDAO extends DAO {
         return sum / 1000.0 / times.size();
     }
 
-    // Tổng điểm giảm dần → trung bình điểm đối thủ giảm dần → trung bình thời gian thắng tăng dần
-    // (người chưa thắng trận nào đứng sau)
+    // Tổng điểm ↓, TB điểm đối thủ ↓, TB thời gian thắng ↑ (chưa thắng đứng sau)
     private static class RankingComparator implements Comparator<Player> {
         @Override
         public int compare(Player a, Player b) {
@@ -194,7 +188,6 @@ public class PlayerDAO extends DAO {
         }
     }
 
-    // Đóng gói một dòng tblPlayer thành Player
     private Player toPlayer(ResultSet rs) throws SQLException {
         Player player = new Player(rs.getInt("id"), rs.getString("username"), rs.getString("displayName"));
         player.setPasswordHash(rs.getString("passwordHash"));

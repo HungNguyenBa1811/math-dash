@@ -48,10 +48,13 @@ class Match {
   - endedAt
 }
 class MatchPlayer {
-  - answers
   - correctCount
   - submittedAt
   - forfeited
+}
+class Answer {
+  - selectedOption
+  - answerTime
 }
 class BotGame {
   - difficulty
@@ -71,6 +74,8 @@ Challenge "n" o-- "1" Player : người được mời
 Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
 Match "1" *-- "10" MathProblem
+MatchPlayer "n" -- "n" MathProblem
+(MatchPlayer, MathProblem) .. Answer
 BotGame "n" o-- "1" Player
 BotGame "1" *-- "10" MathProblem
 Friendship "n" o-- "1" Player : người gửi

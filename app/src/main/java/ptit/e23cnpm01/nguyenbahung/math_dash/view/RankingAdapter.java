@@ -14,9 +14,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Một dòng bảng xếp hạng: hạng, tên, tổng điểm, TB điểm đối thủ, TB thời gian thắng; dòng của mình tô nổi bật.
- */
 public class RankingAdapter extends RecyclerView.Adapter<RankingViewHolder> {
     private List<Player> listPlayer;
     private int myId;

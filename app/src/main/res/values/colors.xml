@@ -20,4 +20,14 @@
     <color name="arcade_text_bright">#F8FAFC</color>
     <color name="arcade_text_dim">#94A3B8</color>
     <color name="arcade_overlay_dim">#D90A0D12</color>
+
+    <!-- 4 ô phương án A, B, C, D của màn thi đấu -->
+    <color name="option_a">#E21B3C</color>
+    <color name="option_a_pressed">#B0152F</color>
+    <color name="option_b">#1368CE</color>
+    <color name="option_b_pressed">#0E50A0</color>
+    <color name="option_c">#D89E00</color>
+    <color name="option_c_pressed">#A87B00</color>
+    <color name="option_d">#26890C</color>
+    <color name="option_d_pressed">#1C6609</color>
 </resources>

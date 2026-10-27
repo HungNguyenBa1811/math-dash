@@ -12,9 +12,6 @@ import java.util.Random;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ProblemDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 
-/**
- * Câu hỏi sinh ra hợp lệ: đúng toán tử, kết quả đúng, 4 phương án khác nhau, không âm, có đáp án.
- */
 public class ProblemDAOTest {
 
     @Test

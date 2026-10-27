@@ -1,29 +1,69 @@
 @startsalt giao-dien-uc04
-title Phác thảo giao diện – Xem bảng xếp hạng
+title Phác thảo giao diện – Xem lịch sử đấu
 {
   {+
-  <b>MainActivity
+  <b>OnlineActivity
   ==
-  <b>HUNG</b> · 13,5 điểm
+  { <b>CHƠI ONLINE</b> | <color:#FFFFFF>xxxx</color> | [<&people>] | [<b><&clock></b>] | [<b><&bar-chart></b>] }
   ==
-  NGƯỜI CHƠI ONLINE
-  {#
-  MINH | 15 | <color:gray>Bận</color>
-  LAN | 13,5 | <color:green>Rỗi</color>
+  {+
+  { <b><color:#0097A7>HUNG</color></b> | <color:#FFFFFF>xxxxxxxxxxx</color> | <color:orange>13,5 điểm</color> }
   }
   .
-  [    CHƠI VỚI MÁY    ]
-  [  <b>BẢNG XẾP HẠNG</b>  ]
-  [      ĐĂNG XUẤT     ]
+  <color:#0097A7>NGƯỜI CHƠI ONLINE</color>
+  {#
+  <b>MINH</b> | <color:orange>15 điểm</color> | <color:gray>Bận</color>
+  <b>LAN</b> | <color:orange>13,5 điểm</color> | <color:green>Rỗi</color>
+  }
+  .
+  ..
+  <color:gray><&clock> Lịch sử đấu: thẻ Trận của tôi</color>
+  <color:gray><&bar-chart> Bảng xếp hạng: thẻ Bảng xếp hạng</color>
   } | . | {+
-  <b>RankingActivity
+  <b>HistoryActivity · thẻ Trận của tôi
   ==
-  <b>BẢNG XẾP HẠNG
+  <b>LỊCH SỬ ĐẤU</b>
+  { <b><u>TRẬN CỦA TÔI</u></b> | . | BẢNG XẾP HẠNG }
+  ==
+  {+
+  {
+  {+
+  .
+  <size:18><b>60%</b></size>
+  thắng
+  .
+  } | . | {
+  <color:green>●</color> Thắng   <b>12</b>
+  <color:orange>●</color> Hòa      <b>3</b>
+  <color:red>●</color> Thua     <b>5</b>
+  ..
+  <b>20 trận</b>
+  }
+  }
+  }
+  .
+  {#
+  <color:green>▌</color> | vs <b>HOANG</b> · #37 | <color:green><b>THẮNG</b></color> | +1
+  . | 10 – 10 câu | . | 25/10 20:15
+  <color:orange>▌</color> | vs <b>LAN</b> · #35 | <color:orange><b>HÒA</b></color> | +0,5
+  . | 9 – 8 câu | . | 25/10 19:58
+  <color:red>▌</color> | vs <b>MINH</b> · #33 | <color:red><b>THUA</b></color> | +0
+  . | 10 – 10 câu | . | 25/10 19:40
+  <color:green>▌</color> | vs <b>HOANG</b> · #28 | <color:green><b>THẮNG</b></color> | +1
+  . | 6 – 3 câu · Đối thủ bỏ trận | . | 24/10 20:47
+  }
+  ...
+  } | . | {+
+  <b>HistoryActivity · thẻ Bảng xếp hạng
+  ==
+  <b>LỊCH SỬ ĐẤU</b>
+  { TRẬN CỦA TÔI | . | <b><u>BẢNG XẾP HẠNG</u></b> }
+  ==
   {#
   <b>#</b> | <b>Tên</b> | <b>Điểm</b> | <b>TB đối thủ</b> | <b>TB thắng</b>
-  <color:orange>1</color> | MINH | 15 | 10,5 | 41,3 s
-  <color:gray>2</color> | <b><color:blue>HUNG</color></b> | <b>13,5</b> | <b>11</b> | <b>39,8 s</b>
-  <color:brown>3</color> | LAN | 13,5 | 9 | 44,0 s
+  1 | MINH | 15 | 10,5 | 41,3 s
+  2 | <b><color:blue>HUNG</color></b> | <b>13,5</b> | <b>11</b> | <b>39,8 s</b>
+  3 | LAN | 13,5 | 9 | 44,0 s
   4 | HOANG | 9 | 13,5 | 47,2 s
   5 | AN | 4,5 | 12 | 49,0 s
   6 | NAM | 4,5 | 12 | 52,1 s

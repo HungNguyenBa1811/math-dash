@@ -1,0 +1,102 @@
+@startuml tuan-tu-thiet-ke-uc04a
+!include _seq.iuml
+title Tuần tự thiết kế – Xem lịch sử đấu, đoạn A: Xem trận của tôi
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary OnlineActivity as OA
+boundary HistoryActivity as HA
+boundary PieChartView as PC
+boundary MatchHistoryAdapter as MHA
+boundary MatchDetailActivity as MDA
+boundary ProblemAdapter as PA
+control SessionDAO as SD
+control MatchApiDAO as MAD
+entity Match as M
+entity MathProblem as Q
+entity Answer as A
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "MatchRestController" as MRC
+control "MatchDAO" as MD
+control "PlayerDAO" as PD
+entity "Match" as SM
+end box
+
+U -> OA : nhấn biểu tượng Lịch sử đấu
+OA -> HA : onClick(): startActivity()
+HA -> SD : onCreate(): getPlayer()
+SD --> HA : Player
+HA -> HA : loadHistory()
+HA -> MAD : getHistory() {Thread}
+MAD -> MRC : GET /api/matches?playerId={id} → getHistory()
+MRC -> MD : findByPlayer()
+MD -> SM : đóng gói Match
+SM --> MD : Match
+MD --> MRC : List<Match>
+MRC --> MAD : List<Match> (JSON)
+MAD -> M : toMatch(): đóng gói Match
+M --> MAD : Match
+MAD --> HA : List<Match>
+HA -> HA : runOnUiThread(): showSummary()
+HA -> M : getResult()
+M --> HA : kết quả trận
+HA -> PC : setData()
+PC --> U : onDraw(): hiển thị biểu đồ tỉ lệ thắng, hòa, thua
+HA -> MHA : tạo MatchHistoryAdapter
+MHA -> M : onBindViewHolder(): getOpponent()
+M --> MHA : đối thủ trong trận
+MHA -> M : getResult()
+M --> MHA : kết quả trận
+MHA -> M : getPoints()
+M --> MHA : điểm trận
+MHA --> U : hiển thị danh sách trận
+U -> MHA : bấm vào một trận
+MHA -> HA : onMatchClick()
+HA -> MDA : startActivity()
+MDA -> SD : onCreate(): getPlayer()
+SD --> MDA : Player
+MDA -> MDA : loadMatch()
+MDA -> MAD : getById() {Thread}
+MAD -> MRC : GET /api/matches/{id} → getById()
+MRC -> MRC : findMatch()
+MRC -> MD : findById()
+MD -> SM : đóng gói Match
+SM --> MD : Match
+MD -> MD : findAnswers()
+MD --> MRC : Match
+MRC -> PD : getTotalPoints()
+PD --> MRC : tổng điểm
+MRC --> MAD : Match (JSON)
+MAD -> M : toMatch(): đóng gói Match
+M --> MAD : Match
+MAD --> MDA : Match
+MDA -> MDA : runOnUiThread(): showMatch()
+MDA -> M : getOpponent()
+M --> MDA : đối thủ trong trận
+MDA -> M : getResult()
+M --> MDA : kết quả trận
+MDA -> MDA : showResult()
+MDA -> M : getPoints()
+M --> MDA : điểm trận
+MDA -> MDA : stats()
+MDA -> M : getFinishTime()
+M --> MDA : thời gian làm bài
+MDA -> PA : tạo ProblemAdapter
+loop 10 câu
+  PA -> Q : onBindViewHolder(): getExpression()
+  Q --> PA : phép tính
+  PA -> PA : answerAt()
+  PA -> PA : showAnswer()
+  PA -> A : isAnswered()
+  A --> PA : đã làm
+  PA -> A : isCorrect()
+  A -> Q : isCorrect()
+  Q --> A : kết quả so sánh
+  A --> PA : đúng / sai
+end
+MDA --> U : hiển thị chi tiết trận và từng câu
+U -> MDA : nhấn Back
+MDA -> HA : finish()
+HA --> U : hiển thị lại danh sách trận
+@enduml

@@ -22,7 +22,6 @@ public class AuthRestController {
     private PlayerDAO playerDAO = new PlayerDAO();
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    // POST /api/auth/register
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody Map<String, String> body) {
@@ -33,7 +32,6 @@ public class AuthRestController {
         }
     }
 
-    // POST /api/auth/login: trả Player, hoặc 401 nếu sai tên đăng nhập / mật khẩu
     @PostMapping("/login")
     public Player login(@RequestBody Map<String, String> body) throws SQLException {
         Player player = playerDAO.findByUsername(body.get("username"));

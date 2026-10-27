@@ -17,5 +17,5 @@ M -> Q : generateProblem()
 Q --> M : câu hỏi
 M --> RV : trận mới
 RV -> GV : gọi
-GV --> U : hiển thị đề mới
+GV --> U : hiển thị câu đầu tiên của đề mới
 @enduml

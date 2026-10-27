@@ -4,7 +4,7 @@ Hệ thống có 3 nơi lưu dữ liệu, mỗi nơi giữ một loại dữ li�
 
 | Nơi lưu | Giữ gì | Vì sao |
 |---|---|---|
-| **MySQL** (server) | Tài khoản người chơi, các trận đối kháng cùng đề bài và bài làm, quan hệ bạn bè | Server lưu toàn bộ thông tin dùng chung giữa các máy |
+| **MySQL** (server) | Tài khoản người chơi, các trận đối kháng cùng đề bài và bài làm từng câu, quan hệ bạn bè | Server lưu toàn bộ thông tin dùng chung giữa các máy |
 | **Firebase Realtime Database** | Người chơi đang online và trạng thái, lời mời thách đấu, diễn biến trận đang đấu | Các máy cần thấy thay đổi của nhau ngay lập tức; chỉ server và người trong cuộc ghi |
 | **SQLite** (app) | Các ván đấu với máy, bản sao người chơi đang đăng nhập | Chơi với máy phải chạy được khi không có mạng |
 
@@ -20,6 +20,7 @@ Hệ thống có 3 nơi lưu dữ liệu, mỗi nơi giữ một loại dữ li�
 | Match | tblMatch | MySQL |
 | MatchPlayer | tblMatchPlayer | MySQL |
 | MathProblem | tblMathProblem | MySQL |
+| Answer | tblAnswer | MySQL |
 | Friendship | tblFriendship | MySQL |
 | BotGame | tblBotGame | SQLite |
 | Player (bản sao) | tblPlayer | SQLite |
@@ -31,6 +32,8 @@ Lớp **không** đề xuất bảng: Challenge.
 
 Câu hỏi của ván đấu với máy cũng không được lưu: ứng dụng sinh đề ngay khi bắt đầu ván, xong ván thì không dùng lại.
 
+Bài làm từng câu của trận đối kháng được lưu thành bảng tblAnswer, vì giao diện chi tiết trận cần hiện lại, với mỗi người chơi, từng câu đúng hay sai, phương án đã chọn và thời gian làm câu, kể cả khi trận đã xong từ lâu.
+
 **Vì sao SQLite cần bảng tblPlayer bản sao:**
 - BotGame thuộc về một Player, nhưng bảng tblPlayer chính nằm trên MySQL ở server.
 - SQLite không đặt được khóa ngoại sang một CSDL khác, và khi mất mạng app không đọc được MySQL.
@@ -40,7 +43,8 @@ Câu hỏi của ván đấu với máy cũng không được lưu: ứng dụng
 
 Bỏ qua các thuộc tính kiểu đối tượng:
 - questions, players của Match.
-- player của MatchPlayer.
+- player, answers của MatchPlayer.
+- problem của Answer.
 - player, questions của BotGame.
 - sender, receiver của Friendship.
 
@@ -61,7 +65,8 @@ answerOptions : List\<Integer> luôn có đúng 4 phần tử nên tách thành 
 | tblPlayer (MySQL) | id, username, passwordHash, displayName, role, createdAt, totalPoints, avgOpponentPoints, avgWinTime, status |
 | tblMatch | id, status, startedAt, endedAt |
 | tblMathProblem | id, operand1, operand2, operator, correctAnswer, option1, option2, option3, option4 |
-| tblMatchPlayer | id, answers, correctCount, submittedAt, forfeited |
+| tblMatchPlayer | id, correctCount, submittedAt, forfeited |
+| tblAnswer | id, selectedOption, answerTime |
 | tblBotGame | id, difficulty, correctCount, finishTime, botCorrectCount, botFinishTime, playedAt |
 | tblFriendship | id, status, createdAt |
 | tblPlayer (SQLite) | id, username, displayName |
@@ -72,11 +77,13 @@ Bảng tblPlayer bản sao trên SQLite **chỉ lấy các cột app cần khi k
 
 - 1 tblMatch – n tblMatchPlayer (đúng 2 dòng cho mỗi trận).
 - 1 tblMatch – n tblMathProblem (đúng 10 dòng cho mỗi trận).
+- 1 tblMatchPlayer – n tblAnswer (đúng 10 dòng khi người chơi đã nộp bài; không có dòng nào nếu người chơi bỏ trận trước khi nộp).
+- 1 tblMathProblem – n tblAnswer (tối đa 2 dòng cho mỗi câu, mỗi người chơi trong trận một dòng).
 - 1 tblPlayer – n tblMatchPlayer (MySQL).
 - 1 tblPlayer – n tblBotGame (SQLite).
 - 1 tblPlayer – n tblFriendship ở vai trò người gửi, và 1 tblPlayer – n tblFriendship ở vai trò người nhận (MySQL).
 
-Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được tách bằng bảng tblMatchPlayer từ pha thiết kế lớp thực thể; quan hệ bạn bè giữa người chơi với người chơi đã được tách bằng bảng tblFriendship. Không có quan hệ 1-1 nào cần gộp bảng.
+Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được tách bằng bảng tblMatchPlayer từ pha thiết kế lớp thực thể; quan hệ n-n tblMatchPlayer – tblMathProblem đã được tách bằng bảng tblAnswer; quan hệ bạn bè giữa người chơi với người chơi đã được tách bằng bảng tblFriendship. Không có quan hệ 1-1 nào cần gộp bảng.
 
 ### Bước 4: Bổ sung khóa
 
@@ -89,7 +96,9 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 **Khóa ngoại:**
 - 1 tblMatch – n tblMatchPlayer → tblMatchPlayer có khóa ngoại tblMatchId.
 - 1 tblMatch – n tblMathProblem → tblMathProblem có khóa ngoại tblMatchId.
-- Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi (ON DELETE CASCADE), đúng với quan hệ hợp thành ở thiết kế lớp thực thể.
+- 1 tblMatchPlayer – n tblAnswer → tblAnswer có khóa ngoại tblMatchPlayerId.
+- 1 tblMathProblem – n tblAnswer → tblAnswer có khóa ngoại tblMathProblemId.
+- Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người (ON DELETE CASCADE), đúng với quan hệ hợp thành ở thiết kế lớp thực thể.
 - 1 tblPlayer – n tblMatchPlayer → tblMatchPlayer có khóa ngoại tblPlayerId.
 - 1 tblPlayer – n tblBotGame → tblBotGame có khóa ngoại tblPlayerId.
 - tblFriendship có 2 khóa ngoại cùng trỏ tới tblPlayer, nên tên khóa thêm vai trò: tblPlayerSenderId (người gửi), tblPlayerReceiverId (người nhận). Xóa người chơi thì xóa luôn các quan hệ bạn bè của người đó (ON DELETE CASCADE), vì quan hệ bạn bè không còn ý nghĩa khi thiếu một bên.
@@ -98,10 +107,11 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 - tblPlayer.username: không có 2 tài khoản trùng tên đăng nhập.
 - tblPlayer.role chỉ nhận player hoặc admin. Tài khoản admin được chèn sẵn trong schema.sql.
 - tblMatchPlayer (tblMatchId, tblPlayerId): một người chơi chỉ có một dòng trong một trận.
+- tblAnswer (tblMatchPlayerId, tblMathProblemId): một người chơi trong trận chỉ có một bài làm cho mỗi câu.
 - tblFriendship (tblPlayerSenderId, tblPlayerReceiverId): không gửi trùng lời mời. Chiều ngược lại (B đã gửi cho A thì A không gửi cho B) được FriendshipDAO kiểm tra trước khi chèn.
 - tblFriendship.status chỉ nhận pending hoặc accepted.
 
-**Thứ tự câu hỏi:** thứ tự câu trong đề là thứ tự id tăng dần của tblMathProblem. Server chèn 10 câu theo đúng thứ tự đề trong một transaction, nên không cần cột số thứ tự riêng.
+**Thứ tự câu hỏi:** thứ tự câu trong đề là thứ tự id tăng dần của tblMathProblem. Server chèn 10 câu theo đúng thứ tự đề trong một transaction, nên không cần cột số thứ tự riêng. Thứ tự câu trong bài làm cũng là thứ tự tblMathProblemId tăng dần, giống thứ tự đề, nên tblAnswer cũng không cần cột số thứ tự.
 
 ### Bước 5: Loại bỏ thuộc tính gây dư thừa
 
@@ -111,24 +121,25 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 - tblMatch.status: trận đã xong khi và chỉ khi endedAt có giá trị.
 - Kết quả và điểm trận của mỗi người: suy ra từ correctCount, submittedAt, forfeited của 2 dòng tblMatchPlayer và startedAt của tblMatch → Match.getResult(playerId), Match.getPoints(playerId).
 - Thời gian làm bài: submittedAt − startedAt → Match.getFinishTime(playerId).
+- Đúng / sai của một câu trong bài làm: so tblAnswer.selectedOption với correctAnswer của câu tương ứng trong tblMathProblem → Answer.isCorrect().
 - Các tiêu chí của bảng xếp hạng: tính từ các trận đã xong.
 - Kết quả ván đấu với máy → BotGame.getResult().
 - Tỉ lệ thắng / hòa / thua trong lịch sử đấu: đếm Match.getResult(playerId) trên các trận của người chơi.
 
 **Thuộc tính bị loại vì không cần lưu lâu dài:**
 - tblPlayer.status: trạng thái rỗi / bận chỉ có ý nghĩa khi người chơi đang online, nên chỉ nằm trên Firebase.
-- tblMatchPlayer.answers: bài làm chỉ dùng để chấm. Server chấm ngay khi nhận và lưu kết quả vào correctCount; sau đó không chức năng nào đọc lại bài làm.
 
 **Các thuộc tính trông giống trùng lặp nhưng được giữ lại:**
 - username, displayName trong tblPlayer của SQLite so với tblPlayer của MySQL: đây là bản sao có chủ đích để chơi với máy khi mất mạng (bước 1). Bản sao được ghi đè mỗi lần đăng nhập nên luôn khớp bản chính.
 - correctAnswer trong tblMathProblem: suy ra được từ operand1, operator, operand2. Tuy vậy, server cần nó ở mọi lần chấm, và nó là căn cứ đối chiếu nếu có khiếu nại kết quả, nên vẫn giữ.
+- correctCount trong tblMatchPlayer: suy ra được bằng cách đếm các dòng tblAnswer đúng của người chơi trong trận. Tuy vậy, kết quả trận, lịch sử đấu, tổng điểm và bảng xếp hạng đều đọc correctCount của mọi trận đã xong mà không cần đề và bài làm; giữ cột này thì không phải đọc và chấm lại 20 dòng tblAnswer cho mỗi trận, nên vẫn giữ.
 
 ### Ràng buộc NULL
 
 - Hai cột được phép rỗng:
   - tblMatch.endedAt rỗng khi trận đang đấu.
   - tblMatchPlayer.submittedAt rỗng khi người chơi chưa nộp bài, hoặc đã bỏ trận mà chưa nộp.
-- Mọi cột khác đều NOT NULL. correctCount và forfeited có mặc định 0; tblFriendship.status có mặc định pending.
+- Mọi cột khác đều NOT NULL. correctCount và forfeited có mặc định 0; tblAnswer.selectedOption có mặc định −1 (bỏ trống), tblAnswer.answerTime có mặc định 0; tblFriendship.status có mặc định pending.
 
 ### Kết quả
 
@@ -136,9 +147,10 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 
 *Hình 4: Biểu đồ thiết kế CSDL của Math Dash 1v1.*
 
-- **Phía MySQL có 5 bảng.** tblMatch là trung tâm của phần đối kháng:
+- **Phía MySQL có 6 bảng.** tblMatch là trung tâm của phần đối kháng:
   - 10 dòng tblMathProblem là đề bài.
   - 2 dòng tblMatchPlayer nối trận với 2 dòng tblPlayer.
+  - Mỗi dòng tblMatchPlayer có các dòng tblAnswer là bài làm từng câu của người đó; mỗi dòng tblAnswer trỏ tới đúng một câu trong tblMathProblem.
 - tblFriendship nối 2 dòng tblPlayer với nhau, một dòng là người gửi, một dòng là người nhận.
 - **Phía SQLite có 2 bảng.** tblBotGame nối tới bản sao tblPlayer bằng khóa ngoại thật.
 - Hai CSDL không nối trực tiếp với nhau; chúng chỉ chung id người chơi.
@@ -199,7 +211,19 @@ CREATE TABLE tblMatchPlayer (
     FOREIGN KEY (tblPlayerId) REFERENCES tblPlayer(id)
 );
 
-CREATE TABLE IF NOT EXISTS tblFriendship (
+CREATE TABLE tblAnswer (
+    id               INT(10)    NOT NULL AUTO_INCREMENT,
+    selectedOption   INT(10)    NOT NULL DEFAULT -1,        -- -1 khi bỏ trống
+    answerTime       BIGINT(20) NOT NULL DEFAULT 0,         -- mili giây từ lúc câu hiện ra tới lúc chọn
+    tblMatchPlayerId INT(10)    NOT NULL,
+    tblMathProblemId INT(10)    NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_answer (tblMatchPlayerId, tblMathProblemId),
+    FOREIGN KEY (tblMatchPlayerId) REFERENCES tblMatchPlayer(id) ON DELETE CASCADE,
+    FOREIGN KEY (tblMathProblemId) REFERENCES tblMathProblem(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tblFriendship (
     id                  INT(10)     NOT NULL AUTO_INCREMENT,
     status              VARCHAR(10) NOT NULL DEFAULT 'pending',  -- pending | accepted
     createdAt           DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -242,10 +266,10 @@ CREATE TABLE tblBotGame (
 | Sửa người chơi | UPDATE tblPlayer SET displayName = ? WHERE id = ?; đặt lại mật khẩu: UPDATE tblPlayer SET passwordHash = ? WHERE id = ? | PlayerDAO (server) |
 | Xóa người chơi | DELETE FROM tblPlayer WHERE id = ? AND NOT EXISTS (SELECT 1 FROM tblMatchPlayer WHERE tblPlayerId = ?) | PlayerDAO (server) |
 | Tạo trận | 1 INSERT INTO tblMatch + 10 INSERT INTO tblMathProblem + 2 INSERT INTO tblMatchPlayer trong một transaction | MatchDAO (server) |
-| Nộp bài | UPDATE tblMatchPlayer SET correctCount = ?, submittedAt = ? WHERE tblMatchId = ? AND tblPlayerId = ? AND submittedAt IS NULL | MatchDAO (server) |
+| Nộp bài | UPDATE tblMatchPlayer SET correctCount = ?, submittedAt = ? WHERE tblMatchId = ? AND tblPlayerId = ? AND submittedAt IS NULL, rồi 10 INSERT INTO tblAnswer, trong một transaction | MatchDAO (server) |
 | Bỏ trận | UPDATE tblMatchPlayer SET forfeited = 1 WHERE tblMatchId = ? AND tblPlayerId = ? | MatchDAO (server) |
 | Kết thúc trận | UPDATE tblMatch SET endedAt = ? WHERE id = ? AND endedAt IS NULL | MatchDAO (server) |
-| Lấy trận kèm đề và 2 người | tblMatch JOIN tblMathProblem; tblMatch JOIN tblMatchPlayer JOIN tblPlayer, theo tblMatch.id | MatchDAO (server) |
+| Lấy trận kèm đề, 2 người và bài làm | tblMatch JOIN tblMathProblem; tblMatch JOIN tblMatchPlayer JOIN tblPlayer, theo tblMatch.id; với mỗi người: SELECT \* FROM tblAnswer WHERE tblMatchPlayerId = ? ORDER BY tblMathProblemId | MatchDAO (server) |
 | Tổng điểm | Lấy các trận đã xong (endedAt IS NOT NULL) mà người chơi tham gia, kèm 2 dòng tblMatchPlayer, rồi cộng Match.getPoints(playerId) ở Java | PlayerDAO (server) |
 | Các trận đã xong | tblMatch JOIN tblMatchPlayer JOIN tblPlayer WHERE endedAt IS NOT NULL | MatchDAO (server) |
 | Bảng xếp hạng | Lấy mọi tblPlayer có role = 'player' và mọi trận đã xong kèm 2 dòng tblMatchPlayer, tính 3 tiêu chí ở Java rồi sắp xếp | PlayerDAO (server) |
@@ -309,7 +333,7 @@ matches/{matchId}
 
 **Ai ghi node nào:**
 - presence/{playerId}:
-  - App của chính người chơi ghi khi vào giao diện chính, và đăng ký onDisconnect().removeValue() để node tự mất khi app tắt hoặc mất mạng. Danh sách online chính là các node con của presence.
+  - App của chính người chơi ghi khi vào giao diện chơi online, xóa khi rời giao diện này, và đăng ký onDisconnect().removeValue() để node tự mất khi app tắt hoặc mất mạng. Danh sách online chính là các node con của presence.
   - Server đổi status khi trận bắt đầu và khi 2 người dừng chơi, và cập nhật totalPoints sau mỗi trận.
 - challenges:
   - App người mời tạo lời mời.
@@ -324,12 +348,13 @@ matches/{matchId}
 
 **Thuộc tính cố ý không đưa lên Firebase:**
 - correctAnswer của câu hỏi. Người chơi có thể đọc dữ liệu Firebase của trận mình, nên đáp án chỉ nằm ở MySQL. App lấy đáp án qua REST khi trận đã xong.
+- Bài làm từng câu. App gửi bài làm qua REST lúc nộp bài và chỉ đọc lại bài làm của 2 người qua REST khi trận đã xong, nên đối thủ không xem được bài làm của mình giữa trận.
 
 **Thuộc tính sao chép:** displayName, totalPoints được chép từ Player vào presence, challenges, matches để máy khác hiện được tên và điểm mà không phải gọi server.
 
 **Vòng đời một trận:**
 1. Lời mời được đồng ý: server tạo trận, lưu MySQL, ghi node matches/{matchId} với status = playing, đổi presence của 2 người thành busy.
-2. Mỗi lần một người nộp bài: server lưu MySQL và ghi submitted = true.
+2. Mỗi lần một người nộp bài: server lưu số câu đúng, thời điểm nộp và bài làm từng câu vào MySQL, rồi ghi submitted = true.
 3. Khi Match.isOver() đúng (cả 2 đã nộp hoặc có người bỏ trận): server ghi endedAt vào MySQL, đặt status = finished, cập nhật totalPoints trong presence của 2 người.
 4. Hai người chọn chơi tiếp:
    - Cả 2 chơi tiếp: server tạo trận mới như bước 1 và ghi nextMatchId.

@@ -8,9 +8,9 @@
 
 Hệ thống là một trò chơi giải toán nhanh gồm một server và nhiều client. Server lưu toàn bộ thông tin và dữ liệu. Mỗi người chơi có một tài khoản gồm tên đăng nhập, mật khẩu và tên hiển thị; người chơi đăng ký tài khoản rồi đăng nhập từ một máy client để chơi. Quản trị viên cũng đăng nhập bằng tài khoản, nhưng chỉ để quản lý thông tin các người chơi: xem, sửa tên hiển thị, đặt lại mật khẩu, xóa tài khoản.
 
-Sau khi đăng nhập, người chơi thấy danh sách người chơi đang online, mỗi người có tên, tổng điểm và trạng thái rỗi hoặc bận. Người chơi bấm vào tên một người đang rỗi để gửi lời mời thách đấu; người được mời đồng ý hoặc từ chối. Khi lời mời được đồng ý, server tạo một trận đấu giữa 2 người, sinh một đề bài gồm 10 câu hỏi và gửi cùng đề cho cả 2 người. Mỗi câu hỏi là một phép tính gồm hai toán hạng và một toán tử, kèm 4 phương án trả lời trong đó có một đáp án đúng. Mỗi người chọn đáp án cho các câu rồi nộp bài làm trong tối đa 60 giây; server ghi nhận thời điểm nộp bài và số câu đúng của từng người. Người nhấn thoát giữa chừng thì bỏ trận và bị xử thua. Khi cả 2 đã nộp bài, server xác định kết quả trận: ai đúng hết và nhanh hơn thì thắng, cả 2 đều có câu sai thì hòa. Thắng được 1 điểm, hòa 0,5 điểm, thua 0 điểm; tổng điểm của người chơi là tổng các điểm trận này. Sau mỗi trận, nếu cả 2 chọn chơi tiếp thì server tạo trận mới với đề mới; nếu một người dừng thì server báo cho người còn lại.
+Khi vào chơi online, người chơi thấy danh sách người chơi đang online, mỗi người có tên, tổng điểm và trạng thái rỗi hoặc bận. Người chơi bấm vào tên một người đang rỗi để gửi lời mời thách đấu; người được mời đồng ý hoặc từ chối. Khi lời mời được đồng ý, server tạo một trận đấu giữa 2 người, sinh một đề bài gồm 10 câu hỏi và gửi cùng đề cho cả 2 người. Mỗi câu hỏi là một phép tính gồm hai toán hạng và một toán tử, kèm 4 phương án trả lời trong đó có một đáp án đúng. Mỗi người làm lần lượt từng câu: chọn một phương án rồi sang câu sau, hệ thống ghi lại phương án đã chọn và thời gian làm câu; làm xong 10 câu thì nộp bài làm, tất cả trong tối đa 60 giây. Server ghi nhận thời điểm nộp bài, số câu đúng và bài làm từng câu của từng người. Người nhấn thoát giữa chừng thì bỏ trận và bị xử thua. Khi cả 2 đã nộp bài, server xác định kết quả trận: ai đúng hết và nhanh hơn thì thắng, cả 2 đều có câu sai thì hòa. Thắng được 1 điểm, hòa 0,5 điểm, thua 0 điểm; tổng điểm của người chơi là tổng các điểm trận này. Sau mỗi trận, nếu cả 2 chọn chơi tiếp thì server tạo trận mới với đề mới; nếu một người dừng thì server báo cho người còn lại.
 
-Người chơi cũng có thể chơi với máy: người chơi chọn độ khó của máy, làm một đề 10 câu, máy cũng có số câu đúng và thời gian làm bài theo độ khó; kết quả ván được lưu lại cùng thời điểm chơi. Người chơi xem được lịch sử đấu gồm các trận đối kháng mình đã đấu cùng tỉ lệ thắng, hòa, thua, và bảng xếp hạng mọi người chơi theo tổng điểm, trung bình điểm của các đối thủ đã gặp và trung bình thời gian trong các trận thắng. Người chơi còn có thể gửi lời mời kết bạn tới một người chơi khác bằng tên đăng nhập; người nhận đồng ý thì hai người thành bạn bè, từ chối thì lời mời bị xóa. Người chơi xem danh sách bạn bè kèm trạng thái online và có thể hủy kết bạn.
+Người chơi cũng có thể chơi với máy: người chơi chọn độ khó của máy, làm một đề 10 câu, máy cũng có số câu đúng và thời gian làm bài theo độ khó; kết quả ván được lưu lại cùng thời điểm chơi. Người chơi xem được lịch sử đấu gồm các trận đối kháng mình đã đấu cùng tỉ lệ thắng, hòa, thua; xem chi tiết một trận gồm đề bài kèm đáp án đúng và câu trả lời của mỗi người ở từng câu: đúng hay sai, phương án đã chọn, thời gian làm câu; và xem bảng xếp hạng mọi người chơi theo tổng điểm, trung bình điểm của các đối thủ đã gặp và trung bình thời gian trong các trận thắng. Người chơi còn có thể gửi lời mời kết bạn tới một người chơi khác bằng tên đăng nhập; người nhận đồng ý thì hai người thành bạn bè, từ chối thì lời mời bị xóa. Người chơi xem danh sách bạn bè kèm trạng thái online và có thể hủy kết bạn.
 
 ## A.2. Bước 2: Trích các danh từ xuất hiện trong đoạn văn
 
@@ -20,10 +20,10 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
   - Tài khoản: tài khoản, tên đăng nhập, mật khẩu, tên hiển thị.
   - Danh sách online: danh sách người chơi online, tổng điểm, trạng thái.
   - Lời mời: lời mời thách đấu.
-  - Trận đấu: trận đấu, đề bài, câu hỏi, phép tính, toán hạng, toán tử, phương án trả lời, đáp án đúng, bài làm, thời điểm nộp bài, số câu đúng, bỏ trận, kết quả trận, điểm trận, chơi tiếp.
+  - Trận đấu: trận đấu, đề bài, câu hỏi, phép tính, toán hạng, toán tử, phương án trả lời, đáp án đúng, bài làm, bài làm từng câu, phương án đã chọn, thời gian làm câu, thời điểm nộp bài, số câu đúng, bỏ trận, kết quả trận, điểm trận, chơi tiếp.
   - Chơi với máy: độ khó, ván đấu với máy, thời gian làm bài, thời điểm chơi.
   - Bảng xếp hạng: bảng xếp hạng, trung bình điểm đối thủ, trung bình thời gian thắng.
-  - Lịch sử đấu: lịch sử đấu, tỉ lệ thắng, hòa, thua.
+  - Lịch sử đấu: lịch sử đấu, tỉ lệ thắng, hòa, thua, chi tiết trận, câu trả lời, đúng / sai.
   - Bạn bè: lời mời kết bạn, người gửi, người nhận, bạn bè, danh sách bạn bè, trạng thái online.
 
 ## A.3. Bước 3: Đánh giá và lựa chọn các danh từ làm lớp thực thể hoặc thuộc tính
@@ -45,7 +45,10 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
   - Câu hỏi / phép tính → cùng một khái niệm → lớp MathProblem: toán hạng thứ nhất (operand1), toán hạng thứ hai (operand2), toán tử (operator), đáp án đúng (correctAnswer), các phương án trả lời (answerOptions).
   - Đề bài → là danh sách 10 MathProblem của một trận, không có thông tin riêng → **không đề xuất lớp**.
   - Trận đấu → lớp Match: trạng thái (status: playing / finished), thời điểm bắt đầu (startedAt), thời điểm kết thúc (endedAt).
-  - Bài làm, số câu đúng, thời điểm nộp bài, bỏ trận → là thông tin của **một người chơi trong một trận cụ thể**, không thuộc riêng Player hay Match → quyết định ở bước 4.
+  - Số câu đúng, thời điểm nộp bài, bỏ trận → là thông tin của **một người chơi trong một trận cụ thể**, không thuộc riêng Player hay Match → quyết định ở bước 4.
+  - Bài làm → là 10 câu trả lời của một người chơi trong một trận, không có thông tin riêng nào khác → **không đề xuất lớp**.
+  - Bài làm từng câu / câu trả lời → là thông tin của **một người chơi trong trận cho một câu hỏi cụ thể**, không thuộc riêng người chơi trong trận hay câu hỏi → lớp Answer (bài làm một câu): phương án đã chọn (selectedOption), thời gian làm câu (answerTime). Quan hệ quyết định ở bước 4.
+  - Đúng / sai của một câu → so phương án đã chọn với đáp án đúng của câu → thuộc tính dẫn xuất, **không lưu**.
   - Kết quả trận, điểm trận → suy ra từ số câu đúng, thời điểm nộp bài và việc bỏ trận của 2 người → thuộc tính dẫn xuất, **không lưu**.
   - Chơi tiếp → là lựa chọn tạm thời của người chơi ngay sau trận, dùng để server quyết định có tạo trận mới không → **loại**.
 - **Các danh từ liên quan đến chơi với máy:**
@@ -67,8 +70,9 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
 
 - Một người chơi gửi nhiều lời mời, mỗi lời mời có đúng một người mời → Player – Challenge là **1-n** ở vai trò người mời.
 - Một người chơi nhận nhiều lời mời, mỗi lời mời có đúng một người được mời → Player – Challenge là **1-n** ở vai trò người được mời.
-- Một người chơi tham gia nhiều trận đấu, một trận đấu có đúng 2 người chơi → Player – Match là **n-n** → đề xuất lớp trung gian MatchPlayer (người chơi trong trận) xác định duy nhất một người chơi trong một trận. MatchPlayer giữ bài làm (answers), số câu đúng (correctCount), thời điểm nộp bài (submittedAt) và bỏ trận (forfeited) của người đó.
+- Một người chơi tham gia nhiều trận đấu, một trận đấu có đúng 2 người chơi → Player – Match là **n-n** → đề xuất lớp trung gian MatchPlayer (người chơi trong trận) xác định duy nhất một người chơi trong một trận. MatchPlayer giữ số câu đúng (correctCount), thời điểm nộp bài (submittedAt) và bỏ trận (forfeited) của người đó.
 - Một trận đấu có 10 câu hỏi, mỗi câu hỏi thuộc về đúng một trận → Match – MathProblem là **1-n**.
+- Một người chơi trong trận làm 10 câu hỏi của đề, mỗi câu hỏi được cả 2 người chơi trong trận làm → MatchPlayer – MathProblem là **n-n** → lớp trung gian Answer (bài làm một câu) xác định duy nhất câu trả lời của một người chơi trong trận cho một câu hỏi. Answer giữ phương án đã chọn (selectedOption) và thời gian làm câu (answerTime).
 - Một người chơi chơi nhiều ván với máy, mỗi ván thuộc về một người chơi → Player – BotGame là **1-n**.
 - Một ván đấu với máy có 10 câu hỏi, mỗi câu hỏi thuộc về đúng một ván → BotGame – MathProblem là **1-n**.
 - Một người chơi gửi nhiều lời mời kết bạn, mỗi lời mời có đúng một người gửi → Player – Friendship là **1-n** ở vai trò người gửi.
@@ -82,12 +86,13 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
 - **Quan hệ gắn chặt (composition)**: thành phần không thể tồn tại nếu không có tổng thể.
   - Câu hỏi là thành phần của trận đấu: đề chỉ được sinh ra cho một trận.
   - Câu hỏi là thành phần của ván đấu với máy.
-- **Quan hệ hợp thành (aggregation)**: dùng cho các quan hệ 1-n, hình thoi đặt ở lớp chứa thông tin của lớp kia.
+- **Quan hệ kết tập (aggregation)**: dùng cho các quan hệ 1-n, hình thoi đặt ở lớp chứa thông tin của lớp kia.
   - Thông tin người chơi nằm trong thông tin lời mời, ở 2 vai trò người mời và người được mời.
   - Thông tin người chơi nằm trong thông tin ván đấu với máy.
   - Thông tin người chơi nằm trong thông tin quan hệ bạn bè, ở 2 vai trò người gửi và người nhận.
 - **Quan hệ liên kết (association)**: dùng cho quan hệ n-n, lớp trung gian được vẽ thành lớp liên kết gắn vào đường association.
   - Người chơi và Trận đấu liên kết tạo ra Người chơi trong trận duy nhất.
+  - Người chơi trong trận và Câu hỏi liên kết tạo ra Bài làm một câu duy nhất.
 
 Kết quả thu được biểu đồ lớp thực thể pha phân tích toàn hệ thống như mục A.7.
 
@@ -100,8 +105,9 @@ Kết quả thu được biểu đồ lớp thực thể pha phân tích toàn h
 | 3 | Challenge | Lời mời thách đấu | Chỉ tồn tại từ lúc gửi tới lúc được trả lời |
 | 4 | Match | Trận đấu | Kết quả trận, điểm trận, tổng điểm, bảng xếp hạng đều suy ra từ lớp này |
 | 5 | MatchPlayer | Người chơi trong trận | Lớp liên kết của quan hệ n-n Player – Match |
-| 6 | BotGame | Ván đấu với máy | Lưu trên máy client |
-| 7 | Friendship | Lời mời kết bạn, bạn bè | Một lớp cho cả lời mời đang chờ và quan hệ đã đồng ý, phân biệt bằng status |
+| 6 | Answer | Bài làm từng câu / câu trả lời | Lớp liên kết của quan hệ n-n MatchPlayer – MathProblem |
+| 7 | BotGame | Ván đấu với máy | Lưu trên máy client |
+| 8 | Friendship | Lời mời kết bạn, bạn bè | Một lớp cho cả lời mời đang chờ và quan hệ đã đồng ý, phân biệt bằng status |
 
 ## A.7. Biểu đồ lớp thực thể pha phân tích
 
@@ -109,14 +115,15 @@ Kết quả thu được biểu đồ lớp thực thể pha phân tích toàn h
 
 *Hình 2: Biểu đồ lớp thực thể pha phân tích toàn hệ thống Math Dash 1v1.*
 
-Biểu đồ có 7 lớp thực thể.
+Biểu đồ có 8 lớp thực thể.
 - **Phía đối kháng:**
-  - Quan hệ n-n giữa Player và Match được tách bằng lớp liên kết MatchPlayer, nơi giữ bài làm, số câu đúng, thời điểm nộp bài và trạng thái bỏ trận của từng người.
+  - Quan hệ n-n giữa Player và Match được tách bằng lớp liên kết MatchPlayer, nơi giữ số câu đúng, thời điểm nộp bài và trạng thái bỏ trận của từng người.
   - Đề bài là các MathProblem gắn chặt vào Match (hình thoi đặc).
+  - Quan hệ n-n giữa MatchPlayer và MathProblem được tách bằng lớp liên kết Answer, nơi giữ phương án đã chọn và thời gian làm câu của một người cho một câu. Bài làm của một người là các Answer của MatchPlayer đó.
   - Challenge chứa thông tin của 2 Player ở 2 vai trò người mời và người được mời.
 - **Phía chơi với máy:** BotGame chứa thông tin người chơi (hình thoi rỗng) và đề bài riêng của ván (hình thoi đặc).
 - **Phía bạn bè:** Friendship chứa thông tin của 2 Player ở 2 vai trò người gửi và người nhận, giống cách Challenge chứa người mời và người được mời.
-- **Các thuộc tính dẫn xuất** không có trên biểu đồ: kết quả trận, điểm trận, kết quả ván với máy, các tiêu chí của bảng xếp hạng, tỉ lệ thắng / hòa / thua trong lịch sử đấu. Riêng tổng điểm và trạng thái được giữ ở Player vì giao diện cần hiển thị cùng tên người chơi.
+- **Các thuộc tính dẫn xuất** không có trên biểu đồ: đúng / sai của từng câu, kết quả trận, điểm trận, kết quả ván với máy, các tiêu chí của bảng xếp hạng, tỉ lệ thắng / hòa / thua trong lịch sử đấu. Riêng tổng điểm và trạng thái được giữ ở Player vì giao diện cần hiển thị cùng tên người chơi.
 
 Mã nguồn PlantUML: [lop-thuc-the-phan-tich.puml](lop-thuc-the-phan-tich.puml).
 
@@ -129,6 +136,7 @@ Mã nguồn PlantUML: [lop-thuc-the-phan-tich.puml](lop-thuc-the-phan-tich.puml)
 | Challenge | | | ✓ | | | | |
 | Match | | | ✓ | ✓ | | ✓ | |
 | MatchPlayer | | | ✓ | ✓ | | ✓ | |
+| Answer | | | ✓ | ✓ | | | |
 | BotGame | | | | | ✓ | | |
 | Friendship | | | | | | | ✓ |
 
@@ -141,7 +149,7 @@ Mã nguồn PlantUML: [lop-thuc-the-phan-tich.puml](lop-thuc-the-phan-tich.puml)
 ## B.1. Bước 1: Bổ sung thuộc tính khóa
 
 Bổ sung thuộc tính id cho mọi lớp, vì lớp nào cũng cần được lưu và cần phân biệt từng đối tượng. Không có lớp nào kế thừa lớp khác.
-- Player, Match, MatchPlayer, MathProblem, BotGame, Friendship: id : int, do CSDL tự sinh.
+- Player, Match, MatchPlayer, MathProblem, Answer, BotGame, Friendship: id : int, do CSDL tự sinh.
 - Challenge: id : String. Lời mời chỉ nằm trên Firebase Realtime Database, khóa là push id do Firebase sinh.
 
 MathProblem có id khi là câu của một trận đối kháng, vì server phải lưu đề để chấm bài. Câu của ván đấu với máy chỉ nằm trong bộ nhớ, id bằng 0.
@@ -151,7 +159,8 @@ MathProblem có id khi là câu của một trận đối kháng, vì server ph�
 Kiểu dữ liệu được chọn như sau:
 - Chuỗi → String.
 - Số đếm, toán hạng, độ khó → int.
-- Thời gian làm bài tính bằng mili giây → long.
+- Thời gian làm bài, thời gian làm câu tính bằng mili giây → long.
+- Phương án đã chọn → int, cùng kiểu với các phương án trả lời; câu bỏ trống có giá trị −1, đặt thành hằng Answer.NONE.
 - Thời điểm → Date.
 - Cờ đúng / sai → boolean.
 - Tổng điểm → double, vì có điểm hòa 0,5.
@@ -169,7 +178,8 @@ Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền t
 | MathProblem | id: int, operand1: int, operand2: int, operator: String, correctAnswer: int, answerOptions: List&lt;Integer&gt; |
 | Challenge | id: String, status: String, createdAt: Date, matchId: int |
 | Match | id: int, status: String, startedAt: Date, endedAt: Date |
-| MatchPlayer | id: int, answers: List&lt;Integer&gt;, correctCount: int, submittedAt: Date, forfeited: boolean |
+| MatchPlayer | id: int, correctCount: int, submittedAt: Date, forfeited: boolean |
+| Answer | id: int, selectedOption: int, answerTime: long |
 | BotGame | id: int, difficulty: int, correctCount: int, finishTime: long, botCorrectCount: int, botFinishTime: long, playedAt: Date |
 | Friendship | id: int, status: String, createdAt: Date |
 
@@ -180,6 +190,11 @@ Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền t
   - **MatchPlayer chứa Player** (kết tập, n – 1): người chơi tồn tại độc lập với trận, mỗi người chơi trong trận chỉ tham chiếu đúng một người chơi.
 
   Lí do chọn hướng chứa này: khi xử lí (chấm bài, xác định kết quả, tính tổng điểm), hệ thống luôn lấy trận kèm cả 2 người chơi trong trận để so số câu đúng và thời gian làm bài.
+- Quan hệ n-n MatchPlayer – MathProblem qua lớp liên kết Answer chuyển thành:
+  - **MatchPlayer chứa Answer** (hợp thành, 1 – n): Answer là thành phần của MatchPlayer, kiểu 1-n. Bài làm một câu chỉ có nghĩa khi thuộc về một người chơi trong trận; xóa trận thì bài làm cũng mất. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.
+  - **Answer chứa MathProblem** (kết tập, n – 1): câu hỏi thuộc về đề của trận, tồn tại không phụ thuộc vào bài làm; mỗi Answer chỉ tham chiếu đúng một câu hỏi, mỗi câu hỏi có tối đa 2 Answer, mỗi người chơi trong trận một.
+
+  Lí do chọn hướng chứa này: khi chấm bài và khi hiện chi tiết trận, hệ thống duyệt bài làm của từng người chơi trong trận; mỗi Answer cần biết câu hỏi của nó để tự xác định đúng hay sai.
 - Các quan hệ đã là kết tập / hợp thành từ pha phân tích giữ nguyên:
   - Match chứa MathProblem (hợp thành, 1 – 10).
   - BotGame chứa MathProblem (hợp thành, 1 – 10).
@@ -197,6 +212,8 @@ Quan hệ 1-n thì lớp chứa khai báo danh sách; quan hệ n-1 hoặc 1-1 t
 - Match chứa 10 MathProblem → questions : List\<MathProblem>.
 - Match chứa 2 MatchPlayer → players : List\<MatchPlayer>.
 - MatchPlayer chứa 1 Player → player : Player.
+- MatchPlayer chứa 10 Answer → answers : List\<Answer>. Answer thứ i của bài làm ứng với câu thứ i của đề.
+- Answer chứa 1 MathProblem → problem : MathProblem.
 - BotGame chứa 1 Player → player : Player.
 - BotGame chứa 10 MathProblem → questions : List\<MathProblem>.
 - Friendship chứa người gửi và người nhận → sender : Player, receiver : Player.
@@ -207,7 +224,9 @@ Các thuộc tính dẫn xuất ở pha phân tích không thành thuộc tính 
 |---|---|---|
 | MathProblem | isCorrect(answer : int) : boolean | answer bằng correctAnswer |
 | MathProblem | getExpression() : String | Chuỗi hiển thị, ví dụ "12 + 7 = ?" |
-| Match | countCorrect(answers : List\<Integer>) : int | Chấm một bài làm: đếm số câu có questions.get(i).isCorrect(answers.get(i)) |
+| Answer | isAnswered() : boolean | Câu đã được làm: selectedOption khác NONE |
+| Answer | isCorrect() : boolean | Câu trả lời đúng: problem.isCorrect(selectedOption) |
+| Match | countCorrect(answers : List\<Answer>) : int | Chấm một bài làm: gắn câu thứ i của đề vào answers.get(i) rồi đếm số câu có answers.get(i).isCorrect() |
 | Match | isOver() : boolean | Trận đã xong: có người bỏ trận, hoặc cả 2 đã nộp bài |
 | Match | getFinishTime(playerId : int) : long | Thời gian làm bài của người chơi: submittedAt − startedAt, tính bằng mili giây |
 | Match | getResult(playerId : int) : String | WIN / LOSE / DRAW, theo thứ tự:<br>1. Ai bỏ trận thì thua.<br>2. Chỉ một người đúng hết 10 câu thì người đó thắng.<br>3. Cả 2 đều có câu sai thì hòa.<br>4. Cả 2 đúng hết thì so thời gian làm bài: ngắn hơn thắng, bằng nhau hòa |
@@ -234,16 +253,20 @@ Server tính 3 giá trị đầu trong DAO, vì phải duyệt nhiều Match, r�
 So với pha phân tích:
 - Mọi lớp có thêm id; mọi thuộc tính có kiểu Java.
 - Lớp liên kết MatchPlayer trở thành thành phần (hình thoi đặc) của Match và chứa Player (hình thoi rỗng).
+- Lớp liên kết Answer trở thành thành phần (hình thoi đặc) của MatchPlayer và chứa MathProblem (hình thoi rỗng).
 - Mỗi quan hệ chứa được thể hiện bằng một thuộc tính đối tượng ở lớp chứa:
   - Challenge.challenger, Challenge.opponent.
   - Match.questions, Match.players.
-  - MatchPlayer.player.
+  - MatchPlayer.player, MatchPlayer.answers.
+  - Answer.problem.
   - BotGame.player, BotGame.questions.
   - Friendship.sender, Friendship.receiver.
 
-Các lớp Player, MathProblem, Match, MatchPlayer, Friendship có mặt ở **cả app và server** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng.
+Các lớp Player, MathProblem, Match, MatchPlayer, Answer, Friendship có mặt ở **cả app và server** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng.
 - passwordHash chỉ có giá trị ở server; app không bao giờ giữ mật khẩu.
 - correctAnswer của câu hỏi chỉ được gửi về app sau khi trận đã xong, để không ai biết trước đáp án.
+- Bài làm từng câu của 2 người cũng chỉ được gửi về app sau khi trận đã xong, để không ai xem được bài làm của đối thủ giữa trận.
+- Answer.problem không đi qua JSON. Answer thứ i ứng với câu thứ i của đề, nên bên nhận tự gắn lại câu hỏi vào bài làm.
 
 Mã nguồn PlantUML: [lop-thuc-the-thiet-ke.puml](lop-thuc-the-thiet-ke.puml).
 
@@ -272,10 +295,13 @@ Mã nguồn PlantUML: [lop-thuc-the-thiet-ke.puml](lop-thuc-the-thiet-ke.puml).
 | Match | startedAt | Thời điểm server tạo trận và gửi đề | Mốc tính thời gian làm bài |
 | Match | endedAt | Thời điểm trận kết thúc | Chỉ có khi status = finished |
 | Match | questions | Đề bài | Đúng 10 câu |
-| MatchPlayer | answers | Bài làm: phương án đã chọn cho từng câu, theo thứ tự đề | 10 số; −1 là câu chưa chọn |
+| MatchPlayer | answers | Bài làm: các Answer của người chơi, theo thứ tự đề | Đúng 10 Answer khi đã nộp; rỗng nếu bỏ trận trước khi nộp |
 | MatchPlayer | correctCount | Số câu đúng do server chấm | 0 – 10 |
 | MatchPlayer | submittedAt | Thời điểm server nhận bài làm | Chưa có khi chưa nộp |
 | MatchPlayer | forfeited | Người chơi này đã bỏ trận và bị xử thua | Mặc định false |
+| Answer | selectedOption | Phương án người chơi đã chọn cho câu | Một trong 4 phương án của câu, hoặc −1 (NONE) khi bỏ trống |
+| Answer | answerTime | Thời gian làm câu: từ lúc câu hiện ra tới lúc người chơi chọn | ≥ 0, mili giây; 0 khi bỏ trống |
+| Answer | problem | Câu hỏi của bài làm này | Câu thứ i của đề ứng với Answer thứ i |
 | BotGame | difficulty | Độ khó của máy | 1 = Dễ, 2 = Trung bình, 3 = Khó |
 | BotGame | correctCount, finishTime | Số câu đúng, thời gian làm bài của người chơi | 0 – 10; mili giây |
 | BotGame | botCorrectCount, botFinishTime | Số câu đúng, thời gian làm bài của máy | 0 – 10; mili giây |

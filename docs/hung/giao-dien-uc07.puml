@@ -1,0 +1,74 @@
+@startsalt giao-dien-uc07
+title Phác thảo giao diện – Quản lý bạn bè
+{
+  {+
+  <b>OnlineActivity
+  ==
+  { <b>CHƠI ONLINE</b> | <color:#FFFFFF>xxxx</color> | [<b><&people></b>] | [<&clock>] | [<&bar-chart>] }
+  ==
+  {+
+  { <b><color:#0097A7>HUNG</color></b> | <color:#FFFFFF>xxxxxxxxxxx</color> | <color:orange>13,5 điểm</color> }
+  }
+  .
+  <color:#0097A7>NGƯỜI CHƠI ONLINE</color>
+  {#
+  <b>MINH</b> | <color:orange>15 điểm</color> | <color:gray>Bận</color>
+  <b>HOANG</b> | <color:orange>9 điểm</color> | <color:green>Rỗi</color>
+  }
+  .
+  ..
+  <color:gray><&people> Bạn bè: mở màn Bạn bè</color>
+  } | . | {+
+  <b>FriendActivity – máy 1
+  ==
+  <b>BẠN BÈ</b>
+  ==
+  { "Tên đăng nhập  " | [ <b>KẾT BẠN</b> ] }
+  .
+  <b>Lời mời kết bạn (1)
+  {+
+  { <b>LAN</b> | . | [ <b>ĐỒNG Ý</b> ] | [ Từ chối ] }
+  }
+  .
+  <b>Bạn bè (3)
+  {+
+  { <color:green>●</color> | <b>MINH</b> | . | [ × ] }
+  { . | 15 điểm · <color:green>Online</color> | . | . }
+  --
+  { <color:gray>●</color> | <b>TUAN</b> | . | [ × ] }
+  { . | 0 điểm · <color:gray>Offline</color> | . | . }
+  --
+  { <color:gray>●</color> | <b>HOANG</b> | . | [ × ] }
+  { . | <color:gray><i>Đang chờ trả lời</i></color> | . | . }
+  }
+  .
+  <color:green>Đã gửi lời mời kết bạn tới HOANG</color>
+  } | . | {+
+  <b>FriendActivity – máy 2
+  ==
+  <b>BẠN BÈ</b>
+  ==
+  { "Tên đăng nhập  " | [ <b>KẾT BẠN</b> ] }
+  .
+  <b>Lời mời kết bạn (1)
+  {+
+  { <b>HUNG</b> | . | [ <b>ĐỒNG Ý</b> ] | [ Từ chối ] }
+  }
+  .
+  <b>Bạn bè (0)
+  {+
+  .
+  <color:gray>Chưa có bạn bè</color>
+  .
+  }
+  } | . | {+
+  <b>Hộp thoại xác nhận
+  ==
+  .
+  Hủy kết bạn với TUAN?
+  .
+  { [ Không ] | [ <b>HỦY KẾT BẠN</b> ] }
+  .
+  }
+}
+@endsalt

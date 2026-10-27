@@ -96,8 +96,8 @@ Không phải module: một màn hình hay một bước con (Xem chi tiết tr�
 | Module | Use case | Thực thể chính | Người |
 |---|---|---|---|
 | Tài khoản | UC01 Đăng ký, UC02 Đăng nhập | Player | Hoàng |
-| Đấu đối kháng | UC03 Chơi online | Challenge, Match, MatchPlayer, MathProblem (ghi) | Hùng |
-| Xem lịch sử đấu | UC04 Xem lịch sử đấu | Match, MatchPlayer, MathProblem (chỉ đọc), Player | Hùng |
+| Đấu đối kháng | UC03 Chơi online | Challenge, Match, MatchPlayer, Answer, MathProblem (ghi) | Hùng |
+| Xem lịch sử đấu | UC04 Xem lịch sử đấu | Match, MatchPlayer, Answer, MathProblem (chỉ đọc), Player | Hùng |
 | Chơi với máy | UC05 Chơi với máy | BotGame | Hoàng |
 | Quản trị | UC06 Quản lý thông tin người chơi | Player | Hoàng |
 | Bạn bè | UC07 Quản lý bạn bè | Friendship | Hùng |
@@ -138,7 +138,7 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 - Viết theo dạng luồng nghiệp vụ, nối các bước bằng `→`.
 - Mỗi lần có giao diện hiện ra thì liệt kê đủ thành phần của giao diện đó.
 
-> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, danh sách 10 câu hỏi mỗi câu 4 phương án, nút Nộp bài, nút Thoát → …
+> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D, nút Thoát → Người chơi bấm một ô, câu tiếp theo hiện ra → Làm xong 10 câu, nút Nộp bài hiện ra → …
 
 **Kịch bản chuẩn v1:**
 - Các bước đánh số, xen kẽ hành động của Người chơi và phản hồi của Hệ thống.
@@ -353,7 +353,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
 - **Tài liệu chỉ chứa nội dung báo cáo.** Không ghi quy ước, luật, trạng thái, số issue, người làm / người duyệt vào tiêu đề hay nội dung tài liệu. Những thứ đó ghi ở file này (mục 6, 7).
 - **Tiêu đề và chú thích hình không có ghi chú trong ngoặc.** Viết `## 1. Chức năng "Chơi online"`, không viết `## 1. Chức năng "Chơi online" (UC03)`; viết `*Hình 13: Biểu đồ lớp chi tiết chức năng Chơi online.*`, không thêm `(client + server)` hay `(phác thảo…)`. Tiêu đề trong ảnh PlantUML cũng vậy.
 - **Ngoại lệ trong kịch bản v2** viết ở mức chung: "hiển thị thông báo không vào được phòng", không ghi `Toast`, `AlertDialog`.
-- **Dữ liệu mẫu** chỉ dùng ở kịch bản v1 (ví dụ của Hùng: HUNG máy 1 mời, HOANG máy 2 được mời, MINH đang bận; trận số 37; câu đầu `12 + 7`; HUNG 10/10 câu, 38,2 giây; HOANG 10/10 câu, 45,6 giây).
+- **Dữ liệu mẫu** chỉ dùng ở kịch bản v1 (ví dụ của Hùng: HUNG máy 1 mời, HOANG máy 2 được mời, MINH đang bận; trận số 37; câu đầu `12 + 7`, 4 ô A 17, B 19, C 21, D 18; HUNG 10/10 câu, 38,2 giây; HOANG 10/10 câu, 45,6 giây; thời gian từng câu của HUNG 3,1 · 4,0 · 3,4 · 3,8 · 3,7 · 3,5 · 4,1 · 3,2 · 3,6 · 2,8 giây, của HOANG 4,0 · 4,4 · 4,0 · 4,7 · 4,3 · 4,1 · 4,9 · 3,8 · 4,4 · 3,7 giây. Tổng thời gian các câu phải nhỏ hơn thời điểm nộp ít nhất 2 giây vì app khóa 4 ô 0,2 giây sau mỗi lần chọn).
 - **Kịch bản v2, v3 viết ở mức chung:**
   - Tác nhân gọi là "người chơi" (hoặc "người dùng"), bên kia là "đối thủ". Không ghi tên người, không ghi "hiển thị cho Hùng".
   - Không nêu dữ liệu cụ thể: mã phòng, câu hỏi, điểm của ai bao nhiêu, kết quả WIN/LOSE. Viết "hiển thị điểm", "trả về kết quả trận".
@@ -379,7 +379,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
 | `docs/hung/BaoCao_Hung.md` | Bản nháp báo cáo | Toàn bộ | #47 M4-05 | Hùng / Hoàng | Các file trên |
 | `docs/hung/launch.md` | Bản báo cáo để dán vào file online (ảnh dạng @file.png, không in đậm) | Toàn bộ | #47 M4-05 | Hùng / Hoàng | Sinh từ BaoCao_Hung.md |
 
-Lớp thực thể theo báo cáo: Hùng (UC03, UC04, UC07) dùng `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Friendship`; Hoàng (UC01, UC02, UC05, UC06) dùng `Player`, `MathProblem`, `BotGame`, `Match`, `MatchPlayer`.
+Lớp thực thể theo báo cáo: Hùng (UC03, UC04, UC07) dùng `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `Friendship`; Hoàng (UC01, UC02, UC05, UC06) dùng `Player`, `MathProblem`, `BotGame`, `Match`, `MatchPlayer`.
 
 Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28/10/2026.
 
@@ -388,6 +388,8 @@ Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28
 **Bản 5 (26/10/2026):** toàn bộ tài liệu chung và tài liệu UC03, UC04, Đăng nhập – đăng ký của Hùng viết lại theo đề 9. Code trên `main` vẫn là bản 4 (phòng mã 6 số, lịch sử đấu), phải làm lại theo M1-04 → M2-05.
 
 **Bản 6 (27/10/2026):** Đăng nhập – đăng ký chuyển hẳn sang báo cáo của Hoàng; tài liệu của Hùng bỏ phần này, UC04 đổi thành Xem lịch sử đấu (gộp bảng xếp hạng), thêm UC07 Quản lý bạn bè.
+
+**Bản 7 (27/10/2026):** tài liệu đồng bộ với giao diện mới: giao diện chính (MainView / MainActivity) chỉ có Chơi với máy, Chơi online; thêm OnlineView / OnlineActivity giữ danh sách online, thách đấu và 3 biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng; giao diện thi đấu mỗi lần một câu với 4 ô A–D (outQuestion, subOptions / btnOptions); thêm thực thể Answer, bảng tblAnswer; chi tiết trận hiện đúng / sai và thời gian từng câu (outListAnswer). Phần chung (Answer, tblAnswer) cần Hoàng duyệt.
 
 **Việc còn lại trước khi nộp (Hùng):**
 1. Thay hình phác thảo giao diện bằng ảnh chụp app thật (M2-08).

@@ -12,7 +12,7 @@ public class Challenge {
     private Date createdAt;
     private Player challenger;
     private Player opponent;
-    // Trận được tạo khi lời mời được đồng ý; 0 khi chưa có
+    // 0 khi chưa có trận
     private int matchId;
 
     public Challenge() {
