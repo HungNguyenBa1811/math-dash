@@ -64,6 +64,13 @@ public class MatchDAO extends DAO {
         return query(SELECT_PLAYERS + " WHERE m.endedAt IS NOT NULL ORDER BY m.id, mp.id", null);
     }
 
+    // Lịch sử đấu: các trận đã kết thúc mà người chơi tham gia, kèm 2 người chơi, mới nhất đứng đầu
+    public List<Match> findByPlayer(int playerId) throws SQLException {
+        return query(SELECT_PLAYERS + " WHERE m.endedAt IS NOT NULL"
+                + " AND m.id IN (SELECT tblMatchId FROM tblMatchPlayer WHERE tblPlayerId = ?)"
+                + " ORDER BY m.endedAt DESC, m.id DESC, mp.id", playerId);
+    }
+
     // Lưu kết quả chấm và thời điểm nộp; chỉ nộp được một lần
     public boolean updateSubmission(int matchId, MatchPlayer mp) throws SQLException {
         String sql = "UPDATE tblMatchPlayer SET correctCount = ?, submittedAt = ?"

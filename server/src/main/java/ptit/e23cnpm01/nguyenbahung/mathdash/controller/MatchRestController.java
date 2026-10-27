@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.FirebaseAdminDAO;
@@ -114,6 +115,12 @@ public class MatchRestController {
         Match next = startMatch(match.getPlayers().get(0).getPlayer(), match.getPlayers().get(1).getPlayer());
         firebaseAdminDAO.writeNextMatch(id, next.getId());
         return hideAnswers(next);
+    }
+
+    // GET /api/matches?playerId={id}: lịch sử đấu, các trận đã xong của người chơi, không kèm đề
+    @GetMapping
+    public List<Match> getHistory(@RequestParam int playerId) throws SQLException {
+        return matchDAO.findByPlayer(playerId);
     }
 
     // GET /api/matches/{id}: trận kèm tổng điểm của 2 người; đáp án chỉ trả khi trận đã xong
