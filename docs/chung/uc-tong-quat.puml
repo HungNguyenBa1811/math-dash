@@ -32,15 +32,20 @@ rectangle "Math Dash 1v1" {
     usecase "Đăng ký" as UC01
     usecase "Đăng nhập" as UC02
   }
-  rectangle "Chơi online" {
+  rectangle "Đấu đối kháng" {
     usecase "Chơi online" as UC03
-    usecase "Xem bảng xếp hạng" as UC04
+  }
+  rectangle "Xem lịch sử đấu" {
+    usecase "Xem lịch sử đấu" as UC04
   }
   rectangle "Chơi với máy" {
     usecase "Chơi với máy" as UC05
   }
   rectangle "Quản trị" {
     usecase "Quản lý thông tin người chơi" as UC06
+  }
+  rectangle "Bạn bè" {
+    usecase "Quản lý bạn bè" as UC07
   }
 }
 
@@ -49,6 +54,7 @@ A1 --> UC02
 A1 --> UC03
 A1 --> UC04
 A1 --> UC05
+A1 --> UC07
 UC02 <-- A2
 UC06 <-- A2
 @enduml

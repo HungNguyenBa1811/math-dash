@@ -61,6 +61,10 @@ class BotGame {
   - botFinishTime
   - playedAt
 }
+class Friendship {
+  - status
+  - createdAt
+}
 
 Challenge "n" o-- "1" Player : người mời
 Challenge "n" o-- "1" Player : người được mời
@@ -69,4 +73,6 @@ Player "n" -- "n" Match
 Match "1" *-- "10" MathProblem
 BotGame "n" o-- "1" Player
 BotGame "1" *-- "10" MathProblem
+Friendship "n" o-- "1" Player : người gửi
+Friendship "n" o-- "1" Player : người nhận
 @enduml
