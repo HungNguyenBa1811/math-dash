@@ -124,4 +124,11 @@ public class MatchTest {
         game.setBotCorrectCount(8);
         assertEquals(Match.DRAW, game.getResult());
     }
+
+    @Test
+    public void doiThuLaNguoiConLaiTrongTran() {
+        Match m = match(10, 38.2, 10, 45.6);
+        assertEquals(HOANG, m.getOpponent(HUNG).getPlayer().getId());
+        assertEquals(HUNG, m.getOpponent(HOANG).getPlayer().getId());
+    }
 }

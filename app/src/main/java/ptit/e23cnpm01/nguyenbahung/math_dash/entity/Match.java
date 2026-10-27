@@ -73,6 +73,11 @@ public class Match {
         return WIN.equals(result) ? 1 : DRAW.equals(result) ? 0.5 : 0;
     }
 
+    // Người chơi trong trận còn lại, dùng để hiện đối thủ trong lịch sử đấu
+    public MatchPlayer getOpponent(int playerId) {
+        return find(playerId, false);
+    }
+
     // Luật của đề: chỉ một người đúng hết thì người đó thắng; cả 2 có câu sai thì hòa;
     // cả 2 đúng hết thì ai nhanh hơn thắng, bằng nhau thì hòa. Dùng chung cho chơi với máy
     public static String judge(int myCorrect, long myTime, int otherCorrect, long otherTime) {
