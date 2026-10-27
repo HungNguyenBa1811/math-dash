@@ -13,6 +13,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Hàng trên: ô thời gian, trạng thái đối thủ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +25,8 @@
                 style="@style/RetroTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/time_full" />
+                android:text="@string/time_full"
+                android:textColor="@color/arcade_amber" />
 
             <TextView
                 android:id="@+id/txtOpponentStatus"
@@ -33,17 +35,93 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
+                android:maxLines="2"
                 android:textColor="@color/arcade_text_dim"
+                android:textSize="14sp"
                 tools:text="HOANG đang làm bài" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvQuestions"
+        <!-- Câu đang làm: số thứ tự và phép tính chữ lớn; làm xong thì hiện thông báo -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
-            android:layout_weight="1" />
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_retro_card"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <TextView
+                android:id="@+id/txtProgress"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/arcade_cyan"
+                tools:text="Câu 3/10" />
+
+            <TextView
+                android:id="@+id/txtExpression"
+                style="@style/RetroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:textSize="44sp"
+                android:textStyle="bold"
+                tools:text="12 + 7 = ?" />
+        </LinearLayout>
+
+        <!-- 4 ô phương án A, B, C, D xếp 2 x 2; bấm một ô là sang câu sau -->
+        <LinearLayout
+            android:id="@+id/layoutOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnOptionA"
+                style="@style/OptionTile"
+                android:background="@drawable/bg_option_a"
+                tools:text="A
+17" />
+
+            <Button
+                android:id="@+id/btnOptionB"
+                style="@style/OptionTile"
+                android:background="@drawable/bg_option_b"
+                tools:text="B
+19" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnOptionC"
+                style="@style/OptionTile"
+                android:background="@drawable/bg_option_c"
+                tools:text="C
+21" />
+
+            <Button
+                android:id="@+id/btnOptionD"
+                style="@style/OptionTile"
+                android:background="@drawable/bg_option_d"
+                tools:text="D
+18" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Hàng dưới: Thoát; Nộp bài chỉ hiện khi đã làm xong 10 câu -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,7 +133,6 @@
                 style="@style/RetroButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:text="@string/btn_exit" />
 
@@ -64,8 +141,11 @@
                 style="@style/RetroButton.Accent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:layout_weight="2"
-                android:text="@string/btn_submit" />
+                android:text="@string/btn_submit"
+                android:visibility="gone"
+                tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 

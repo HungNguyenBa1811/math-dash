@@ -47,12 +47,41 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <!-- Phương án trắc nghiệm -->
-    <style name="RetroOption">
-        <item name="android:textColor">@color/arcade_text_bright</item>
-        <item name="android:fontFamily">monospace</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:minHeight">48dp</item>
-        <item name="buttonTint">@color/arcade_cyan</item>
+    <!-- Thanh trên cùng của mỗi màn: tiêu đề bên trái, nút biểu tượng bên phải -->
+    <style name="TopBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
     </style>
+
+    <style name="TopBarTitle" parent="RetroTitle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="IconButton">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:background">@drawable/bg_icon_button</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <!-- Ô phương án A, B, C, D của màn thi đấu -->
+    <style name="OptionTile" parent="RetroButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

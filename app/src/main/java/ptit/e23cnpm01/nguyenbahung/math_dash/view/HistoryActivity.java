@@ -27,6 +27,9 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
 public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
     public static final String EXTRA_MATCH_ID = "matchId";
+    // Thẻ mở sẵn khi vào màn: 0 là Trận của tôi, TAB_RANKING là Bảng xếp hạng
+    public static final String EXTRA_TAB = "tab";
+    public static final int TAB_RANKING = 1;
 
     private Player me;
     private List<Match> matches;
@@ -68,6 +71,9 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
         me = new SessionDAO(this).getPlayer();
         showSummary(null);
         loadHistory();
+        if (getIntent().getIntExtra(EXTRA_TAB, 0) == TAB_RANKING) {
+            tabLayout.selectTab(tabLayout.getTabAt(TAB_RANKING));
+        }
     }
 
     private void loadHistory() {
@@ -117,7 +123,7 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        boolean ranking = tab.getPosition() == 1;
+        boolean ranking = tab.getPosition() == TAB_RANKING;
         layoutMyMatches.setVisibility(ranking ? View.GONE : View.VISIBLE);
         layoutRanking.setVisibility(ranking ? View.VISIBLE : View.GONE);
         if (ranking && !rankingLoaded) {

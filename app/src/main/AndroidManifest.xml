@@ -35,13 +35,17 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Chơi online, Xem bảng xếp hạng -->
+        <!-- Chơi online -->
+        <activity
+            android:name=".view.OnlineActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.MatchActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Xem lịch sử đấu -->
+        <!-- Xem lịch sử đấu, gồm bảng xếp hạng -->
         <activity
             android:name=".view.HistoryActivity"
             android:exported="false"

@@ -7,16 +7,15 @@
     android:background="@color/arcade_bg"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:layout_margin="16dp"
     tools:context=".view.HistoryActivity">
 
-    <TextView
-        style="@style/RetroTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="12dp"
-        android:text="@string/title_history" />
+    <LinearLayout style="@style/TopBar">
+
+        <TextView
+            style="@style/TopBarTitle"
+            android:text="@string/title_history" />
+    </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

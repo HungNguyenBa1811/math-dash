@@ -12,14 +12,19 @@
     <string name="btn_register">ĐĂNG KÝ</string>
 
     <!-- Màn chính -->
-    <string name="title_online_players">NGƯỜI CHƠI ONLINE</string>
-    <string name="label_points">%1$s điểm</string>
+    <string name="label_hello">Xin chào, %1$s</string>
     <string name="btn_play_bot">CHƠI VỚI MÁY</string>
-    <string name="btn_history">LỊCH SỬ ĐẤU</string>
-    <string name="btn_friends">BẠN BÈ</string>
+    <string name="btn_play_online">CHƠI ONLINE</string>
     <string name="btn_logout">ĐĂNG XUẤT</string>
 
     <!-- Chơi online: danh sách online, lời mời -->
+    <string name="title_online">CHƠI ONLINE</string>
+    <string name="title_online_players">NGƯỜI CHƠI ONLINE</string>
+    <string name="label_points">%1$s điểm</string>
+    <string name="msg_no_online">Chưa có ai khác online</string>
+    <string name="desc_friends">Bạn bè</string>
+    <string name="desc_history">Lịch sử đấu</string>
+    <string name="desc_ranking">Bảng xếp hạng</string>
     <string name="status_free">Rỗi</string>
     <string name="status_busy">Bận</string>
     <string name="msg_busy">%1$s đang bận</string>
@@ -31,13 +36,16 @@
     <string name="btn_cancel">HỦY</string>
 
     <!-- Chơi online: thi đấu, kết quả -->
-    <string name="title_match">THI ĐẤU</string>
     <string name="time_full">01:00</string>
     <string name="time_zero">00:00</string>
+    <string name="label_question">Câu %1$d/%2$d</string>
     <string name="status_opponent_working">%1$s đang làm bài</string>
     <string name="status_opponent_submitted">%1$s đã nộp bài</string>
     <string name="btn_submit">NỘP BÀI</string>
     <string name="btn_exit">THOÁT</string>
+    <string name="msg_all_answered">Đã làm xong %1$d câu</string>
+    <string name="msg_time_up">Hết giờ</string>
+    <string name="msg_submitting">Đang nộp bài...</string>
     <string name="msg_submitted">Đã nộp bài, đang chờ đối thủ...</string>
     <string name="msg_confirm_leave">Thoát sẽ bị xử thua?</string>
     <string name="btn_stay">Ở LẠI</string>
@@ -88,12 +96,17 @@
     <string name="history_me_forfeited">Bạn bỏ trận</string>
     <string name="history_opponent">vs %1$s · #%2$d</string>
     <string name="history_score">%1$d – %2$d câu</string>
+    <string name="title_match_detail">CHI TIẾT TRẬN</string>
     <string name="detail_title">Trận #%1$d</string>
     <string name="detail_title_time">Trận #%1$d · %2$s</string>
     <string name="detail_points">+%1$s điểm</string>
     <string name="detail_forfeited">Bỏ trận</string>
     <string name="detail_stats">%1$d/10 câu · %2$s</string>
-    <string name="detail_problems">ĐỀ BÀI VÀ ĐÁP ÁN</string>
+    <string name="detail_problems">TỪNG CÂU</string>
+    <string name="col_question">Câu</string>
+    <string name="answer_correct">✓ %1$d</string>
+    <string name="answer_wrong">✗ %1$d</string>
+    <string name="answer_blank">Bỏ trống</string>
     <string name="col_name">Tên</string>
     <string name="col_points">Điểm</string>
     <string name="col_avg_opponent">TB đối thủ</string>

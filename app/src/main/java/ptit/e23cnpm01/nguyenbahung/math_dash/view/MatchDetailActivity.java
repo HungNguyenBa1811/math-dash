@@ -33,6 +33,8 @@ public class MatchDetailActivity extends AppCompatActivity {
     private TextView txtMyStats;
     private TextView txtOpponentName;
     private TextView txtOpponentStats;
+    private TextView txtMyColumn;
+    private TextView txtOpponentColumn;
     private RecyclerView rvProblems;
     private MatchApiDAO matchApiDAO = new MatchApiDAO();
 
@@ -47,6 +49,8 @@ public class MatchDetailActivity extends AppCompatActivity {
         txtMyStats = findViewById(R.id.txtMyStats);
         txtOpponentName = findViewById(R.id.txtOpponentName);
         txtOpponentStats = findViewById(R.id.txtOpponentStats);
+        txtMyColumn = findViewById(R.id.txtMyColumn);
+        txtOpponentColumn = findViewById(R.id.txtOpponentColumn);
         rvProblems = findViewById(R.id.rvProblems);
         rvProblems.setLayoutManager(new LinearLayoutManager(this));
         me = new SessionDAO(this).getPlayer();
@@ -84,23 +88,28 @@ public class MatchDetailActivity extends AppCompatActivity {
         MatchPlayer opponent = match.getOpponent(me.getId());
         // Dòng của chính mình trong trận là đối thủ của đối thủ
         MatchPlayer mine = match.getOpponent(opponent.getPlayer().getId());
-        String result = match.getResult(me.getId());
-        int color = Match.WIN.equals(result) ? R.color.arcade_green
-                : Match.DRAW.equals(result) ? R.color.arcade_amber : R.color.arcade_red;
-        int text = Match.WIN.equals(result) ? R.string.result_win
-                : Match.DRAW.equals(result) ? R.string.result_draw : R.string.result_lose;
         if (match.getEndedAt() != null) {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             txtTitle.setText(getString(R.string.detail_title_time, match.getId(), format.format(match.getEndedAt())));
         }
-        txtResult.setText(text);
-        txtResult.setTextColor(getColor(color));
+        showResult(match.getResult(me.getId()));
         txtPoints.setText(getString(R.string.detail_points, PointFormat.format(match.getPoints(me.getId()))));
         txtMyName.setText(mine.getPlayer().getDisplayName());
         txtMyStats.setText(stats(mine));
         txtOpponentName.setText(opponent.getPlayer().getDisplayName());
         txtOpponentStats.setText(stats(opponent));
-        rvProblems.setAdapter(new ProblemAdapter(match.getQuestions()));
+        txtMyColumn.setText(mine.getPlayer().getDisplayName());
+        txtOpponentColumn.setText(opponent.getPlayer().getDisplayName());
+        rvProblems.setAdapter(new ProblemAdapter(match.getQuestions(), mine.getAnswers(), opponent.getAnswers()));
+    }
+
+    private void showResult(String result) {
+        int color = Match.WIN.equals(result) ? R.color.arcade_green
+                : Match.DRAW.equals(result) ? R.color.arcade_amber : R.color.arcade_red;
+        int text = Match.WIN.equals(result) ? R.string.result_win
+                : Match.DRAW.equals(result) ? R.string.result_draw : R.string.result_lose;
+        txtResult.setText(text);
+        txtResult.setTextColor(getColor(color));
     }
 
     // "10/10 câu · 38,2 giây", hoặc "Bỏ trận"

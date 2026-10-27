@@ -16,9 +16,9 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 public class PlayerAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
     private List<Player> listPlayer = new ArrayList<>();
-    private MainActivity activity;
+    private OnlineActivity activity;
 
-    public PlayerAdapter(MainActivity activity) {
+    public PlayerAdapter(OnlineActivity activity) {
         this.activity = activity;
     }
 
