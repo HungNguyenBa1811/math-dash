@@ -219,4 +219,28 @@ SFriendship "n" o-- "1" SPlayer : sender
 SFriendship "n" o-- "1" SPlayer : receiver
 
 FriendshipApiDAO -- FriendshipRestController : HTTP/JSON
+
+' Bố cục dọc: mỗi tầng vài lớp, Server nằm dưới Client
+OnlineActivity -[hidden]down- FriendActivity
+xmlOnline -[hidden]down- xmlFriend
+FriendActivity -[hidden]down- FriendRequestAdapter
+xmlFriend -[hidden]down- FriendAdapter
+xmlFriend -[hidden]down- PlayerListCallback
+FriendRequestAdapter -[hidden]down- FriendRequestViewHolder
+FriendAdapter -[hidden]down- FriendViewHolder
+PlayerListCallback -[hidden]down- SessionDAO
+FriendRequestViewHolder -[hidden]down- xmlItemRequest
+FriendViewHolder -[hidden]down- xmlItemFriend
+SessionDAO -[hidden]down- PresenceFirebaseDAO
+SessionDAO -[hidden]down- FriendshipApiDAO
+xmlItemRequest -[hidden]down- FirebaseDAO
+xmlItemFriend -[hidden]down- ApiDAO
+PresenceFirebaseDAO -[hidden]down- Friendship
+FirebaseDAO -[hidden]down- Player
+Player -[hidden]down- FriendshipRestController
+FriendshipRestController -[hidden]down- FriendshipDAO
+FriendshipRestController -[hidden]down- PlayerDAO
+FriendshipDAO -[hidden]down- SDAO
+PlayerDAO -[hidden]down- SFriendship
+SDAO -[hidden]down- SPlayer
 @enduml

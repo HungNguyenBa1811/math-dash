@@ -418,7 +418,7 @@ package "Server (Spring Boot)" {
 }
 
 MainActivity -r- OnlineActivity
-OnlineActivity -- MatchActivity
+OnlineActivity -r- MatchActivity
 OnlineActivity -- PlayerAdapter
 PlayerAdapter -- PlayerViewHolder
 MainActivity -- xmlMain
@@ -484,4 +484,46 @@ SMathProblem "1" --o "n" SAnswer
 
 PlayerApiDAO -- PlayerRestController : HTTP/JSON
 MatchApiDAO -- MatchRestController : HTTP/JSON
+
+
+
+
+
+' Bố cục dọc: mỗi tầng vài lớp, Server nằm dưới Client
+MainActivity -[hidden]down- xmlMain
+OnlineActivity -[hidden]down- xmlOnline
+MatchActivity -[hidden]down- PlayerAdapter
+MatchActivity -[hidden]down- xmlMatch
+xmlMain -[hidden]down- PlayerViewHolder
+xmlOnline -[hidden]down- PlayerListCallback
+PlayerAdapter -[hidden]down- ChallengeCallback
+xmlMatch -[hidden]down- MatchCallback
+xmlMatch -[hidden]down- xmlItemPlayer
+PlayerViewHolder -[hidden]down- SessionDAO
+PlayerListCallback -[hidden]down- PresenceFirebaseDAO
+ChallengeCallback -[hidden]down- ChallengeFirebaseDAO
+MatchCallback -[hidden]down- MatchFirebaseDAO
+xmlItemPlayer -[hidden]down- PlayerApiDAO
+xmlItemPlayer -[hidden]down- MatchApiDAO
+SessionDAO -[hidden]down- FirebaseDAO
+PresenceFirebaseDAO -[hidden]down- ApiDAO
+ChallengeFirebaseDAO -[hidden]down- Challenge
+MatchFirebaseDAO -[hidden]down- Player
+PlayerApiDAO -[hidden]down- Match
+FirebaseDAO -[hidden]down- MatchPlayer
+ApiDAO -[hidden]down- MathProblem
+MatchPlayer -[hidden]down- Answer
+Answer -[hidden]down- PlayerRestController
+Answer -[hidden]down- MatchRestController
+PlayerRestController -[hidden]down- PlayerDAO
+MatchRestController -[hidden]down- MatchDAO
+MatchRestController -[hidden]down- ProblemDAO
+MatchRestController -[hidden]down- FirebaseAdminDAO
+PlayerDAO -[hidden]down- SDAO
+MatchDAO -[hidden]down- SChallenge
+ProblemDAO -[hidden]down- SPlayer
+FirebaseAdminDAO -[hidden]down- SMatch
+SDAO -[hidden]down- SMatchPlayer
+SChallenge -[hidden]down- SMathProblem
+SMatchPlayer -[hidden]down- SAnswer
 @enduml

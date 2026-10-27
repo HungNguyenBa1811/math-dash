@@ -333,4 +333,39 @@ SMathProblem "1" --o "n" SAnswer
 
 MatchApiDAO -- MatchRestController : HTTP/JSON
 PlayerApiDAO -- PlayerRestController : HTTP/JSON
+
+' Bố cục dọc: mỗi tầng vài lớp, Server nằm dưới Client
+OnlineActivity -[hidden]down- HistoryActivity
+xmlOnline -[hidden]down- xmlHistory
+HistoryActivity -[hidden]down- PieChartView
+xmlHistory -[hidden]down- MatchHistoryAdapter
+xmlHistory -[hidden]down- RankingAdapter
+xmlHistory -[hidden]down- MatchDetailActivity
+PieChartView -[hidden]down- MatchHistoryViewHolder
+MatchHistoryAdapter -[hidden]down- RankingViewHolder
+RankingAdapter -[hidden]down- ProblemAdapter
+MatchDetailActivity -[hidden]down- xmlDetail
+MatchHistoryViewHolder -[hidden]down- xmlItemMatch
+RankingViewHolder -[hidden]down- xmlItemRanking
+ProblemAdapter -[hidden]down- ProblemViewHolder
+xmlItemMatch -[hidden]down- xmlItemProblem
+xmlItemRanking -[hidden]down- SessionDAO
+ProblemViewHolder -[hidden]down- MatchApiDAO
+ProblemViewHolder -[hidden]down- PlayerApiDAO
+xmlItemProblem -[hidden]down- ApiDAO
+SessionDAO -[hidden]down- Player
+MatchApiDAO -[hidden]down- Match
+ApiDAO -[hidden]down- MatchPlayer
+Player -[hidden]down- MathProblem
+MatchPlayer -[hidden]down- Answer
+Answer -[hidden]down- MatchRestController
+Answer -[hidden]down- PlayerRestController
+MatchRestController -[hidden]down- MatchDAO
+PlayerRestController -[hidden]down- PlayerDAO
+MatchDAO -[hidden]down- SDAO
+PlayerDAO -[hidden]down- SMatch
+PlayerDAO -[hidden]down- SPlayer
+SDAO -[hidden]down- SMatchPlayer
+SMatch -[hidden]down- SMathProblem
+SMatchPlayer -[hidden]down- SAnswer
 @enduml
