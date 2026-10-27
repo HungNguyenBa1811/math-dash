@@ -23,3 +23,7 @@ server/src/main/resources/firebase-service-account.json
 # Keystore ký bản release
 *.jks
 keystore.properties
+
+# File sao lưu Visual Paradigm tự sinh
+*.vpp.bak_*
+*.vpp.lck
