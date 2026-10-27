@@ -14,15 +14,12 @@ import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.ProblemDAO;
 
-/**
- * Luật của đề: chấm bài (countCorrect), điều kiện kết thúc (isOver), thắng thua (getResult), điểm (getPoints).
- */
 class MatchTest {
     private static final int HUNG = 1;
     private static final int HOANG = 2;
     private static final long START = 1_000_000L;
 
-    // Trận giữa Hùng và Hoàng: số câu đúng và số giây nộp bài (âm = chưa nộp) cho trước
+    // Số giây âm = chưa nộp
     private Match match(int hungCorrect, double hungSeconds, int hoangCorrect, double hoangSeconds) {
         Match match = new Match();
         match.setStartedAt(new Date(START));

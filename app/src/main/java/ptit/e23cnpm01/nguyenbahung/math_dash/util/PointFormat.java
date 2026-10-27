@@ -4,9 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-/**
- * Hiển thị điểm theo kiểu Việt Nam: 13 → "13", 12.5 → "12,5".
- */
+// 13 → "13", 12.5 → "12,5"
 public final class PointFormat {
     private static final DecimalFormat FORMAT = new DecimalFormat("0.#", new DecimalFormatSymbols(new Locale("vi", "VN")));
 

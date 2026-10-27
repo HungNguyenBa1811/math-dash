@@ -33,10 +33,7 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Màn thi đấu: 10 câu trắc nghiệm trong 60 giây, nộp bài, kết quả và chơi tiếp.
- * Activity không chấm bài, không phân thắng thua: mọi kết quả lấy từ bản trận server trả về.
- */
+// Không chấm bài ở app: mọi kết quả lấy từ server
 public class MatchActivity extends AppCompatActivity
         implements View.OnClickListener, MatchCallback, PlayerListCallback {
     public static final String EXTRA_MATCH_ID = "matchId";
@@ -95,7 +92,6 @@ public class MatchActivity extends AppCompatActivity
         }
     }
 
-    // Overlay kết quả nằm trong activity_match.xml
     private void bindResultViews() {
         layoutResult = findViewById(R.id.layoutResult);
         txtResult = findViewById(R.id.txtResult);
@@ -139,9 +135,6 @@ public class MatchActivity extends AppCompatActivity
         presenceFirebaseDAO.stopWatching();
     }
 
-    // ---------- Theo dõi trận ----------
-
-    // Lần đầu nhận trận thì bắt đầu; các lần sau cập nhật trạng thái đối thủ; trận xong thì lấy kết quả
     @Override
     public void onSuccess(Match match) {
         if (!started && !match.getQuestions().isEmpty()) {
@@ -161,7 +154,6 @@ public class MatchActivity extends AppCompatActivity
         }
     }
 
-    // Đối thủ bỏ trận khi đang đấu thì mình thắng; đối thủ dừng sau trận thì về màn chính
     @Override
     public void onStopped(int playerId) {
         if (playerId == me.getId() || leaving) {
@@ -183,7 +175,7 @@ public class MatchActivity extends AppCompatActivity
         showToast(message);
     }
 
-    // Đối thủ biến khỏi danh sách online khi trận đang đấu: xử đối thủ bỏ trận
+    // Đối thủ rời danh sách online giữa trận: coi như bỏ trận
     @Override
     public void onPlayersChanged(List<Player> players) {
         if (!started || resultShown || opponentLeft || leaving) {
@@ -196,8 +188,6 @@ public class MatchActivity extends AppCompatActivity
         }
         forfeit(opponentId);
     }
-
-    // ---------- Thi đấu ----------
 
     private void startMatch(Match match) {
         started = true;
@@ -226,7 +216,6 @@ public class MatchActivity extends AppCompatActivity
         txtTimer.setText(String.format(Locale.US, "00:%02d", millisLeft / 1000));
     }
 
-    // Hết 60 giây: tự nộp, câu chưa chọn tính là sai
     public void onFinish() {
         txtTimer.setText(R.string.time_zero);
         submitAnswers();
@@ -239,7 +228,6 @@ public class MatchActivity extends AppCompatActivity
         txtOpponentStatus.setText(getString(text, opponent.getPlayer().getDisplayName()));
     }
 
-    // Gửi bài làm cho server chấm; server ghi thời điểm nhận
     private void submitAnswers() {
         if (submitted || !started) {
             return;
@@ -286,8 +274,6 @@ public class MatchActivity extends AppCompatActivity
         });
     }
 
-    // ---------- Thoát trận ----------
-
     private void confirmLeave() {
         if (leaving) {
             return;
@@ -304,7 +290,6 @@ public class MatchActivity extends AppCompatActivity
                 .show();
     }
 
-    // Mình bỏ trận: báo server rồi về màn chính
     private void leaveMatch() {
         leaving = true;
         forfeit(me.getId());
@@ -324,9 +309,6 @@ public class MatchActivity extends AppCompatActivity
         }).start();
     }
 
-    // ---------- Kết quả, chơi tiếp ----------
-
-    // Lấy bản trận server đã chấm (có đáp án, tổng điểm mới)
     private void loadResult() {
         if (resultLoading) {
             return;
@@ -386,7 +368,6 @@ public class MatchActivity extends AppCompatActivity
                 PointFormat.format(mine.getPlayer().getTotalPoints())));
     }
 
-    // Chơi tiếp: chờ đối thủ, trận mới đến qua onNextMatch. Dừng: về màn chính
     private void sendChoice(final boolean choice) {
         btnContinue.setEnabled(false);
         btnStop.setEnabled(false);
@@ -417,8 +398,6 @@ public class MatchActivity extends AppCompatActivity
         startActivity(intent);
         finish();
     }
-
-    // ---------- Tiện ích ----------
 
     private MatchPlayer mineOf(Match match) {
         for (MatchPlayer mp : match.getPlayers()) {

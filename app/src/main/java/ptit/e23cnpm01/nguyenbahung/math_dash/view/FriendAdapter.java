@@ -18,10 +18,7 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Friendship;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Danh sách bạn bè: chấm Online / Offline, tên, tổng điểm, nút hủy kết bạn.
- * Lời mời mình đã gửi mà chưa được trả lời nằm cuối danh sách với dòng "Đang chờ trả lời".
- */
+// Lời mời đã gửi nằm cuối danh sách, hiện "Đang chờ trả lời"
 public class FriendAdapter extends RecyclerView.Adapter<FriendViewHolder> {
     private List<Friendship> listFriendship = new ArrayList<>();
     private int playerId;

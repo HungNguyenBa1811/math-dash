@@ -14,13 +14,11 @@ import java.util.Map;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Danh sách người chơi online ở node presence/{playerId}: tên, tổng điểm, trạng thái rỗi / bận.
- */
+// Node presence/{playerId}
 public class PresenceFirebaseDAO extends FirebaseDAO {
     private ValueEventListener watcher;
 
-    // Ghi mình vào danh sách online với trạng thái rỗi; app tắt hoặc mất mạng thì node tự bị xóa
+    // Mất kết nối thì node tự bị xóa
     public void goOnline(Player player) {
         DatabaseReference ref = presenceRef().child(String.valueOf(player.getId()));
         ref.onDisconnect().removeValue();
@@ -31,7 +29,6 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
         ref.setValue(data);
     }
 
-    // Đăng xuất: rời danh sách online
     public void goOffline(int playerId) {
         presenceRef().child(String.valueOf(playerId)).removeValue();
     }
@@ -50,7 +47,7 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Mất quyền đọc hoặc mất kết nối: giữ danh sách cũ
+                // Giữ danh sách cũ
             }
         };
         presenceRef().addValueEventListener(watcher);
@@ -63,7 +60,6 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
         }
     }
 
-    // Đóng gói một node presence thành Player
     private Player toPlayer(String id, DataSnapshot data) {
         Player player = new Player(Integer.parseInt(id), null, data.child("displayName").getValue(String.class));
         Number points = data.child("totalPoints").getValue(Double.class);

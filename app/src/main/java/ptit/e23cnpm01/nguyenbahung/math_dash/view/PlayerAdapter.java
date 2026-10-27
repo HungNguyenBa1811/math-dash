@@ -14,9 +14,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Danh sách người chơi online: tên, tổng điểm, trạng thái. Bấm vào một dòng để thách đấu.
- */
 public class PlayerAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
     private List<Player> listPlayer = new ArrayList<>();
     private MainActivity activity;

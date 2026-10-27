@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Phiên đăng nhập lưu trong SharedPreferences "session".
- */
 public class SessionDAO {
     private SharedPreferences prefs;
 
@@ -24,7 +21,7 @@ public class SessionDAO {
                 .apply();
     }
 
-    // Người đang đăng nhập; chưa có phiên thì trả null
+    // null nếu chưa đăng nhập
     public Player getPlayer() {
         if (!prefs.contains("playerId")) {
             return null;

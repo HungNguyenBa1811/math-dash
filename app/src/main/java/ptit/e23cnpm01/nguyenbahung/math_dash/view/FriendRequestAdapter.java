@@ -13,9 +13,6 @@ import java.util.List;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Friendship;
 
-/**
- * Các lời mời kết bạn người chơi đã nhận: tên người gửi, nút Đồng ý, nút Từ chối.
- */
 public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestViewHolder> {
     private List<Friendship> listFriendship = new ArrayList<>();
     private FriendActivity activity;

@@ -7,9 +7,7 @@ import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 
-/**
- * Sinh đề trắc nghiệm cho Chơi với máy. Không truy cập CSDL; giống hệt ProblemDAO phía server.
- */
+// Giống hệt ProblemDAO phía server
 public class ProblemDAO {
     private static final String[] OPERATORS = {"+", "-", "×"};
     private static final int OPTION_COUNT = 4;
@@ -25,7 +23,6 @@ public class ProblemDAO {
         this.random = random;
     }
 
-    // Đề gồm count câu
     public List<MathProblem> generateProblems(int count) {
         List<MathProblem> list = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -45,7 +42,6 @@ public class ProblemDAO {
         int a = nextInt(1, 99);
         int b = nextInt(1, 99);
         if (operator.equals("-") && a < b) {
-            // Đổi chỗ để kết quả phép trừ không âm
             int tmp = a;
             a = b;
             b = tmp;
@@ -54,7 +50,6 @@ public class ProblemDAO {
         return new MathProblem(a, b, operator, answer, createOptions(answer));
     }
 
-    // 4 phương án khác nhau, không âm, có đáp án đúng, đã xáo trộn
     private List<Integer> createOptions(int answer) {
         List<Integer> options = new ArrayList<>();
         options.add(answer);
@@ -68,7 +63,6 @@ public class ProblemDAO {
         return options;
     }
 
-    // Số nguyên ngẫu nhiên trong đoạn [min, max]
     private int nextInt(int min, int max) {
         return min + random.nextInt(max - min + 1);
     }

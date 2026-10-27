@@ -16,11 +16,11 @@ public class Player {
     private String displayName;
     private String role = ROLE_PLAYER;
     private Date createdAt;
-    // Các thuộc tính dẫn xuất, không có cột trong CSDL: server tính rồi gán vào để gửi cho app
+    // Do server tính, không có cột trong CSDL
     private double totalPoints;
     private double avgOpponentPoints;
     private double avgWinTime;
-    // Trạng thái khi online (free / busy), chỉ nằm trên Firebase
+    // Chỉ nằm trên Firebase
     private String status;
 
     public Player() {

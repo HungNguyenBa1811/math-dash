@@ -22,12 +22,10 @@ public class MathProblem {
         this.answerOptions = answerOptions;
     }
 
-    // Phương án người chơi chọn có đúng không
     public boolean isCorrect(int answer) {
         return answer == correctAnswer;
     }
 
-    // Chuỗi hiển thị, ví dụ "12 + 7 = ?"
     public String getExpression() {
         return operand1 + " " + operator + " " + operand2 + " = ?";
     }

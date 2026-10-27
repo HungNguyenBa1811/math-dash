@@ -10,11 +10,11 @@ public class Player {
     private String username;
     private String displayName;
     private String role = ROLE_PLAYER;
-    // Các thuộc tính dẫn xuất do server tính, app chỉ hiển thị
+    // Do server tính
     private double totalPoints;
     private double avgOpponentPoints;
     private double avgWinTime;
-    // Trạng thái khi online (free / busy), chỉ nằm trên Firebase
+    // Chỉ nằm trên Firebase
     private String status;
 
     public Player() {

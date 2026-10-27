@@ -36,9 +36,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Màn chính: thông tin của mình, danh sách người chơi online, thách đấu và nhận lời thách đấu.
- */
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, PlayerListCallback, ChallengeCallback {
     private TextView txtMyName;
@@ -109,7 +106,6 @@ public class MainActivity extends AppCompatActivity
         challengeFirebaseDAO.stopWatching();
     }
 
-    // Lấy tổng điểm mới nhất từ server rồi ghi mình vào danh sách online
     private void goOnline() {
         new Thread(new Runnable() {
             @Override
@@ -130,7 +126,6 @@ public class MainActivity extends AppCompatActivity
         }).start();
     }
 
-    // Danh sách online đổi: dòng của mình lên thẻ thông tin, những người còn lại vào danh sách
     @Override
     public void onPlayersChanged(List<Player> players) {
         List<Player> others = new ArrayList<>();
@@ -151,7 +146,6 @@ public class MainActivity extends AppCompatActivity
         playerAdapter.setPlayers(others);
     }
 
-    // Bấm vào tên một người: bận thì báo, rỗi thì gửi lời mời và chờ trả lời
     public void onPlayerClick(Player opponent) {
         if (Player.BUSY.equals(opponent.getStatus())) {
             showToast(getString(R.string.msg_busy, opponent.getDisplayName()));
@@ -165,7 +159,6 @@ public class MainActivity extends AppCompatActivity
         showWaitingDialog(opponent);
     }
 
-    // Lời mời gửi tới mình đang chờ: hỏi đồng ý / từ chối. Lời mình gửi: mở trận hoặc báo bị từ chối
     @Override
     public void onChallengeChanged(Challenge challenge) {
         if (challenge.getOpponent().getId() == me.getId()) {
@@ -220,7 +213,6 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-    // Đồng ý: server sinh đề, tạo trận; xong thì vào màn thi đấu
     private void acceptChallenge(final Challenge challenge) {
         new Thread(new Runnable() {
             @Override
@@ -264,7 +256,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    // Đăng xuất: rời danh sách online, xóa phiên, quay về màn Đăng nhập
     private void logout() {
         presenceFirebaseDAO.goOffline(me.getId());
         sessionDAO.clear();

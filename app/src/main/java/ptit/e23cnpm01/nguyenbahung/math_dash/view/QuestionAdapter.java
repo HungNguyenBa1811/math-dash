@@ -16,9 +16,6 @@ import java.util.List;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 
-/**
- * Danh sách câu hỏi trắc nghiệm; giữ phương án người chơi chọn cho từng câu (-1 là chưa chọn).
- */
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionViewHolder>
         implements RadioGroup.OnCheckedChangeListener {
     private List<MathProblem> listQuestion = new ArrayList<>();
@@ -32,7 +29,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionViewHolder>
         notifyDataSetChanged();
     }
 
-    // Bài làm theo thứ tự câu
     public List<Integer> getAnswers() {
         List<Integer> list = new ArrayList<>();
         for (int answer : answers) {
@@ -41,7 +37,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionViewHolder>
         return list;
     }
 
-    // Khóa mọi phương án sau khi nộp bài
     public void setLocked(boolean locked) {
         this.locked = locked;
         notifyDataSetChanged();
@@ -58,7 +53,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionViewHolder>
     public void onBindViewHolder(@NonNull QuestionViewHolder holder, int position) {
         MathProblem problem = listQuestion.get(position);
         holder.txtExpression.setText((position + 1) + ".  " + problem.getExpression());
-        // Gỡ listener trước khi đặt lại trạng thái chọn, để không ghi nhầm đáp án khi tái sử dụng dòng
+        // Gỡ listener trước để không ghi nhầm khi tái sử dụng dòng
         holder.rgOptions.setOnCheckedChangeListener(null);
         holder.rgOptions.clearCheck();
         holder.rgOptions.setTag(position);
@@ -71,7 +66,6 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionViewHolder>
         holder.rgOptions.setOnCheckedChangeListener(this);
     }
 
-    // Người chơi chọn một phương án: lưu giá trị phương án vào câu đó
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         RadioButton selected = group.findViewById(checkedId);

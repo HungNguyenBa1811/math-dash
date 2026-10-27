@@ -29,10 +29,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Friendship;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Quản lý bạn bè: gửi lời mời bằng tên đăng nhập, đồng ý / từ chối lời mời đã nhận,
- * xem bạn bè kèm trạng thái Online / Offline, hủy kết bạn hoặc rút lời mời đã gửi.
- */
 public class FriendActivity extends AppCompatActivity implements View.OnClickListener, PlayerListCallback {
     private EditText edtUsername;
     private Button btnAddFriend;
@@ -87,7 +83,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         presenceFirebaseDAO.stopWatching();
     }
 
-    // Nút Kết bạn: gửi lời mời tới người có tên đăng nhập vừa nhập
     @Override
     public void onClick(View v) {
         if (v != btnAddFriend) {
@@ -123,7 +118,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         }).start();
     }
 
-    // Lấy lời mời và bạn bè của người chơi từ server
     private void loadFriendships() {
         new Thread(new Runnable() {
             @Override
@@ -143,7 +137,7 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         }).start();
     }
 
-    // Tách lời mời mình cần trả lời ra khỏi bạn bè; lời mời mình đã gửi nằm cuối danh sách bạn bè
+    // Lời mời mình đã gửi nằm cuối danh sách bạn bè
     private void showFriendships(List<Friendship> list) {
         requests = new ArrayList<>();
         friends = new ArrayList<>();
@@ -163,7 +157,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         refreshTitles();
     }
 
-    // Danh sách online đổi: cập nhật chấm Online / Offline của bạn bè
     @Override
     public void onPlayersChanged(List<Player> players) {
         onlineIds = new HashSet<>();
@@ -173,7 +166,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         friendAdapter.setOnlineIds(onlineIds);
     }
 
-    // Nút Đồng ý ở một lời mời đã nhận
     public void onAccept(final Friendship friendship) {
         new Thread(new Runnable() {
             @Override
@@ -199,12 +191,10 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         }).start();
     }
 
-    // Nút Từ chối: xóa lời mời
     public void onReject(final Friendship friendship) {
         deleteFriendship(friendship);
     }
 
-    // Nút hủy ở một người bạn (hủy kết bạn) hoặc ở lời mời mình đã gửi (rút lời mời): hỏi xác nhận trước
     public void onUnfriend(final Friendship friendship) {
         String name = friendship.getFriend(me.getId()).getDisplayName();
         boolean pending = Friendship.PENDING.equals(friendship.getStatus());
@@ -244,7 +234,6 @@ public class FriendActivity extends AppCompatActivity implements View.OnClickLis
         }).start();
     }
 
-    // Tiêu đề 2 mục kèm số lượng; mục lời mời chỉ hiện khi có lời mời
     private void refreshTitles() {
         int requestCount = requests.size();
         txtRequestsTitle.setText(getString(R.string.friend_requests_title, requestCount));

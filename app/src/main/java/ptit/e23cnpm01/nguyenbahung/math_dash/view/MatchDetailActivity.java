@@ -22,9 +22,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Chi tiết một trận đã xong: kết quả, điểm trận, số câu đúng và thời gian 2 bên, đề 10 câu kèm đáp án đúng.
- */
 public class MatchDetailActivity extends AppCompatActivity {
     private Player me;
     private Match match;
@@ -58,7 +55,6 @@ public class MatchDetailActivity extends AppCompatActivity {
         loadMatch();
     }
 
-    // Lấy trận kèm đề và đáp án (trận đã xong) trong Thread
     private void loadMatch() {
         new Thread(new Runnable() {
             @Override

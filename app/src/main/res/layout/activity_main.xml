@@ -45,7 +45,7 @@
         android:text="@string/title_online_players"
         android:textColor="@color/arcade_cyan" />
 
-    <!-- Danh sách người chơi online: tên, tổng điểm, trạng thái (M2-02) -->
+    <!-- Danh sách người chơi online -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPlayers"
         android:layout_width="match_parent"
@@ -60,7 +60,6 @@
         android:layout_marginTop="12dp"
         android:text="@string/btn_play_bot" />
 
-    <!-- Lịch sử đấu và Bạn bè đặt cạnh nhau cho gọn -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

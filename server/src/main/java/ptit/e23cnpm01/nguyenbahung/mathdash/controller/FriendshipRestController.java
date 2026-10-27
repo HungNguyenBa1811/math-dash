@@ -21,17 +21,13 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Friendship;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * Quản lý bạn bè: lấy lời mời và bạn bè, gửi lời mời, đồng ý, từ chối / hủy kết bạn.
- * Các hàm ghi đều synchronized để 2 người gửi lời mời cho nhau cùng lúc không tạo 2 quan hệ.
- */
+// Hàm ghi synchronized: 2 người mời nhau cùng lúc không tạo 2 quan hệ
 @RestController
 @RequestMapping("/api/friendships")
 public class FriendshipRestController {
     private FriendshipDAO friendshipDAO = new FriendshipDAO();
     private PlayerDAO playerDAO = new PlayerDAO();
 
-    // GET /api/friendships?playerId={id}: lời mời và bạn bè, kèm tổng điểm của 2 bên
     @GetMapping
     public List<Friendship> getFriendships(@RequestParam int playerId) throws SQLException {
         List<Friendship> list = friendshipDAO.findByPlayer(playerId);
@@ -42,7 +38,6 @@ public class FriendshipRestController {
         return list;
     }
 
-    // POST /api/friendships: gửi lời mời theo tên đăng nhập của người nhận
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public synchronized Friendship sendRequest(@RequestBody Map<String, String> body) throws SQLException {
@@ -69,7 +64,6 @@ public class FriendshipRestController {
         return friendship;
     }
 
-    // POST /api/friendships/{id}/accept?playerId={id}: người nhận đồng ý lời mời
     @PostMapping("/{id}/accept")
     public synchronized Friendship accept(@PathVariable int id, @RequestParam int playerId) throws SQLException {
         Friendship friendship = findFriendship(id);
@@ -87,7 +81,6 @@ public class FriendshipRestController {
         return friendship;
     }
 
-    // DELETE /api/friendships/{id}?playerId={id}: từ chối, rút lời mời hoặc hủy kết bạn
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public synchronized void delete(@PathVariable int id, @RequestParam int playerId) throws SQLException {

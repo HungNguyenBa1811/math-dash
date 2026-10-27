@@ -15,12 +15,9 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Gọi API trận đấu, mỗi hàm một API. Các hàm chạy đồng bộ nên phải gọi trong Thread.
- */
+// Hàm đồng bộ, phải gọi trong Thread
 public class MatchApiDAO extends ApiDAO {
 
-    // POST /api/matches: tạo trận từ lời mời đã đồng ý
     public Match createMatch(Challenge challenge) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("id", challenge.getId());
@@ -29,7 +26,6 @@ public class MatchApiDAO extends ApiDAO {
         return toMatch(post("/matches", body));
     }
 
-    // POST /api/matches/{id}/submit: nộp bài làm
     public Match submit(int matchId, int playerId, List<Integer> answers) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("player", new JSONObject().put("id", playerId));
@@ -37,18 +33,15 @@ public class MatchApiDAO extends ApiDAO {
         return toMatch(post("/matches/" + matchId + "/submit", body));
     }
 
-    // POST /api/matches/{id}/forfeit: bỏ trận
     public Match forfeit(int matchId, int playerId) throws IOException, JSONException {
         return toMatch(post("/matches/" + matchId + "/forfeit?playerId=" + playerId, new JSONObject()));
     }
 
-    // POST /api/matches/{id}/continue: chơi tiếp (true) hoặc dừng (false)
     public Match continueMatch(int matchId, int playerId, boolean choice) throws IOException, JSONException {
         String path = "/matches/" + matchId + "/continue?playerId=" + playerId + "&choice=" + choice;
         return toMatch(post(path, new JSONObject()));
     }
 
-    // GET /api/matches?playerId=: các trận đã xong của người chơi, mới nhất trước, không kèm đề
     public List<Match> getHistory(int playerId) throws IOException, JSONException {
         JSONArray array = getArray("/matches?playerId=" + playerId);
         List<Match> list = new ArrayList<>();
@@ -58,12 +51,10 @@ public class MatchApiDAO extends ApiDAO {
         return list;
     }
 
-    // GET /api/matches/{id}: trận đầy đủ, có đáp án khi trận đã xong
     public Match getById(int matchId) throws IOException, JSONException {
         return toMatch(get("/matches/" + matchId));
     }
 
-    // Đóng gói JSON thành Match + MathProblem + 2 MatchPlayer + 2 Player
     private Match toMatch(JSONObject json) throws JSONException {
         Match match = new Match();
         match.setId(json.getInt("id"));

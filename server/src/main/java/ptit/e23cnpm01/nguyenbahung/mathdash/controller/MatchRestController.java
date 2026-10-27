@@ -27,10 +27,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * Trọng tài của mọi trận: sinh đề, chấm bài, xác định kết quả, chơi tiếp.
- * Các hàm ghi đều synchronized để 2 yêu cầu của 2 máy đến cùng lúc không lẫn nhau.
- */
+// Hàm ghi synchronized: 2 yêu cầu đến cùng lúc không lẫn nhau
 @RestController
 @RequestMapping("/api/matches")
 public class MatchRestController {
@@ -38,11 +35,10 @@ public class MatchRestController {
     private PlayerDAO playerDAO = new PlayerDAO();
     private ProblemDAO problemDAO = new ProblemDAO();
     private FirebaseAdminDAO firebaseAdminDAO = new FirebaseAdminDAO();
-    // Trận đang có một người chọn chơi tiếp: id trận → id người đã chọn
+    // id trận → id người đã chọn chơi tiếp
     private Map<Integer, Integer> waitingChoices = new HashMap<>();
 
-    // POST /api/matches: tạo trận từ lời mời đã đồng ý;
-    // lời mời đã hủy, hoặc một người không online / đang bận thì 409
+    // 409 nếu lời mời đã hủy hoặc một người không rỗi
     @PostMapping
     public synchronized Match create(@RequestBody Challenge challenge)
             throws IOException, InterruptedException, SQLException {
@@ -58,7 +54,6 @@ public class MatchRestController {
         return hideAnswers(match);
     }
 
-    // POST /api/matches/{id}/submit: ghi thời điểm nhận theo đồng hồ server, chấm bài, kết thúc trận nếu đã xong
     @PostMapping("/{id}/submit")
     public synchronized Match submit(@PathVariable int id, @RequestBody MatchPlayer matchPlayer)
             throws SQLException, IOException, InterruptedException {
@@ -78,7 +73,6 @@ public class MatchRestController {
         return hideAnswers(match);
     }
 
-    // POST /api/matches/{id}/forfeit?playerId=: bỏ trận, bị xử thua; 2 người trở lại rỗi
     @PostMapping("/{id}/forfeit")
     public synchronized Match forfeit(@PathVariable int id, @RequestParam int playerId)
             throws SQLException, IOException, InterruptedException {
@@ -95,7 +89,6 @@ public class MatchRestController {
         return match;
     }
 
-    // POST /api/matches/{id}/continue?playerId=&choice=: dừng, hoặc chơi tiếp; cả 2 chơi tiếp thì tạo trận mới
     @PostMapping("/{id}/continue")
     public synchronized Match continueMatch(@PathVariable int id, @RequestParam int playerId,
                                             @RequestParam boolean choice)
@@ -117,13 +110,11 @@ public class MatchRestController {
         return hideAnswers(next);
     }
 
-    // GET /api/matches?playerId={id}: lịch sử đấu, các trận đã xong của người chơi, không kèm đề
     @GetMapping
     public List<Match> getHistory(@RequestParam int playerId) throws SQLException {
         return matchDAO.findByPlayer(playerId);
     }
 
-    // GET /api/matches/{id}: trận kèm tổng điểm của 2 người; đáp án chỉ trả khi trận đã xong
     @GetMapping("/{id}")
     public Match getById(@PathVariable int id) throws SQLException {
         Match match = findMatch(id);
@@ -133,7 +124,6 @@ public class MatchRestController {
         return match.getEndedAt() == null ? hideAnswers(match) : match;
     }
 
-    // Sinh đề, tạo trận, lưu MySQL, gửi đề qua Firebase, chuyển 2 người sang bận
     private Match startMatch(Player p1, Player p2) throws IOException, InterruptedException {
         Match match = new Match();
         match.setStatus(Match.PLAYING);
@@ -149,7 +139,6 @@ public class MatchRestController {
         return match;
     }
 
-    // Kết thúc trận: ghi thời điểm kết thúc, cập nhật tổng điểm 2 người trong danh sách online
     private void endMatch(Match match) throws SQLException, IOException, InterruptedException {
         match.setEndedAt(new Date());
         match.setStatus(Match.FINISHED);
@@ -187,7 +176,6 @@ public class MatchRestController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Người chơi không ở trong trận");
     }
 
-    // Trận chưa xong thì không trả đáp án về app
     private Match hideAnswers(Match match) {
         if (match.getEndedAt() == null) {
             for (MathProblem p : match.getQuestions()) {

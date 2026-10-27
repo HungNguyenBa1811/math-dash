@@ -9,9 +9,7 @@ import android.view.View;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
-/**
- * Biểu đồ tròn dạng vành khuyên: tỉ lệ thắng / hòa / thua, giữa ghi tỉ lệ thắng. Tự vẽ bằng Canvas.
- */
+// Biểu đồ vành khuyên thắng / hòa / thua, tự vẽ bằng Canvas
 public class PieChartView extends View {
     private int wins;
     private int draws;
@@ -53,7 +51,7 @@ public class PieChartView extends View {
             arcPaint.setColor(getContext().getColor(R.color.arcade_btn_stroke));
             canvas.drawArc(oval, 0, 360, false, arcPaint);
         } else {
-            // Bắt đầu từ đỉnh, đi theo chiều kim đồng hồ: thắng, hòa, thua
+            // Từ đỉnh, theo chiều kim đồng hồ
             float start = -90;
             start = drawPart(canvas, start, wins, total, R.color.arcade_green);
             start = drawPart(canvas, start, draws, total, R.color.arcade_amber);
@@ -70,7 +68,7 @@ public class PieChartView extends View {
         canvas.drawText(getContext().getString(R.string.label_win_rate), cx, cy + size * 0.16f, labelPaint);
     }
 
-    // Vẽ một cung theo tỉ lệ count / total, trả về góc bắt đầu của cung kế tiếp
+    // Trả về góc bắt đầu của cung kế tiếp
     private float drawPart(Canvas canvas, float start, int count, int total, int colorRes) {
         if (count == 0) {
             return start;

@@ -17,9 +17,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-/**
- * Một dòng lịch sử đấu: dải màu kết quả, đối thủ, THẮNG / HÒA / THUA, điểm trận, số câu đúng 2 bên, thời điểm kết thúc.
- */
 public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryViewHolder> {
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault());
     private List<Match> listMatch;

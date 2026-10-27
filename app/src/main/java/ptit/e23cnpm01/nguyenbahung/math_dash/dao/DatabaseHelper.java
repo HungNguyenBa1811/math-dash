@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "math_dash.db";
-    // Bản 3: thay tblGameRecord (chơi offline 3 mạng) bằng tblBotGame (chơi với máy)
     private static final int DB_VERSION = 3;
 
     public DatabaseHelper(Context context) {

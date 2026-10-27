@@ -16,16 +16,13 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Theo dõi trận đang đấu ở node matches/{matchId}. App chỉ đọc, mọi ghi do server làm.
- */
+// Node matches/{matchId}: app chỉ đọc, server ghi
 public class MatchFirebaseDAO extends FirebaseDAO {
     private static final String NETWORK_ERROR = "Mất kết nối, kiểm tra kết nối mạng";
 
     private DatabaseReference matchRef;
     private ValueEventListener watcher;
 
-    // Báo về: có trận mới tiếp theo, có người dừng / bỏ trận, hoặc trận thay đổi
     public void watchMatch(int matchId, final MatchCallback callback) {
         stopWatching(matchId);
         matchRef = con.child("matches").child(String.valueOf(matchId));
@@ -61,7 +58,7 @@ public class MatchFirebaseDAO extends FirebaseDAO {
         }
     }
 
-    // Đóng gói node thành Match kèm 10 câu hỏi (không có đáp án) và 2 người chơi
+    // model mapper
     private Match toMatch(int matchId, DataSnapshot data) {
         Match match = new Match();
         match.setId(matchId);

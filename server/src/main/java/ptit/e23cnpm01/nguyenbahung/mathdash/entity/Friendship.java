@@ -21,12 +21,10 @@ public class Friendship {
         this.status = PENDING;
     }
 
-    // Người còn lại trong quan hệ: là người nhận nếu playerId là người gửi, ngược lại là người gửi
     public Player getFriend(int playerId) {
         return sender.getId() == playerId ? receiver : sender;
     }
 
-    // Chỉ người nhận mới đồng ý được, và chỉ khi lời mời còn đang chờ
     public boolean canAccept(int playerId) {
         return PENDING.equals(status) && receiver.getId() == playerId;
     }

@@ -15,16 +15,14 @@ import java.util.Map;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Lời mời thách đấu ở node challenges/{challengeId}.
- */
+// Node challenges/{challengeId}
 public class ChallengeFirebaseDAO extends FirebaseDAO {
     private Query incomingQuery;
     private ValueEventListener incomingWatcher;
     private DatabaseReference sentRef;
     private ValueEventListener sentWatcher;
 
-    // Tạo lời mời đang chờ; người mời tắt app thì lời mời tự bị xóa
+    // Người mời tắt app thì lời mời tự bị xóa
     public Challenge sendChallenge(Player challenger, Player opponent) {
         DatabaseReference ref = challengesRef().push();
         Map<String, Object> data = new HashMap<>();
@@ -45,7 +43,6 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         return challenge;
     }
 
-    // Nhận các lời mời đang chờ gửi tới playerId
     public void watchIncoming(int playerId, final ChallengeCallback callback) {
         incomingQuery = challengesRef().orderByChild("opponentId").equalTo(playerId);
         incomingWatcher = new ValueEventListener() {
@@ -61,13 +58,11 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Mất kết nối: không nhận được lời mời mới
             }
         };
         incomingQuery.addValueEventListener(incomingWatcher);
     }
 
-    // Theo dõi lời mời mình đã gửi để biết được đồng ý hay bị từ chối
     public void watchChallenge(String challengeId, final ChallengeCallback callback) {
         stopWatchingSent();
         sentRef = challengesRef().child(challengeId);
@@ -81,7 +76,6 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Mất kết nối: lời mời coi như hết hiệu lực
             }
         };
         sentRef.addValueEventListener(sentWatcher);
@@ -91,7 +85,6 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         challengesRef().child(challengeId).child("status").setValue(Challenge.REJECTED);
     }
 
-    // Gỡ mọi lắng nghe (khi rời màn chính)
     public void stopWatching() {
         stopWatchingSent();
         if (incomingWatcher != null) {
@@ -107,7 +100,6 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         }
     }
 
-    // Đóng gói một node lời mời thành Challenge kèm 2 Player
     private Challenge toChallenge(String id, DataSnapshot data) {
         Challenge challenge = new Challenge();
         challenge.setId(id);

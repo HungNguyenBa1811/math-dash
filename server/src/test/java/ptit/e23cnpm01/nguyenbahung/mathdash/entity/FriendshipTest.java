@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Luật của quan hệ bạn bè: ai là bạn của ai (getFriend), ai được đồng ý lời mời (canAccept).
- */
 class FriendshipTest {
     private static final int HUNG = 1;
     private static final int HOANG = 2;

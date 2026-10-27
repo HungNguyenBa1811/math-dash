@@ -60,7 +60,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login(username, password);
     }
 
-    // Gọi server trong Thread: kiểm tra tài khoản, ghi nhớ phiên, lưu bản sao người chơi
     private void login(final String username, final String password) {
         new Thread(new Runnable() {
             @Override
@@ -94,7 +93,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    // Quản trị viên vào màn quản lý người chơi, người chơi vào màn chính
     private void openHome(Player player) {
         Class<?> home = Player.ROLE_ADMIN.equals(player.getRole()) ? AdminActivity.class : MainActivity.class;
         startActivity(new Intent(this, home));

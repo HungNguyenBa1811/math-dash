@@ -25,9 +25,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Lịch sử đấu: thẻ Trận của tôi (biểu đồ tròn thắng / hòa / thua + danh sách trận) và thẻ Bảng xếp hạng.
- */
 public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
     public static final String EXTRA_MATCH_ID = "matchId";
 
@@ -73,7 +70,6 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
         loadHistory();
     }
 
-    // Lấy các trận đã xong của mình trong Thread, rồi vẽ biểu đồ và danh sách trên luồng giao diện
     private void loadHistory() {
         new Thread(new Runnable() {
             @Override
@@ -96,7 +92,6 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
         }).start();
     }
 
-    // Đếm kết quả của mình qua các trận rồi cập nhật biểu đồ tròn và chú giải
     private void showSummary(List<Match> matches) {
         int wins = 0;
         int draws = 0;
@@ -138,7 +133,7 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
     public void onTabReselected(TabLayout.Tab tab) {
     }
 
-    // Lấy bảng xếp hạng (server đã sắp theo 3 tiêu chí) trong Thread, chỉ tải lần đầu chọn thẻ
+    // Chỉ tải lần đầu chọn thẻ
     private void loadRanking() {
         rankingLoaded = true;
         new Thread(new Runnable() {
@@ -160,7 +155,6 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
         }).start();
     }
 
-    // MatchHistoryAdapter gọi khi một dòng trận được bấm
     public void onMatchClick(Match match) {
         Intent intent = new Intent(this, MatchDetailActivity.class);
         intent.putExtra(EXTRA_MATCH_ID, match.getId());

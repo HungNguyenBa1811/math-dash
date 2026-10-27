@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Một ván đấu với máy. Lưu trên máy (SQLite), không tính vào tổng điểm.
- */
+// Lưu SQLite, không tính vào tổng điểm
 public class BotGame {
     public static final int EASY = 1;
     public static final int MEDIUM = 2;
@@ -20,7 +18,7 @@ public class BotGame {
     private long botFinishTime;
     private Date playedAt;
     private Player player;
-    // Đề của ván, chỉ nằm trong bộ nhớ
+    // Chỉ nằm trong bộ nhớ
     private List<MathProblem> questions = new ArrayList<>();
 
     public BotGame() {
@@ -31,7 +29,7 @@ public class BotGame {
         this.difficulty = difficulty;
     }
 
-    // WIN / LOSE / DRAW của người chơi so với máy, cùng luật với trận đối kháng
+    // Cùng luật với trận đối kháng
     public String getResult() {
         return Match.judge(correctCount, finishTime, botCorrectCount, botFinishTime);
     }

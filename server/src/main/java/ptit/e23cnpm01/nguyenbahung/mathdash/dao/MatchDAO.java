@@ -16,7 +16,6 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class MatchDAO extends DAO {
 
-    // Mỗi dòng là một người chơi trong một trận, kèm thông tin trận và tài khoản
     private static final String SELECT_PLAYERS = "SELECT m.id, m.startedAt, m.endedAt,"
             + " mp.id AS mpId, mp.correctCount, mp.submittedAt, mp.forfeited,"
             + " p.id AS playerId, p.username, p.displayName"
@@ -24,8 +23,7 @@ public class MatchDAO extends DAO {
             + " JOIN tblMatchPlayer mp ON mp.tblMatchId = m.id"
             + " JOIN tblPlayer p ON p.id = mp.tblPlayerId";
 
-    // Lưu 1 dòng tblMatch + 10 dòng tblMathProblem + 2 dòng tblMatchPlayer trong một transaction,
-    // gán id vừa sinh cho trận, câu hỏi và người chơi trong trận
+    // Một transaction; gán id vừa sinh cho trận, câu hỏi, người chơi
     public boolean insert(Match match) {
         synchronized (conn) {
             try {
@@ -48,7 +46,6 @@ public class MatchDAO extends DAO {
         }
     }
 
-    // Trận kèm đề và 2 người chơi; không có thì trả null
     public Match findById(int id) throws SQLException {
         List<Match> list = query(SELECT_PLAYERS + " WHERE m.id = ? ORDER BY mp.id", id);
         if (list.isEmpty()) {
@@ -59,19 +56,19 @@ public class MatchDAO extends DAO {
         return match;
     }
 
-    // Mọi trận đã kết thúc kèm 2 người chơi, không kèm đề (dùng cho tổng điểm, bảng xếp hạng)
+    // Không kèm đề
     public List<Match> findFinished() throws SQLException {
         return query(SELECT_PLAYERS + " WHERE m.endedAt IS NOT NULL ORDER BY m.id, mp.id", null);
     }
 
-    // Lịch sử đấu: các trận đã kết thúc mà người chơi tham gia, kèm 2 người chơi, mới nhất đứng đầu
+    // Mới nhất đứng đầu
     public List<Match> findByPlayer(int playerId) throws SQLException {
         return query(SELECT_PLAYERS + " WHERE m.endedAt IS NOT NULL"
                 + " AND m.id IN (SELECT tblMatchId FROM tblMatchPlayer WHERE tblPlayerId = ?)"
                 + " ORDER BY m.endedAt DESC, m.id DESC, mp.id", playerId);
     }
 
-    // Lưu kết quả chấm và thời điểm nộp; chỉ nộp được một lần
+    // Chỉ nộp được một lần
     public boolean updateSubmission(int matchId, MatchPlayer mp) throws SQLException {
         String sql = "UPDATE tblMatchPlayer SET correctCount = ?, submittedAt = ?"
                 + " WHERE tblMatchId = ? AND tblPlayerId = ? AND submittedAt IS NULL";
@@ -84,7 +81,6 @@ public class MatchDAO extends DAO {
         }
     }
 
-    // Đánh dấu người chơi bỏ trận
     public boolean updateForfeit(int matchId, int playerId) throws SQLException {
         String sql = "UPDATE tblMatchPlayer SET forfeited = 1 WHERE tblMatchId = ? AND tblPlayerId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -94,7 +90,7 @@ public class MatchDAO extends DAO {
         }
     }
 
-    // Ghi thời điểm kết thúc; trận đã kết thúc thì không ghi lại
+    // Trận đã kết thúc thì không ghi lại
     public boolean updateEndedAt(int matchId, Date endedAt) throws SQLException {
         String sql = "UPDATE tblMatch SET endedAt = ? WHERE id = ? AND endedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -104,7 +100,6 @@ public class MatchDAO extends DAO {
         }
     }
 
-    // Chạy truy vấn SELECT_PLAYERS, gom các dòng cùng trận thành 1 Match + 2 MatchPlayer
     private List<Match> query(String sql, Integer key) throws SQLException {
         List<Match> list = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

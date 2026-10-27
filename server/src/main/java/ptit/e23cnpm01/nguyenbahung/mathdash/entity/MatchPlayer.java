@@ -6,7 +6,7 @@ import java.util.List;
 
 public class MatchPlayer {
     private int id;
-    // Bài làm: phương án đã chọn cho từng câu, -1 là câu chưa chọn. Chỉ dùng để chấm, không lưu
+    // -1 là câu chưa chọn; không lưu CSDL
     private List<Integer> answers = new ArrayList<>();
     private int correctCount;
     private Date submittedAt;

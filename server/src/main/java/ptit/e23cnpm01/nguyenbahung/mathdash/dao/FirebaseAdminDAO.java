@@ -18,13 +18,10 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * Đọc / ghi Realtime Database qua REST API: presence, challenges, matches.
- * Cây dữ liệu: docs/chung/03-csdl.md mục 2.
- */
+// Cây dữ liệu: docs/chung/03-csdl.md mục 2
 public class FirebaseAdminDAO {
     private String dbUrl;
-    // Database secret (tùy chọn): có thì server ghi được cả khi Rules chặn app
+    // Tùy chọn: có thì ghi được cả khi Rules chặn app
     private String secret;
     private HttpClient client = HttpClient.newHttpClient();
     private ObjectMapper mapper = new ObjectMapper();
@@ -34,7 +31,7 @@ public class FirebaseAdminDAO {
         secret = DAO.loadConfig().getProperty("firebase.secret", "");
     }
 
-    // GET presence/{playerId}: người chơi kèm trạng thái; không online thì trả null
+    // null nếu không online
     public Player readPresence(int playerId) throws IOException, InterruptedException {
         JsonNode node = mapper.readTree(send("GET", "presence/" + playerId, null));
         if (node == null || node.isNull()) {
@@ -46,23 +43,21 @@ public class FirebaseAdminDAO {
         return player;
     }
 
-    // PATCH presence/{playerId}: status = free | busy; người đã offline thì bỏ qua
+    // Người đã offline thì bỏ qua
     public void updateStatus(int playerId, String status) throws IOException, InterruptedException {
         updatePresence(playerId, "status", status);
     }
 
-    // PATCH presence/{playerId}: totalPoints; người đã offline thì bỏ qua
     public void updatePoints(int playerId, double totalPoints) throws IOException, InterruptedException {
         updatePresence(playerId, "totalPoints", totalPoints);
     }
 
-    // GET challenges/{challengeId}/status: pending | accepted | rejected; lời mời đã bị xóa thì trả null
+    // null nếu lời mời đã bị xóa
     public String readChallengeStatus(String challengeId) throws IOException, InterruptedException {
         JsonNode node = mapper.readTree(send("GET", "challenges/" + challengeId + "/status", null));
         return node == null || node.isNull() ? null : node.asText();
     }
 
-    // PATCH challenges/{challengeId}: status, matchId
     public void updateChallenge(String challengeId, String status, int matchId) throws IOException, InterruptedException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("status", status);
@@ -70,7 +65,6 @@ public class FirebaseAdminDAO {
         send("PATCH", "challenges/" + challengeId, data);
     }
 
-    // PUT matches/{matchId}: đề không kèm đáp án, 2 người chơi, status = playing
     public void writeMatch(Match match) throws IOException, InterruptedException {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("status", Match.PLAYING);
@@ -80,27 +74,22 @@ public class FirebaseAdminDAO {
         send("PUT", "matches/" + match.getId(), data);
     }
 
-    // PUT matches/{matchId}/players/{playerId}/submitted = true
     public void writeSubmitted(int matchId, int playerId) throws IOException, InterruptedException {
         send("PUT", "matches/" + matchId + "/players/" + playerId + "/submitted", true);
     }
 
-    // PUT matches/{matchId}/status = finished
     public void writeFinished(int matchId) throws IOException, InterruptedException {
         send("PUT", "matches/" + matchId + "/status", Match.FINISHED);
     }
 
-    // PUT matches/{matchId}/players/{playerId}/choice = continue | stop
     public void writeChoice(int matchId, int playerId, boolean choice) throws IOException, InterruptedException {
         send("PUT", "matches/" + matchId + "/players/" + playerId + "/choice", choice ? "continue" : "stop");
     }
 
-    // PUT matches/{matchId}/nextMatchId
     public void writeNextMatch(int matchId, int nextMatchId) throws IOException, InterruptedException {
         send("PUT", "matches/" + matchId + "/nextMatchId", nextMatchId);
     }
 
-    // PUT matches/{matchId}/stoppedBy
     public void writeStopped(int matchId, int playerId) throws IOException, InterruptedException {
         send("PUT", "matches/" + matchId + "/stoppedBy", playerId);
     }
@@ -114,7 +103,7 @@ public class FirebaseAdminDAO {
         send("PATCH", "presence/" + playerId, data);
     }
 
-    // Câu hỏi gửi cho app: không có correctAnswer
+    // Không gửi correctAnswer cho app
     private List<Map<String, Object>> toQuestions(List<MathProblem> questions) {
         List<Map<String, Object>> list = new ArrayList<>();
         for (MathProblem p : questions) {
@@ -140,7 +129,6 @@ public class FirebaseAdminDAO {
         return map;
     }
 
-    // Gửi yêu cầu tới một node, ví dụ path = "matches/37/status"; Firebase trả mã khác 200 thì ném lỗi
     private String send(String method, String path, Object body) throws IOException, InterruptedException {
         String query = secret.isEmpty() ? "" : "?auth=" + secret;
         HttpRequest.BodyPublisher publisher = body == null ? HttpRequest.BodyPublishers.noBody()

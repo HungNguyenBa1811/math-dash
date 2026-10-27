@@ -12,9 +12,6 @@ import java.util.List;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
 
-/**
- * Một câu trong đề của trận đã xong: số thứ tự và phép tính kèm đáp án đúng, ví dụ "12 + 7 = 19".
- */
 public class ProblemAdapter extends RecyclerView.Adapter<ProblemViewHolder> {
     private List<MathProblem> listProblem;
 

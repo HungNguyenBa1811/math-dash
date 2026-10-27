@@ -14,7 +14,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public abstract class ApiDAO {
-    protected static final String BASE_URL = "https://math-dash-server.onrender.com/api"; // server trên Render; chạy local: "http://10.0.2.2:8080/api"
+    protected static final String BASE_URL = "https://math-dash-server.onrender.com/api"; // local: http://10.0.2.2:8080/api
     protected static final String NETWORK_ERROR = "Không kết nối được máy chủ, kiểm tra kết nối mạng";
 
     protected JSONObject post(String path, JSONObject body) throws IOException, JSONException {
@@ -72,7 +72,7 @@ public abstract class ApiDAO {
         return conn;
     }
 
-    // Đọc nội dung trả về; mã lỗi (>= 400) thì ném IOException mang câu thông báo của server
+    // Lỗi HTTP: ném IOException kèm thông báo của server
     private String read(HttpURLConnection conn, int code) throws IOException, JSONException {
         InputStream in = code < 400 ? conn.getInputStream() : conn.getErrorStream();
         StringBuilder text = new StringBuilder();

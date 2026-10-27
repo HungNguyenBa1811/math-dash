@@ -9,9 +9,6 @@ import org.junit.Test;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Friendship;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
 
-/**
- * Luật của quan hệ bạn bè: ai là bạn của ai (getFriend), ai được đồng ý lời mời (canAccept).
- */
 public class FriendshipTest {
     private static final int HUNG = 1;
     private static final int HOANG = 2;

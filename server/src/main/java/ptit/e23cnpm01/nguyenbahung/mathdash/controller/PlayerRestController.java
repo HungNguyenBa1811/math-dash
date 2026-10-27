@@ -13,15 +13,11 @@ import java.util.List;
 import ptit.e23cnpm01.nguyenbahung.mathdash.dao.PlayerDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-/**
- * API người chơi: thông tin kèm tổng điểm, bảng xếp hạng, và các hàm quản trị (UC06, Hoàng).
- */
 @RestController
 @RequestMapping("/api/players")
 public class PlayerRestController {
     private PlayerDAO playerDAO = new PlayerDAO();
 
-    // GET /api/players/{id}: người chơi kèm tổng điểm hiện có
     @GetMapping("/{id}")
     public Player getById(@PathVariable int id) throws SQLException {
         Player player = playerDAO.findById(id);
@@ -32,7 +28,6 @@ public class PlayerRestController {
         return player;
     }
 
-    // GET /api/players/ranking: mọi người chơi kèm 3 tiêu chí, đã xếp hạng
     @GetMapping("/ranking")
     public List<Player> getRanking() throws SQLException {
         return playerDAO.getRanking();
