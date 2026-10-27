@@ -3,13 +3,13 @@
 title Tuần tự phân tích – Quản lý bạn bè, đoạn A: Gửi lời mời kết bạn
 
 actor "Người chơi" as U
-boundary MainView as MV
+boundary OnlineView as OV
 boundary FriendView as FV
 entity Friendship as F
 entity Player as P
 
-U -> MV : nhấn Bạn bè
-MV -> FV : gọi
+U -> OV : nhấn Bạn bè
+OV -> FV : gọi
 FV -> F : getFriendships()
 F --> FV : lời mời và quan hệ bạn bè của người chơi
 FV -> P : getOnlinePlayers()

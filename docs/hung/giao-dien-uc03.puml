@@ -4,20 +4,35 @@ title Phác thảo giao diện – Chơi online
   {+
   <b>MainActivity
   ==
-  <b>HUNG</b> · 12,5 điểm
+  { <color:#FFFFFF>xxxxxxxxxxxxxxxxxxxxxxxxxx</color> | [<&account-logout>] }
+  .
+  .
+  <size:20><b>MATH DASH</b></size>
+  <color:gray>Xin chào, HUNG</color>
+  .
+  .
+  [      CHƠI VỚI MÁY      ]
+  [     <b>CHƠI ONLINE</b>      ]
+  .
+  .
+  } | . | {+
+  <b>OnlineActivity
   ==
-  NGƯỜI CHƠI ONLINE
-  {#
-  MINH | 15 | <color:gray>Bận</color>
-  HOANG | 9 | <color:green>Rỗi</color>
-  LAN | 4,5 | <color:green>Rỗi</color>
+  { <b>CHƠI ONLINE</b> | <color:#FFFFFF>xxxx</color> | [<&people>] | [<&clock>] | [<&bar-chart>] }
+  ==
+  {+
+  { <b><color:#0097A7>HUNG</color></b> | <color:#FFFFFF>xxxxxxxxxxx</color> | <color:orange>12,5 điểm</color> }
   }
   .
-  [    CHƠI VỚI MÁY    ]
-  [    BẢNG XẾP HẠNG   ]
-  [      ĐĂNG XUẤT     ]
+  <color:#0097A7>NGƯỜI CHƠI ONLINE</color>
+  {#
+  <b>MINH</b> | <color:orange>15 điểm</color> | <color:gray>Bận</color>
+  <b>HOANG</b> | <color:orange>9 điểm</color> | <color:green>Rỗi</color>
+  <b>LAN</b> | <color:orange>4,5 điểm</color> | <color:green>Rỗi</color>
+  }
+  .
   } | . | {+
-  <b>Hộp thoại lời mời (máy 2)
+  <b>Hộp thoại lời mời · máy 2
   ==
   .
   HUNG (12,5 điểm)
@@ -28,19 +43,35 @@ title Phác thảo giao diện – Chơi online
   } | . | {+
   <b>MatchActivity
   ==
-  { <b>00:42</b> | . | HOANG đang làm bài }
-  ==
+  { <size:16><b><color:orange>00:42</color></b></size>  | .        | <color:gray>HOANG đang làm bài</color> }
+  .
   {+
-  <b>1.  12 + 7 = ?
-  { () 17 | (X) 19 | () 21 | () 18 }
+  <color:#FFFFFF>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</color>
+  <color:#0097A7>Câu 1/10</color>
+  <size:22><b>12 + 7 = ?</b></size>
+  .
   }
-  {+
-  <b>2.  9 × 6 = ?
-  { () 48 | (X) 54 | () 56 | () 63 }
-  }
-  ...
+  .
+  { [ <color:#E21B3C><b>A</b></color>    <size:18><b>17</b></size>    ] | [ <color:#1368CE><b>B</b></color>    <size:18><b>19</b></size>    ] }
+  { [ <color:#D89E00><b>C</b></color>    <size:18><b>21</b></size>    ] | [ <color:#26890C><b>D</b></color>    <size:18><b>18</b></size>    ] }
+  .
+  [            THOÁT            ]
+  } | . | {+
+  <b>MatchActivity · làm xong 10 câu
   ==
-  { [ Thoát ] | . | [   <b>NỘP BÀI</b>   ] }
+  { <size:16><b><color:orange>00:22</color></b></size>  | .        | <color:gray>HOANG đang làm bài</color> }
+  .
+  {+
+  <color:#FFFFFF>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</color>
+  .
+  <color:#0097A7>Đã làm xong 10 câu</color>
+  .
+  .
+  }
+  .
+  .
+  .
+  { [  THOÁT  ] | [      <b>NỘP BÀI</b>      ] }
   } | . | {+
   <b>Overlay layoutResult
   ==

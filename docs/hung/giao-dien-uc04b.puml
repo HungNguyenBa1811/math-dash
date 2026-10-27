@@ -4,30 +4,90 @@ title Phác thảo giao diện – Xem chi tiết trận
   {+
   <b>MatchDetailActivity
   ==
-  { <&arrow-left> | <b>Trận #37</b> · 25/10/2026 20:15 }
+  <b>CHI TIẾT TRẬN</b>
   ==
-  .
+  <color:gray>Trận #37 · 25/10/2026 20:15</color>
   <size:22><b><color:green>THẮNG!</color></b></size>
-  +1 điểm
+  <color:orange>+1 điểm</color>
   .
-  {#
-  . | <b>Bạn · HUNG</b> | <b>HOANG</b>
-  Câu đúng | <b>10/10</b> | 10/10
-  Thời gian | <b>38,2 giây</b> | 45,6 giây
+  {+
+  <b><color:#0097A7>HUNG</color></b> | <color:#FFFFFF>xx</color> | HOANG
+  <b>10/10 câu · 38,2 giây</b> | . | <color:gray>10/10 câu · 45,6 giây</color>
   }
   .
-  <b>ĐỀ BÀI VÀ ĐÁP ÁN</b>
+  <color:#0097A7>TỪNG CÂU</color>
   {#
-  1. | 12 + 7 = <b>19</b>
-  2. | 9 × 6 = <b>54</b>
-  3. | 45 − 18 = <b>27</b>
-  4. | 8 × 7 = <b>56</b>
-  5. | 36 + 25 = <b>61</b>
-  6. | 72 − 39 = <b>33</b>
-  7. | 7 × 12 = <b>84</b>
-  8. | 58 + 27 = <b>85</b>
-  9. | 91 − 46 = <b>45</b>
-  10. | 6 × 15 = <b>90</b>
+  <color:gray>#</color> | <color:gray>Câu</color> | <color:#0097A7>HUNG</color> | <color:gray>HOANG</color>
+  <color:gray>1</color> | 12 + 7 = 19 | {
+  <color:green>✓ 19</color>
+  <color:green>3,1 s</color>
+  } | {
+  <color:green>✓ 19</color>
+  <color:green>4,0 s</color>
+  }
+  <color:gray>2</color> | 9 × 6 = 54 | {
+  <color:green>✓ 54</color>
+  <color:green>4,0 s</color>
+  } | {
+  <color:green>✓ 54</color>
+  <color:green>4,4 s</color>
+  }
+  <color:gray>3</color> | 45 − 18 = 27 | {
+  <color:green>✓ 27</color>
+  <color:green>3,4 s</color>
+  } | {
+  <color:green>✓ 27</color>
+  <color:green>4,0 s</color>
+  }
+  <color:gray>4</color> | 8 × 7 = 56 | {
+  <color:green>✓ 56</color>
+  <color:green>3,8 s</color>
+  } | {
+  <color:green>✓ 56</color>
+  <color:green>4,7 s</color>
+  }
+  <color:gray>5</color> | 36 + 25 = 61 | {
+  <color:green>✓ 61</color>
+  <color:green>3,7 s</color>
+  } | {
+  <color:green>✓ 61</color>
+  <color:green>4,3 s</color>
+  }
+  <color:gray>6</color> | 72 − 39 = 33 | {
+  <color:green>✓ 33</color>
+  <color:green>3,5 s</color>
+  } | {
+  <color:green>✓ 33</color>
+  <color:green>4,1 s</color>
+  }
+  <color:gray>7</color> | 7 × 12 = 84 | {
+  <color:green>✓ 84</color>
+  <color:green>4,1 s</color>
+  } | {
+  <color:green>✓ 84</color>
+  <color:green>4,9 s</color>
+  }
+  <color:gray>8</color> | 58 + 27 = 85 | {
+  <color:green>✓ 85</color>
+  <color:green>3,2 s</color>
+  } | {
+  <color:green>✓ 85</color>
+  <color:green>3,8 s</color>
+  }
+  <color:gray>9</color> | 91 − 46 = 45 | {
+  <color:green>✓ 45</color>
+  <color:green>3,6 s</color>
+  } | {
+  <color:green>✓ 45</color>
+  <color:green>4,4 s</color>
+  }
+  <color:gray>10</color> | 6 × 15 = 90 | {
+  <color:green>✓ 90</color>
+  <color:green>2,8 s</color>
+  } | {
+  <color:green>✓ 90</color>
+  <color:green>3,7 s</color>
+  }
   }
   }
 }

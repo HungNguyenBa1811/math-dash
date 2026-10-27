@@ -6,73 +6,76 @@
 
 ### 1.1. Đoạn A: Gửi lời thách đấu
 
-1. Người chơi đăng nhập thành công, MainActivity được mở.
-2. Hàm onCreate() của MainActivity gọi hàm getPlayer() của SessionDAO.
-3. Hàm getPlayer() gọi lớp Player để đóng gói người chơi đang đăng nhập.
-4. Lớp Player trả đối tượng Player cho hàm getPlayer().
-5. Hàm getPlayer() trả đối tượng Player cho hàm onCreate().
-6. Hàm onCreate() gọi hàm goOnline() của chính nó.
-7. Hàm goOnline() mở một Thread và gọi hàm getById() của PlayerApiDAO để lấy tổng điểm mới nhất.
-8. Hàm onCreate() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính MainActivity làm PlayerListCallback.
-9. Hàm onCreate() gọi hàm watchIncoming() của ChallengeFirebaseDAO, truyền chính MainActivity làm ChallengeCallback, để nhận các lời mời gửi tới người chơi.
-10. PlayerApiDAO gửi yêu cầu GET /api/players/{id} tới hàm getById() của PlayerRestController.
-11. Hàm getById() của PlayerRestController gọi hàm findById() của PlayerDAO.
-12. Hàm findById() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
-13. Lớp Player trả đối tượng Player cho hàm findById().
-14. Hàm findById() trả đối tượng Player cho hàm getById().
-15. Hàm getById() gọi hàm getTotalPoints() của PlayerDAO.
-16. Hàm getTotalPoints() cộng điểm trận của người chơi qua các trận đã kết thúc và trả về cho hàm getById().
-17. Hàm getById() trả người chơi kèm tổng điểm dạng JSON cho PlayerApiDAO.
-18. Hàm toPlayer() của PlayerApiDAO gọi lớp Player để đóng gói dữ liệu JSON.
-19. Lớp Player trả đối tượng Player cho PlayerApiDAO.
-20. PlayerApiDAO trả đối tượng Player cho hàm goOnline().
-21. Trong hàm runOnUiThread(), hàm goOnline() của MainActivity gọi hàm goOnline() của PresenceFirebaseDAO để ghi người chơi vào danh sách online với trạng thái rỗi.
-22. Khi danh sách online thay đổi, hàm onDataChange() của PresenceFirebaseDAO gọi hàm toPlayer() cho từng người chơi.
-23. Hàm toPlayer() gọi lớp Player để đóng gói người chơi kèm tổng điểm và trạng thái.
-24. Lớp Player trả đối tượng Player cho hàm toPlayer().
-25. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 8, chính là MainActivity, truyền danh sách người chơi online.
-26. Hàm onPlayersChanged() hiển thị tổng điểm của chính người chơi, rồi gọi hàm setPlayers() của PlayerAdapter với danh sách những người còn lại.
-27. PlayerAdapter hiển thị danh sách người chơi online gồm tên, tổng điểm, trạng thái.
-28. Người chơi bấm vào tên một đối thủ đang rỗi.
-29. Hàm onClick() của PlayerAdapter gọi hàm onPlayerClick() của MainActivity.
-30. Hàm onPlayerClick() thấy đối thủ đang rỗi và người chơi chưa có lời mời nào đang chờ, gọi hàm sendChallenge() của ChallengeFirebaseDAO.
-31. Hàm sendChallenge() gọi lớp Challenge để tạo lời mời đang chờ, rồi ghi lời mời lên Firebase.
-32. Lớp Challenge trả đối tượng Challenge cho hàm sendChallenge().
-33. Hàm sendChallenge() trả đối tượng Challenge cho hàm onPlayerClick(); MainActivity giữ lời mời này trong sentChallenge.
-34. Hàm onPlayerClick() gọi hàm watchChallenge() của ChallengeFirebaseDAO, truyền chính MainActivity làm ChallengeCallback, để theo dõi lời mời vừa gửi.
-35. Hàm onPlayerClick() gọi hàm showWaitingDialog(), MainActivity hiển thị hộp thoại đang chờ đối thủ trả lời kèm nút Hủy.
-36. Khi đối thủ đồng ý, hàm onDataChange() của ChallengeFirebaseDAO gọi hàm toChallenge().
-37. Hàm toChallenge() gọi lớp Challenge để đóng gói lời mời mới nhất.
-38. Lớp Challenge trả đối tượng Challenge cho hàm toChallenge().
-39. ChallengeFirebaseDAO gọi hàm onChallengeChanged() của ChallengeCallback đã đăng ký ở bước 34, chính là MainActivity.
-40. Hàm onChallengeChanged() thấy lời mời đã được đồng ý, gọi hàm closeSentChallenge() của chính nó.
-41. Hàm closeSentChallenge() gọi hàm stopWatchingSent() của ChallengeFirebaseDAO để gỡ theo dõi lời mời, rồi đóng hộp thoại chờ.
-42. Hàm onChallengeChanged() gọi hàm openMatch() để mở MatchActivity với mã trận trong lời mời.
+1. Người chơi nhấn nút Chơi online trên MainActivity.
+2. Hàm onClick() của MainActivity gọi hàm startActivity() mở OnlineActivity.
+3. Hàm onCreate() của OnlineActivity gọi hàm getPlayer() của SessionDAO.
+4. Hàm getPlayer() gọi lớp Player để đóng gói người chơi đang đăng nhập.
+5. Lớp Player trả đối tượng Player cho hàm getPlayer().
+6. Hàm getPlayer() trả đối tượng Player cho hàm onCreate().
+7. Hàm onCreate() gọi hàm goOnline() của chính nó.
+8. Hàm goOnline() mở một Thread và gọi hàm getById() của PlayerApiDAO để lấy tổng điểm mới nhất.
+9. Hàm onCreate() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính OnlineActivity làm PlayerListCallback.
+10. Hàm onCreate() gọi hàm watchIncoming() của ChallengeFirebaseDAO, truyền chính OnlineActivity làm ChallengeCallback, để nhận các lời mời gửi tới người chơi.
+11. PlayerApiDAO gửi yêu cầu GET /api/players/{id} tới hàm getById() của PlayerRestController.
+12. Hàm getById() của PlayerRestController gọi hàm findById() của PlayerDAO.
+13. Hàm findById() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
+14. Lớp Player trả đối tượng Player cho hàm findById().
+15. Hàm findById() trả đối tượng Player cho hàm getById().
+16. Hàm getById() gọi hàm getTotalPoints() của PlayerDAO.
+17. Hàm getTotalPoints() cộng điểm trận của người chơi qua các trận đã kết thúc và trả về cho hàm getById().
+18. Hàm getById() trả người chơi kèm tổng điểm dạng JSON cho PlayerApiDAO.
+19. Hàm toPlayer() của PlayerApiDAO gọi lớp Player để đóng gói dữ liệu JSON.
+20. Lớp Player trả đối tượng Player cho PlayerApiDAO.
+21. PlayerApiDAO trả đối tượng Player cho hàm goOnline().
+22. Trong hàm runOnUiThread(), hàm goOnline() của OnlineActivity gọi hàm goOnline() của PresenceFirebaseDAO để ghi người chơi vào danh sách online với trạng thái rỗi.
+23. Khi danh sách online thay đổi, hàm onDataChange() của PresenceFirebaseDAO gọi hàm toPlayer() cho từng người chơi.
+24. Hàm toPlayer() gọi lớp Player để đóng gói người chơi kèm tổng điểm và trạng thái.
+25. Lớp Player trả đối tượng Player cho hàm toPlayer().
+26. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 9, chính là OnlineActivity, truyền danh sách người chơi online.
+27. Hàm onPlayersChanged() hiển thị tổng điểm của chính người chơi, rồi gọi hàm setPlayers() của PlayerAdapter với danh sách những người còn lại, xếp theo tổng điểm giảm dần.
+28. PlayerAdapter hiển thị danh sách người chơi online gồm tên, tổng điểm, trạng thái.
+29. Người chơi bấm vào tên một đối thủ đang rỗi.
+30. Hàm onClick() của PlayerAdapter gọi hàm onPlayerClick() của OnlineActivity.
+31. Hàm onPlayerClick() thấy đối thủ đang rỗi và người chơi chưa có lời mời nào đang chờ, gọi hàm sendChallenge() của ChallengeFirebaseDAO.
+32. Hàm sendChallenge() gọi lớp Challenge để tạo lời mời đang chờ, rồi ghi lời mời lên Firebase.
+33. Lớp Challenge trả đối tượng Challenge cho hàm sendChallenge().
+34. Hàm sendChallenge() trả đối tượng Challenge cho hàm onPlayerClick(); OnlineActivity giữ lời mời này trong sentChallenge.
+35. Hàm onPlayerClick() gọi hàm watchChallenge() của ChallengeFirebaseDAO, truyền chính OnlineActivity làm ChallengeCallback, để theo dõi lời mời vừa gửi.
+36. Hàm onPlayerClick() gọi hàm showWaitingDialog(), OnlineActivity hiển thị hộp thoại đang chờ đối thủ trả lời kèm nút Hủy.
+37. Khi đối thủ đồng ý, hàm onDataChange() của ChallengeFirebaseDAO gọi hàm toChallenge().
+38. Hàm toChallenge() gọi lớp Challenge để đóng gói lời mời mới nhất.
+39. Lớp Challenge trả đối tượng Challenge cho hàm toChallenge().
+40. ChallengeFirebaseDAO gọi hàm onChallengeChanged() của ChallengeCallback đã đăng ký ở bước 35, chính là OnlineActivity.
+41. Hàm onChallengeChanged() thấy lời mời đã được đồng ý, gọi hàm closeSentChallenge() của chính nó.
+42. Hàm closeSentChallenge() gọi hàm stopWatchingSent() của ChallengeFirebaseDAO để gỡ theo dõi lời mời, rồi đóng hộp thoại chờ.
+43. Hàm onChallengeChanged() gọi hàm openMatch() để mở MatchActivity với mã trận trong lời mời.
 
 ![Hình 26: Tuần tự thiết kế Chơi online – Gửi lời thách đấu](tuan-tu-thiet-ke-uc03a.png)
 
 *Hình 26: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
-- Biểu đồ có 42 thông điệp.
-- **Lời gọi REST** duy nhất là bước 10, để lấy tổng điểm mới nhất từ server. Server đi theo khuôn PlayerRestController → PlayerDAO → Player.
+- Biểu đồ có 43 thông điệp.
+- MainActivity chỉ là điểm vào: nút Chơi online mở OnlineActivity (bước 1–2). Mọi việc của chức năng này, từ danh sách online tới lời mời, nằm ở OnlineActivity.
+- **Lời gọi REST** duy nhất là bước 11, để lấy tổng điểm mới nhất từ server. Server đi theo khuôn PlayerRestController → PlayerDAO → Player.
 - **Firebase** làm 3 việc:
-  - Ghi người chơi vào danh sách online (bước 21).
-  - Báo khi danh sách thay đổi (bước 22–25).
-  - Chuyển lời mời giữa 2 máy (bước 30–39).
-- **Bất đồng bộ:** hàm goOnline() mở Thread ở bước 7 rồi trả về ngay, nên onCreate() đăng ký theo dõi ở bước 8–9 trong lúc yêu cầu REST ở bước 10–20 còn đang chạy. watchOnlinePlayers(), watchIncoming(), watchChallenge() là lời đăng ký; kết quả đến sau qua onDataChange(). Bước 36 xảy ra khi đối thủ đồng ý ở đoạn B.
-- **Callback:** các FirebaseDAO không biết MainActivity, chỉ giữ interface PlayerListCallback, ChallengeCallback được truyền vào lúc đăng ký (bước 8, 9, 34). Bước 25 và 39 gọi qua interface đó; ở chức năng này đối tượng cài đặt là MainActivity.
-- Bước 40–41 gỡ theo dõi lời mời đã gửi trước khi mở trận, để lần ghi sau của server lên lời mời không gọi lại onChallengeChanged().
+  - Ghi người chơi vào danh sách online (bước 22).
+  - Báo khi danh sách thay đổi (bước 23–26).
+  - Chuyển lời mời giữa 2 máy (bước 31–40).
+- **Chỉ online khi ở màn Chơi online:** người chơi được ghi vào danh sách online khi mở OnlineActivity (bước 22). Khi rời màn này, hàm onDestroy() của OnlineActivity gỡ các theo dõi rồi gọi hàm goOffline() của PresenceFirebaseDAO. Lời mời thách đấu cũng chỉ nhận được trong lúc đó, vì watchIncoming() đăng ký ở bước 10.
+- **Bất đồng bộ:** hàm goOnline() mở Thread ở bước 8 rồi trả về ngay, nên onCreate() đăng ký theo dõi ở bước 9–10 trong lúc yêu cầu REST ở bước 11–21 còn đang chạy. watchOnlinePlayers(), watchIncoming(), watchChallenge() là lời đăng ký; kết quả đến sau qua onDataChange(). Bước 37 xảy ra khi đối thủ đồng ý ở đoạn B.
+- **Callback:** các FirebaseDAO không biết OnlineActivity, chỉ giữ interface PlayerListCallback, ChallengeCallback được truyền vào lúc đăng ký (bước 9, 10, 35). Bước 26 và 40 gọi qua interface đó; ở chức năng này đối tượng cài đặt là OnlineActivity.
+- Bước 41–42 gỡ theo dõi lời mời đã gửi trước khi mở trận, để lần ghi sau của server lên lời mời không gọi lại onChallengeChanged().
 
 ### 1.2. Đoạn B: Nhận lời thách đấu
 
 1. Khi có lời mời mới gửi tới người chơi, hàm onDataChange() của ChallengeFirebaseDAO gọi hàm toChallenge().
 2. Hàm toChallenge() gọi lớp Challenge để đóng gói lời mời.
 3. Lớp Challenge trả đối tượng Challenge cho hàm toChallenge().
-4. ChallengeFirebaseDAO gọi hàm onChallengeChanged() của ChallengeCallback đã đăng ký bằng watchIncoming(), chính là MainActivity.
+4. ChallengeFirebaseDAO gọi hàm onChallengeChanged() của ChallengeCallback đã đăng ký bằng watchIncoming(), chính là OnlineActivity.
 5. Hàm onChallengeChanged() thấy lời mời gửi tới người chơi chưa từng hiện, ghi id lời mời vào shownChallenges và gọi hàm showChallengeDialog() của chính nó.
-6. MainActivity hiển thị hộp thoại lời mời gồm tên, tổng điểm của người mời và 2 nút Đồng ý, Từ chối.
+6. OnlineActivity hiển thị hộp thoại lời mời gồm tên, tổng điểm của người mời và 2 nút Đồng ý, Từ chối.
 7. Người chơi nhấn Đồng ý.
-8. Hàm onClick() của nút Đồng ý gọi hàm acceptChallenge() của MainActivity.
+8. Hàm onClick() của nút Đồng ý gọi hàm acceptChallenge() của OnlineActivity.
 9. Hàm acceptChallenge() mở một Thread và gọi hàm createMatch() của MatchApiDAO.
 10. MatchApiDAO gửi yêu cầu POST /api/matches kèm lời mời tới hàm create() của MatchRestController.
 11. Hàm create() gọi hàm readPresence() của FirebaseAdminDAO cho người mời và người được mời.
@@ -108,7 +111,7 @@
 - Biểu đồ có 35 thông điệp.
 - **Server sinh đề** (bước 19–22) và lưu đề vào MySQL cùng trận (bước 23–25), vì server cần đáp án để chấm bài sau này.
 - **Đề không kèm đáp án:** đề gửi qua Firebase không có đáp án (bước 26), và bản trận trả về cho app cũng đã bị hideAnswers() xóa đáp án (bước 30). Người chơi không đọc được đáp án trước khi nộp bài.
-- Bước 29 cập nhật lời mời, đây chính là tín hiệu để máy người mời mở MatchActivity ở bước 36 của đoạn A.
+- Bước 29 cập nhật lời mời, đây chính là tín hiệu để máy người mời mở MatchActivity ở bước 37 của đoạn A.
 - Hàm create() đọc trạng thái online của 2 người (bước 11–14) và trạng thái lời mời (bước 15) trước khi tạo trận, nên không thể có người ở trong 2 trận cùng lúc. Lời mời đã hủy hoặc một người không rỗi thì server ghi lời mời là bị từ chối.
 
 ### 1.3. Đoạn C: Thi đấu
@@ -120,98 +123,123 @@
 5. Hàm toMatch() gọi lớp Match để đóng gói trận, kèm 10 câu hỏi và 2 người chơi trong trận.
 6. Lớp Match trả đối tượng Match cho hàm toMatch().
 7. MatchFirebaseDAO gọi hàm onSuccess() của MatchCallback đã đăng ký ở bước 3, chính là MatchActivity.
-8. Lần đầu nhận trận có đề, hàm onSuccess() gọi hàm startMatch() của chính nó; hàm startMatch() lưu id đối thủ vào opponentId.
-9. Hàm startMatch() gọi hàm setQuestions() của QuestionAdapter với 10 câu hỏi của trận.
-10. Với mỗi câu, hàm onBindViewHolder() của QuestionAdapter gọi hàm getExpression() của MathProblem.
-11. MathProblem trả chuỗi phép tính cho QuestionAdapter.
-12. Hàm startMatch() gọi hàm createTimer() của chính nó để tạo CountDownTimer 60 giây.
-13. Hàm startMatch() gọi hàm start() của CountDownTimer.
-14. Hàm startMatch() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính MatchActivity làm PlayerListCallback, để biết đối thủ còn online hay không.
-15. MatchActivity hiển thị ô thời gian, trạng thái đối thủ, danh sách câu hỏi, nút Nộp bài và nút Thoát cho người chơi.
-16. Hàm onDataChange() của PresenceFirebaseDAO đóng gói danh sách người chơi online và gọi hàm onPlayersChanged() của PlayerListCallback, chính là MatchActivity; đối thủ vẫn có trong danh sách nên trận tiếp tục.
-17. Mỗi giây, CountDownTimer gọi hàm onTick() của MatchActivity để hiển thị thời gian còn lại.
-18. Người chơi chọn một phương án cho từng câu hỏi.
-19. Hàm onCheckedChanged() của QuestionAdapter lưu phương án đã chọn của câu đó.
-20. Người chơi nhấn Nộp bài.
-21. Hàm onClick() của nút Nộp bài gọi hàm submitAnswers() của chính nó.
-22. Hàm submitAnswers() gọi hàm setLocked() của QuestionAdapter để khóa danh sách câu hỏi.
-23. Hàm submitAnswers() gọi hàm getAnswers() của QuestionAdapter.
-24. QuestionAdapter trả bài làm gồm 10 phương án đã chọn cho hàm submitAnswers().
-25. Hàm submitAnswers() mở một Thread và gọi hàm submit() của MatchApiDAO.
-26. MatchApiDAO gửi yêu cầu POST /api/matches/{id}/submit kèm bài làm tới hàm submit() của MatchRestController.
-27. Hàm submit() ghi lại thời điểm nhận bài làm, rồi gọi hàm findMatch() của chính nó.
-28. Hàm findMatch() gọi hàm findById() của MatchDAO.
-29. Hàm findById() truy vấn trận, đề và 2 người chơi, rồi gọi lớp Match để đóng gói.
-30. Lớp Match trả đối tượng Match cho hàm findById().
-31. Hàm findById() trả đối tượng Match cho hàm findMatch(), hàm findMatch() trả về cho hàm submit().
-32. Hàm submit() gọi hàm countCorrect() của Match để chấm bài làm.
-33. Hàm countCorrect() gọi hàm isCorrect() của MathProblem cho từng câu.
-34. MathProblem trả kết quả chấm câu đó cho hàm countCorrect().
-35. Hàm countCorrect() trả số câu đúng cho hàm submit().
-36. Hàm submit() gọi hàm updateSubmission() của MatchDAO để lưu số câu đúng và thời điểm nộp bài.
-37. Hàm updateSubmission() trả kết quả cho hàm submit().
-38. Hàm submit() gọi hàm writeSubmitted() của FirebaseAdminDAO để máy đối thủ biết người chơi đã nộp bài.
-39. Hàm submit() gọi hàm isOver() của Match.
-40. Match trả về sai vì đối thủ chưa nộp bài.
-41. Hàm submit() gọi hàm hideAnswers() của chính nó để xóa đáp án vì trận chưa kết thúc.
-42. Hàm submit() trả trận dạng JSON cho MatchApiDAO.
-43. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
-44. Lớp Match trả đối tượng Match cho MatchApiDAO.
-45. MatchApiDAO trả đối tượng Match cho hàm submitAnswers().
-46. Trong hàm runOnUiThread(), hàm submitAnswers() gọi hàm onSubmitted() của chính nó.
-47. Hàm onSubmitted() gọi hàm cancel() của CountDownTimer.
-48. MatchActivity ẩn nút Nộp bài và hiển thị thông báo đã nộp bài, đang chờ đối thủ.
-49. Khi đối thủ nộp bài, hàm submit() của MatchRestController, lúc này xử lý yêu cầu từ máy đối thủ, chấm bài như trên rồi gọi hàm isOver() của Match.
-50. Match trả về đúng vì cả 2 người chơi đã nộp bài.
-51. Hàm submit() gọi hàm endMatch() của chính nó.
-52. Hàm endMatch() gọi hàm updateEndedAt() của MatchDAO để ghi thời điểm kết thúc trận.
-53. Hàm updateEndedAt() trả kết quả cho hàm endMatch().
-54. Hàm endMatch() gọi hàm getTotalPoints() của PlayerDAO cho từng người chơi trong trận.
-55. Hàm getTotalPoints() trả tổng điểm mới cho hàm endMatch().
-56. Hàm endMatch() gọi hàm updatePoints() của FirebaseAdminDAO để cập nhật tổng điểm trong danh sách online.
-57. Hàm submit() gọi hàm writeFinished() của FirebaseAdminDAO để báo trận đã kết thúc cho cả 2 máy.
-58. Hàm onDataChange() của MatchFirebaseDAO gọi hàm toMatch().
-59. Hàm toMatch() gọi lớp Match để đóng gói trận mới nhất.
-60. Lớp Match trả đối tượng Match cho hàm toMatch().
-61. MatchFirebaseDAO gọi hàm onSuccess() của MatchCallback, chính là MatchActivity.
-62. Hàm onSuccess() thấy trận đã kết thúc, gọi hàm loadResult() của chính nó.
-63. Hàm loadResult() mở một Thread và gọi hàm getById() của MatchApiDAO để lấy trận đầy đủ, có đáp án và kết quả chấm.
-64. MatchApiDAO gửi yêu cầu GET /api/matches/{id} tới hàm getById() của MatchRestController.
-65. Hàm getById() gọi hàm findMatch() của chính nó.
-66. Hàm findMatch() gọi hàm findById() của MatchDAO.
-67. Hàm findById() truy vấn trận, đề, 2 người chơi và gọi lớp Match để đóng gói.
-68. Lớp Match trả đối tượng Match cho hàm findById().
-69. Hàm findById() trả đối tượng Match cho hàm findMatch(), hàm findMatch() trả về cho hàm getById().
-70. Hàm getById() gọi hàm getTotalPoints() của PlayerDAO cho 2 người chơi và gán vào Player của trận.
-71. Hàm getTotalPoints() trả tổng điểm cho hàm getById().
-72. Hàm getById() trả trận dạng JSON, kèm đáp án vì trận đã kết thúc, cho MatchApiDAO.
-73. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
-74. Lớp Match trả đối tượng Match cho MatchApiDAO.
-75. MatchApiDAO trả đối tượng Match cho hàm loadResult().
-76. Trong hàm runOnUiThread(), hàm loadResult() gọi hàm showResult() của chính nó.
-77. Hàm showResult() gọi hàm getResult() của Match.
-78. Match trả về kết quả của người chơi.
-79. Hàm showResult() gọi hàm showScores() của chính nó.
-80. Hàm showScores() gọi hàm getFinishTime() của Match cho người chơi và đối thủ.
-81. Match trả về thời gian làm bài.
-82. Hàm showScores() gọi hàm getPoints() của Match.
-83. Match trả về điểm trận của người chơi.
-84. MatchActivity hiển thị lớp kết quả gồm kết quả, số câu đúng, thời gian làm bài, điểm trận, tổng điểm và câu hỏi chơi tiếp cho người chơi.
+8. Lần đầu nhận trận có đề, hàm onSuccess() gọi hàm startMatch() của chính nó; hàm startMatch() lưu id đối thủ vào opponentId và lưu 10 câu hỏi của trận vào questions.
+9. Hàm startMatch() gọi lớp Answer để tạo bài làm rỗng, chưa chọn phương án, cho từng câu.
+10. Lớp Answer trả đối tượng Answer cho hàm startMatch(); hàm startMatch() giữ 10 bài làm trong answers.
+11. Hàm startMatch() gọi hàm showQuestion() của chính nó để hiện câu đầu tiên.
+12. Hàm showQuestion() gọi hàm getExpression() của MathProblem của câu đang làm.
+13. MathProblem trả chuỗi phép tính cho hàm showQuestion().
+14. Hàm showQuestion() gọi hàm getAnswerOptions() của MathProblem.
+15. MathProblem trả 4 phương án cho hàm showQuestion().
+16. Với mỗi ô, hàm showQuestion() gọi hàm optionText() của chính nó để ghép chữ cái A, B, C, D với giá trị phương án; sau đó hàm showQuestion() bật 4 ô và ghi thời điểm câu hiện ra vào shownAt.
+17. Hàm startMatch() gọi hàm createTimer() của chính nó để tạo CountDownTimer 60 giây.
+18. Hàm startMatch() gọi hàm start() của CountDownTimer.
+19. Hàm startMatch() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính MatchActivity làm PlayerListCallback, để biết đối thủ còn online hay không.
+20. MatchActivity hiển thị ô thời gian, trạng thái đối thủ và nút Thoát cho người chơi.
+21. Hàm onDataChange() của PresenceFirebaseDAO đóng gói danh sách người chơi online và gọi hàm onPlayersChanged() của PlayerListCallback, chính là MatchActivity; đối thủ vẫn có trong danh sách nên trận tiếp tục.
+22. Mỗi giây, CountDownTimer gọi hàm onTick() của MatchActivity để hiển thị thời gian còn lại.
+23. MatchActivity hiển thị số thứ tự câu đang làm, phép tính và 4 ô phương án A, B, C, D cho người chơi.
+24. Người chơi bấm một ô phương án.
+25. Hàm onClick() của MatchActivity gọi hàm chooseOption() của chính nó.
+26. Hàm chooseOption() gọi hàm setSelectedOption() của Answer ứng với câu đang làm để ghi phương án đã chọn.
+27. Hàm chooseOption() gọi hàm setAnswerTime() của Answer để ghi thời gian làm câu, tính từ shownAt tới lúc bấm.
+28. Hàm chooseOption() khóa 4 ô, làm mờ 3 ô không chọn, tăng current, rồi sau NEXT_DELAY gọi hàm showQuestion() của chính nó; khi còn câu, hàm showQuestion() hiện câu tiếp theo như bước 12–16.
+
+Các bước 23–28 lặp lại cho đến câu thứ 10.
+
+29. Sau câu thứ 10, hàm showQuestion() thấy đã làm xong 10 câu, gọi hàm showMessage() của chính nó.
+30. MatchActivity thay câu hỏi bằng thông báo đã làm xong 10 câu và hiển thị nút Nộp bài cho người chơi.
+31. Người chơi nhấn Nộp bài.
+32. Hàm onClick() của MatchActivity gọi hàm submitAnswers() của chính nó.
+33. Hàm submitAnswers() khóa nút Nộp bài và gọi hàm showMessage() của chính nó để hiển thị thông báo đang nộp bài.
+34. Hàm submitAnswers() mở một Thread và gọi hàm submit() của MatchApiDAO với 10 bài làm.
+35. MatchApiDAO gửi yêu cầu POST /api/matches/{id}/submit kèm phương án đã chọn và thời gian làm từng câu tới hàm submit() của MatchRestController.
+36. Hàm submit() ghi lại thời điểm nhận bài làm, rồi gọi hàm findMatch() của chính nó.
+37. Hàm findMatch() gọi hàm findById() của MatchDAO.
+38. Hàm findById() truy vấn trận, đề và 2 người chơi, rồi gọi lớp Match để đóng gói.
+39. Lớp Match trả đối tượng Match cho hàm findById().
+40. Hàm findById() trả đối tượng Match cho hàm findMatch(), hàm findMatch() trả về cho hàm submit().
+41. Hàm submit() gán bài làm nhận được cho người chơi trong trận, rồi gọi hàm countCorrect() của Match để chấm.
+42. Hàm countCorrect() gọi hàm setProblem() của Answer để gắn câu thứ i của đề vào bài làm thứ i.
+43. Hàm countCorrect() gọi hàm isCorrect() của Answer.
+44. Hàm isCorrect() của Answer gọi hàm isCorrect() của MathProblem để so phương án đã chọn với đáp án đúng.
+45. MathProblem trả kết quả so sánh cho hàm isCorrect() của Answer.
+46. Answer trả đúng / sai cho hàm countCorrect().
+
+Các bước 42–46 lặp lại cho đến câu thứ 10.
+
+47. Hàm countCorrect() trả số câu đúng cho hàm submit().
+48. Hàm submit() ghi số câu đúng và thời điểm nộp bài vào người chơi trong trận, rồi gọi hàm updateSubmission() của MatchDAO.
+49. Hàm updateSubmission() mở một transaction và gọi hàm updateMatchPlayer() của chính nó để lưu số câu đúng và thời điểm nộp bài vào bảng tblMatchPlayer.
+50. Với mỗi câu, hàm updateSubmission() gọi hàm insertAnswer() của chính nó để lưu phương án đã chọn và thời gian làm câu vào bảng tblAnswer.
+51. Hàm updateSubmission() xác nhận transaction và trả kết quả cho hàm submit().
+52. Hàm submit() gọi hàm writeSubmitted() của FirebaseAdminDAO để máy đối thủ biết người chơi đã nộp bài.
+53. Hàm submit() gọi hàm isOver() của Match.
+54. Match trả về sai vì đối thủ chưa nộp bài.
+55. Hàm submit() gọi hàm hideAnswers() của chính nó để xóa đáp án và bài làm vì trận chưa kết thúc.
+56. Hàm submit() trả trận dạng JSON cho MatchApiDAO.
+57. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
+58. Lớp Match trả đối tượng Match cho MatchApiDAO.
+59. MatchApiDAO trả đối tượng Match cho hàm submitAnswers().
+60. Trong hàm runOnUiThread(), hàm submitAnswers() gọi hàm onSubmitted() của chính nó.
+61. Hàm onSubmitted() gọi hàm cancel() của CountDownTimer.
+62. Hàm onSubmitted() ẩn nút Nộp bài và gọi hàm showMessage() của chính nó.
+63. MatchActivity hiển thị thông báo đã nộp bài, đang chờ đối thủ cho người chơi.
+64. Khi đối thủ nộp bài, hàm submit() của MatchRestController, lúc này xử lý yêu cầu từ máy đối thủ, chấm và lưu bài làm như trên rồi gọi hàm isOver() của Match.
+65. Match trả về đúng vì cả 2 người chơi đã nộp bài.
+66. Hàm submit() gọi hàm endMatch() của chính nó.
+67. Hàm endMatch() gọi hàm updateEndedAt() của MatchDAO để ghi thời điểm kết thúc trận.
+68. Hàm updateEndedAt() trả kết quả cho hàm endMatch().
+69. Hàm endMatch() gọi hàm getTotalPoints() của PlayerDAO cho từng người chơi trong trận.
+70. Hàm getTotalPoints() trả tổng điểm mới cho hàm endMatch().
+71. Hàm endMatch() gọi hàm updatePoints() của FirebaseAdminDAO để cập nhật tổng điểm trong danh sách online.
+72. Hàm submit() gọi hàm writeFinished() của FirebaseAdminDAO để báo trận đã kết thúc cho cả 2 máy.
+73. Hàm onDataChange() của MatchFirebaseDAO gọi hàm toMatch().
+74. Hàm toMatch() gọi lớp Match để đóng gói trận mới nhất.
+75. Lớp Match trả đối tượng Match cho hàm toMatch().
+76. MatchFirebaseDAO gọi hàm onSuccess() của MatchCallback, chính là MatchActivity.
+77. Hàm onSuccess() thấy trận đã kết thúc, gọi hàm loadResult() của chính nó.
+78. Hàm loadResult() mở một Thread và gọi hàm getById() của MatchApiDAO để lấy trận đầy đủ, có đáp án và kết quả chấm.
+79. MatchApiDAO gửi yêu cầu GET /api/matches/{id} tới hàm getById() của MatchRestController.
+80. Hàm getById() gọi hàm findMatch() của chính nó.
+81. Hàm findMatch() gọi hàm findById() của MatchDAO.
+82. Hàm findById() truy vấn trận, đề, 2 người chơi và bài làm từng câu, rồi gọi lớp Match để đóng gói.
+83. Lớp Match trả đối tượng Match cho hàm findById().
+84. Hàm findById() trả đối tượng Match cho hàm findMatch(), hàm findMatch() trả về cho hàm getById().
+85. Hàm getById() gọi hàm getTotalPoints() của PlayerDAO cho 2 người chơi và gán vào Player của trận.
+86. Hàm getTotalPoints() trả tổng điểm cho hàm getById().
+87. Hàm getById() trả trận dạng JSON, kèm đáp án và bài làm vì trận đã kết thúc, cho MatchApiDAO.
+88. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
+89. Lớp Match trả đối tượng Match cho MatchApiDAO.
+90. MatchApiDAO trả đối tượng Match cho hàm loadResult().
+91. Trong hàm runOnUiThread(), hàm loadResult() gọi hàm showResult() của chính nó.
+92. Hàm showResult() gọi hàm getResult() của Match.
+93. Match trả về kết quả của người chơi.
+94. Hàm showResult() gọi hàm showScores() của chính nó.
+95. Hàm showScores() gọi hàm getFinishTime() của Match cho người chơi và đối thủ.
+96. Match trả về thời gian làm bài.
+97. Hàm showScores() gọi hàm getPoints() của Match.
+98. Match trả về điểm trận của người chơi.
+99. MatchActivity hiển thị lớp kết quả gồm kết quả, số câu đúng, thời gian làm bài, điểm trận, tổng điểm và câu hỏi chơi tiếp cho người chơi.
 
 ![Hình 28: Tuần tự thiết kế Chơi online – Thi đấu](tuan-tu-thiet-ke-uc03c.png)
 
 *Hình 28: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
 
-- Biểu đồ có 84 thông điệp.
+- Biểu đồ có 99 thông điệp.
 - Bước 2 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở đoạn A.
+- **Làm bài từng câu:** MatchActivity hiện mỗi lần một câu với 4 ô A, B, C, D (bước 11–16, 23). Người chơi bấm một ô thì hàm chooseOption() ghi phương án đã chọn và thời gian làm câu vào Answer của câu đó (bước 26–27) rồi chuyển sang câu sau; vòng này lặp cho 10 câu (bước 23–28). App không có đáp án nên không báo đúng / sai ngay. NEXT_DELAY khóa 4 ô một lúc sau khi chọn, để bấm đúp không trả lời nhầm câu sau.
 - **Server làm trọng tài**, gồm 3 phần nghiệp vụ là hàm Java thuần của lớp thực thể:
-  - **Chấm bài:** hàm countCorrect() của Match gọi hàm isCorrect() của MathProblem (bước 32–35).
-  - **Điều kiện kết thúc:** hàm isOver() của Match (bước 39, 49).
-  - **Thắng thua:** hàm getResult() và getPoints() của Match. App gọi 2 hàm này trên bản trận server trả về (bước 77–83).
-- **Thời gian làm bài** tính theo đồng hồ server: thời điểm server nhận bài làm trừ thời điểm bắt đầu trận. Độ trễ khác nhau giữa 2 máy không làm sai kết quả do đồng hồ máy lệch nhau.
-- Bước 49–57 diễn ra khi server xử lý yêu cầu nộp bài từ máy đối thủ. Máy này biết trận đã xong nhờ Firebase (bước 58–61).
-- **MatchActivity cài đặt 2 callback:** MatchCallback nhận diễn biến trận (bước 3, 7, 61), PlayerListCallback nhận danh sách người chơi online (bước 14, 16). Ở kịch bản chuẩn đối thủ vẫn online nên bước 16 không làm gì thêm; khi đối thủ biến khỏi danh sách giữa trận, hàm onPlayersChanged() gọi forfeit() thay cho đối thủ.
-- Các cờ started, submitted, resultLoading của MatchActivity chặn gọi lặp: onSuccess() được gọi lại mỗi lần node trận thay đổi, nhưng startMatch() chỉ chạy ở lần đầu (bước 8), loadResult() chỉ chạy một lần (bước 62).
+  - **Chấm bài:** hàm countCorrect() của Match gắn từng câu của đề vào bài làm tương ứng rồi gọi hàm isCorrect() của Answer; Answer dùng hàm isCorrect() của MathProblem để so phương án đã chọn với đáp án (bước 41–47).
+  - **Điều kiện kết thúc:** hàm isOver() của Match (bước 53, 64).
+  - **Thắng thua:** hàm getResult() và getPoints() của Match. App gọi 2 hàm này trên bản trận server trả về (bước 92–98).
+- **Lưu bài làm từng câu:** hàm updateSubmission() ghi số câu đúng, thời điểm nộp vào tblMatchPlayer và 10 dòng bài làm vào tblAnswer trong cùng một transaction (bước 48–51). Bài làm được lưu để chi tiết trận ở chức năng Xem lịch sử đấu hiện được đúng / sai và thời gian từng câu của mỗi người.
+- **Không lộ bài làm giữa trận:** khi trận chưa kết thúc, hàm hideAnswers() xóa đáp án và bài làm của cả 2 người khỏi bản trận trả về (bước 55).
+- **Thời gian làm bài** tính theo đồng hồ server: thời điểm server nhận bài làm trừ thời điểm bắt đầu trận. Độ trễ khác nhau giữa 2 máy không làm sai kết quả do đồng hồ máy lệch nhau. Thời gian làm từng câu đo ở app, từ lúc câu hiện ra tới lúc bấm, và chỉ dùng để hiển thị trong chi tiết trận.
+- Bước 64–72 diễn ra khi server xử lý yêu cầu nộp bài từ máy đối thủ. Máy này biết trận đã xong nhờ Firebase (bước 73–76).
+- **MatchActivity cài đặt 2 callback:** MatchCallback nhận diễn biến trận (bước 3, 7, 76), PlayerListCallback nhận danh sách người chơi online (bước 19, 21). Ở kịch bản chuẩn đối thủ vẫn online nên bước 21 không làm gì thêm; khi đối thủ biến khỏi danh sách giữa trận, hàm onPlayersChanged() gọi forfeit() thay cho đối thủ.
+- Các cờ started, submitted, resultLoading của MatchActivity chặn gọi lặp: onSuccess() được gọi lại mỗi lần node trận thay đổi, nhưng startMatch() chỉ chạy ở lần đầu (bước 8), loadResult() chỉ chạy một lần (bước 77).
+- Hết 60 giây mà người chơi chưa nộp thì CountDownTimer gọi hàm onFinish() của MatchActivity; hàm onFinish() gọi showMessage() rồi submitAnswers() thay cho bước 31–32, các câu chưa làm được gửi đi là bỏ trống.
 
 ### 1.4. Đoạn D: Chơi tiếp
 
@@ -261,11 +289,11 @@
 
 ### 2.1. Đoạn A: Xem trận của tôi và chi tiết trận
 
-1. Người chơi nhấn nút Lịch sử đấu trên MainActivity.
-2. Hàm onClick() của MainActivity gọi hàm startActivity() mở HistoryActivity.
+1. Người chơi nhấn biểu tượng Lịch sử đấu trên OnlineActivity.
+2. Hàm onClick() của OnlineActivity gọi hàm startActivity() mở HistoryActivity.
 3. Hàm onCreate() của HistoryActivity gọi hàm getPlayer() của SessionDAO.
 4. Hàm getPlayer() trả đối tượng Player đang đăng nhập cho hàm onCreate().
-5. Hàm onCreate() gọi hàm loadHistory() của chính nó.
+5. Hàm onCreate() gọi hàm loadHistory() của chính nó; Intent không kèm EXTRA_TAB nên màn mở ở thẻ Trận của tôi.
 6. Hàm loadHistory() mở một Thread và gọi hàm getHistory() của MatchApiDAO.
 7. MatchApiDAO gửi yêu cầu GET /api/matches?playerId={id} tới hàm getHistory() của MatchRestController.
 8. Hàm getHistory() của MatchRestController gọi hàm findByPlayer() của MatchDAO.
@@ -301,85 +329,107 @@
 38. Hàm findMatch() gọi hàm findById() của MatchDAO.
 39. Hàm findById() truy vấn trận, đề, 2 người chơi và gọi lớp Match để đóng gói.
 40. Lớp Match trả đối tượng Match cho hàm findById().
-41. Hàm findById() trả đối tượng Match cho hàm findMatch(), hàm findMatch() trả về cho hàm getById().
-42. Hàm getById() gọi hàm getTotalPoints() của PlayerDAO cho 2 người chơi và gán vào Player của trận.
-43. Hàm getTotalPoints() trả tổng điểm cho hàm getById().
-44. Hàm getById() trả trận dạng JSON, kèm đáp án đúng vì trận đã kết thúc, cho MatchApiDAO.
-45. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON.
-46. Lớp Match trả đối tượng Match cho MatchApiDAO.
-47. MatchApiDAO trả đối tượng Match cho hàm loadMatch().
-48. Trong hàm runOnUiThread(), hàm loadMatch() gọi hàm showMatch() của chính nó.
-49. Hàm showMatch() gọi hàm getOpponent() của Match.
-50. Match trả về đối thủ trong trận.
-51. Hàm showMatch() gọi hàm getResult() của Match.
-52. Match trả về kết quả trận của người chơi.
-53. Hàm showMatch() gọi hàm getPoints() của Match.
-54. Match trả về điểm trận.
-55. Với người chơi và đối thủ, hàm showMatch() gọi hàm stats() của chính nó.
-56. Hàm stats() gọi hàm getFinishTime() của Match.
-57. Match trả về thời gian làm bài.
-58. Hàm showMatch() tạo ProblemAdapter với 10 câu hỏi của trận, rồi gắn vào danh sách.
-59. Hàm onBindViewHolder() của ProblemAdapter gọi hàm getExpression() của MathProblem.
-60. MathProblem trả về chuỗi phép tính.
-61. MatchDetailActivity hiển thị kết quả, điểm trận, số câu đúng và thời gian làm bài của 2 bên, 10 câu hỏi kèm đáp án đúng cho người chơi.
-62. Người chơi nhấn Back.
-63. MatchDetailActivity gọi hàm finish(), quay về HistoryActivity.
-64. HistoryActivity hiển thị lại danh sách trận cho người chơi.
+41. Với mỗi người chơi trong trận, hàm findById() gọi hàm findAnswers() của chính nó để đọc bài làm từng câu ở bảng tblAnswer theo thứ tự câu và gắn câu hỏi tương ứng vào từng bài làm.
+42. Hàm findById() trả đối tượng Match cho hàm findMatch(), hàm findMatch() trả về cho hàm getById().
+43. Hàm getById() gọi hàm getTotalPoints() của PlayerDAO cho 2 người chơi và gán vào Player của trận.
+44. Hàm getTotalPoints() trả tổng điểm cho hàm getById().
+45. Hàm getById() trả trận dạng JSON, kèm đáp án đúng và bài làm từng câu của 2 người vì trận đã kết thúc, cho MatchApiDAO.
+46. Hàm toMatch() của MatchApiDAO gọi lớp Match để đóng gói dữ liệu JSON, kèm bài làm từng câu của 2 người chơi.
+47. Lớp Match trả đối tượng Match cho MatchApiDAO.
+48. MatchApiDAO trả đối tượng Match cho hàm loadMatch().
+49. Trong hàm runOnUiThread(), hàm loadMatch() gọi hàm showMatch() của chính nó.
+50. Hàm showMatch() gọi hàm getOpponent() của Match.
+51. Match trả về đối thủ trong trận.
+52. Hàm showMatch() gọi hàm getResult() của Match.
+53. Match trả về kết quả trận của người chơi.
+54. Hàm showMatch() gọi hàm showResult() của chính nó để hiển thị kết quả với màu tương ứng.
+55. Hàm showMatch() gọi hàm getPoints() của Match.
+56. Match trả về điểm trận.
+57. Với người chơi và đối thủ, hàm showMatch() gọi hàm stats() của chính nó.
+58. Hàm stats() gọi hàm getFinishTime() của Match.
+59. Match trả về thời gian làm bài.
+60. Hàm showMatch() tạo ProblemAdapter với 10 câu hỏi của trận và bài làm từng câu của người chơi, của đối thủ, rồi gắn vào danh sách.
+61. Hàm onBindViewHolder() của ProblemAdapter gọi hàm getExpression() của MathProblem của câu đó.
+62. MathProblem trả về chuỗi phép tính; hàm onBindViewHolder() ghép đáp án đúng vào phép tính.
+63. Hàm onBindViewHolder() gọi hàm answerAt() của chính nó để lấy bài làm câu đó của người chơi và của đối thủ.
+64. Với từng bài làm, hàm onBindViewHolder() gọi hàm showAnswer() của chính nó.
+65. Hàm showAnswer() gọi hàm isAnswered() của Answer.
+66. Answer trả về câu đó đã được làm.
+67. Hàm showAnswer() gọi hàm isCorrect() của Answer.
+68. Hàm isCorrect() của Answer gọi hàm isCorrect() của MathProblem để so phương án đã chọn với đáp án đúng.
+69. MathProblem trả kết quả so sánh cho hàm isCorrect() của Answer.
+70. Answer trả đúng / sai cho hàm showAnswer().
+
+Các bước 61–70 lặp lại cho đến câu thứ 10.
+
+71. MatchDetailActivity hiển thị cho người chơi kết quả, điểm trận, số câu đúng và thời gian làm bài của 2 bên, và 10 câu, mỗi câu gồm phép tính kèm đáp án đúng, với mỗi người là đúng / sai, phương án đã chọn và thời gian làm câu.
+72. Người chơi nhấn Back.
+73. MatchDetailActivity gọi hàm finish(), quay về HistoryActivity.
+74. HistoryActivity hiển thị lại danh sách trận cho người chơi.
 
 ![Hình 30: Tuần tự thiết kế Xem lịch sử đấu – Xem trận của tôi](tuan-tu-thiet-ke-uc04a.png)
 
 *Hình 30: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
-- Biểu đồ có 64 thông điệp.
+- Biểu đồ có 74 thông điệp.
 - Bước 3–4 và 32–33 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
 - **Có 2 lời gọi REST:** bước 7 lấy danh sách trận, bước 36 lấy một trận đầy đủ. Server đi theo khuôn MatchRestController → MatchDAO → Match.
-- **Danh sách trận không kèm đề** (bước 9) để mỗi lần mở lịch sử chỉ đọc 2 bảng tblMatch, tblMatchPlayer. Đề và đáp án chỉ được đọc khi người chơi mở một trận (bước 39).
+- **Danh sách trận không kèm đề** (bước 9) để mỗi lần mở lịch sử chỉ đọc 2 bảng tblMatch, tblMatchPlayer. Đề, đáp án và bài làm từng câu chỉ được đọc khi người chơi mở một trận (bước 39–41).
 - **Biểu đồ tròn và từng dòng trận** đều dựa trên getResult(), getPoints(), getOpponent() của Match (bước 17, 22–27). Đây là cùng luật dùng khi kết thúc trận, nên lịch sử luôn khớp với kết quả đã báo cho 2 người.
-- Lời gọi mạng chạy trong Thread (bước 6, 35). Phần vẽ giao diện chạy trong hàm runOnUiThread() (bước 16, 48).
+- **Từng câu của chi tiết trận** (bước 61–70): ProblemAdapter lấy bài làm câu đó của mỗi người bằng answerAt(), rồi showAnswer() hỏi Answer: isAnswered() để biết câu bỏ trống, isCorrect() để tô đúng / sai. Đúng / sai không lưu trong CSDL mà tính lại từ phương án đã chọn và đáp án đúng, bằng cùng hàm isCorrect() của MathProblem mà server dùng khi chấm. Người bỏ trận trước khi nộp không có bài làm, answerAt() không trả bài làm nào và ô đó hiện dấu gạch ngang.
+- Lời gọi mạng chạy trong Thread (bước 6, 35). Phần vẽ giao diện chạy trong hàm runOnUiThread() (bước 16, 49).
 
 ### 2.2. Đoạn B: Xem bảng xếp hạng
 
-1. Người chơi chọn thẻ Bảng xếp hạng trên HistoryActivity.
-2. Hàm onTabSelected() của HistoryActivity ẩn khối Trận của tôi, hiện danh sách xếp hạng và, vì chưa tải lần nào, gọi hàm loadRanking() của chính nó.
-3. Hàm loadRanking() ghi rankingLoaded, mở một Thread và gọi hàm getRanking() của PlayerApiDAO.
-4. PlayerApiDAO gửi yêu cầu GET /api/players/ranking tới hàm getRanking() của PlayerRestController.
-5. Hàm getRanking() của PlayerRestController gọi hàm getRanking() của PlayerDAO.
-6. Hàm getRanking() của PlayerDAO gọi hàm findAllPlayers() của chính nó.
-7. Hàm findAllPlayers() truy vấn các tài khoản có vai trò người chơi và gọi lớp Player để đóng gói từng người.
-8. Lớp Player trả đối tượng Player cho hàm findAllPlayers().
-9. Hàm getRanking() gọi hàm findFinished() của MatchDAO.
-10. Hàm findFinished() truy vấn các trận đã kết thúc kèm 2 người chơi, và gọi lớp Match để đóng gói từng trận.
-11. Lớp Match trả đối tượng Match cho hàm findFinished().
-12. Hàm findFinished() trả danh sách trận cho hàm getRanking().
-13. Hàm getRanking() gọi hàm rank() của chính nó với danh sách người chơi và danh sách trận.
-14. Với mỗi trận, hàm rank() gọi hàm addMatch() của chính nó.
-15. Hàm addMatch() gọi hàm getPoints() của Match để cộng điểm trận vào tổng điểm của 2 người.
-16. Match trả về điểm trận.
-17. Hàm addMatch() gọi hàm getFinishTime() của Match.
-18. Match trả về thời gian làm bài.
-19. Hàm addMatch() gọi hàm getResult() của Match để biết người thắng; trận thắng thì ghi thời gian làm bài vào danh sách thời gian thắng.
-20. Match trả về kết quả trận.
-21. Hàm rank() tính trung bình điểm đối thủ bằng hàm averagePoints(), trung bình thời gian thắng bằng hàm averageSeconds(), rồi sắp xếp theo 3 tiêu chí.
-22. Hàm getRanking() của PlayerDAO trả danh sách người chơi đã xếp hạng cho PlayerRestController.
-23. Hàm getRanking() của PlayerRestController trả danh sách dạng JSON cho PlayerApiDAO.
-24. Với mỗi phần tử JSON, hàm toPlayer() của PlayerApiDAO gọi lớp Player để đóng gói.
-25. Lớp Player trả đối tượng Player cho PlayerApiDAO.
-26. PlayerApiDAO trả danh sách người chơi cho hàm loadRanking().
-27. Trong hàm runOnUiThread(), hàm loadRanking() tạo RankingAdapter với danh sách và id của người xem, rồi gắn vào danh sách xếp hạng.
-28. RankingAdapter hiển thị bảng xếp hạng, dòng của người xem được tô nổi bật.
-29. Người chơi nhấn Back.
-30. HistoryActivity gọi hàm finish(), quay về MainActivity.
-31. MainActivity hiển thị giao diện chính cho người chơi.
+1. Người chơi nhấn biểu tượng Bảng xếp hạng trên OnlineActivity.
+2. Hàm onClick() của OnlineActivity gọi hàm startActivity() mở HistoryActivity, kèm EXTRA_TAB bằng TAB_RANKING.
+3. Hàm onCreate() của HistoryActivity gọi hàm getPlayer() của SessionDAO.
+4. Hàm getPlayer() trả đối tượng Player đang đăng nhập cho hàm onCreate().
+5. Hàm onCreate() gọi hàm loadHistory() của chính nó để tải sẵn thẻ Trận của tôi như bước 6–28 của đoạn A.
+6. Hàm onCreate() thấy Intent có EXTRA_TAB bằng TAB_RANKING, gọi hàm selectTab() của TabLayout để chọn thẻ Bảng xếp hạng.
+7. TabLayout gọi hàm onTabSelected() của HistoryActivity.
+8. Hàm onTabSelected() ẩn khối Trận của tôi, hiện danh sách xếp hạng và, vì chưa tải lần nào, gọi hàm loadRanking() của chính nó.
+9. Hàm loadRanking() ghi rankingLoaded, mở một Thread và gọi hàm getRanking() của PlayerApiDAO.
+10. PlayerApiDAO gửi yêu cầu GET /api/players/ranking tới hàm getRanking() của PlayerRestController.
+11. Hàm getRanking() của PlayerRestController gọi hàm getRanking() của PlayerDAO.
+12. Hàm getRanking() của PlayerDAO gọi hàm findAllPlayers() của chính nó.
+13. Hàm findAllPlayers() truy vấn các tài khoản có vai trò người chơi và gọi lớp Player để đóng gói từng người.
+14. Lớp Player trả đối tượng Player cho hàm findAllPlayers().
+15. Hàm getRanking() gọi hàm findFinished() của MatchDAO.
+16. Hàm findFinished() truy vấn các trận đã kết thúc kèm 2 người chơi, và gọi lớp Match để đóng gói từng trận.
+17. Lớp Match trả đối tượng Match cho hàm findFinished().
+18. Hàm findFinished() trả danh sách trận cho hàm getRanking().
+19. Hàm getRanking() gọi hàm rank() của chính nó với danh sách người chơi và danh sách trận.
+20. Với mỗi trận, hàm rank() gọi hàm addMatch() của chính nó.
+21. Hàm addMatch() gọi hàm getPoints() của Match để cộng điểm trận vào tổng điểm của 2 người.
+22. Match trả về điểm trận.
+23. Hàm addMatch() gọi hàm getFinishTime() của Match.
+24. Match trả về thời gian làm bài.
+25. Hàm addMatch() gọi hàm getResult() của Match để biết người thắng; trận thắng thì ghi thời gian làm bài vào danh sách thời gian thắng.
+26. Match trả về kết quả trận.
+27. Hàm rank() tính trung bình điểm đối thủ bằng hàm averagePoints(), trung bình thời gian thắng bằng hàm averageSeconds(), rồi sắp xếp theo 3 tiêu chí.
+28. Hàm getRanking() của PlayerDAO trả danh sách người chơi đã xếp hạng cho PlayerRestController.
+29. Hàm getRanking() của PlayerRestController trả danh sách dạng JSON cho PlayerApiDAO.
+30. Với mỗi phần tử JSON, hàm toPlayer() của PlayerApiDAO gọi lớp Player để đóng gói.
+31. Lớp Player trả đối tượng Player cho PlayerApiDAO.
+32. PlayerApiDAO trả danh sách người chơi cho hàm loadRanking().
+33. Trong hàm runOnUiThread(), hàm loadRanking() tạo RankingAdapter với danh sách và id của người xem, rồi gắn vào danh sách xếp hạng.
+34. RankingAdapter hiển thị bảng xếp hạng, dòng của người xem được tô nổi bật.
+35. Người chơi nhấn Back.
+36. HistoryActivity gọi hàm finish(), quay về OnlineActivity.
+37. OnlineActivity hiển thị lại màn Chơi online cho người chơi.
 
 ![Hình 31: Tuần tự thiết kế Xem lịch sử đấu – Xem bảng xếp hạng](tuan-tu-thiet-ke-uc04b.png)
 
 *Hình 31: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 
-- Biểu đồ có 31 thông điệp.
-- **Lời gọi REST** duy nhất là bước 4. Server đi theo khuôn PlayerRestController → PlayerDAO → MatchDAO → Match, Player.
-- **Các tiêu chí không lưu trong CSDL** mà được tính lại ở bước 13–21 bằng getPoints(), getResult(), getFinishTime() của Match. Bảng xếp hạng vì vậy luôn khớp với kết quả các trận.
-- rank() là hàm static, không truy cập CSDL: nhận danh sách người chơi và danh sách trận đã đọc ở bước 6–12 rồi chỉ tính toán, nên kiểm thử được bằng unit test.
-- Bảng xếp hạng là một thẻ của HistoryActivity nên không mở Activity mới; chỉ lần chọn thẻ đầu tiên mới gọi server, các lần sau dùng lại danh sách đã tải.
+- Biểu đồ có 37 thông điệp.
+- Bước 4 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
+- **Lời gọi REST** của bảng xếp hạng là bước 10. Server đi theo khuôn PlayerRestController → PlayerDAO → MatchDAO → Match, Player. Danh sách trận cho thẻ Trận của tôi vẫn được tải ở nền bằng loadHistory() (bước 5) như đoạn A.
+- **Mở thẳng thẻ Bảng xếp hạng:** biểu tượng Bảng xếp hạng gửi EXTRA_TAB trong Intent (bước 2), HistoryActivity chọn sẵn thẻ bằng selectTab() và TabLayout gọi lại onTabSelected() (bước 6–8), giống như khi người chơi tự chọn thẻ.
+- **Các tiêu chí không lưu trong CSDL** mà được tính lại ở bước 19–27 bằng getPoints(), getResult(), getFinishTime() của Match. Bảng xếp hạng vì vậy luôn khớp với kết quả các trận.
+- rank() là hàm static, không truy cập CSDL: nhận danh sách người chơi và danh sách trận đã đọc ở bước 12–18 rồi chỉ tính toán, nên kiểm thử được bằng unit test.
+- Bảng xếp hạng là một thẻ của HistoryActivity nên không cần Activity riêng; chỉ lần chọn thẻ đầu tiên mới gọi server, các lần sau dùng lại danh sách đã tải.
 
 ---
 
@@ -387,8 +437,8 @@
 
 ### 3.1. Đoạn A: Gửi lời mời kết bạn
 
-1. Người chơi nhấn nút Bạn bè trên MainActivity.
-2. Hàm onClick() của MainActivity gọi hàm startActivity() mở FriendActivity.
+1. Người chơi nhấn biểu tượng Bạn bè trên OnlineActivity.
+2. Hàm onClick() của OnlineActivity gọi hàm startActivity() mở FriendActivity.
 3. Hàm onCreate() của FriendActivity gọi hàm getPlayer() của SessionDAO.
 4. Hàm getPlayer() gọi lớp Player để đóng gói người chơi đang đăng nhập.
 5. Lớp Player trả đối tượng Player cho hàm getPlayer().
@@ -454,7 +504,7 @@
 
 - Biểu đồ có 60 thông điệp.
 - **Lời gọi REST** có 2 lần: bước 10 lấy lời mời và bạn bè, bước 38 gửi lời mời. Server đi theo khuôn FriendshipRestController → FriendshipDAO, PlayerDAO → Friendship, Player.
-- **Firebase** chỉ dùng để biết bạn nào đang online (bước 7, 30–34). Bước 30 xảy ra mỗi khi có người vào hoặc thoát ứng dụng, nên trạng thái Online / Offline tự cập nhật mà không phải gọi server. PresenceFirebaseDAO gọi về qua interface PlayerListCallback (bước 33), dùng chung với MainActivity, MatchActivity của Chơi online.
+- **Firebase** chỉ dùng để biết bạn nào đang online (bước 7, 30–34). Bước 30 xảy ra mỗi khi có người vào hoặc rời màn Chơi online, nên trạng thái Online / Offline tự cập nhật mà không phải gọi server. PresenceFirebaseDAO gọi về qua interface PlayerListCallback (bước 33), dùng chung với OnlineActivity, MatchActivity của Chơi online.
 - **Luật nghiệp vụ** nằm ở thực thể Friendship: canAccept() tách lời mời đã nhận (bước 22), getFriend() lấy người còn lại trong quan hệ (bước 27). Kiểm tra trùng quan hệ theo cả 2 chiều nằm ở existsBetween() của FriendshipDAO (bước 47).
 - Lời gọi mạng chạy trong Thread (bước 9, 37). Phần vẽ giao diện chạy trong hàm runOnUiThread() (bước 21, 59).
 

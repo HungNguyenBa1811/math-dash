@@ -4,19 +4,22 @@ title Tuần tự phân tích – Chơi online, đoạn A: Gửi lời thách đ
 
 actor "Người chơi" as U
 boundary MainView as MV
+boundary OnlineView as OV
 boundary MatchView as GV
 entity Player as P
 entity Challenge as C
 
-MV -> P : goOnline()
-MV -> P : getOnlinePlayers()
-P --> MV : danh sách người chơi online
-MV --> U : hiển thị thông tin của mình, danh sách online
-U -> MV : bấm vào tên đối thủ đang rỗi
-MV -> C : sendChallenge()
-C --> MV : lời mời đang chờ
-MV --> U : hiển thị đang chờ đối thủ trả lời
-MV -> C : watchChallenge()
-C --> MV : lời mời đã được đồng ý
-MV -> GV : gọi
+U -> MV : nhấn Chơi online
+MV -> OV : gọi
+OV -> P : goOnline()
+OV -> P : getOnlinePlayers()
+P --> OV : danh sách người chơi online
+OV --> U : hiển thị thông tin của mình, danh sách online
+U -> OV : bấm vào tên đối thủ đang rỗi
+OV -> C : sendChallenge()
+C --> OV : lời mời đang chờ
+OV --> U : hiển thị đang chờ đối thủ trả lời
+OV -> C : watchChallenge()
+C --> OV : lời mời đã được đồng ý
+OV -> GV : gọi
 @enduml

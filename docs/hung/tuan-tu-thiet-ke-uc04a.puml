@@ -4,7 +4,7 @@ title Tuần tự thiết kế – Xem lịch sử đấu, đoạn A: Xem trận
 
 actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
-boundary MainActivity as MA
+boundary OnlineActivity as OA
 boundary HistoryActivity as HA
 boundary PieChartView as PC
 boundary MatchHistoryAdapter as MHA
@@ -14,6 +14,7 @@ control SessionDAO as SD
 control MatchApiDAO as MAD
 entity Match as M
 entity MathProblem as Q
+entity Answer as A
 end box
 box "Server (Spring Boot)" #FFFFFF
 boundary "MatchRestController" as MRC
@@ -22,8 +23,8 @@ control "PlayerDAO" as PD
 entity "Match" as SM
 end box
 
-U -> MA : nhấn Lịch sử đấu
-MA -> HA : onClick(): startActivity()
+U -> OA : nhấn biểu tượng Lịch sử đấu
+OA -> HA : onClick(): startActivity()
 HA -> SD : onCreate(): getPlayer()
 SD --> HA : Player
 HA -> HA : loadHistory()
@@ -62,6 +63,7 @@ MRC -> MRC : findMatch()
 MRC -> MD : findById()
 MD -> SM : đóng gói Match
 SM --> MD : Match
+MD -> MD : findAnswers()
 MD --> MRC : Match
 MRC -> PD : getTotalPoints()
 PD --> MRC : tổng điểm
@@ -74,15 +76,26 @@ MDA -> M : getOpponent()
 M --> MDA : đối thủ trong trận
 MDA -> M : getResult()
 M --> MDA : kết quả trận
+MDA -> MDA : showResult()
 MDA -> M : getPoints()
 M --> MDA : điểm trận
 MDA -> MDA : stats()
 MDA -> M : getFinishTime()
 M --> MDA : thời gian làm bài
 MDA -> PA : tạo ProblemAdapter
-PA -> Q : onBindViewHolder(): getExpression()
-Q --> PA : phép tính
-MDA --> U : hiển thị chi tiết trận
+loop 10 câu
+  PA -> Q : onBindViewHolder(): getExpression()
+  Q --> PA : phép tính
+  PA -> PA : answerAt()
+  PA -> PA : showAnswer()
+  PA -> A : isAnswered()
+  A --> PA : đã làm
+  PA -> A : isCorrect()
+  A -> Q : isCorrect()
+  Q --> A : kết quả so sánh
+  A --> PA : đúng / sai
+end
+MDA --> U : hiển thị chi tiết trận và từng câu
 U -> MDA : nhấn Back
 MDA -> HA : finish()
 HA --> U : hiển thị lại danh sách trận

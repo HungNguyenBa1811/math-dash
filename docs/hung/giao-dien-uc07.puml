@@ -2,22 +2,26 @@
 title Phác thảo giao diện – Quản lý bạn bè
 {
   {+
-  <b>MainActivity
+  <b>OnlineActivity
   ==
-  <b>HUNG</b> · 13,5 điểm
+  { <b>CHƠI ONLINE</b> | <color:#FFFFFF>xxxx</color> | [<b><&people></b>] | [<&clock>] | [<&bar-chart>] }
   ==
-  NGƯỜI CHƠI ONLINE
-  {#
-  MINH | 15 | <color:gray>Bận</color>
-  HOANG | 9 | <color:green>Rỗi</color>
+  {+
+  { <b><color:#0097A7>HUNG</color></b> | <color:#FFFFFF>xxxxxxxxxxx</color> | <color:orange>13,5 điểm</color> }
   }
   .
-  [    CHƠI VỚI MÁY    ]
-  [     LỊCH SỬ ĐẤU    ]
-  [      <b>BẠN BÈ</b>      ]
-  [      ĐĂNG XUẤT     ]
+  <color:#0097A7>NGƯỜI CHƠI ONLINE</color>
+  {#
+  <b>MINH</b> | <color:orange>15 điểm</color> | <color:gray>Bận</color>
+  <b>HOANG</b> | <color:orange>9 điểm</color> | <color:green>Rỗi</color>
+  }
+  .
+  ..
+  <color:gray><&people> Bạn bè: mở màn Bạn bè</color>
   } | . | {+
   <b>FriendActivity – máy 1
+  ==
+  <b>BẠN BÈ</b>
   ==
   { "Tên đăng nhập  " | [ <b>KẾT BẠN</b> ] }
   .
@@ -41,6 +45,8 @@ title Phác thảo giao diện – Quản lý bạn bè
   <color:green>Đã gửi lời mời kết bạn tới HOANG</color>
   } | . | {+
   <b>FriendActivity – máy 2
+  ==
+  <b>BẠN BÈ</b>
   ==
   { "Tên đăng nhập  " | [ <b>KẾT BẠN</b> ] }
   .

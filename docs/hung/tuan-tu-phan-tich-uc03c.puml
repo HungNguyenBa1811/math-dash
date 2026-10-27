@@ -6,15 +6,23 @@ actor "Người chơi" as U
 boundary MatchView as GV
 boundary MatchResultView as RV
 entity Match as M
+entity Answer as A
 entity MathProblem as Q
 
 GV -> M : watchMatch()
 M --> GV : trận đấu kèm đề bài
-GV --> U : hiển thị ô thời gian, trạng thái đối thủ, 10 câu hỏi
-U -> GV : chọn đáp án, nhấn Nộp bài
+GV --> U : hiển thị ô thời gian, trạng thái đối thủ, nút Thoát
+loop 10 câu
+  GV --> U : hiển thị số thứ tự, phép tính, 4 ô phương án
+  U -> GV : bấm một ô phương án
+end
+GV --> U : hiển thị đã làm xong 10 câu, nút Nộp bài
+U -> GV : nhấn Nộp bài
 GV -> M : submitAnswers()
-M -> Q : isCorrect()
-Q --> M : đúng / sai
+M -> A : isCorrect()
+A -> Q : isCorrect()
+Q --> A : đúng / sai
+A --> M : câu đúng / sai
 M --> GV : trận đã ghi nhận bài làm
 GV --> U : hiển thị đã nộp bài, đang chờ đối thủ
 M -> M : isOver()

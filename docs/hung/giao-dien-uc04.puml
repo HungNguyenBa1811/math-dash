@@ -2,24 +2,27 @@
 title Phác thảo giao diện – Xem lịch sử đấu
 {
   {+
-  <b>MainActivity
+  <b>OnlineActivity
   ==
-  <b>HUNG</b> · 13,5 điểm
+  { <b>CHƠI ONLINE</b> | <color:#FFFFFF>xxxx</color> | [<&people>] | [<b><&clock></b>] | [<b><&bar-chart></b>] }
   ==
-  NGƯỜI CHƠI ONLINE
-  {#
-  MINH | 15 | <color:gray>Bận</color>
-  LAN | 13,5 | <color:green>Rỗi</color>
+  {+
+  { <b><color:#0097A7>HUNG</color></b> | <color:#FFFFFF>xxxxxxxxxxx</color> | <color:orange>13,5 điểm</color> }
   }
   .
-  [    CHƠI VỚI MÁY    ]
-  [   <b>LỊCH SỬ ĐẤU</b>   ]
-  [       BẠN BÈ       ]
-  [      ĐĂNG XUẤT     ]
+  <color:#0097A7>NGƯỜI CHƠI ONLINE</color>
+  {#
+  <b>MINH</b> | <color:orange>15 điểm</color> | <color:gray>Bận</color>
+  <b>LAN</b> | <color:orange>13,5 điểm</color> | <color:green>Rỗi</color>
+  }
+  .
+  ..
+  <color:gray><&clock> Lịch sử đấu: thẻ Trận của tôi</color>
+  <color:gray><&bar-chart> Bảng xếp hạng: thẻ Bảng xếp hạng</color>
   } | . | {+
   <b>HistoryActivity · thẻ Trận của tôi
   ==
-  { <&arrow-left> | <b>Lịch sử đấu</b> }
+  <b>LỊCH SỬ ĐẤU</b>
   { <b><u>TRẬN CỦA TÔI</u></b> | . | BẢNG XẾP HẠNG }
   ==
   {+
@@ -53,7 +56,7 @@ title Phác thảo giao diện – Xem lịch sử đấu
   } | . | {+
   <b>HistoryActivity · thẻ Bảng xếp hạng
   ==
-  { <&arrow-left> | <b>Lịch sử đấu</b> }
+  <b>LỊCH SỬ ĐẤU</b>
   { TRẬN CỦA TÔI | . | <b><u>BẢNG XẾP HẠNG</u></b> }
   ==
   {#

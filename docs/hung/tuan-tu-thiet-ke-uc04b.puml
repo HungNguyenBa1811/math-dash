@@ -4,9 +4,11 @@ title Tuần tự thiết kế – Xem lịch sử đấu, đoạn B: Xem bảng
 
 actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
-boundary MainActivity as MA
+boundary OnlineActivity as OA
 boundary HistoryActivity as HA
+boundary TabLayout as TL
 boundary RankingAdapter as RAD
+control SessionDAO as SD
 control PlayerApiDAO as PAD
 entity Player as P
 end box
@@ -18,8 +20,14 @@ entity "Player" as SP
 entity "Match" as SM
 end box
 
-U -> HA : chọn thẻ Bảng xếp hạng
-HA -> HA : onTabSelected(): loadRanking()
+U -> OA : nhấn biểu tượng Bảng xếp hạng
+OA -> HA : onClick(): startActivity() kèm EXTRA_TAB
+HA -> SD : onCreate(): getPlayer()
+SD --> HA : Player
+HA -> HA : loadHistory()
+HA -> TL : selectTab()
+TL -> HA : onTabSelected()
+HA -> HA : loadRanking()
 HA -> PAD : getRanking() {Thread}
 PAD -> PRC : GET /api/players/ranking → getRanking()
 PRC -> PD : getRanking()
@@ -47,6 +55,6 @@ PAD --> HA : List<Player>
 HA -> RAD : runOnUiThread(): new RankingAdapter()
 RAD --> U : hiển thị bảng xếp hạng
 U -> HA : nhấn Back
-HA -> MA : finish()
-MA --> U : hiển thị giao diện chính
+HA -> OA : finish()
+OA --> U : hiển thị lại màn Chơi online
 @enduml

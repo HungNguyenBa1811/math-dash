@@ -3,8 +3,8 @@
 title Biểu đồ lớp chi tiết – Quản lý bạn bè
 
 package "Client (Android)" {
-  class MainActivity <<boundary>> {
-    - btnFriends : Button
+  class OnlineActivity <<boundary>> {
+    - btnFriends : ImageButton
     + onClick(v : View) : void
   }
   class FriendActivity <<boundary>> {
@@ -68,7 +68,7 @@ package "Client (Android)" {
     - txtStatus : TextView
     - btnUnfriend : ImageButton
   }
-  class "activity_main.xml" as xmlMain
+  class "activity_online.xml" as xmlOnline
   class "activity_friend.xml" as xmlFriend
   class "item_friend_request.xml" as xmlItemRequest
   class "item_friend.xml" as xmlItemFriend
@@ -181,12 +181,12 @@ package "Server (Spring Boot)" {
   }
 }
 
-MainActivity -- FriendActivity
+OnlineActivity -- FriendActivity
 FriendActivity -- FriendRequestAdapter
 FriendActivity -- FriendAdapter
 FriendRequestAdapter -- FriendRequestViewHolder
 FriendAdapter -- FriendViewHolder
-MainActivity -- xmlMain
+OnlineActivity -- xmlOnline
 FriendActivity -- xmlFriend
 FriendRequestViewHolder -- xmlItemRequest
 FriendViewHolder -- xmlItemFriend

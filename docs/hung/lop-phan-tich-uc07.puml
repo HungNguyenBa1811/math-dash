@@ -2,7 +2,7 @@
 !include _theme.iuml
 title Biểu đồ lớp pha phân tích – Quản lý bạn bè
 
-class MainView <<boundary>> {
+class OnlineView <<boundary>> {
   - outMyInfo
   - subFriends
 }
@@ -30,7 +30,7 @@ class Friendship <<entity>> {
   + getFriend()
 }
 
-MainView -- FriendView
+OnlineView -- FriendView
 FriendView -- Friendship
 FriendView -- Player
 Friendship "n" o-- "1" Player : người gửi

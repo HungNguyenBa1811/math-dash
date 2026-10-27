@@ -2,9 +2,10 @@
 !include _theme.iuml
 title Biểu đồ lớp pha phân tích – Xem lịch sử đấu
 
-class MainView <<boundary>> {
+class OnlineView <<boundary>> {
   - outMyInfo
   - subHistory
+  - subRanking
 }
 class HistoryView <<boundary>> {
   - outWinRateChart
@@ -18,7 +19,7 @@ class MatchDetailView <<boundary>> {
   - outPoints
   - outMyResult
   - outOpponentResult
-  - outListProblem
+  - outListAnswer
 }
 class Player <<entity>> {
   - username
@@ -43,19 +44,28 @@ class MatchPlayer <<entity>> {
   - submittedAt
   - forfeited
 }
+class Answer <<entity>> {
+  - selectedOption
+  - answerTime
+  + isCorrect()
+}
 class MathProblem <<entity>> {
   - operand1
   - operand2
   - operator
   - correctAnswer
+  + isCorrect()
 }
 
-MainView -- HistoryView
+OnlineView -- HistoryView
 HistoryView -- MatchDetailView
 HistoryView -- Match
 HistoryView -- Player
 MatchDetailView -- Match
+MatchDetailView -- Answer
 Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
 Match "1" *-- "10" MathProblem
+MatchPlayer "n" -- "n" MathProblem
+(MatchPlayer, MathProblem) .. Answer
 @enduml

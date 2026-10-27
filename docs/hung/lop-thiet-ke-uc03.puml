@@ -5,15 +5,28 @@ title Biểu đồ lớp chi tiết – Chơi online
 package "Client (Android)" {
   class MainActivity <<boundary>> {
     - txtMyName : TextView
+    - btnPlayBot : Button
+    - btnPlayOnline : Button
+    - btnLogout : ImageButton
+    - me : Player
+    - sessionDAO : SessionDAO
+    + onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+    - logout() : void
+  }
+  class OnlineActivity <<boundary>> {
+    - txtMyName : TextView
     - txtMyPoints : TextView
+    - txtEmpty : TextView
     - rvPlayers : RecyclerView
-    - btnLogout : Button
+    - btnFriends : ImageButton
+    - btnHistory : ImageButton
+    - btnRanking : ImageButton
     - me : Player
     - playerAdapter : PlayerAdapter
     - waitingDialog : AlertDialog
     - sentChallenge : Challenge
     - shownChallenges : Set<String>
-    - sessionDAO : SessionDAO
     - playerApiDAO : PlayerApiDAO
     - presenceFirebaseDAO : PresenceFirebaseDAO
     - challengeFirebaseDAO : ChallengeFirebaseDAO
@@ -24,17 +37,18 @@ package "Client (Android)" {
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
+    - bindViews() : void
     - goOnline() : void
     - showWaitingDialog(opponent : Player) : void
     - showChallengeDialog(challenge : Challenge) : void
     - acceptChallenge(challenge : Challenge) : void
     - closeSentChallenge() : void
     - openMatch(matchId : int) : void
-    - logout() : void
+    - showToast(message : String) : void
   }
   class PlayerAdapter <<boundary>> {
     - listPlayer : List<Player>
-    - activity : MainActivity
+    - activity : OnlineActivity
     + setPlayers(players : List<Player>) : void
     + onCreateViewHolder(parent : ViewGroup, viewType : int) : PlayerViewHolder
     + onBindViewHolder(holder : PlayerViewHolder, position : int) : void
@@ -48,9 +62,14 @@ package "Client (Android)" {
   class MatchActivity <<boundary>> {
     + {static} EXTRA_MATCH_ID : String
     - {static} MATCH_MILLIS : long
+    - {static} NEXT_DELAY : long
+    - {static} LETTERS : String[]
     - txtTimer : TextView
     - txtOpponentStatus : TextView
-    - rvQuestions : RecyclerView
+    - txtProgress : TextView
+    - txtExpression : TextView
+    - layoutOptions : LinearLayout
+    - btnOptions : Button[4]
     - btnSubmit : Button
     - btnExit : Button
     - layoutResult : LinearLayout
@@ -64,8 +83,11 @@ package "Client (Android)" {
     - me : Player
     - matchId : int
     - opponentId : int
+    - questions : List<MathProblem>
+    - answers : List<Answer>
+    - current : int
+    - shownAt : long
     - timer : CountDownTimer
-    - questionAdapter : QuestionAdapter
     - matchFirebaseDAO : MatchFirebaseDAO
     - presenceFirebaseDAO : PresenceFirebaseDAO
     - matchApiDAO : MatchApiDAO
@@ -87,6 +109,10 @@ package "Client (Android)" {
     + onTick(millisLeft : long) : void
     + onFinish() : void
     - startMatch(match : Match) : void
+    - showQuestion() : void
+    - chooseOption(index : int) : void
+    - optionText(index : int, value : int) : CharSequence
+    - showMessage(message : String) : void
     - createTimer() : CountDownTimer
     - submitAnswers() : void
     - onSubmitted() : void
@@ -104,27 +130,10 @@ package "Client (Android)" {
     - sendChoice(choice : boolean) : void
     - openNextMatch(nextMatchId : int) : void
   }
-  class QuestionAdapter <<boundary>> {
-    - listQuestion : List<MathProblem>
-    - answers : int[]
-    - locked : boolean
-    + setQuestions(questions : List<MathProblem>) : void
-    + getAnswers() : List<Integer>
-    + setLocked(locked : boolean) : void
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : QuestionViewHolder
-    + onBindViewHolder(holder : QuestionViewHolder, position : int) : void
-    + onCheckedChanged(group : RadioGroup, checkedId : int) : void
-    + getItemCount() : int
-  }
-  class QuestionViewHolder <<boundary>> {
-    - txtExpression : TextView
-    - rgOptions : RadioGroup
-    - rbOptions : RadioButton[4]
-  }
   class "activity_main.xml" as xmlMain
+  class "activity_online.xml" as xmlOnline
   class "item_player.xml" as xmlItemPlayer
   class "activity_match.xml" as xmlMatch
-  class "item_question.xml" as xmlItemQuestion
 
   interface PlayerListCallback {
     + onPlayersChanged(players : List<Player>) : void
@@ -197,13 +206,14 @@ package "Client (Android)" {
   }
   class MatchApiDAO <<control>> {
     + createMatch(challenge : Challenge) : Match
-    + submit(matchId : int, playerId : int, answers : List<Integer>) : Match
+    + submit(matchId : int, playerId : int, answers : List<Answer>) : Match
     + forfeit(matchId : int, playerId : int) : Match
     + continueMatch(matchId : int, playerId : int, choice : boolean) : Match
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
     - toProblem(json : JSONObject) : MathProblem
-    - toMatchPlayer(json : JSONObject) : MatchPlayer
+    - toMatchPlayer(json : JSONObject, questions : List<MathProblem>) : MatchPlayer
+    - toAnswers(array : JSONArray, questions : List<MathProblem>) : List<Answer>
   }
   class Player <<entity>> {
     - id : int
@@ -234,11 +244,20 @@ package "Client (Android)" {
   }
   class MatchPlayer <<entity>> {
     - id : int
-    - answers : List<Integer>
+    - answers : List<Answer>
     - correctCount : int
     - submittedAt : Date
     - forfeited : boolean
     - player : Player
+  }
+  class Answer <<entity>> {
+    + {static} NONE : int
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
+    + Answer()
+    + Answer(selectedOption : int, answerTime : long)
   }
   class MathProblem <<entity>> {
     - id : int
@@ -293,16 +312,20 @@ package "Server (Spring Boot)" {
     + insert(match : Match) : boolean
     + findById(id : int) : Match
     + findFinished() : List<Match>
-    + updateSubmission(matchId : int, matchPlayer : MatchPlayer) : boolean
+    + updateSubmission(matchId : int, mp : MatchPlayer) : boolean
     + updateForfeit(matchId : int, playerId : int) : boolean
     + updateEndedAt(matchId : int, endedAt : Date) : boolean
     - query(sql : String, key : Integer) : List<Match>
     - findProblems(matchId : int) : List<MathProblem>
+    - findAnswers(matchPlayerId : int, questions : List<MathProblem>) : List<Answer>
+    - updateMatchPlayer(matchId : int, mp : MatchPlayer) : boolean
+    - insertAnswer(answer : Answer, matchPlayerId : int) : void
     - insertMatch(match : Match) : void
     - insertProblem(p : MathProblem, matchId : int) : void
     - insertMatchPlayer(mp : MatchPlayer, matchId : int) : void
     - toMatch(rs : ResultSet) : Match
     - toMatchPlayer(rs : ResultSet) : MatchPlayer
+    - toAnswer(rs : ResultSet, questions : List<MathProblem>) : Answer
     - toProblem(rs : ResultSet) : MathProblem
   }
   class ProblemDAO <<control>> {
@@ -361,7 +384,7 @@ package "Server (Spring Boot)" {
     - endedAt : Date
     - questions : List<MathProblem>
     - players : List<MatchPlayer>
-    + countCorrect(answers : List<Integer>) : int
+    + countCorrect(answers : List<Answer>) : int
     + isOver() : boolean
     + getFinishTime(playerId : int) : long
     + getResult(playerId : int) : String
@@ -369,11 +392,19 @@ package "Server (Spring Boot)" {
   }
   class "MatchPlayer" as SMatchPlayer <<entity>> {
     - id : int
-    - answers : List<Integer>
+    - answers : List<Answer>
     - correctCount : int
     - submittedAt : Date
     - forfeited : boolean
     - player : Player
+  }
+  class "Answer" as SAnswer <<entity>> {
+    + {static} NONE : int
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
+    + isCorrect() : boolean
   }
   class "MathProblem" as SMathProblem <<entity>> {
     - id : int
@@ -386,30 +417,32 @@ package "Server (Spring Boot)" {
   }
 }
 
-MainActivity -- MatchActivity
-MainActivity -- PlayerAdapter
+MainActivity -r- OnlineActivity
+OnlineActivity -- MatchActivity
+OnlineActivity -- PlayerAdapter
 PlayerAdapter -- PlayerViewHolder
-MatchActivity -- QuestionAdapter
-QuestionAdapter -- QuestionViewHolder
 MainActivity -- xmlMain
+OnlineActivity -- xmlOnline
 PlayerViewHolder -- xmlItemPlayer
 MatchActivity -- xmlMatch
-QuestionViewHolder -- xmlItemQuestion
 MainActivity o-- "1" Player
+OnlineActivity o-- "1" Player
 MatchActivity o-- "1" Player
 PlayerAdapter o-- "n" Player
-QuestionAdapter o-- "10" MathProblem
-MainActivity ..|> PlayerListCallback
-MainActivity ..|> ChallengeCallback
+MatchActivity o-- "10" MathProblem
+MatchActivity o-- "10" Answer
+OnlineActivity ..|> PlayerListCallback
+OnlineActivity ..|> ChallengeCallback
 MatchActivity ..|> MatchCallback
 MatchActivity ..|> PlayerListCallback
 MatchActivity -- PresenceFirebaseDAO
 MainActivity -- SessionDAO
+OnlineActivity -- SessionDAO
 MatchActivity -- SessionDAO
-MainActivity -- PlayerApiDAO
-MainActivity -- PresenceFirebaseDAO
-MainActivity -- ChallengeFirebaseDAO
-MainActivity -- MatchApiDAO
+OnlineActivity -- PlayerApiDAO
+OnlineActivity -- PresenceFirebaseDAO
+OnlineActivity -- ChallengeFirebaseDAO
+OnlineActivity -- MatchApiDAO
 MatchActivity -- MatchFirebaseDAO
 MatchActivity -- MatchApiDAO
 PresenceFirebaseDAO --|> FirebaseDAO
@@ -427,6 +460,8 @@ Challenge "n" o-- "2" Player
 Match "1" *-- "2" MatchPlayer
 Match "1" *-- "10" MathProblem
 MatchPlayer "n" o-- "1" Player
+MatchPlayer "1" *-- "n" Answer
+MathProblem "1" --o "n" Answer
 
 PlayerRestController -- PlayerDAO
 MatchRestController -- MatchDAO
@@ -444,6 +479,8 @@ SChallenge "n" o-- "2" SPlayer
 SMatch "1" *-- "2" SMatchPlayer
 SMatch "1" *-- "10" SMathProblem
 SMatchPlayer "n" o-- "1" SPlayer
+SMatchPlayer "1" *-- "n" SAnswer
+SMathProblem "1" --o "n" SAnswer
 
 PlayerApiDAO -- PlayerRestController : HTTP/JSON
 MatchApiDAO -- MatchRestController : HTTP/JSON

@@ -4,7 +4,7 @@ title Tuần tự thiết kế – Quản lý bạn bè, đoạn A: Gửi lời 
 
 actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
-boundary MainActivity as MA
+boundary OnlineActivity as OA
 boundary FriendActivity as FA
 boundary FriendRequestAdapter as FRA
 boundary FriendAdapter as FAD
@@ -22,13 +22,13 @@ entity "Friendship" as SF
 entity "Player" as SP
 end box
 
-U -> MA : nhấn Bạn bè
-MA -> FA : onClick(): startActivity()
+U -> OA : nhấn biểu tượng Bạn bè
+OA -> FA : onClick(): startActivity()
 FA -> SD : onCreate(): getPlayer()
 SD -> P : đóng gói Player
 P --> SD : Player
 SD --> FA : Player
-FA -> PFD : watchOnlinePlayers(this)
+FA -> PFD : watchOnlinePlayers()
 FA -> FA : loadFriendships()
 FA -> FSAD : getFriendships() {Thread}
 FSAD -> FRC : GET /api/friendships?playerId={id} → getFriendships()
