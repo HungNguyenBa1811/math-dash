@@ -43,6 +43,94 @@ public class PlayerDAO extends DAO {
         }
     }
 
+    // ---------- Quản trị (UC06, Hoàng) ----------
+
+    // Người chơi (vai trò player) có tên hiển thị chứa name, kèm tổng điểm; name rỗng thì lấy tất cả
+    public List<Player> search(String name) throws SQLException {
+        String sql = "SELECT " + COLUMNS + " FROM tblPlayer WHERE role = ? AND displayName LIKE ? ORDER BY id";
+        List<Player> list = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, Player.ROLE_PLAYER);
+            ps.setString(2, "%" + name + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(toPlayer(rs));
+            }
+        }
+        addTotalPoints(list, new MatchDAO().findFinished());
+        return list;
+    }
+
+    // Gán số trận thắng / hòa / thua cho người chơi, tính từ các trận đã xong
+    public void countResults(Player player) throws SQLException {
+        countResults(player, new MatchDAO().findFinished());
+    }
+
+    // Đếm kết quả bằng luật của trận (Match.getResult); hàm thuần, không truy cập CSDL
+    public static void countResults(Player player, List<Match> matches) {
+        int win = 0;
+        int draw = 0;
+        int lose = 0;
+        for (Match match : matches) {
+            if (!hasPlayer(match, player.getId())) {
+                continue;
+            }
+            String result = match.getResult(player.getId());
+            if (Match.WIN.equals(result)) {
+                win++;
+            } else if (Match.DRAW.equals(result)) {
+                draw++;
+            } else {
+                lose++;
+            }
+        }
+        player.setWinCount(win);
+        player.setDrawCount(draw);
+        player.setLoseCount(lose);
+    }
+
+    // Sửa tên hiển thị của một người chơi; không có người chơi đó thì trả false
+    public boolean updateDisplayName(int id, String displayName) throws SQLException {
+        return executeUpdate("UPDATE tblPlayer SET displayName = ? WHERE id = ? AND role = ?",
+                displayName, id, Player.ROLE_PLAYER);
+    }
+
+    // Đặt mật khẩu mới (đã băm BCrypt) cho một người chơi
+    public boolean updatePassword(int id, String passwordHash) throws SQLException {
+        return executeUpdate("UPDATE tblPlayer SET passwordHash = ? WHERE id = ? AND role = ?",
+                passwordHash, id, Player.ROLE_PLAYER);
+    }
+
+    // Xóa người chơi chưa có trận nào; đã có trận (có dòng tblMatchPlayer) thì không xóa, trả false
+    public boolean delete(int id) throws SQLException {
+        return executeUpdate("DELETE FROM tblPlayer WHERE id = ? AND role = ?"
+                        + " AND NOT EXISTS (SELECT 1 FROM tblMatchPlayer WHERE tblPlayerId = ?)",
+                id, Player.ROLE_PLAYER, id);
+    }
+
+    // Tổng điểm của từng người trong danh sách, cộng điểm trận qua các trận đã xong
+    private void addTotalPoints(List<Player> players, List<Match> matches) {
+        for (Player player : players) {
+            double total = 0;
+            for (Match match : matches) {
+                if (hasPlayer(match, player.getId())) {
+                    total += match.getPoints(player.getId());
+                }
+            }
+            player.setTotalPoints(total);
+        }
+    }
+
+    // Chạy một câu UPDATE / DELETE với các tham số theo thứ tự; đúng 1 dòng bị ảnh hưởng thì trả true
+    private boolean executeUpdate(String sql, Object... params) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                ps.setObject(i + 1, params[i]);
+            }
+            return ps.executeUpdate() == 1;
+        }
+    }
+
     // Tổng điểm: cộng điểm trận (1 / 0,5 / 0) qua các trận đã xong mà người chơi tham gia
     public double getTotalPoints(int playerId) throws SQLException {
         List<Match> matches = new MatchDAO().findFinished();
@@ -177,7 +265,7 @@ public class PlayerDAO extends DAO {
         return list;
     }
 
-    private boolean hasPlayer(Match match, int playerId) {
+    private static boolean hasPlayer(Match match, int playerId) {
         for (MatchPlayer mp : match.getPlayers()) {
             if (mp.getPlayer().getId() == playerId) {
                 return true;

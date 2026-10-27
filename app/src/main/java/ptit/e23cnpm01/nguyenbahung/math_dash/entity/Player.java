@@ -1,5 +1,7 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
+import java.util.Date;
+
 public class Player {
     public static final String ROLE_PLAYER = "player";
     public static final String ROLE_ADMIN = "admin";
@@ -10,10 +12,15 @@ public class Player {
     private String username;
     private String displayName;
     private String role = ROLE_PLAYER;
+    private Date createdAt;
     // Các thuộc tính dẫn xuất do server tính, app chỉ hiển thị
     private double totalPoints;
     private double avgOpponentPoints;
     private double avgWinTime;
+    // Số trận thắng / hòa / thua qua các trận đã xong (UC06), cũng do server tính
+    private int winCount;
+    private int drawCount;
+    private int loseCount;
     // Trạng thái khi online (free / busy), chỉ nằm trên Firebase
     private String status;
 
@@ -58,6 +65,14 @@ public class Player {
         this.role = role;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public double getTotalPoints() {
         return totalPoints;
     }
@@ -80,6 +95,30 @@ public class Player {
 
     public void setAvgWinTime(double avgWinTime) {
         this.avgWinTime = avgWinTime;
+    }
+
+    public int getWinCount() {
+        return winCount;
+    }
+
+    public void setWinCount(int winCount) {
+        this.winCount = winCount;
+    }
+
+    public int getDrawCount() {
+        return drawCount;
+    }
+
+    public void setDrawCount(int drawCount) {
+        this.drawCount = drawCount;
+    }
+
+    public int getLoseCount() {
+        return loseCount;
+    }
+
+    public void setLoseCount(int loseCount) {
+        this.loseCount = loseCount;
     }
 
     public String getStatus() {

@@ -16,10 +16,89 @@
         android:layout_height="wrap_content"
         android:text="@string/title_admin" />
 
-    <!-- Ô tìm theo tên và danh sách người chơi (Hoàng, M2-07) -->
-    <View
+    <!-- Ô tìm theo tên hiển thị + nút Tìm -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edtSearch"
+            style="@style/RetroInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="1"
+            android:hint="@string/hint_search"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnSearch"
+            style="@style/RetroButton.Accent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/btn_search" />
+    </LinearLayout>
+
+    <!-- Tiêu đề các cột của danh sách -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.6"
+            android:text="@string/label_col_username"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="12sp" />
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.6"
+            android:text="@string/label_col_display_name"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="12sp" />
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:gravity="end"
+            android:text="@string/label_col_points"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="12sp" />
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.4"
+            android:gravity="end"
+            android:text="@string/label_col_created_at"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Danh sách người chơi, mỗi dòng là item_admin_player -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPlayers"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:layout_weight="1" />
 
     <Button
@@ -27,6 +106,7 @@
         style="@style/RetroButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="@string/btn_logout" />
 
 </LinearLayout>

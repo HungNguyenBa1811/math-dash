@@ -20,6 +20,10 @@ public class Player {
     private double totalPoints;
     private double avgOpponentPoints;
     private double avgWinTime;
+    // Số trận thắng / hòa / thua qua các trận đã xong (UC06), cũng là dẫn xuất
+    private int winCount;
+    private int drawCount;
+    private int loseCount;
     // Trạng thái khi online (free / busy), chỉ nằm trên Firebase
     private String status;
 
@@ -103,6 +107,30 @@ public class Player {
 
     public void setAvgWinTime(double avgWinTime) {
         this.avgWinTime = avgWinTime;
+    }
+
+    public int getWinCount() {
+        return winCount;
+    }
+
+    public void setWinCount(int winCount) {
+        this.winCount = winCount;
+    }
+
+    public int getDrawCount() {
+        return drawCount;
+    }
+
+    public void setDrawCount(int drawCount) {
+        this.drawCount = drawCount;
+    }
+
+    public int getLoseCount() {
+        return loseCount;
+    }
+
+    public void setLoseCount(int loseCount) {
+        this.loseCount = loseCount;
     }
 
     public String getStatus() {

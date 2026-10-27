@@ -18,7 +18,30 @@ public abstract class ApiDAO {
     protected static final String NETWORK_ERROR = "Không kết nối được máy chủ, kiểm tra kết nối mạng";
 
     protected JSONObject post(String path, JSONObject body) throws IOException, JSONException {
-        HttpURLConnection conn = open(path, "POST");
+        return send(path, "POST", body);
+    }
+
+    // PUT kèm body JSON (UC06: sửa tên hiển thị, đặt lại mật khẩu)
+    protected JSONObject put(String path, JSONObject body) throws IOException, JSONException {
+        return send(path, "PUT", body);
+    }
+
+    protected JSONObject get(String path) throws IOException, JSONException {
+        return new JSONObject(request(path, "GET"));
+    }
+
+    protected JSONArray getArray(String path) throws IOException, JSONException {
+        return new JSONArray(request(path, "GET"));
+    }
+
+    // DELETE không có body (UC06: xóa tài khoản); mã lỗi thì ném IOException như các hàm khác
+    protected void delete(String path) throws IOException, JSONException {
+        request(path, "DELETE");
+    }
+
+    // Gửi body JSON bằng POST / PUT; server trả rỗng thì coi như đối tượng rỗng
+    private JSONObject send(String path, String method, JSONObject body) throws IOException, JSONException {
+        HttpURLConnection conn = open(path, method);
         int code;
         try {
             conn.setDoOutput(true);
@@ -33,16 +56,9 @@ public abstract class ApiDAO {
         return text.isEmpty() ? new JSONObject() : new JSONObject(text);
     }
 
-    protected JSONObject get(String path) throws IOException, JSONException {
-        return new JSONObject(readGet(path));
-    }
-
-    protected JSONArray getArray(String path) throws IOException, JSONException {
-        return new JSONArray(readGet(path));
-    }
-
-    private String readGet(String path) throws IOException, JSONException {
-        HttpURLConnection conn = open(path, "GET");
+    // Gọi GET / DELETE không có body, trả nội dung dạng chuỗi
+    private String request(String path, String method) throws IOException, JSONException {
+        HttpURLConnection conn = open(path, method);
         int code;
         try {
             code = conn.getResponseCode();

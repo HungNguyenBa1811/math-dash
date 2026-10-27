@@ -16,4 +16,85 @@
         android:layout_height="wrap_content"
         android:text="@string/title_player_detail" />
 
+    <!-- Thông tin người chơi: tên đăng nhập, ô tên hiển thị, tổng điểm, số trận thắng / hòa / thua -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_retro_card"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/txtUsername"
+            style="@style/RetroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Tên đăng nhập: hung" />
+
+        <TextView
+            style="@style/RetroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/hint_display_name"
+            android:textColor="@color/arcade_text_dim"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edtDisplayName"
+            style="@style/RetroInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:hint="@string/hint_display_name"
+            android:inputType="textCapCharacters" />
+
+        <TextView
+            android:id="@+id/txtPoints"
+            style="@style/RetroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/arcade_amber"
+            tools:text="Tổng điểm: 12,5" />
+
+        <TextView
+            android:id="@+id/txtResults"
+            style="@style/RetroText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            tools:text="Thắng 11 · Hòa 3 · Thua 6" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnSave"
+        style="@style/RetroButton.Accent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_save" />
+
+    <Button
+        android:id="@+id/btnResetPassword"
+        style="@style/RetroButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/btn_reset_password" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        style="@style/RetroButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/btn_delete_account"
+        android:textColor="@color/arcade_red" />
+
 </LinearLayout>
