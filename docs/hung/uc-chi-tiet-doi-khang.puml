@@ -1,4 +1,4 @@
-@startuml uc-chi-tiet-choi-online
+@startuml uc-chi-tiet-doi-khang
 !pragma layout smetana
 ' === VP Base Theme v2 ===
 skinparam defaultFontName "Segoe UI"
@@ -19,13 +19,12 @@ skinparam rectangle {
 }
 
 left to right direction
-title Biểu đồ use case chi tiết module Chơi online – Math Dash 1v1
+title Biểu đồ use case chi tiết module Đấu đối kháng – Math Dash 1v1
 
 actor "Người chơi" as A1
 
-rectangle "Module Chơi online" {
+rectangle "Module Đấu đối kháng" {
   usecase "Chơi online" as UC03
-  usecase "Xem bảng xếp hạng" as UC04
   usecase "Xem danh sách người chơi online" as DS
   usecase "//Vào trận đấu//" as VTD
   usecase "Gửi lời thách đấu" as GUI
@@ -37,7 +36,6 @@ rectangle "Module Chơi online" {
 }
 
 A1 --> UC03
-A1 --> UC04
 
 UC03 ..> DS : <<include>>
 UC03 ..> VTD : <<include>>

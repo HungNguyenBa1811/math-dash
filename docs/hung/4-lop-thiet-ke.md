@@ -1,4 +1,4 @@
-# THIẾT KẾ GIAO DIỆN VÀ BIỂU ĐỒ LỚP CHI TIẾT — CHƠI ONLINE, XEM BẢNG XẾP HẠNG, ĐĂNG NHẬP
+# THIẾT KẾ GIAO DIỆN VÀ BIỂU ĐỒ LỚP CHI TIẾT — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU, QUẢN LÝ BẠN BÈ
 
 ---
 
@@ -11,11 +11,17 @@
 | MainView | MainActivity + PlayerAdapter | activity_main.xml, item_player.xml |
 | MatchView | MatchActivity + QuestionAdapter | activity_match.xml, item_question.xml |
 | MatchResultView | Overlay layoutResult nằm trong MatchActivity | activity_match.xml |
-| RankingView | RankingActivity + RankingAdapter | activity_ranking.xml, item_ranking.xml |
+| HistoryView | HistoryActivity + PieChartView + MatchHistoryAdapter + RankingAdapter | activity_history.xml, item_match_history.xml, item_ranking.xml |
+| MatchDetailView | MatchDetailActivity + ProblemAdapter | activity_match_detail.xml, item_problem.xml |
+| FriendView | FriendActivity + FriendRequestAdapter + FriendAdapter | activity_friend.xml, item_friend_request.xml, item_friend.xml |
 
 MatchResultView là overlay chứ không phải Activity riêng:
 - Kết quả hiện đè lên màn thi đấu ngay khi trận xong.
 - Câu hỏi "Chơi tiếp?" cần tiếp tục theo dõi trận đang mở.
+
+HistoryView là một Activity có 2 thẻ (TabLayout):
+- Thẻ Trận của tôi gồm PieChartView và danh sách rvMatches; thẻ Bảng xếp hạng là danh sách rvRanking. Chọn thẻ chỉ ẩn / hiện 2 khối này, không mở Activity mới.
+- PieChartView là View tự vẽ biểu đồ tròn bằng Canvas, không dùng thư viện ngoài.
 
 ### 0.2. Phương thức của thực thể sang Activity hoặc DAO
 
@@ -34,9 +40,18 @@ MatchResultView là overlay chứ không phải Activity riêng:
 | isOver(), getResult(), getFinishTime(), getPoints() | Match | Giữ nguyên, thêm tham số playerId : int cho 3 hàm sau | Match |
 | forfeit() | Match | leaveMatch() : void<br>forfeit(matchId : int, playerId : int) : Match → forfeit(id : int, playerId : int) : Match<br>updateForfeit(matchId : int, playerId : int) : boolean, writeStopped(matchId : int, playerId : int) : void | MatchActivity<br>MatchApiDAO → MatchRestController<br>MatchDAO, FirebaseAdminDAO |
 | continueMatch() | Match | sendChoice(choice : boolean) : void<br>continueMatch(matchId : int, playerId : int, choice : boolean) : Match → continueMatch(id : int, playerId : int, choice : boolean) : Match<br>writeChoice(matchId : int, playerId : int, choice : boolean) : void, writeNextMatch(matchId : int, nextMatchId : int) : void, writeStopped(matchId : int, playerId : int) : void | MatchActivity<br>MatchApiDAO → MatchRestController<br>FirebaseAdminDAO |
-| register(), checkLogin() | Player | register(username : String, password : String, displayName : String) : void → register(body : Map\<String, String>) : void<br>login(username : String, password : String) : Player → login(body : Map\<String, String>) : Player<br>findByUsername(username : String) : Player, insert(player : Player) : boolean | PlayerApiDAO → AuthRestController<br><br>PlayerDAO (server) |
-| saveSession(), getSession() | Player | save(player : Player) : void, getPlayer() : Player<br>saveOrUpdate(player : Player) : void | SessionDAO<br>PlayerDAO (app) |
-| getRanking() | Player | getRanking() : List\<Player> → getRanking() : List\<Player><br>getRanking() : List\<Player>, findFinished() : List\<Match> | PlayerApiDAO → PlayerRestController<br>PlayerDAO, MatchDAO |
+| getHistory() | Match | getHistory(playerId : int) : List\<Match> → getHistory(playerId : int) : List\<Match><br>findByPlayer(playerId : int) : List\<Match> | MatchApiDAO → MatchRestController<br>MatchDAO |
+| getMatch() | Match | getById(matchId : int) : Match → getById(id : int) : Match<br>findById(id : int) : Match, getTotalPoints(playerId : int) : double | MatchApiDAO → MatchRestController<br>MatchDAO, PlayerDAO |
+| getOpponent() | Match | getOpponent(playerId : int) : MatchPlayer | Match |
+| getResult(), getPoints(), getFinishTime() | Match | Giữ nguyên như ở Chơi online | Match |
+| getRanking() | Player | getRanking() : List\<Player> → getRanking() : List\<Player><br>getRanking() : List\<Player>, rank(players : List\<Player>, matches : List\<Match>) : List\<Player>, findFinished() : List\<Match> | PlayerApiDAO → PlayerRestController<br>PlayerDAO, MatchDAO |
+| Đếm thắng / hòa / thua của HistoryView | HistoryView | showSummary(matches : List\<Match>) : void<br>setData(wins : int, draws : int, losses : int) : void | HistoryActivity<br>PieChartView |
+| getFriendships() | Friendship | loadFriendships() : void, showFriendships(list : List\<Friendship>) : void<br>getFriendships(playerId : int) : List\<Friendship> → getFriendships(playerId : int) : List\<Friendship><br>findByPlayer(playerId : int) : List\<Friendship>, getTotalPoints(playerId : int) : double | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>FriendshipDAO, PlayerDAO |
+| getOnlinePlayers() | Player | watchOnlinePlayers(callback : PlayerListCallback) : void<br>onPlayersChanged(players : List\<Player>) : void, setOnlineIds(onlineIds : Set\<Integer>) : void | PresenceFirebaseDAO<br>FriendActivity, FriendAdapter |
+| sendRequest() | Friendship | onClick(v : View) : void<br>sendRequest(senderId : int, receiverUsername : String) : Friendship → sendRequest(body : Map\<String, String>) : Friendship<br>findById(id : int) : Player, findByUsername(username : String) : Player<br>existsBetween(playerId1 : int, playerId2 : int) : boolean, insert(friendship : Friendship) : boolean | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>PlayerDAO<br>FriendshipDAO |
+| accept() | Friendship | onAccept(friendship : Friendship) : void<br>accept(friendshipId : int, playerId : int) : Friendship → accept(id : int, playerId : int) : Friendship<br>findById(id : int) : Friendship, updateStatus(id : int, status : String) : boolean | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>FriendshipDAO |
+| delete() | Friendship | onReject(friendship : Friendship) : void, onUnfriend(friendship : Friendship) : void<br>delete(friendshipId : int, playerId : int) : void → delete(id : int, playerId : int) : void<br>delete(path : String) : void<br>findById(id : int) : Friendship, delete(id : int) : boolean | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>ApiDAO<br>FriendshipDAO |
+| canAccept(), getFriend() | Friendship | Giữ nguyên, thêm tham số playerId : int | Friendship |
 
 ### 0.3. Lớp DAO cha
 
@@ -45,8 +60,10 @@ Mỗi nơi lưu trữ có một lớp DAO cha giữ kết nối dùng chung; cá
 | Nơi lưu trữ | DAO cha | Giữ | DAO con dùng ở đây |
 |---|---|---|---|
 | App → Firebase | FirebaseDAO | con : DatabaseReference | PresenceFirebaseDAO, ChallengeFirebaseDAO, MatchFirebaseDAO |
-| App → REST | ApiDAO | BASE_URL; gửi / nhận JSON | PlayerApiDAO, MatchApiDAO |
-| Server → MySQL | DAO | conn : Connection | PlayerDAO, MatchDAO |
+| App → REST | ApiDAO | BASE_URL; gửi / nhận JSON | PlayerApiDAO, MatchApiDAO, FriendshipApiDAO |
+| Server → MySQL | DAO | conn : Connection | PlayerDAO, MatchDAO, FriendshipDAO |
+
+ApiDAO có 3 hàm gửi yêu cầu: get, post và delete; delete dùng để từ chối lời mời và hủy kết bạn.
 
 Các lớp không có lớp cha:
 - SessionDAO chỉ đọc SharedPreferences.
@@ -59,9 +76,9 @@ Các lớp không có lớp cha:
 
 ### 1.1. Thiết kế giao diện
 
-![Hình 13: Thiết kế giao diện chức năng Chơi online](giao-dien-uc03.png)
+![Hình 19: Thiết kế giao diện chức năng Chơi online](giao-dien-uc03.png)
 
-*Hình 13: Thiết kế giao diện chức năng Chơi online.*
+*Hình 19: Thiết kế giao diện chức năng Chơi online.*
 
 Chức năng có 2 màn, 1 hộp thoại lời mời và 1 overlay, đi theo thứ tự MainActivity → hộp thoại lời mời trên máy người được mời → MatchActivity → overlay layoutResult.
 - **Màn chính** chia 2 phần:
@@ -102,9 +119,9 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
 
 ### 1.2. Biểu đồ lớp chi tiết
 
-![Hình 14: Biểu đồ lớp chi tiết chức năng Chơi online](lop-thiet-ke-uc03.png)
+![Hình 20: Biểu đồ lớp chi tiết chức năng Chơi online](lop-thiet-ke-uc03.png)
 
-*Hình 14: Biểu đồ lớp chi tiết chức năng Chơi online.*
+*Hình 20: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
 **Package "Client (Android)".**
 
@@ -153,113 +170,175 @@ Firebase không phải một lớp trên biểu đồ: các FirebaseDAO ở app 
 
 ---
 
-## 2. Chức năng "Xem bảng xếp hạng"
+## 2. Chức năng "Xem lịch sử đấu"
 
 ### 2.1. Thiết kế giao diện
 
-![Hình 15: Thiết kế giao diện chức năng Xem bảng xếp hạng](giao-dien-uc04.png)
+![Hình 21: Thiết kế giao diện chức năng Xem lịch sử đấu](giao-dien-uc04.png)
 
-*Hình 15: Thiết kế giao diện chức năng Xem bảng xếp hạng.*
+*Hình 21: Thiết kế giao diện chức năng Xem lịch sử đấu.*
 
-Màn Bảng xếp hạng là một danh sách cuộn, mỗi dòng là một item_ranking.xml.
-- Hàng tiêu đề cột cố định ở trên.
-- Dòng của người xem có nền màu nhấn, để thấy ngay hạng của mình.
+Màn Lịch sử đấu có 2 thẻ ở dưới thanh tiêu đề.
+- **Thẻ Trận của tôi** mở sẵn. Trên cùng là thẻ tóm tắt: biểu đồ tròn dạng vành khuyên bên trái, giữa ghi tỉ lệ thắng to; chú giải 3 màu và tổng số trận bên phải. Người chơi thấy ngay phong độ của mình trước khi đọc từng trận.
+- **Danh sách trận** nằm dưới thẻ tóm tắt, trận mới nhất ở trên. Mỗi dòng là một item_match_history.xml có dải màu bên trái theo kết quả: xanh lá thắng, vàng hòa, đỏ thua. Dòng trên ghi đối thủ, số trận, kết quả, điểm trận; dòng dưới ghi số câu đúng 2 bên và thời điểm kết thúc. Trận có người bỏ trận ghi thêm "Đối thủ bỏ trận" hoặc "Bạn bỏ trận".
+- **Thẻ Bảng xếp hạng** giữ nguyên bố cục bảng xếp hạng: hàng tiêu đề cột cố định, mỗi dòng là một item_ranking.xml, dòng của người xem có nền màu nhấn.
+
+![Hình 22: Thiết kế giao diện chi tiết trận](giao-dien-uc04b.png)
+
+*Hình 22: Thiết kế giao diện chi tiết trận.*
+
+Màn Chi tiết trận đi từ tổng quát tới chi tiết: kết quả và điểm trận to ở trên, bảng so sánh 2 bên ở giữa, đề bài kèm đáp án đúng ở dưới. Cột của người xem in đậm.
 
 **Bảng thành phần:**
 
 | Màn | id trong layout | Loại View | Chức năng | Tên ở pha phân tích |
 |---|---|---|---|---|
 | MainActivity | txtMyName, txtMyPoints | TextView | "HUNG · 13,5 điểm" | outMyInfo |
-| | btnRanking | Button | Mở màn Bảng xếp hạng | subRanking |
-| RankingActivity | rvRanking | RecyclerView | Danh sách đã xếp hạng | outListRanking |
-| item_ranking.xml | txtRank | TextView | Hạng | một dòng của outListRanking |
-| | txtName | TextView | Tên | một dòng của outListRanking |
-| | txtPoints | TextView | Tổng điểm | một dòng của outListRanking |
-| | txtAvgOpponent | TextView | Trung bình điểm đối thủ | một dòng của outListRanking |
-| | txtAvgWinTime | TextView | Trung bình thời gian thắng, "—" nếu chưa thắng | một dòng của outListRanking |
+| | btnHistory | Button | Mở màn Lịch sử đấu | subHistory |
+| HistoryActivity | tabLayout | TabLayout | 2 thẻ Trận của tôi, Bảng xếp hạng | subTabRanking |
+| | layoutMyMatches | LinearLayout | Khối thẻ Trận của tôi, ẩn khi chọn thẻ Bảng xếp hạng | |
+| | pieChart | PieChartView | Biểu đồ tròn tỉ lệ thắng, hòa, thua | outWinRateChart |
+| | txtWins, txtDraws, txtLosses | TextView | Chú giải số trận thắng, hòa, thua | outSummary |
+| | txtTotal | TextView | Tổng số trận | outSummary |
+| | rvMatches | RecyclerView | Danh sách trận | outsubListMatch |
+| | txtEmpty | TextView | "Bạn chưa đấu trận nào", ẩn khi có trận | outsubListMatch |
+| | rvRanking | RecyclerView | Danh sách đã xếp hạng | outListRanking |
+| item_match_history.xml | viewResultBar | View | Dải màu theo kết quả | một dòng của outsubListMatch |
+| | txtOpponent | TextView | "vs HOANG · #37" | một dòng của outsubListMatch |
+| | txtResult | TextView | THẮNG / HÒA / THUA, kèm "Đối thủ bỏ trận" nếu có | một dòng của outsubListMatch |
+| | txtPoints | TextView | "+1" | một dòng của outsubListMatch |
+| | txtScore | TextView | "10 – 10 câu" | một dòng của outsubListMatch |
+| | txtEndedAt | TextView | "25/10 20:15" | một dòng của outsubListMatch |
+| item_ranking.xml | txtRank, txtName, txtPoints, txtAvgOpponent, txtAvgWinTime | TextView | Hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng ("—" nếu chưa thắng) | một dòng của outListRanking |
+| MatchDetailActivity | txtTitle | TextView | "Trận #37 · 25/10/2026 20:15" | |
+| | txtResult | TextView | THẮNG! / THUA! / HÒA! | outResult |
+| | txtPoints | TextView | "+1 điểm" | outPoints |
+| | txtMyName, txtMyStats | TextView | Tên, "10/10 · 38,2 giây" của mình | outMyResult |
+| | txtOpponentName, txtOpponentStats | TextView | Tên, "10/10 · 45,6 giây" hoặc "Bỏ trận" của đối thủ | outOpponentResult |
+| | rvProblems | RecyclerView | 10 câu hỏi kèm đáp án đúng | outListProblem |
+| item_problem.xml | txtIndex | TextView | Số thứ tự câu | một dòng của outListProblem |
+| | txtExpression | TextView | "12 + 7 = 19" | một dòng của outListProblem |
 
 ### 2.2. Biểu đồ lớp chi tiết
 
-![Hình 16: Biểu đồ lớp chi tiết chức năng Xem bảng xếp hạng](lop-thiet-ke-uc04.png)
+![Hình 23: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu](lop-thiet-ke-uc04.png)
 
-*Hình 16: Biểu đồ lớp chi tiết chức năng Xem bảng xếp hạng.*
+*Hình 23: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
 **Package "Client (Android)".**
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | MainActivity | onClick của nút Bảng xếp hạng mở RankingActivity |
-| Boundary | RankingActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer rồi gọi loadRanking. loadRanking gọi PlayerApiDAO.getRanking trong Thread, rồi trong runOnUiThread gắn RankingAdapter. Lỗi mạng thì hiện Toast |
-| Boundary | RankingAdapter, RankingViewHolder | RankingAdapter giữ danh sách Player và id của người xem. onBindViewHolder hiện hạng bằng vị trí + 1, 3 tiêu chí của Player, tô nền dòng có id trùng người xem. RankingViewHolder giữ 5 TextView của một dòng |
+| Boundary | MainActivity | onClick của nút Lịch sử đấu mở HistoryActivity |
+| Boundary | HistoryActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer rồi gọi loadHistory. loadHistory gọi MatchApiDAO.getHistory trong Thread, rồi trong runOnUiThread gọi showSummary và gắn MatchHistoryAdapter. showSummary đếm Match.getResult theo id người chơi thành số trận thắng, hòa, thua, gọi PieChartView.setData và ghi chú giải. onTabSelected ẩn / hiện 2 khối; lần đầu chọn thẻ Bảng xếp hạng thì gọi loadRanking. onMatchClick mở MatchDetailActivity kèm matchId. Lỗi mạng thì hiện Toast |
+| Boundary | PieChartView | View tự vẽ, kế thừa View của Android. setData lưu 3 số rồi gọi invalidate; onDraw vẽ 3 cung tròn bằng Canvas.drawArc theo tỉ lệ, khoét giữa thành vành khuyên và ghi tỉ lệ thắng. Cả 3 số bằng 0 thì vẽ vòng xám |
+| Boundary | MatchHistoryAdapter, MatchHistoryViewHolder | MatchHistoryAdapter giữ danh sách Match, id người xem và HistoryActivity chứa nó. onBindViewHolder gọi Match.getOpponent, getResult, getPoints để điền một dòng và tô màu dải kết quả; bấm vào dòng thì gọi onMatchClick của HistoryActivity, giống cách PlayerAdapter gọi về MainActivity. MatchHistoryViewHolder giữ các View của một dòng |
+| Boundary | RankingAdapter, RankingViewHolder | RankingAdapter hiện hạng bằng vị trí + 1, 3 tiêu chí của Player, tô nền dòng của người xem |
+| Boundary | MatchDetailActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer, đọc matchId từ Intent rồi gọi loadMatch. loadMatch gọi MatchApiDAO.getById trong Thread, rồi trong runOnUiThread gọi showMatch. showMatch dùng Match.getResult, getPoints, getOpponent, getFinishTime để điền kết quả và bảng so sánh, rồi gắn ProblemAdapter |
+| Boundary | ProblemAdapter, ProblemViewHolder | ProblemAdapter giữ 10 MathProblem; onBindViewHolder ghi số thứ tự và MathProblem.getExpression thay dấu "?" bằng correctAnswer |
 | Control | SessionDAO | Như ở Chơi online |
-| Control | ApiDAO ← PlayerApiDAO | getRanking gửi GET /api/players/ranking, đóng gói từng phần tử JSON thành Player bằng toPlayer |
-| Entity | Player | Mang 3 tiêu chí totalPoints, avgOpponentPoints, avgWinTime do server tính |
+| Control | ApiDAO ← MatchApiDAO | getHistory gửi GET /api/matches?playerId={id}; getById gửi GET /api/matches/{id}. Cả 2 đóng gói JSON thành Match bằng toMatch |
+| Control | ApiDAO ← PlayerApiDAO | getRanking gửi GET /api/players/ranking, đóng gói từng phần tử thành Player bằng toPlayer |
+| Entity | Match, MatchPlayer, MathProblem, Player | Match có thêm getOpponent trả MatchPlayer còn lại; các luật getResult, getPoints, getFinishTime dùng chung với Chơi online |
 
 **Package "Server (Spring Boot)".**
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | PlayerRestController | getRanking() nhận GET /api/players/ranking, gọi PlayerDAO.getRanking và trả danh sách Player dạng JSON |
-| Control | DAO ← PlayerDAO | getRanking đọc mọi tblPlayer có role = player, lấy các trận đã xong bằng MatchDAO.findFinished, rồi gọi rank. rank là hàm tĩnh thuần, có unit test:<br>1. Đọc người chơi.<br>2. Duyệt các trận.<br>3. Cộng Match.getPoints vào tổng điểm từng người; ghi lại các đối thủ đã gặp; với trận Match.getResult là WIN thì cộng Match.getFinishTime.<br>4. Tính 2 giá trị trung bình rồi sắp xếp theo 3 tiêu chí |
-| Control | DAO ← MatchDAO | findFinished truy vấn tblMatch có endedAt khác rỗng, JOIN tblMatchPlayer, tblPlayer, đóng gói mỗi trận thành 1 Match + 2 MatchPlayer + 2 Player. Không cần đề nên không đọc tblMathProblem |
-| Entity | Player, Match, MatchPlayer | Như ở Chơi online |
+| Boundary | MatchRestController | getHistory(playerId) nhận GET /api/matches?playerId={id}, gọi MatchDAO.findByPlayer và trả danh sách Match dạng JSON. getById(id) nhận GET /api/matches/{id}, gọi MatchDAO.findById, gán tổng điểm 2 người bằng PlayerDAO.getTotalPoints; trận đã xong nên trả kèm đáp án đúng |
+| Boundary | PlayerRestController | getRanking() nhận GET /api/players/ranking, gọi PlayerDAO.getRanking |
+| Control | DAO ← MatchDAO | findByPlayer truy vấn tblMatch có endedAt khác rỗng và có dòng tblMatchPlayer của người chơi, JOIN tblMatchPlayer, tblPlayer, sắp theo endedAt giảm dần; đóng gói mỗi trận thành 1 Match + 2 MatchPlayer + 2 Player, không đọc đề. findById đọc thêm 10 dòng tblMathProblem. findFinished dùng cho bảng xếp hạng |
+| Control | DAO ← PlayerDAO | getRanking đọc mọi người chơi, lấy các trận đã xong bằng MatchDAO.findFinished rồi gọi rank để tính và sắp xếp 3 tiêu chí. getTotalPoints cộng Match.getPoints qua các trận đã xong |
+| Entity | Player, Match, MatchPlayer, MathProblem | Như ở Chơi online |
 
 **Quan hệ giữa các lớp giao diện:**
-- MainActivity – RankingActivity – RankingAdapter – RankingViewHolder nối nhau bằng quan hệ liên kết.
-- Layout: MainActivity – activity_main.xml, RankingActivity – activity_ranking.xml, RankingViewHolder – item_ranking.xml.
-- RankingAdapter chứa danh sách người chơi trong thuộc tính listPlayer, nên Player kết tập vào RankingAdapter, bội số n ở phía Player.
+- MainActivity – HistoryActivity – MatchDetailActivity nối nhau bằng quan hệ liên kết theo luồng màn hình.
+- HistoryActivity nối liên kết với PieChartView, MatchHistoryAdapter, RankingAdapter; mỗi Adapter nối với ViewHolder của nó. MatchDetailActivity – ProblemAdapter – ProblemViewHolder cũng vậy.
+- MatchHistoryAdapter giữ HistoryActivity để gọi lại onMatchClick khi một dòng được bấm.
+- Layout: MainActivity – activity_main.xml, HistoryActivity – activity_history.xml, MatchHistoryViewHolder – item_match_history.xml, RankingViewHolder – item_ranking.xml, MatchDetailActivity – activity_match_detail.xml, ProblemViewHolder – item_problem.xml.
+- **Kết tập:** HistoryActivity giữ me và danh sách trận; MatchHistoryAdapter giữ danh sách Match; RankingAdapter giữ danh sách Player; MatchDetailActivity giữ me và một Match; ProblemAdapter giữ 10 MathProblem. Hình thoi ở phía Activity hoặc Adapter.
 
-Chức năng dùng lại các lớp PlayerApiDAO, PlayerRestController, PlayerDAO, MatchDAO với Chơi online. Biểu đồ chỉ vẽ các phương thức chức năng này dùng.
+Chức năng dùng lại MatchApiDAO, PlayerApiDAO, MatchRestController, PlayerRestController, MatchDAO, PlayerDAO của Chơi online; biểu đồ chỉ vẽ các phương thức chức năng này dùng. Phần mới gồm MatchApiDAO.getHistory, MatchRestController.getHistory, MatchDAO.findByPlayer và Match.getOpponent.
 
 ---
 
-## 3. Chức năng "Đăng nhập, đăng ký"
+## 3. Chức năng "Quản lý bạn bè"
 
 ### 3.1. Thiết kế giao diện
 
-![Hình 26: Thiết kế giao diện chức năng Đăng nhập, đăng ký](giao-dien-tai-khoan.png)
+![Hình 24: Thiết kế giao diện chức năng Quản lý bạn bè](giao-dien-uc07.png)
 
-*Hình 26: Thiết kế giao diện chức năng Đăng nhập, đăng ký.*
+*Hình 24: Thiết kế giao diện chức năng Quản lý bạn bè.*
 
-Chức năng có 2 màn: LoginActivity là màn mở đầu của ứng dụng; RegisterActivity mở từ nút Đăng ký và tự đóng khi đăng ký thành công. Ô mật khẩu dùng inputType textPassword.
+Chức năng có 1 màn và 1 hộp thoại xác nhận, đi theo thứ tự MainActivity → FriendActivity → hộp thoại "Hủy kết bạn với <tên>?" khi nhấn ×.
+- **Màn chính** có thêm nút Bạn bè nằm giữa nút Lịch sử đấu và nút Đăng xuất.
+- **Màn Bạn bè** chia 3 phần từ trên xuống:
+  1. Hàng nhập: ô tên đăng nhập chiếm phần lớn chiều ngang, nút Kết bạn bên phải. Gửi xong thì ô được xóa trống để gửi tiếp.
+  2. Mục "Lời mời kết bạn (n)": chỉ hiện khi có lời mời đã nhận, đặt trên cùng để người chơi thấy ngay. Mỗi dòng có tên người gửi, nút Đồng ý nổi bật, nút Từ chối viền mảnh để tránh bấm nhầm.
+  3. Mục "Bạn bè (n)": danh sách cuộn. Mỗi dòng có chấm xanh (Online) hoặc xám (Offline) bên trái, tên chữ đậm, dòng dưới là tổng điểm và chữ Online / Offline, nút × bên phải. Lời mời mình đã gửi nằm cuối, chữ nghiêng màu xám "Đang chờ trả lời". Chưa có ai thì hiện "Chưa có bạn bè".
+- Nút × là nút biểu tượng nên có mô tả "Hủy kết bạn" cho trình đọc màn hình. Hủy kết bạn luôn hỏi xác nhận vì không hoàn tác được.
 
 **Bảng thành phần:**
 
 | Màn | id trong layout | Loại View | Chức năng | Tên ở pha phân tích |
 |---|---|---|---|---|
-| LoginActivity | edtUsername | EditText | Tên đăng nhập | inUsername |
-| | edtPassword | EditText (textPassword) | Mật khẩu | inPassword |
-| | btnLogin | Button | Đăng nhập | subLogin |
-| | btnRegister | Button | Mở màn Đăng ký | subRegister |
-| RegisterActivity | edtUsername | EditText | Tên đăng nhập | inUsername |
-| | edtPassword | EditText (textPassword) | Mật khẩu | inPassword |
-| | edtConfirmPassword | EditText (textPassword) | Nhập lại mật khẩu | inConfirmPassword |
-| | edtDisplayName | EditText | Tên hiển thị | inDisplayName |
-| | btnRegister | Button | Đăng ký | subRegister |
+| MainActivity | btnFriends | Button | Mở màn Bạn bè | subFriends |
+| FriendActivity | edtUsername | EditText | Ô nhập tên đăng nhập người muốn kết bạn | inUsername |
+| | btnAddFriend | Button | Kết bạn | subAddFriend |
+| | txtRequestsTitle | TextView | "Lời mời kết bạn (1)"; ẩn khi không có lời mời | outsubListRequest |
+| | rvRequests | RecyclerView | Danh sách lời mời đã nhận | outsubListRequest |
+| | txtFriendsTitle | TextView | "Bạn bè (3)" | outsubListFriend |
+| | txtEmpty | TextView | "Chưa có bạn bè"; chỉ hiện khi danh sách trống | outsubListFriend |
+| | rvFriends | RecyclerView | Danh sách bạn bè và lời mời đã gửi | outsubListFriend |
+| item_friend_request.xml | txtName | TextView | Tên người gửi | một dòng của outsubListRequest |
+| | btnAccept | Button | Đồng ý | một dòng của outsubListRequest |
+| | btnReject | Button | Từ chối | một dòng của outsubListRequest |
+| item_friend.xml | viewOnlineDot | View | Chấm tròn xanh / xám | một dòng của outsubListFriend |
+| | txtName | TextView | Tên người bạn | một dòng của outsubListFriend |
+| | txtPoints | TextView | "15 điểm"; lời mời đã gửi thì để trống | một dòng của outsubListFriend |
+| | txtStatus | TextView | Online / Offline / Đang chờ trả lời | một dòng của outsubListFriend |
+| | btnUnfriend | ImageButton | Hủy kết bạn hoặc rút lời mời, contentDescription "Hủy kết bạn" | một dòng của outsubListFriend |
+
+Các thông báo ngắn ("Đã gửi lời mời kết bạn tới HOANG", "Không tìm thấy người chơi", "Lời mời không còn"…) dùng Toast. Hộp thoại "Hủy kết bạn với TUAN?" dùng AlertDialog. Cả hai đều không phải thành phần của layout.
 
 ### 3.2. Biểu đồ lớp chi tiết
 
-![Hình 27: Biểu đồ lớp chi tiết chức năng Đăng nhập, đăng ký](lop-thiet-ke-tai-khoan.png)
+![Hình 25: Biểu đồ lớp chi tiết chức năng Quản lý bạn bè](lop-thiet-ke-uc07.png)
 
-*Hình 27: Biểu đồ lớp chi tiết chức năng Đăng nhập, đăng ký.*
+*Hình 25: Biểu đồ lớp chi tiết chức năng Quản lý bạn bè.*
 
 **Package "Client (Android)".**
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | LoginActivity | onCreate: SessionDAO.getPlayer khác rỗng thì gọi openHome ngay. onClick: nút Đăng ký mở RegisterActivity; nút Đăng nhập kiểm tra 2 ô rồi gọi login. login gọi PlayerApiDAO.login trong Thread, lưu phiên bằng SessionDAO.save, lưu bản sao bằng PlayerDAO.saveOrUpdate, rồi openHome. openHome mở AdminActivity nếu role là admin, ngược lại mở MainActivity |
-| Boundary | RegisterActivity | onClick kiểm tra ô trống và mật khẩu nhập lại ngay ở app, đúng thì gọi register. register gọi PlayerApiDAO.register trong Thread; showResult hiện thông báo, thành công thì finish |
-| Control | SessionDAO | Đọc / ghi / xóa SharedPreferences "session" |
-| Control | DAO ← PlayerDAO | PlayerDAO phía app ghi bản sao người chơi vào tblPlayer của SQLite, để Chơi với máy chạy được khi mất mạng |
-| Control | ApiDAO ← PlayerApiDAO | register gửi POST /api/auth/register; login gửi POST /api/auth/login và đóng gói JSON thành Player bằng toPlayer. Lỗi 401, 409 chuyển thành thông báo tiếng Việt |
-| Entity | Player | id, username, displayName, role. App không bao giờ giữ mật khẩu |
+| Boundary | MainActivity | onClick của nút Bạn bè mở FriendActivity |
+| Boundary | FriendActivity | Màn Bạn bè, cài đặt View.OnClickListener và PlayerListCallback; giữ người chơi đang đăng nhập (me), các lời mời đã nhận (requests), bạn bè và lời mời đã gửi (friends), id những người đang online (onlineIds).<br>- onCreate lấy me bằng SessionDAO.getPlayer, gọi PresenceFirebaseDAO.watchOnlinePlayers rồi loadFriendships.<br>- loadFriendships gọi FriendshipApiDAO.getFriendships trong Thread, rồi trong runOnUiThread gọi showFriendships.<br>- showFriendships dùng Friendship.canAccept để tách lời mời mình cần trả lời vào requests, phần còn lại vào friends, rồi đưa vào 2 Adapter.<br>- onPlayersChanged lấy id những người đang online vào onlineIds và gọi FriendAdapter.setOnlineIds.<br>- onClick của nút Kết bạn kiểm tra ô không trống, gọi FriendshipApiDAO.sendRequest trong Thread, thêm lời mời vào cuối friends và hiện Toast.<br>- onAccept gọi FriendshipApiDAO.accept, chuyển quan hệ từ requests sang friends. onReject gọi FriendshipApiDAO.delete. onUnfriend hỏi xác nhận rồi gọi FriendshipApiDAO.delete.<br>- onDestroy gọi PresenceFirebaseDAO.stopWatching.<br>Lỗi server (không tìm thấy, đã có quan hệ, lời mời không còn) hiện bằng Toast với câu thông báo server trả về |
+| Boundary | FriendRequestAdapter, FriendRequestViewHolder | FriendRequestAdapter kế thừa RecyclerView.Adapter, giữ danh sách Friendship đã nhận. setFriendships thay danh sách và vẽ lại. onBindViewHolder hiện tên người gửi (sender); nút Đồng ý gọi FriendActivity.onAccept, nút Từ chối gọi FriendActivity.onReject. FriendRequestViewHolder giữ txtName, btnAccept, btnReject |
+| Boundary | FriendAdapter, FriendViewHolder | FriendAdapter giữ danh sách Friendship, id của người xem (playerId) và onlineIds. onBindViewHolder lấy người bạn bằng Friendship.getFriend(playerId):<br>- Quan hệ accepted: hiện tổng điểm, chấm xanh và Online nếu id người bạn có trong onlineIds, ngược lại chấm xám và Offline.<br>- Lời mời pending mình đã gửi: hiện "Đang chờ trả lời".<br>Nút × gọi FriendActivity.onUnfriend. setOnlineIds chỉ vẽ lại trạng thái, không gọi server. FriendViewHolder giữ viewOnlineDot, txtName, txtPoints, txtStatus, btnUnfriend |
+| — | PlayerListCallback | Interface trả danh sách người chơi online từ PresenceFirebaseDAO về FriendActivity; dùng chung với Chơi online |
+| Control | SessionDAO | Như ở Chơi online |
+| Control | FirebaseDAO ← PresenceFirebaseDAO | Như ở Chơi online. Chức năng này chỉ đọc node presence qua watchOnlinePlayers, stopWatching; không ghi gì lên Firebase |
+| Control | ApiDAO ← FriendshipApiDAO | ApiDAO có thêm delete(path) gửi yêu cầu DELETE. FriendshipApiDAO có 4 hàm, mỗi hàm một API:<br>- getFriendships: GET /api/friendships?playerId={id}.<br>- sendRequest: POST /api/friendships, thân gồm senderId và receiverUsername.<br>- accept: POST /api/friendships/{id}/accept?playerId={id}.<br>- delete: DELETE /api/friendships/{id}?playerId={id}.<br>toFriendship đóng gói JSON thành Friendship, dùng toPlayer cho người gửi và người nhận |
+| Entity | Friendship, Player | Như thiết kế lớp thực thể. Friendship có 2 phương thức nghiệp vụ là hàm Java thuần:<br>- getFriend(playerId): người còn lại trong quan hệ.<br>- canAccept(playerId): lời mời đang chờ và playerId là người nhận |
 
 **Package "Server (Spring Boot)".**
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | AuthRestController | register băm mật khẩu bằng BCryptPasswordEncoder rồi gọi PlayerDAO.insert; trùng tên đăng nhập thì trả 409. login gọi PlayerDAO.findByUsername và so mật khẩu bằng BCrypt; sai thì trả 401 |
-| Control | DAO ← PlayerDAO | findByUsername đọc tblPlayer theo username; insert thêm dòng mới với role = player, trả false nếu trùng khóa duy nhất |
-| Entity | Player | Có passwordHash, không trả ra JSON |
+| Boundary | FriendshipRestController | - getFriendships(playerId) nhận GET /api/friendships: FriendshipDAO.findByPlayer, rồi gán tổng điểm cho người gửi và người nhận bằng PlayerDAO.getTotalPoints.<br>- sendRequest(body) nhận POST /api/friendships:<br>  1. PlayerDAO.findById lấy người gửi; PlayerDAO.findByUsername tìm người nhận, không có thì trả 404 "Không tìm thấy người chơi".<br>  2. Người nhận là người gửi thì trả 400 "Không thể kết bạn với chính mình".<br>  3. FriendshipDAO.existsBetween đúng thì trả 409 "Đã có lời mời hoặc đã là bạn bè".<br>  4. Tạo Friendship pending, FriendshipDAO.insert, trả 201 kèm lời mời.<br>- accept(id, playerId): FriendshipDAO.findById, không có thì trả 404 "Lời mời không còn"; Friendship.canAccept sai thì trả 403; đúng thì updateStatus accepted, gán tổng điểm và trả quan hệ.<br>- delete(id, playerId): FriendshipDAO.findById; playerId không phải người gửi hay người nhận thì trả 403; ngược lại FriendshipDAO.delete, trả 204 |
+| Control | DAO ← FriendshipDAO | DAO giữ conn : Connection (JDBC).<br>- findByPlayer truy vấn tblFriendship có tblPlayerSenderId hoặc tblPlayerReceiverId bằng playerId, JOIN tblPlayer 2 lần để có người gửi và người nhận.<br>- findById đọc một quan hệ theo id, cùng cách JOIN.<br>- existsBetween kiểm tra có dòng nào giữa 2 người theo cả 2 chiều.<br>- insert ghi 1 dòng tblFriendship, gán id vừa sinh.<br>- updateStatus ghi status, chỉ khi dòng đang pending.<br>- delete xóa 1 dòng theo id.<br>- toFriendship đóng gói một dòng kết quả thành Friendship kèm 2 Player |
+| Control | DAO ← PlayerDAO | findById, findByUsername đọc tblPlayer; getTotalPoints như ở Chơi online. Cả 3 hàm thuộc phần chung, chức năng này chỉ gọi lại |
+| Entity | Friendship, Player | Cùng tên, cùng thuộc tính với phía app, để Jackson chuyển JSON thẳng vào đối tượng. passwordHash của Player không bao giờ trả ra JSON |
 
-**Quan hệ giữa các lớp giao diện:** LoginActivity – RegisterActivity, LoginActivity – MainActivity nối bằng liên kết; mỗi Activity nối với layout của nó. Đường HTTP/JSON duy nhất là PlayerApiDAO – AuthRestController.
+**Quan hệ giữa các lớp giao diện:**
+- MainActivity – FriendActivity, FriendActivity – FriendRequestAdapter – FriendRequestViewHolder, FriendActivity – FriendAdapter – FriendViewHolder nối nhau bằng quan hệ liên kết.
+- Layout: MainActivity – activity_main.xml, FriendActivity – activity_friend.xml, FriendRequestViewHolder – item_friend_request.xml, FriendViewHolder – item_friend.xml.
+- FriendActivity thực thi interface PlayerListCallback.
+- Kết tập:
+  - FriendActivity chứa người chơi trong thuộc tính me, nên Player kết tập vào FriendActivity.
+  - FriendActivity, FriendRequestAdapter, FriendAdapter chứa danh sách Friendship, bội số n ở phía Friendship.
+  - Friendship chứa 2 Player ở vai trò sender và receiver, ở cả 2 package.
+
+**Quan hệ liên kết HTTP/JSON** giữa 2 package có 1 cặp: FriendshipApiDAO – FriendshipRestController.
+
+Trạng thái online của bạn bè đi qua Firebase, không đi qua server: PresenceFirebaseDAO đọc cùng node presence mà Chơi online đã ghi.

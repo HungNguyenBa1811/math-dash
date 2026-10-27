@@ -1,4 +1,4 @@
-# BIỂU ĐỒ LỚP PHA PHÂN TÍCH — CHƠI ONLINE, XEM BẢNG XẾP HẠNG, ĐĂNG NHẬP
+# BIỂU ĐỒ LỚP PHA PHÂN TÍCH — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU, QUẢN LÝ BẠN BÈ
 
 ---
 
@@ -42,9 +42,9 @@ Không đề xuất lớp View cho:
 
 ### Bước 4: Biểu đồ lớp pha phân tích
 
-![Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online](lop-phan-tich-uc03.png)
+![Hình 8: Biểu đồ lớp pha phân tích chức năng Chơi online](lop-phan-tich-uc03.png)
 
-*Hình 6: Biểu đồ lớp pha phân tích chức năng Chơi online.*
+*Hình 8: Biểu đồ lớp pha phân tích chức năng Chơi online.*
 
 - **3 lớp View** nối nhau bằng quan hệ liên kết theo luồng màn hình: MainView – MatchView – MatchResultView. MatchResultView quay về MatchView khi chơi tiếp, về MainView khi dừng.
 - Mỗi View nối với lớp thực thể nó gọi phương thức bằng **quan hệ liên kết**:
@@ -59,68 +59,99 @@ Không đề xuất lớp View cho:
 
 ---
 
-## 2. Phân tích tĩnh chức năng "Xem bảng xếp hạng"
+## 2. Phân tích tĩnh chức năng "Xem lịch sử đấu"
 
 ### Bước 1 + 2: Lớp View và thành phần
 
 | Bước kịch bản v1 | Giao diện | Lớp View | Thành phần |
 |---|---|---|---|
-| 1 | Giao diện chính | MainView | outMyInfo: dòng "HUNG · 13,5 điểm"<br>subRanking: nút Bảng xếp hạng |
-| 2 | Giao diện bảng xếp hạng | RankingView | outListRanking: danh sách người chơi đã xếp hạng; mỗi dòng có hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng; dòng của người xem được tô nổi bật |
+| 1 | Giao diện chính | MainView | outMyInfo: dòng "HUNG · 13,5 điểm"<br>subHistory: nút Lịch sử đấu |
+| 2, 6–9 | Giao diện lịch sử đấu | HistoryView | outWinRateChart: biểu đồ tròn tỉ lệ thắng / hòa / thua<br>outSummary: số trận thắng, hòa, thua và tổng số trận<br>outsubListMatch: danh sách trận; mỗi dòng có đối thủ, kết quả, điểm trận, số câu đúng, thời điểm kết thúc; bấm vào một dòng để xem chi tiết trận<br>subTabRanking: thẻ Bảng xếp hạng<br>outListRanking: danh sách người chơi đã xếp hạng; dòng của người xem được tô nổi bật |
+| 4–5 | Giao diện chi tiết trận | MatchDetailView | outResult: THẮNG! / THUA! / HÒA!<br>outPoints: điểm trận<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: tên, số câu đúng, thời gian làm bài của đối thủ<br>outListProblem: 10 câu hỏi kèm đáp án đúng |
 
-Danh sách chỉ để xem, bấm vào một dòng không làm gì. Vì vậy thành phần mang tiền tố out, không phải outsub.
+Thẻ Trận của tôi và thẻ Bảng xếp hạng là 2 phần của cùng một giao diện, chuyển qua lại bằng thẻ, nên chỉ có một lớp HistoryView. Danh sách xếp hạng và danh sách câu hỏi chỉ để xem, bấm vào không làm gì, nên mang tiền tố out. Danh sách trận mang tiền tố outsub vì bấm vào một dòng thì mở chi tiết trận.
+
+Không đề xuất lớp View cho các thông báo "Bạn chưa đấu trận nào", "Không tải được lịch sử đấu…", "Không tải được chi tiết trận…", "Không tải được bảng xếp hạng…".
 
 ### Bước 3: Phương thức và lớp thực thể được gán
 
 | Bước v1 | Xử lý hệ thống | Tên phương thức | Đầu vào | Đầu ra | Gán cho lớp | Lý do |
 |---|---|---|---|---|---|---|
-| 2 | Lấy mọi người chơi kèm 3 tiêu chí, đã sắp xếp | getRanking() | Không có | Danh sách Player kèm tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng | Player | Đầu ra là danh sách Player |
-| 2 | Lấy điểm trận của một người trong một trận đã xong | getPoints() | Trận (Match), người chơi | 1 / 0,5 / 0 | Match | Như ở Chơi online; dùng chung |
-| 2 | Biết người chơi thắng trận nào | getResult() | Trận (Match), người chơi | WIN / LOSE / DRAW | Match | Như ở Chơi online |
-| 2 | Lấy thời gian làm bài trong trận thắng | getFinishTime() | Trận (Match), người chơi | Số mili giây | Match | Như ở Chơi online |
+| 2 | Lấy các trận đã kết thúc mà người chơi tham gia, mới nhất đứng đầu | getHistory() | Người chơi (Player) | Danh sách Match kèm 2 người chơi | Match | Đầu ra là danh sách Match |
+| 2, 4 | Biết người chơi thắng, hòa hay thua một trận | getResult() | Trận (Match), người chơi | WIN / LOSE / DRAW | Match | Như ở Chơi online; dùng chung |
+| 2, 4 | Lấy điểm trận của người chơi | getPoints() | Trận (Match), người chơi | 1 / 0,5 / 0 | Match | Như ở Chơi online |
+| 2, 4 | Lấy người chơi còn lại trong trận | getOpponent() | Trận (Match), người chơi | Người chơi trong trận của đối thủ (MatchPlayer) | Match | Match chứa cả 2 MatchPlayer |
+| 4 | Lấy một trận kèm đề, đáp án đúng và 2 người chơi | getMatch() | Trận (Match) | Trận đầy đủ (Match) | Match | Đầu ra là Match |
+| 4 | Lấy thời gian làm bài của mỗi bên | getFinishTime() | Trận (Match), người chơi | Số mili giây | Match | Như ở Chơi online |
+| 8 | Lấy mọi người chơi kèm 3 tiêu chí, đã sắp xếp | getRanking() | Không có | Danh sách Player kèm tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng | Player | Đầu ra là danh sách Player |
+
+Số trận thắng, hòa, thua và tỉ lệ thắng trên biểu đồ tròn không phải phương thức của thực thể: HistoryView đếm các kết quả do getResult() trả về để hiển thị. Đây là thông tin dẫn xuất, không lưu.
 
 ### Bước 4: Biểu đồ lớp pha phân tích
 
-![Hình 7: Biểu đồ lớp pha phân tích chức năng Xem bảng xếp hạng](lop-phan-tich-uc04.png)
+![Hình 9: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu](lop-phan-tich-uc04.png)
 
-*Hình 7: Biểu đồ lớp pha phân tích chức năng Xem bảng xếp hạng.*
+*Hình 9: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu.*
 
-- Chức năng có 2 lớp View nối nhau bằng quan hệ liên kết: MainView mở RankingView; RankingView gọi getRanking() của Player.
-- Player dùng 3 phương thức của Match để tính các tiêu chí. Bảng xếp hạng vì vậy dùng **cùng luật thắng thua** với trận đấu, không viết lại luật ở nơi khác.
-- Các tiêu chí xếp hạng là thuộc tính dẫn xuất của Player, được tính khi xem chứ không lưu.
+- **3 lớp View** nối nhau bằng quan hệ liên kết theo luồng màn hình: MainView – HistoryView – MatchDetailView.
+- Mỗi View nối với lớp thực thể nó gọi phương thức bằng **quan hệ liên kết**:
+  - HistoryView: Match (lịch sử, kết quả, điểm, đối thủ), Player (bảng xếp hạng).
+  - MatchDetailView: Match (trận đầy đủ, kết quả, điểm, đối thủ, thời gian làm bài).
+- **Quan hệ giữa các thực thể** giữ đúng như Hình 2:
+  - Player – Match là n-n, qua lớp liên kết MatchPlayer.
+  - MathProblem là thành phần của Match (hợp thành); chi tiết trận cần đề để hiện đáp án đúng.
+- **Lịch sử đấu và bảng xếp hạng dùng cùng luật thắng thua** với trận đấu: getResult(), getPoints(), getFinishTime() của Match. Không có luật nào được viết lại ở giao diện.
 
 ---
 
-## 3. Phân tích tĩnh chức năng "Đăng nhập, đăng ký"
+## 3. Phân tích tĩnh chức năng "Quản lý bạn bè"
 
 ### Bước 1 + 2: Lớp View và thành phần
 
 | Bước kịch bản v1 | Giao diện | Lớp View | Thành phần |
 |---|---|---|---|
-| 1, 6, 7 | Giao diện đăng nhập | LoginView | inUsername: ô tên đăng nhập<br>inPassword: ô mật khẩu<br>subLogin: nút Đăng nhập<br>subRegister: nút Đăng ký |
-| 3, 4 | Giao diện đăng ký | RegisterView | inUsername: ô tên đăng nhập<br>inPassword: ô mật khẩu<br>inConfirmPassword: ô nhập lại mật khẩu<br>inDisplayName: ô tên hiển thị<br>subRegister: nút Đăng ký |
-| 9 | Giao diện chính | MainView | outMyInfo: dòng "HUNG · 0 điểm" |
+| 1, 5 | Giao diện chính | MainView | outMyInfo: dòng "HUNG · 13,5 điểm"<br>subFriends: nút Bạn bè |
+| 2–8 | Giao diện bạn bè | FriendView | inUsername: ô nhập tên đăng nhập<br>subAddFriend: nút Kết bạn<br>outsubListRequest: danh sách lời mời kết bạn đã nhận; mỗi dòng có tên người gửi, nút Đồng ý, nút Từ chối<br>outsubListFriend: danh sách bạn bè và lời mời đã gửi; mỗi dòng có trạng thái Online / Offline, tên, tổng điểm hoặc "Đang chờ trả lời", nút Hủy kết bạn |
 
-Các thông báo "Đăng ký thành công", "Sai tên đăng nhập hoặc mật khẩu"… không phải giao diện nên không có lớp View.
+outsubListRequest và outsubListFriend mang tiền tố outsub vì mỗi dòng vừa hiển thị thông tin vừa có nút để bấm.
+
+Không đề xuất lớp View cho:
+- Hộp thoại "Hủy kết bạn với TUAN?" với 2 nút Không, Hủy kết bạn. Đây là hộp thoại xác nhận hiện trên giao diện bạn bè.
+- Các thông báo "Đã gửi lời mời kết bạn tới HOANG", "Không tìm thấy người chơi", "Không thể kết bạn với chính mình", "Đã có lời mời hoặc đã là bạn bè", "Lời mời không còn".
 
 ### Bước 3: Phương thức và lớp thực thể được gán
 
 | Bước v1 | Xử lý hệ thống | Tên phương thức | Đầu vào | Đầu ra | Gán cho lớp | Lý do |
 |---|---|---|---|---|---|---|
-| 5 | Tạo tài khoản người chơi mới | register() | Tên đăng nhập, mật khẩu, tên hiển thị | Người chơi mới (Player) | Player | Đầu ra là Player |
-| 8 | Kiểm tra tên đăng nhập và mật khẩu | checkLogin() | Tên đăng nhập, mật khẩu | Người chơi (Player), hoặc không có | Player | Đầu ra là Player |
-| 8 | Ghi nhớ phiên đăng nhập trên máy | saveSession() | Người chơi (Player) | Không có | Player | Đầu vào chỉ thuộc Player |
-| 1 | Lấy phiên đã ghi nhớ | getSession() | Không có | Người chơi (Player), hoặc không có | Player | Đầu ra là Player |
+| 2, 5 | Lấy các lời mời kết bạn và quan hệ bạn bè của người chơi, ở cả 2 vai trò người gửi và người nhận | getFriendships() | Người chơi (Player) | Danh sách Friendship kèm người gửi, người nhận | Friendship | Đầu ra là danh sách Friendship |
+| 2, 7 | Lấy danh sách người chơi đang online để biết bạn nào Online | getOnlinePlayers() | Không có | Danh sách Player kèm trạng thái | Player | Như ở Chơi online; dùng chung |
+| 2, 7 | Lấy người còn lại trong một quan hệ: là người nhận nếu mình là người gửi, ngược lại là người gửi | getFriend() | Quan hệ (Friendship), người chơi | Người bạn (Player) | Friendship | Friendship chứa được cả 2 đầu vào: người gửi và người nhận |
+| 4 | Tìm người nhận theo tên đăng nhập, kiểm tra chưa có quan hệ giữa 2 người, tạo lời mời đang chờ | sendRequest() | Người gửi (Player), tên đăng nhập người nhận | Lời mời đang chờ (Friendship) | Friendship | Đầu ra là Friendship |
+| 7 | Chuyển lời mời sang trạng thái đã là bạn bè | accept() | Lời mời (Friendship), người chơi | Quan hệ đã đồng ý (Friendship) | Friendship | Đầu ra là Friendship |
+| 7 | Kiểm tra lời mời đang chờ và người chơi là người nhận | canAccept() | Lời mời (Friendship), người chơi | Đúng / sai | Friendship | Đầu ra không phải thực thể; đầu vào chính là Friendship |
+| 2, 6 (ngoại lệ) | Xóa lời mời khi từ chối hoặc rút lại; xóa quan hệ khi hủy kết bạn | delete() | Quan hệ (Friendship), người chơi | Không có | Friendship | Đầu vào chính là Friendship |
 
 ### Bước 4: Biểu đồ lớp pha phân tích
 
-![Hình 23: Biểu đồ lớp pha phân tích chức năng Đăng nhập, đăng ký](lop-phan-tich-tai-khoan.png)
+![Hình 10: Biểu đồ lớp pha phân tích chức năng Quản lý bạn bè](lop-phan-tich-uc07.png)
 
-*Hình 23: Biểu đồ lớp pha phân tích chức năng Đăng nhập, đăng ký.*
+*Hình 10: Biểu đồ lớp pha phân tích chức năng Quản lý bạn bè.*
 
-- 3 lớp View nối nhau bằng quan hệ liên kết: LoginView mở RegisterView và MainView.
-- Cả 4 phương thức đều gán cho Player vì đầu ra hoặc đầu vào của chúng chỉ là người chơi.
-- Vai trò (role) của Player quyết định giao diện mở ra sau khi đăng nhập.
+- Chức năng có 2 lớp View nối nhau bằng quan hệ liên kết: MainView mở FriendView.
+- FriendView nối với 2 lớp thực thể nó gọi phương thức:
+  - Friendship: lấy, gửi, đồng ý, xóa lời mời và quan hệ bạn bè.
+  - Player: lấy danh sách người chơi online để hiện trạng thái của bạn bè.
+- **Quan hệ giữa các thực thể** giữ đúng như Hình 2: Friendship chứa thông tin 2 Player ở 2 vai trò người gửi và người nhận (kết tập).
+- **Friendship nhận mọi phương thức** của chức năng, kể cả luật "chỉ người nhận mới đồng ý được" (canAccept()). Trạng thái online của bạn bè không lưu trong Friendship mà lấy từ danh sách online.
+
+Đối chiếu với kịch bản v1:
+
+| Thành phần trong kịch bản v1 | Thuộc tính |
+|---|---|
+| Nút Bạn bè | MainView.subFriends |
+| Ô tên đăng nhập, nút Kết bạn | FriendView.inUsername, subAddFriend |
+| Mục Lời mời kết bạn, nút Đồng ý, nút Từ chối | FriendView.outsubListRequest |
+| Mục Bạn bè, trạng thái, tổng điểm, dòng "Đang chờ trả lời", nút × | FriendView.outsubListFriend |
 
 ---
 
@@ -131,9 +162,9 @@ Mọi thành phần giao diện nêu trong kịch bản v1 đều có ở lớp 
 | Thành phần trong kịch bản v1 | Thuộc tính |
 |---|---|
 | Dòng thông tin của mình, danh sách người chơi online | MainView.outMyInfo, outsubListPlayer |
-| Nút Bảng xếp hạng | MainView.subRanking |
+| Nút Lịch sử đấu, nút Bạn bè | MainView.subHistory, subFriends |
 | Ô thời gian, trạng thái đối thủ, danh sách câu hỏi, nút Nộp bài, nút Thoát | MatchView.outTimer, outOpponentStatus, inoutListQuestion, subSubmit, subExit |
 | Dòng kết quả, kết quả của mình, của đối thủ, điểm, nút Chơi tiếp, nút Dừng | MatchResultView.outResult, outMyResult, outOpponentResult, outPoints, subContinue, subStop |
-| Danh sách xếp hạng | RankingView.outListRanking |
-| Ô tên đăng nhập, mật khẩu, nút Đăng nhập, nút Đăng ký | LoginView.inUsername, inPassword, subLogin, subRegister |
-| Các ô và nút của giao diện đăng ký | RegisterView.inUsername, inPassword, inConfirmPassword, inDisplayName, subRegister |
+| Biểu đồ tròn, số trận thắng / hòa / thua, danh sách trận, thẻ Bảng xếp hạng, danh sách xếp hạng | HistoryView.outWinRateChart, outSummary, outsubListMatch, subTabRanking, outListRanking |
+| Kết quả, điểm trận, kết quả của mình, của đối thủ, danh sách 10 câu kèm đáp án | MatchDetailView.outResult, outPoints, outMyResult, outOpponentResult, outListProblem |
+| Ô tên đăng nhập, nút Kết bạn, danh sách lời mời, danh sách bạn bè | FriendView.inUsername, subAddFriend, outsubListRequest, outsubListFriend |

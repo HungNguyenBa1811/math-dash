@@ -1,0 +1,16 @@
+@startuml tuan-tu-phan-tich-uc07b
+!include _seq.iuml
+title Tuần tự phân tích – Quản lý bạn bè, đoạn B: Đồng ý lời mời kết bạn
+
+actor "Người chơi" as U
+boundary FriendView as FV
+entity Friendship as F
+
+U -> FV : nhấn Đồng ý ở một lời mời
+FV -> F : accept()
+F -> F : canAccept()
+F --> FV : quan hệ đã là bạn bè
+FV -> F : getFriend()
+F --> FV : người gửi lời mời
+FV --> U : bỏ lời mời, hiển thị người gửi trong danh sách bạn bè
+@enduml

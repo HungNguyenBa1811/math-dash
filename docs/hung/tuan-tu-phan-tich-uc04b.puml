@@ -1,0 +1,24 @@
+@startuml tuan-tu-phan-tich-uc04b
+!include _seq.iuml
+title Tuần tự phân tích – Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng
+
+actor "Người chơi" as U
+boundary MainView as MV
+boundary HistoryView as HV
+entity Player as P
+entity Match as M
+
+U -> HV : chọn thẻ Bảng xếp hạng
+HV -> P : getRanking()
+P -> M : getPoints()
+M --> P : điểm trận
+P -> M : getResult()
+M --> P : kết quả trận
+P -> M : getFinishTime()
+M --> P : thời gian làm bài
+P --> HV : danh sách người chơi đã xếp hạng
+HV --> U : hiển thị bảng xếp hạng
+U -> HV : nhấn Back
+HV -> MV : gọi
+MV --> U : hiển thị giao diện chính
+@enduml

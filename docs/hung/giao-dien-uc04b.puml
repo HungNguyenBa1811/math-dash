@@ -1,0 +1,34 @@
+@startsalt giao-dien-uc04b
+title Phác thảo giao diện – Xem chi tiết trận
+{
+  {+
+  <b>MatchDetailActivity
+  ==
+  { <&arrow-left> | <b>Trận #37</b> · 25/10/2026 20:15 }
+  ==
+  .
+  <size:22><b><color:green>THẮNG!</color></b></size>
+  +1 điểm
+  .
+  {#
+  . | <b>Bạn · HUNG</b> | <b>HOANG</b>
+  Câu đúng | <b>10/10</b> | 10/10
+  Thời gian | <b>38,2 giây</b> | 45,6 giây
+  }
+  .
+  <b>ĐỀ BÀI VÀ ĐÁP ÁN</b>
+  {#
+  1. | 12 + 7 = <b>19</b>
+  2. | 9 × 6 = <b>54</b>
+  3. | 45 − 18 = <b>27</b>
+  4. | 8 × 7 = <b>56</b>
+  5. | 36 + 25 = <b>61</b>
+  6. | 72 − 39 = <b>33</b>
+  7. | 7 × 12 = <b>84</b>
+  8. | 58 + 27 = <b>85</b>
+  9. | 91 − 46 = <b>45</b>
+  10. | 6 × 15 = <b>90</b>
+  }
+  }
+}
+@endsalt

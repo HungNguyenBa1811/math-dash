@@ -1,4 +1,4 @@
-@startuml uc-chi-tiet-tai-khoan
+@startuml uc-chi-tiet-lich-su-dau
 !pragma layout smetana
 ' === VP Base Theme v2 ===
 skinparam defaultFontName "Segoe UI"
@@ -19,21 +19,20 @@ skinparam rectangle {
 }
 
 left to right direction
-title Biểu đồ use case chi tiết module Tài khoản – Math Dash 1v1
+title Biểu đồ use case chi tiết module Xem lịch sử đấu – Math Dash 1v1
 
 actor "Người chơi" as A1
-actor "Quản trị viên" as A2
 
-rectangle "Module Tài khoản" {
-  usecase "Đăng ký" as UC01
-  usecase "Đăng nhập" as UC02
-  usecase "Kiểm tra tài khoản" as KT
-  usecase "Ghi nhớ phiên đăng nhập" as GN
+rectangle "Module Xem lịch sử đấu" {
+  usecase "Xem lịch sử đấu" as UC04
+  usecase "Xem trận của tôi" as TCT
+  usecase "Xem chi tiết trận" as CT
+  usecase "Xem bảng xếp hạng" as BXH
 }
 
-A1 --> UC01
-A1 --> UC02
-UC02 <-- A2
-UC02 ..> KT : <<include>>
-UC02 ..> GN : <<include>>
+A1 --> UC04
+
+UC04 ..> TCT : <<include>>
+CT ..> TCT : <<extend>>
+BXH ..> UC04 : <<extend>>
 @enduml

@@ -1,0 +1,43 @@
+@startuml tuan-tu-thiet-ke-uc07b
+!include _seq.iuml
+title Tuần tự thiết kế – Quản lý bạn bè, đoạn B: Đồng ý lời mời kết bạn
+
+actor "Người chơi" as U
+box "Client (Android)" #FFFFFF
+boundary FriendActivity as FA
+boundary FriendRequestAdapter as FRA
+boundary FriendAdapter as FAD
+control FriendshipApiDAO as FSAD
+entity Friendship as F
+end box
+box "Server (Spring Boot)" #FFFFFF
+boundary "FriendshipRestController" as FRC
+control "FriendshipDAO" as FD
+control "PlayerDAO" as PD
+entity "Friendship" as SF
+end box
+
+U -> FRA : nhấn Đồng ý ở một lời mời
+FRA -> FA : onClick(): onAccept()
+FA -> FSAD : accept() {Thread}
+FSAD -> FRC : POST /api/friendships/{id}/accept?playerId={id} → accept()
+FRC -> FD : findById()
+FD -> SF : đóng gói Friendship
+SF --> FD : Friendship
+FD --> FRC : Friendship
+FRC -> SF : canAccept()
+SF --> FRC : true
+FRC -> FD : updateStatus()
+FD --> FRC : true
+FRC -> PD : getTotalPoints()
+PD --> FRC : tổng điểm
+FRC --> FSAD : Friendship (JSON)
+FSAD -> F : toFriendship(): đóng gói Friendship
+F --> FSAD : Friendship
+FSAD --> FA : Friendship
+FA -> FRA : runOnUiThread(): setFriendships()
+FA -> FAD : setFriendships()
+FAD -> F : getFriend()
+F --> FAD : Player
+FAD --> U : hiển thị người gửi trong danh sách bạn bè
+@enduml

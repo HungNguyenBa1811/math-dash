@@ -1,13 +1,24 @@
 @startuml lop-phan-tich-uc04
 !include _theme.iuml
-title Biểu đồ lớp pha phân tích – Xem bảng xếp hạng
+title Biểu đồ lớp pha phân tích – Xem lịch sử đấu
 
 class MainView <<boundary>> {
   - outMyInfo
-  - subRanking
+  - subHistory
 }
-class RankingView <<boundary>> {
+class HistoryView <<boundary>> {
+  - outWinRateChart
+  - outSummary
+  - outsubListMatch
+  - subTabRanking
   - outListRanking
+}
+class MatchDetailView <<boundary>> {
+  - outResult
+  - outPoints
+  - outMyResult
+  - outOpponentResult
+  - outListProblem
 }
 class Player <<entity>> {
   - username
@@ -20,6 +31,9 @@ class Player <<entity>> {
 class Match <<entity>> {
   - startedAt
   - endedAt
+  + getHistory()
+  + getMatch()
+  + getOpponent()
   + getResult()
   + getFinishTime()
   + getPoints()
@@ -29,9 +43,19 @@ class MatchPlayer <<entity>> {
   - submittedAt
   - forfeited
 }
+class MathProblem <<entity>> {
+  - operand1
+  - operand2
+  - operator
+  - correctAnswer
+}
 
-MainView -- RankingView
-RankingView -- Player
+MainView -- HistoryView
+HistoryView -- MatchDetailView
+HistoryView -- Match
+HistoryView -- Player
+MatchDetailView -- Match
 Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
+Match "1" *-- "10" MathProblem
 @enduml
