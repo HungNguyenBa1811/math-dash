@@ -10,7 +10,7 @@ Hệ thống là một trò chơi giải toán nhanh gồm một server và nhi�
 
 Sau khi đăng nhập, người chơi thấy danh sách người chơi đang online, mỗi người có tên, tổng điểm và trạng thái rỗi hoặc bận. Người chơi bấm vào tên một người đang rỗi để gửi lời mời thách đấu; người được mời đồng ý hoặc từ chối. Khi lời mời được đồng ý, server tạo một trận đấu giữa 2 người, sinh một đề bài gồm 10 câu hỏi và gửi cùng đề cho cả 2 người. Mỗi câu hỏi là một phép tính gồm hai toán hạng và một toán tử, kèm 4 phương án trả lời trong đó có một đáp án đúng. Mỗi người chọn đáp án cho các câu rồi nộp bài làm trong tối đa 60 giây; server ghi nhận thời điểm nộp bài và số câu đúng của từng người. Người nhấn thoát giữa chừng thì bỏ trận và bị xử thua. Khi cả 2 đã nộp bài, server xác định kết quả trận: ai đúng hết và nhanh hơn thì thắng, cả 2 đều có câu sai thì hòa. Thắng được 1 điểm, hòa 0,5 điểm, thua 0 điểm; tổng điểm của người chơi là tổng các điểm trận này. Sau mỗi trận, nếu cả 2 chọn chơi tiếp thì server tạo trận mới với đề mới; nếu một người dừng thì server báo cho người còn lại.
 
-Người chơi cũng có thể chơi với máy: người chơi chọn độ khó của máy, làm một đề 10 câu, máy cũng có số câu đúng và thời gian làm bài theo độ khó; kết quả ván được lưu lại cùng thời điểm chơi. Người chơi xem được bảng xếp hạng mọi người chơi theo tổng điểm, trung bình điểm của các đối thủ đã gặp và trung bình thời gian trong các trận thắng.
+Người chơi cũng có thể chơi với máy: người chơi chọn độ khó của máy, làm một đề 10 câu, máy cũng có số câu đúng và thời gian làm bài theo độ khó; kết quả ván được lưu lại cùng thời điểm chơi. Người chơi xem được lịch sử đấu gồm các trận đối kháng mình đã đấu cùng tỉ lệ thắng, hòa, thua, và bảng xếp hạng mọi người chơi theo tổng điểm, trung bình điểm của các đối thủ đã gặp và trung bình thời gian trong các trận thắng. Người chơi còn có thể gửi lời mời kết bạn tới một người chơi khác bằng tên đăng nhập; người nhận đồng ý thì hai người thành bạn bè, từ chối thì lời mời bị xóa. Người chơi xem danh sách bạn bè kèm trạng thái online và có thể hủy kết bạn.
 
 ## A.2. Bước 2: Trích các danh từ xuất hiện trong đoạn văn
 
@@ -23,6 +23,8 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
   - Trận đấu: trận đấu, đề bài, câu hỏi, phép tính, toán hạng, toán tử, phương án trả lời, đáp án đúng, bài làm, thời điểm nộp bài, số câu đúng, bỏ trận, kết quả trận, điểm trận, chơi tiếp.
   - Chơi với máy: độ khó, ván đấu với máy, thời gian làm bài, thời điểm chơi.
   - Bảng xếp hạng: bảng xếp hạng, trung bình điểm đối thủ, trung bình thời gian thắng.
+  - Lịch sử đấu: lịch sử đấu, tỉ lệ thắng, hòa, thua.
+  - Bạn bè: lời mời kết bạn, người gửi, người nhận, bạn bè, danh sách bạn bè, trạng thái online.
 
 ## A.3. Bước 3: Đánh giá và lựa chọn các danh từ làm lớp thực thể hoặc thuộc tính
 
@@ -52,6 +54,14 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
 - **Các danh từ liên quan đến bảng xếp hạng:**
   - Bảng xếp hạng → là danh sách Player đã sắp xếp, không có thông tin riêng → **loại**.
   - Trung bình điểm đối thủ, trung bình thời gian thắng → tính từ các Match đã xong → thuộc tính dẫn xuất của Player, **không lưu**. Giống tổng điểm, giao diện bảng xếp hạng cần hiển thị chúng cùng tên người chơi.
+- **Các danh từ liên quan đến lịch sử đấu:**
+  - Lịch sử đấu → là danh sách các Match đã xong mà người chơi tham gia, không có thông tin riêng → **loại**.
+  - Tỉ lệ thắng, hòa, thua → đếm từ Match.getResult() của các trận trong lịch sử → dẫn xuất, **không lưu**, không thành thuộc tính của lớp nào.
+- **Các danh từ liên quan đến bạn bè:**
+  - Lời mời kết bạn, bạn bè → cùng một quan hệ giữa 2 người chơi ở 2 giai đoạn: lúc chờ trả lời và lúc đã đồng ý → lớp Friendship: trạng thái (status: pending / accepted), thời điểm gửi (createdAt). Người gửi và người nhận là 2 Player.
+  - Lời mời bị từ chối, hủy kết bạn → quan hệ không còn, bị xóa → không cần trạng thái riêng.
+  - Danh sách bạn bè → là các Friendship đã đồng ý của người chơi → **loại**.
+  - Trạng thái online của bạn bè → chính là status của Player khi online → **không thêm thuộc tính**.
 
 ## A.4. Bước 4: Xác định quan hệ số lượng giữa các thực thể
 
@@ -61,6 +71,8 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
 - Một trận đấu có 10 câu hỏi, mỗi câu hỏi thuộc về đúng một trận → Match – MathProblem là **1-n**.
 - Một người chơi chơi nhiều ván với máy, mỗi ván thuộc về một người chơi → Player – BotGame là **1-n**.
 - Một ván đấu với máy có 10 câu hỏi, mỗi câu hỏi thuộc về đúng một ván → BotGame – MathProblem là **1-n**.
+- Một người chơi gửi nhiều lời mời kết bạn, mỗi lời mời có đúng một người gửi → Player – Friendship là **1-n** ở vai trò người gửi.
+- Một người chơi nhận nhiều lời mời kết bạn, mỗi lời mời có đúng một người nhận → Player – Friendship là **1-n** ở vai trò người nhận.
 - Một lời mời được đồng ý thì sinh ra trận đầu tiên của 2 người. Lời mời không có thông tin nào cần cho trận, trận cũng không cần biết lời mời → Challenge – Match **không nối**.
 
 ## A.5. Bước 5: Xác định quan hệ đối tượng giữa các thực thể
@@ -73,6 +85,7 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
 - **Quan hệ hợp thành (aggregation)**: dùng cho các quan hệ 1-n, hình thoi đặt ở lớp chứa thông tin của lớp kia.
   - Thông tin người chơi nằm trong thông tin lời mời, ở 2 vai trò người mời và người được mời.
   - Thông tin người chơi nằm trong thông tin ván đấu với máy.
+  - Thông tin người chơi nằm trong thông tin quan hệ bạn bè, ở 2 vai trò người gửi và người nhận.
 - **Quan hệ liên kết (association)**: dùng cho quan hệ n-n, lớp trung gian được vẽ thành lớp liên kết gắn vào đường association.
   - Người chơi và Trận đấu liên kết tạo ra Người chơi trong trận duy nhất.
 
@@ -88,6 +101,7 @@ Kết quả thu được biểu đồ lớp thực thể pha phân tích toàn h
 | 4 | Match | Trận đấu | Kết quả trận, điểm trận, tổng điểm, bảng xếp hạng đều suy ra từ lớp này |
 | 5 | MatchPlayer | Người chơi trong trận | Lớp liên kết của quan hệ n-n Player – Match |
 | 6 | BotGame | Ván đấu với máy | Lưu trên máy client |
+| 7 | Friendship | Lời mời kết bạn, bạn bè | Một lớp cho cả lời mời đang chờ và quan hệ đã đồng ý, phân biệt bằng status |
 
 ## A.7. Biểu đồ lớp thực thể pha phân tích
 
@@ -95,26 +109,28 @@ Kết quả thu được biểu đồ lớp thực thể pha phân tích toàn h
 
 *Hình 2: Biểu đồ lớp thực thể pha phân tích toàn hệ thống Math Dash 1v1.*
 
-Biểu đồ có 6 lớp thực thể.
+Biểu đồ có 7 lớp thực thể.
 - **Phía đối kháng:**
   - Quan hệ n-n giữa Player và Match được tách bằng lớp liên kết MatchPlayer, nơi giữ bài làm, số câu đúng, thời điểm nộp bài và trạng thái bỏ trận của từng người.
   - Đề bài là các MathProblem gắn chặt vào Match (hình thoi đặc).
   - Challenge chứa thông tin của 2 Player ở 2 vai trò người mời và người được mời.
 - **Phía chơi với máy:** BotGame chứa thông tin người chơi (hình thoi rỗng) và đề bài riêng của ván (hình thoi đặc).
-- **Các thuộc tính dẫn xuất** không có trên biểu đồ: kết quả trận, điểm trận, kết quả ván với máy, các tiêu chí của bảng xếp hạng. Riêng tổng điểm và trạng thái được giữ ở Player vì giao diện cần hiển thị cùng tên người chơi.
+- **Phía bạn bè:** Friendship chứa thông tin của 2 Player ở 2 vai trò người gửi và người nhận, giống cách Challenge chứa người mời và người được mời.
+- **Các thuộc tính dẫn xuất** không có trên biểu đồ: kết quả trận, điểm trận, kết quả ván với máy, các tiêu chí của bảng xếp hạng, tỉ lệ thắng / hòa / thua trong lịch sử đấu. Riêng tổng điểm và trạng thái được giữ ở Player vì giao diện cần hiển thị cùng tên người chơi.
 
 Mã nguồn PlantUML: [lop-thuc-the-phan-tich.puml](lop-thuc-the-phan-tich.puml).
 
 ## A.8. Lớp thực thể dùng cho chức năng nào
 
-| Lớp | UC01 Đăng ký | UC02 Đăng nhập | UC03 Chơi online | UC04 Xem bảng xếp hạng | UC05 Chơi với máy | UC06 Quản lý thông tin người chơi |
-|---|---|---|---|---|---|---|
-| Player | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| MathProblem | | | ✓ | | ✓ | |
-| Challenge | | | ✓ | | | |
-| Match | | | ✓ | ✓ | | ✓ |
-| MatchPlayer | | | ✓ | ✓ | | ✓ |
-| BotGame | | | | | ✓ | |
+| Lớp | UC01 Đăng ký | UC02 Đăng nhập | UC03 Chơi online | UC04 Xem lịch sử đấu | UC05 Chơi với máy | UC06 Quản lý thông tin người chơi | UC07 Quản lý bạn bè |
+|---|---|---|---|---|---|---|---|
+| Player | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| MathProblem | | | ✓ | ✓ | ✓ | | |
+| Challenge | | | ✓ | | | | |
+| Match | | | ✓ | ✓ | | ✓ | |
+| MatchPlayer | | | ✓ | ✓ | | ✓ | |
+| BotGame | | | | | ✓ | | |
+| Friendship | | | | | | | ✓ |
 
 ---
 
@@ -125,7 +141,7 @@ Mã nguồn PlantUML: [lop-thuc-the-phan-tich.puml](lop-thuc-the-phan-tich.puml)
 ## B.1. Bước 1: Bổ sung thuộc tính khóa
 
 Bổ sung thuộc tính id cho mọi lớp, vì lớp nào cũng cần được lưu và cần phân biệt từng đối tượng. Không có lớp nào kế thừa lớp khác.
-- Player, Match, MatchPlayer, MathProblem, BotGame: id : int, do CSDL tự sinh.
+- Player, Match, MatchPlayer, MathProblem, BotGame, Friendship: id : int, do CSDL tự sinh.
 - Challenge: id : String. Lời mời chỉ nằm trên Firebase Realtime Database, khóa là push id do Firebase sinh.
 
 MathProblem có id khi là câu của một trận đối kháng, vì server phải lưu đề để chấm bài. Câu của ván đấu với máy chỉ nằm trong bộ nhớ, id bằng 0.
@@ -155,6 +171,7 @@ Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền t
 | Match | id: int, status: String, startedAt: Date, endedAt: Date |
 | MatchPlayer | id: int, answers: List&lt;Integer&gt;, correctCount: int, submittedAt: Date, forfeited: boolean |
 | BotGame | id: int, difficulty: int, correctCount: int, finishTime: long, botCorrectCount: int, botFinishTime: long, playedAt: Date |
+| Friendship | id: int, status: String, createdAt: Date |
 
 ## B.3. Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành
 
@@ -168,6 +185,7 @@ Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền t
   - BotGame chứa MathProblem (hợp thành, 1 – 10).
   - Challenge chứa Player 2 lần, ở vai trò người mời và người được mời (kết tập).
   - BotGame chứa Player (kết tập).
+  - Friendship chứa Player 2 lần, ở vai trò người gửi và người nhận (kết tập).
 
 Sau bước này không còn đường liên kết trơn nào trên biểu đồ.
 
@@ -181,6 +199,7 @@ Quan hệ 1-n thì lớp chứa khai báo danh sách; quan hệ n-1 hoặc 1-1 t
 - MatchPlayer chứa 1 Player → player : Player.
 - BotGame chứa 1 Player → player : Player.
 - BotGame chứa 10 MathProblem → questions : List\<MathProblem>.
+- Friendship chứa người gửi và người nhận → sender : Player, receiver : Player.
 
 Các thuộc tính dẫn xuất ở pha phân tích không thành thuộc tính lưu trữ mà thành **phương thức nghiệp vụ** của lớp thực thể. Đây là các hàm Java thuần, có unit test:
 
@@ -193,7 +212,10 @@ Các thuộc tính dẫn xuất ở pha phân tích không thành thuộc tính 
 | Match | getFinishTime(playerId : int) : long | Thời gian làm bài của người chơi: submittedAt − startedAt, tính bằng mili giây |
 | Match | getResult(playerId : int) : String | WIN / LOSE / DRAW, theo thứ tự:<br>1. Ai bỏ trận thì thua.<br>2. Chỉ một người đúng hết 10 câu thì người đó thắng.<br>3. Cả 2 đều có câu sai thì hòa.<br>4. Cả 2 đúng hết thì so thời gian làm bài: ngắn hơn thắng, bằng nhau hòa |
 | Match | getPoints(playerId : int) : double | 1 nếu WIN, 0,5 nếu DRAW, 0 nếu LOSE |
+| Match | getOpponent(playerId : int) : MatchPlayer | Người chơi trong trận còn lại, dùng để hiện đối thủ trong lịch sử đấu |
 | BotGame | getResult() : String | WIN / LOSE / DRAW của người chơi so với máy, cùng luật với Match.getResult |
+| Friendship | getFriend(playerId : int) : Player | Người còn lại trong quan hệ: là receiver nếu playerId là sender, ngược lại là sender |
+| Friendship | canAccept(playerId : int) : boolean | Lời mời đang chờ và playerId là người nhận; chỉ người nhận mới đồng ý được |
 
 Một số thuộc tính dẫn xuất được giữ lại trong Player, vì giao diện cần hiển thị chúng cùng tên người chơi:
 - totalPoints: tổng getPoints của người chơi qua các trận đã xong.
@@ -217,8 +239,9 @@ So với pha phân tích:
   - Match.questions, Match.players.
   - MatchPlayer.player.
   - BotGame.player, BotGame.questions.
+  - Friendship.sender, Friendship.receiver.
 
-Các lớp Player, MathProblem, Match, MatchPlayer có mặt ở **cả app và server** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng.
+Các lớp Player, MathProblem, Match, MatchPlayer, Friendship có mặt ở **cả app và server** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng.
 - passwordHash chỉ có giá trị ở server; app không bao giờ giữ mật khẩu.
 - correctAnswer của câu hỏi chỉ được gửi về app sau khi trận đã xong, để không ai biết trước đáp án.
 
@@ -257,3 +280,6 @@ Mã nguồn PlantUML: [lop-thuc-the-thiet-ke.puml](lop-thuc-the-thiet-ke.puml).
 | BotGame | correctCount, finishTime | Số câu đúng, thời gian làm bài của người chơi | 0 – 10; mili giây |
 | BotGame | botCorrectCount, botFinishTime | Số câu đúng, thời gian làm bài của máy | 0 – 10; mili giây |
 | BotGame | playedAt | Thời điểm ván kết thúc | |
+| Friendship | status | Trạng thái quan hệ | pending (đang chờ trả lời), accepted (đã là bạn bè) |
+| Friendship | createdAt | Thời điểm gửi lời mời kết bạn | |
+| Friendship | sender, receiver | Người gửi, người nhận lời mời | Hai người chơi khác nhau; giữa 2 người chỉ có tối đa một Friendship |
