@@ -10,8 +10,8 @@
 |---|---|---|---|
 | 1–2 | Giao diện chính | MainView | subPlayBot: nút Chơi với máy<br>subPlayOnline: nút Chơi online |
 | 3–8 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 12,5 điểm"<br>outsubListPlayer: danh sách người chơi online; mỗi dòng có tên, tổng điểm, trạng thái; bấm vào một dòng để thách đấu |
-| 10–17 | Giao diện thi đấu | MatchView | outTimer: ô thời gian đếm ngược<br>outOpponentStatus: dòng "HOANG đang làm bài" / "HOANG đã nộp bài"<br>outQuestion: số thứ tự câu đang làm "Câu 1/10" và phép tính "12 + 7 = ?"<br>subOptions: 4 ô phương án A, B, C, D; bấm một ô là chọn phương án và sang câu sau<br>subSubmit: nút Nộp bài, hiện khi đã làm xong 10 câu<br>subExit: nút Thoát |
-| 19–20 | Giao diện kết quả | MatchResultView | outResult: THẮNG! / THUA! / HÒA!<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: số câu đúng, thời gian làm bài của đối thủ<br>outPoints: điểm trận được cộng và tổng điểm mới<br>subContinue: nút Chơi tiếp<br>subStop: nút Dừng |
+| 10–18 | Giao diện thi đấu | MatchView | outTimer: ô thời gian đếm ngược<br>outOpponentStatus: dòng "HOANG đang làm bài" / "HOANG đã nộp bài"<br>outQuestion: số thứ tự câu đang làm "Câu 1/10" và phép tính "12 + 7 = ?"<br>subOptions: 4 ô phương án A, B, C, D; bấm một ô là chọn phương án và sang câu sau<br>subSubmit: nút Nộp bài, hiện khi đã làm xong 10 câu<br>subExit: nút Thoát |
+| 20–22 | Giao diện kết quả | MatchResultView | outResult: THẮNG! / THUA! / HÒA!<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: số câu đúng, thời gian làm bài của đối thủ<br>outPoints: điểm trận được cộng và tổng điểm mới<br>subContinue: nút Chơi tiếp<br>subStop: nút Dừng |
 
 MainView gồm 2 nút chọn chế độ chơi; nút Đăng xuất ở góc phải trên thuộc module Tài khoản nên không đưa vào đây. Danh sách người chơi online nằm ở OnlineView: người chơi chỉ online khi đang ở giao diện này.
 
@@ -31,19 +31,19 @@ Không đề xuất lớp View cho:
 | 3, 9 | Lấy danh sách người chơi online và theo dõi thay đổi | getOnlinePlayers() | Không có | Danh sách Player kèm tổng điểm, trạng thái | Player | Đầu ra là danh sách Player |
 | 5 | Gửi lời mời tới một người chơi đang rỗi | sendChallenge() | Người mời, người được mời (Player) | Lời mời đang chờ (Challenge) | Challenge | Đầu ra là Challenge |
 | 6, 9 | Theo dõi lời mời: người được mời nhận lời mời mới; người mời biết lời mời được đồng ý hay bị từ chối | watchChallenge() | Người chơi, hoặc lời mời | Lời mời mới nhất (Challenge) | Challenge | Đầu ra là Challenge |
-| 7 (ngoại lệ) | Từ chối lời mời | rejectChallenge() | Lời mời (Challenge) | Không có | Challenge | Đầu vào chỉ thuộc Challenge |
+| 7a | Từ chối lời mời | rejectChallenge() | Lời mời (Challenge) | Không có | Challenge | Đầu vào chỉ thuộc Challenge |
 | 8 | Tạo trận từ lời mời đã đồng ý: sinh đề, chuyển 2 người sang bận | createMatch() | Lời mời (Challenge) | Trận mới (Match) | Match | Đầu ra là Match |
-| 8, 22 | Sinh một câu hỏi kèm 4 phương án | generateProblem() | Không có | Câu hỏi (MathProblem) | MathProblem | Đầu ra là MathProblem |
-| 10, 16, 18 | Theo dõi trận: nhận đề, biết đối thủ đã nộp bài, biết trận đã xong | watchMatch() | Trận (Match) | Trận mới nhất (Match) | Match | Đầu ra là Match |
+| 8, 24 | Sinh một câu hỏi kèm 4 phương án | generateProblem() | Không có | Câu hỏi (MathProblem) | MathProblem | Đầu ra là MathProblem |
+| 10, 16, 19 | Theo dõi trận: nhận đề, biết đối thủ đã nộp bài, biết trận đã xong | watchMatch() | Trận (Match) | Trận mới nhất (Match) | Match | Đầu ra là Match |
 | 16 | Nhận bài làm, ghi thời điểm nộp, lưu bài làm từng câu, chấm bài | submitAnswers() | Trận (Match), bài làm của người chơi gồm 10 Answer, mỗi Answer có phương án đã chọn và thời gian làm câu | Trận sau khi chấm (Match) | Match | Đầu ra là Match |
 | 16 | Chấm một câu của bài làm | isCorrect() | Bài làm một câu (Answer), chứa câu hỏi và phương án đã chọn | Đúng / sai | Answer | Đầu ra không phải thực thể; đầu vào chính là Answer |
 | 16 | So phương án đã chọn với đáp án đúng của câu hỏi | isCorrect() | Câu hỏi (MathProblem), phương án đã chọn | Đúng / sai | MathProblem | Đầu ra không phải thực thể; đầu vào chính là MathProblem |
-| 18 | Kiểm tra trận đã xong chưa | isOver() | Trận (Match) | Đúng / sai | Match | Đầu vào chỉ thuộc Match |
-| 19 | Lấy kết quả thắng / thua / hòa của một người chơi | getResult() | Trận (Match), người chơi | WIN / LOSE / DRAW | Match | Match chứa được cả 2 đầu vào, qua MatchPlayer |
-| 19 | Lấy thời gian làm bài của một người chơi | getFinishTime() | Trận (Match), người chơi | Số mili giây | Match | Cần cả thời điểm bắt đầu của Match và thời điểm nộp của MatchPlayer |
-| 19 | Lấy điểm trận của một người chơi | getPoints() | Trận (Match), người chơi | 1 / 0,5 / 0 | Match | Như getResult() |
-| 11–15 (ngoại lệ) | Người chơi thoát trận và bị xử thua | forfeit() | Trận (Match), người chơi | Trận đã kết thúc (Match) | Match | Đầu ra là Match |
-| 20–22 | Ghi nhận lựa chọn chơi tiếp hoặc dừng; cả 2 chơi tiếp thì tạo trận mới | continueMatch() | Trận (Match), người chơi, lựa chọn | Trận mới, hoặc trận cũ đã dừng (Match) | Match | Đầu ra là Match |
+| 19 | Kiểm tra trận đã xong chưa | isOver() | Trận (Match) | Đúng / sai | Match | Đầu vào chỉ thuộc Match |
+| 20 | Lấy kết quả thắng / thua / hòa của một người chơi | getResult() | Trận (Match), người chơi | WIN / LOSE / DRAW | Match | Match chứa được cả 2 đầu vào, qua MatchPlayer |
+| 20 | Lấy thời gian làm bài của một người chơi | getFinishTime() | Trận (Match), người chơi | Số mili giây | Match | Cần cả thời điểm bắt đầu của Match và thời điểm nộp của MatchPlayer |
+| 20 | Lấy điểm trận của một người chơi | getPoints() | Trận (Match), người chơi | 1 / 0,5 / 0 | Match | Như getResult() |
+| 11b | Người chơi thoát trận và bị xử thua | forfeit() | Trận (Match), người chơi | Trận đã kết thúc (Match) | Match | Đầu ra là Match |
+| 21–24 | Ghi nhận lựa chọn chơi tiếp hoặc dừng; cả 2 chơi tiếp thì tạo trận mới | continueMatch() | Trận (Match), người chơi, lựa chọn | Trận mới, hoặc trận cũ đã dừng (Match) | Match | Đầu ra là Match |
 
 Ghi phương án đã chọn và thời gian làm từng câu (bước 11–13) là xử lý của MatchView, không phải phương thức của thực thể: giao diện đo thời gian từ lúc câu hiện ra tới lúc người chơi bấm một ô và giữ bài làm từng câu cho tới khi nộp. Giao diện không biết đáp án đúng nên không chấm; việc chấm nằm ở isCorrect() của Answer, dùng luật isCorrect() của MathProblem.
 
@@ -74,9 +74,9 @@ Ghi phương án đã chọn và thời gian làm từng câu (bước 11–13) 
 
 | Bước kịch bản v1 | Giao diện | Lớp View | Thành phần |
 |---|---|---|---|
-| 1, 8–9, 12 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 13,5 điểm"<br>subHistory: nút Lịch sử đấu<br>subRanking: nút Bảng xếp hạng |
-| 2, 5–6, 10–11 | Giao diện lịch sử đấu | HistoryView | outWinRateChart: biểu đồ tròn tỉ lệ thắng / hòa / thua<br>outSummary: số trận thắng, hòa, thua và tổng số trận<br>outsubListMatch: danh sách trận; mỗi dòng có đối thủ, kết quả, điểm trận, số câu đúng, thời điểm kết thúc; bấm vào một dòng để xem chi tiết trận<br>subTabRanking: thẻ Bảng xếp hạng<br>outListRanking: danh sách người chơi đã xếp hạng; dòng của người xem được tô nổi bật |
-| 4–5 | Giao diện chi tiết trận | MatchDetailView | outResult: THẮNG! / THUA! / HÒA!<br>outPoints: điểm trận<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: tên, số câu đúng, thời gian làm bài của đối thủ<br>outListAnswer: 10 câu; mỗi câu có phép tính kèm đáp án đúng và, với mỗi người chơi, đúng / sai, phương án đã chọn, thời gian làm câu |
+| Xem lịch sử đấu 1, 4; Xem bảng xếp hạng 1, 4 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 13,5 điểm"<br>subHistory: nút Lịch sử đấu<br>subRanking: nút Bảng xếp hạng |
+| Xem lịch sử đấu 2–3; Xem chi tiết trận 4; Xem bảng xếp hạng 2–3 | Giao diện lịch sử đấu | HistoryView | outWinRateChart: biểu đồ tròn tỉ lệ thắng / hòa / thua<br>outSummary: số trận thắng, hòa, thua và tổng số trận<br>outsubListMatch: danh sách trận; mỗi dòng có đối thủ, kết quả, điểm trận, số câu đúng, thời điểm kết thúc; bấm vào một dòng để xem chi tiết trận<br>subTabRanking: thẻ Bảng xếp hạng<br>outListRanking: danh sách người chơi đã xếp hạng; dòng của người xem được tô nổi bật |
+| Xem chi tiết trận 2–3 | Giao diện chi tiết trận | MatchDetailView | outResult: THẮNG! / THUA! / HÒA!<br>outPoints: điểm trận<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: tên, số câu đúng, thời gian làm bài của đối thủ<br>outListAnswer: 10 câu; mỗi câu có phép tính kèm đáp án đúng và, với mỗi người chơi, đúng / sai, phương án đã chọn, thời gian làm câu |
 
 Thẻ Trận của tôi và thẻ Bảng xếp hạng là 2 phần của cùng một giao diện, chuyển qua lại bằng thẻ, nên chỉ có một lớp HistoryView. OnlineView mở HistoryView theo 2 cách: subHistory mở sẵn thẻ Trận của tôi, subRanking mở thẳng thẻ Bảng xếp hạng. Danh sách xếp hạng và danh sách bài làm từng câu chỉ để xem, bấm vào không làm gì, nên mang tiền tố out. Danh sách trận mang tiền tố outsub vì bấm vào một dòng thì mở chi tiết trận.
 
@@ -86,15 +86,15 @@ Không đề xuất lớp View cho các thông báo "Bạn chưa đấu trận n
 
 | Bước v1 | Xử lý hệ thống | Tên phương thức | Đầu vào | Đầu ra | Gán cho lớp | Lý do |
 |---|---|---|---|---|---|---|
-| 2 | Lấy các trận đã kết thúc mà người chơi tham gia, mới nhất đứng đầu | getHistory() | Người chơi (Player) | Danh sách Match kèm 2 người chơi | Match | Đầu ra là danh sách Match |
-| 2, 4 | Biết người chơi thắng, hòa hay thua một trận | getResult() | Trận (Match), người chơi | WIN / LOSE / DRAW | Match | Như ở Chơi online; dùng chung |
-| 2, 4 | Lấy điểm trận của người chơi | getPoints() | Trận (Match), người chơi | 1 / 0,5 / 0 | Match | Như ở Chơi online |
-| 2, 4 | Lấy người chơi còn lại trong trận | getOpponent() | Trận (Match), người chơi | Người chơi trong trận của đối thủ (MatchPlayer) | Match | Match chứa cả 2 MatchPlayer |
-| 4 | Lấy một trận kèm đề, đáp án đúng, 2 người chơi và bài làm từng câu của mỗi người | getMatch() | Trận (Match) | Trận đầy đủ (Match) | Match | Đầu ra là Match |
-| 4 | Lấy thời gian làm bài của mỗi bên | getFinishTime() | Trận (Match), người chơi | Số mili giây | Match | Như ở Chơi online |
-| 4 | Biết một câu trong bài làm đúng hay sai | isCorrect() | Bài làm một câu (Answer), chứa câu hỏi và phương án đã chọn | Đúng / sai | Answer | Như ở Chơi online |
-| 4 | So phương án đã chọn với đáp án đúng của câu hỏi | isCorrect() | Câu hỏi (MathProblem), phương án đã chọn | Đúng / sai | MathProblem | Như ở Chơi online |
-| 10 | Lấy mọi người chơi kèm 3 tiêu chí, đã sắp xếp | getRanking() | Không có | Danh sách Player kèm tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng | Player | Đầu ra là danh sách Player |
+| Xem lịch sử đấu 2 | Lấy các trận đã kết thúc mà người chơi tham gia, mới nhất đứng đầu | getHistory() | Người chơi (Player) | Danh sách Match kèm 2 người chơi | Match | Đầu ra là danh sách Match |
+| Xem lịch sử đấu 2; Xem chi tiết trận 2 | Biết người chơi thắng, hòa hay thua một trận | getResult() | Trận (Match), người chơi | WIN / LOSE / DRAW | Match | Như ở Chơi online; dùng chung |
+| Xem lịch sử đấu 2; Xem chi tiết trận 2 | Lấy điểm trận của người chơi | getPoints() | Trận (Match), người chơi | 1 / 0,5 / 0 | Match | Như ở Chơi online |
+| Xem lịch sử đấu 2; Xem chi tiết trận 2 | Lấy người chơi còn lại trong trận | getOpponent() | Trận (Match), người chơi | Người chơi trong trận của đối thủ (MatchPlayer) | Match | Match chứa cả 2 MatchPlayer |
+| Xem chi tiết trận 2 | Lấy một trận kèm đề, đáp án đúng, 2 người chơi và bài làm từng câu của mỗi người | getMatch() | Trận (Match) | Trận đầy đủ (Match) | Match | Đầu ra là Match |
+| Xem chi tiết trận 2 | Lấy thời gian làm bài của mỗi bên | getFinishTime() | Trận (Match), người chơi | Số mili giây | Match | Như ở Chơi online |
+| Xem chi tiết trận 2 | Biết một câu trong bài làm đúng hay sai | isCorrect() | Bài làm một câu (Answer), chứa câu hỏi và phương án đã chọn | Đúng / sai | Answer | Như ở Chơi online |
+| Xem chi tiết trận 2 | So phương án đã chọn với đáp án đúng của câu hỏi | isCorrect() | Câu hỏi (MathProblem), phương án đã chọn | Đúng / sai | MathProblem | Như ở Chơi online |
+| Xem bảng xếp hạng 2 | Lấy mọi người chơi kèm 3 tiêu chí, đã sắp xếp | getRanking() | Không có | Danh sách Player kèm tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng | Player | Đầu ra là danh sách Player |
 
 Số trận thắng, hòa, thua và tỉ lệ thắng trên biểu đồ tròn không phải phương thức của thực thể: HistoryView đếm các kết quả do getResult() trả về để hiển thị. Đây là thông tin dẫn xuất, không lưu. Đúng / sai của từng câu cũng là thông tin dẫn xuất, tính bằng isCorrect() của Answer; phương án đã chọn và thời gian làm câu là thuộc tính của Answer, hiển thị thẳng.
 
@@ -122,8 +122,8 @@ Số trận thắng, hòa, thua và tỉ lệ thắng trên biểu đồ tròn k
 
 | Bước kịch bản v1 | Giao diện | Lớp View | Thành phần |
 |---|---|---|---|
-| 1, 5 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 13,5 điểm"<br>subFriends: nút Bạn bè |
-| 2–8 | Giao diện bạn bè | FriendView | inUsername: ô nhập tên đăng nhập<br>subAddFriend: nút Kết bạn<br>outsubListRequest: danh sách lời mời kết bạn đã nhận; mỗi dòng có tên người gửi, nút Đồng ý, nút Từ chối<br>outsubListFriend: danh sách bạn bè và lời mời đã gửi; mỗi dòng có trạng thái Online / Offline, tên, tổng điểm hoặc "Đang chờ trả lời", nút Hủy kết bạn |
+| Quản lý bạn bè 1; Kết bạn 1, 5 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 13,5 điểm"<br>subFriends: nút Bạn bè |
+| Quản lý bạn bè 2–3; Kết bạn 2–9; Hủy kết bạn 1–4 | Giao diện bạn bè | FriendView | inUsername: ô nhập tên đăng nhập<br>subAddFriend: nút Kết bạn<br>outsubListRequest: danh sách lời mời kết bạn đã nhận; mỗi dòng có tên người gửi, nút Đồng ý, nút Từ chối<br>outsubListFriend: danh sách bạn bè và lời mời đã gửi; mỗi dòng có trạng thái Online / Offline, tên, tổng điểm hoặc "Đang chờ trả lời", nút Hủy kết bạn |
 
 outsubListRequest và outsubListFriend mang tiền tố outsub vì mỗi dòng vừa hiển thị thông tin vừa có nút để bấm.
 
@@ -135,13 +135,13 @@ Không đề xuất lớp View cho:
 
 | Bước v1 | Xử lý hệ thống | Tên phương thức | Đầu vào | Đầu ra | Gán cho lớp | Lý do |
 |---|---|---|---|---|---|---|
-| 2, 5 | Lấy các lời mời kết bạn và quan hệ bạn bè của người chơi, ở cả 2 vai trò người gửi và người nhận | getFriendships() | Người chơi (Player) | Danh sách Friendship kèm người gửi, người nhận | Friendship | Đầu ra là danh sách Friendship |
-| 2, 7 | Lấy danh sách người chơi đang online để biết bạn nào Online | getOnlinePlayers() | Không có | Danh sách Player kèm trạng thái | Player | Như ở Chơi online; dùng chung |
-| 2, 7 | Lấy người còn lại trong một quan hệ: là người nhận nếu mình là người gửi, ngược lại là người gửi | getFriend() | Quan hệ (Friendship), người chơi | Người bạn (Player) | Friendship | Friendship chứa được cả 2 đầu vào: người gửi và người nhận |
-| 4 | Tìm người nhận theo tên đăng nhập, kiểm tra chưa có quan hệ giữa 2 người, tạo lời mời đang chờ | sendRequest() | Người gửi (Player), tên đăng nhập người nhận | Lời mời đang chờ (Friendship) | Friendship | Đầu ra là Friendship |
-| 7 | Chuyển lời mời sang trạng thái đã là bạn bè | accept() | Lời mời (Friendship), người chơi | Quan hệ đã đồng ý (Friendship) | Friendship | Đầu ra là Friendship |
-| 7 | Kiểm tra lời mời đang chờ và người chơi là người nhận | canAccept() | Lời mời (Friendship), người chơi | Đúng / sai | Friendship | Đầu ra không phải thực thể; đầu vào chính là Friendship |
-| 2, 6 (ngoại lệ) | Xóa lời mời khi từ chối hoặc rút lại; xóa quan hệ khi hủy kết bạn | delete() | Quan hệ (Friendship), người chơi | Không có | Friendship | Đầu vào chính là Friendship |
+| Quản lý bạn bè 2; Kết bạn 2, 6 | Lấy các lời mời kết bạn và quan hệ bạn bè của người chơi, ở cả 2 vai trò người gửi và người nhận | getFriendships() | Người chơi (Player) | Danh sách Friendship kèm người gửi, người nhận | Friendship | Đầu ra là danh sách Friendship |
+| Quản lý bạn bè 2; Kết bạn 2, 8 | Lấy danh sách người chơi đang online để biết bạn nào Online | getOnlinePlayers() | Không có | Danh sách Player kèm trạng thái | Player | Như ở Chơi online; dùng chung |
+| Quản lý bạn bè 2; Kết bạn 2, 8 | Lấy người còn lại trong một quan hệ: là người nhận nếu mình là người gửi, ngược lại là người gửi | getFriend() | Quan hệ (Friendship), người chơi | Người bạn (Player) | Friendship | Friendship chứa được cả 2 đầu vào: người gửi và người nhận |
+| Kết bạn 4 | Tìm người nhận theo tên đăng nhập, kiểm tra chưa có quan hệ giữa 2 người, tạo lời mời đang chờ | sendRequest() | Người gửi (Player), tên đăng nhập người nhận | Lời mời đang chờ (Friendship) | Friendship | Đầu ra là Friendship |
+| Kết bạn 8 | Chuyển lời mời sang trạng thái đã là bạn bè | accept() | Lời mời (Friendship), người chơi | Quan hệ đã đồng ý (Friendship) | Friendship | Đầu ra là Friendship |
+| Kết bạn 8 | Kiểm tra lời mời đang chờ và người chơi là người nhận | canAccept() | Lời mời (Friendship), người chơi | Đúng / sai | Friendship | Đầu ra không phải thực thể; đầu vào chính là Friendship |
+| Hủy kết bạn 4, 1a; Kết bạn 2a, 7a | Xóa lời mời khi từ chối hoặc rút lại; xóa quan hệ khi hủy kết bạn | delete() | Quan hệ (Friendship), người chơi | Không có | Friendship | Đầu vào chính là Friendship |
 
 ### Bước 4: Biểu đồ lớp pha phân tích
 

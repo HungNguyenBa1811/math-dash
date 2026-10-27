@@ -299,37 +299,30 @@ Firebase là CSDL dạng cây JSON, không có bảng. Ánh xạ từ lớp th�
 | MathProblem (thành phần của Match) | matches/{matchId}/questions/{i} | Thứ tự câu trong đề, 0 – 9 |
 | MatchPlayer (thành phần của Match) | matches/{matchId}/players/{playerId} | id người chơi |
 
-```
-presence/{playerId}
-    displayName : String
-    totalPoints : double
-    status      : "free" | "busy"
-
-challenges/{challengeId}
-    challengerId   : int
-    challengerName : String
-    challengerPoints : double
-    opponentId     : int
-    opponentName   : String
-    status         : "pending" | "accepted" | "rejected"
-    createdAt      : ServerValue.TIMESTAMP
-    matchId        : int                         (có khi status = accepted)
-
-matches/{matchId}
-    status    : "playing" | "finished"
-    startedAt : long
-    questions/
-        {i} : { operand1 : int, operand2 : int, operator : String, answerOptions : [int, int, int, int] }
-    players/
-        {playerId} : {
-            displayName : String
-            submitted   : bool
-            forfeited   : bool
-            choice      : "continue" | "stop"        (có sau khi trận xong)
-        }
-    nextMatchId : int                            (có khi cả 2 chơi tiếp)
-    stoppedBy   : int                            (có khi một người dừng hoặc thoát)
-```
+| Node | Field | Kiểu | Ghi chú |
+|---|---|---|---|
+| presence/{playerId} | displayName | String | |
+| | totalPoints | double | |
+| | status | String | free hoặc busy |
+| challenges/{challengeId} | challengerId | int | |
+| | challengerName | String | |
+| | challengerPoints | double | |
+| | opponentId | int | |
+| | opponentName | String | |
+| | status | String | pending, accepted hoặc rejected |
+| | createdAt | long | giờ của Firebase lúc tạo lời mời |
+| | matchId | int | có khi status là accepted |
+| matches/{matchId} | status | String | playing hoặc finished |
+| | startedAt | long | |
+| | nextMatchId | int | có khi cả 2 chơi tiếp |
+| | stoppedBy | int | có khi một người dừng hoặc thoát |
+| matches/{matchId}/questions/{i} | operand1, operand2 | int | i là thứ tự câu trong đề, 0 – 9 |
+| | operator | String | |
+| | answerOptions | danh sách 4 số int | |
+| matches/{matchId}/players/{playerId} | displayName | String | |
+| | submitted | boolean | |
+| | forfeited | boolean | |
+| | choice | String | continue hoặc stop, có sau khi trận xong |
 
 **Ai ghi node nào:**
 - presence/{playerId}:

@@ -143,6 +143,7 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 > *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D, nút Thoát → Người chơi bấm một ô, câu tiếp theo hiện ra → Làm xong 10 câu, nút Nộp bài hiện ra → …
 
 **Kịch bản chuẩn v1:**
+- Kịch bản v1 viết **mỗi use case con một bảng riêng**, 6 dòng: Use case, Actor, Tiền điều kiện, Hậu điều kiện, Sự kiện chính, Ngoại lệ. Sự kiện chính là một luồng hoàn chỉnh đánh số từ 1, không chia đoạn A, B, C, D; ngoại lệ đánh số theo bước rẽ nhánh của chính bảng đó (4a, 4a.1). Ngoại lệ: use case chính chỉ gồm các use case con include nối thành một luồng (Chơi online = Thách đấu + Thi đấu) thì gộp thành 1 bảng cho use case chính. Use case thuộc module người khác (Đăng nhập) không viết bảng.
 - Các bước đánh số, xen kẽ hành động của Người chơi và phản hồi của Hệ thống.
 - Dùng **dữ liệu cụ thể** (tên `HUNG`, phép tính `12 + 7`, điểm `120`). Có danh sách thì vẽ bảng dữ liệu mẫu.
 
@@ -361,7 +362,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
   - Không nêu dữ liệu cụ thể: mã phòng, câu hỏi, điểm của ai bao nhiêu, kết quả WIN/LOSE. Viết "hiển thị điểm", "trả về kết quả trận".
   - Hàm ghi đầy đủ dạng "hàm onFinish()", không ghi tham số truyền vào.
   - Biểu đồ tuần tự đi kèm cũng vậy: tác nhân "Người chơi", thông điệp ghi hàm không tham số, không có dữ liệu cụ thể.
-- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành 1 dòng, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL và cây dữ liệu Firebase. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
+- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành 1 dòng, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL; cây dữ liệu Firebase viết thành bảng (node, khóa, field) để dán được vào file báo cáo. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
 - **Kịch bản v1** chỉ có Người chơi và Hệ thống, không có tên lớp, tên hàm, thuật ngữ kỹ thuật.
 
 ---
