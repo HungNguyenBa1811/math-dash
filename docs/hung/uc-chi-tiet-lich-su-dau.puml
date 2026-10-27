@@ -27,8 +27,8 @@ rectangle "Module Xem lịch sử đấu" {
   usecase "Xem lịch sử đấu" as UC04
   usecase "Xem chi tiết trận" as CT
   usecase "Xem bảng xếp hạng" as BXH
+  usecase "Đăng nhập" as DN
 }
-usecase "Đăng nhập" as DN
 
 A1 --> UC04
 

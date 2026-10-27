@@ -27,8 +27,8 @@ rectangle "Module Đấu đối kháng" {
   usecase "Chơi online" as UC03
   usecase "Thách đấu" as TD
   usecase "Thi đấu" as TDAU
+  usecase "Đăng nhập" as DN
 }
-usecase "Đăng nhập" as DN
 
 A1 --> UC03
 

@@ -27,8 +27,8 @@ rectangle "Module Bạn bè" {
   usecase "Quản lý bạn bè" as UC07
   usecase "Kết bạn" as KB
   usecase "Hủy kết bạn" as HUY
+  usecase "Đăng nhập" as DN
 }
-usecase "Đăng nhập" as DN
 
 A1 --> UC07
 
