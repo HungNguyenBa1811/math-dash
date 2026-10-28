@@ -1,0 +1,40 @@
+@startuml csdl-sqlite
+!pragma layout smetana
+' === VP Base Theme v2 ===
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam arrowColor #000000
+skinparam lineColor #000000
+hide circle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #000000
+  FontSize 11
+  AttributeFontSize 10
+}
+skinparam packageStyle rectangle
+title Biểu đồ thiết kế CSDL SQLite trên client
+
+package "SQLite (client)" {
+  entity "tblPlayer" as CP {
+    * id : integer <<PK>>
+    --
+    * username : text
+    * displayName : text
+  }
+  entity "tblBotGame" as CB {
+    * id : integer <<PK>>
+    --
+    * difficulty : integer
+    * correctCount : integer
+    * finishTime : integer
+    * botCorrectCount : integer
+    * botFinishTime : integer
+    * playedAt : text
+    * tblPlayerId : integer <<FK>>
+  }
+}
+
+CP ||--o{ CB : "1 - n"
+@enduml
