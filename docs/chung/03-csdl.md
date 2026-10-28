@@ -98,7 +98,7 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 - 1 tblMatch – n tblMathProblem → tblMathProblem có khóa ngoại tblMatchId.
 - 1 tblMatchPlayer – n tblAnswer → tblAnswer có khóa ngoại tblMatchPlayerId.
 - 1 tblMathProblem – n tblAnswer → tblAnswer có khóa ngoại tblMathProblemId.
-- Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người (ON DELETE CASCADE), đúng với quan hệ hợp thành ở thiết kế lớp thực thể.
+- Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người (ON DELETE CASCADE), vì khi trận không còn thì 2 dòng người chơi trong trận, 10 câu hỏi và bài làm không còn ý nghĩa.
 - 1 tblPlayer – n tblMatchPlayer → tblMatchPlayer có khóa ngoại tblPlayerId.
 - 1 tblPlayer – n tblBotGame → tblBotGame có khóa ngoại tblPlayerId.
 - tblFriendship có 2 khóa ngoại cùng trỏ tới tblPlayer, nên tên khóa thêm vai trò: tblPlayerSenderId (người gửi), tblPlayerReceiverId (người nhận). Xóa người chơi thì xóa luôn các quan hệ bạn bè của người đó (ON DELETE CASCADE), vì quan hệ bạn bè không còn ý nghĩa khi thiếu một bên.
@@ -289,7 +289,7 @@ Tổng điểm và bảng xếp hạng được tính ở Java thay vì bằng m
 Firebase là CSDL dạng cây JSON, không có bảng. Ánh xạ từ lớp thực thể theo cùng tinh thần 5 bước ở trên:
 - Mỗi lớp là một node; mỗi đối tượng là một node con có khóa riêng.
 - Thuộc tính kiểu cơ bản là field.
-- Quan hệ hợp thành là node con nằm bên trong.
+- Lớp nằm trong lớp khác là node con nằm bên trong: MathProblem, MatchPlayer nằm trong Match (kết tập) nên thành node con của matches.
 
 | Lớp | Node | Khóa |
 |---|---|---|

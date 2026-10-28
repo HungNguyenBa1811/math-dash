@@ -173,7 +173,7 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
   - MainActivity, OnlineActivity và MatchActivity chứa thông tin người chơi trong thuộc tính me, nên Player kết tập vào 3 Activity này.
   - PlayerAdapter chứa danh sách Player.
   - MatchActivity chứa đề (10 MathProblem) và bài làm (10 Answer) trong questions, answers.
-- Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (hợp thành); MatchPlayer gồm các Answer (hợp thành, 10 khi đã nộp); Answer chứa thông tin MathProblem (kết tập, mỗi câu có 2 bài làm của 2 người).
+- Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (kết tập); MatchPlayer gồm các Answer (kết tập, 10 khi đã nộp); Answer chứa thông tin MathProblem (kết tập, mỗi câu có 2 bài làm của 2 người).
 
 **Quan hệ liên kết HTTP/JSON** giữa 2 package có 2 cặp:
 - MatchApiDAO – MatchRestController: trận đấu.
@@ -277,6 +277,6 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 - MatchHistoryAdapter giữ HistoryActivity để gọi lại onMatchClick khi một dòng được bấm.
 - Layout: OnlineActivity – activity_online.xml, HistoryActivity – activity_history.xml, MatchHistoryViewHolder – item_match_history.xml, RankingViewHolder – item_ranking.xml, MatchDetailActivity – activity_match_detail.xml, ProblemViewHolder – item_problem.xml.
 - **Kết tập:** HistoryActivity giữ me và danh sách trận; MatchHistoryAdapter giữ danh sách Match; RankingAdapter giữ danh sách Player; MatchDetailActivity giữ me và một Match; ProblemAdapter giữ 10 MathProblem và bài làm của 2 người. Hình thoi ở phía Activity hoặc Adapter.
-- Thực thể: MatchPlayer gồm các Answer (hợp thành); Answer chứa thông tin MathProblem (kết tập).
+- Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (kết tập); MatchPlayer gồm các Answer (kết tập); Answer chứa thông tin MathProblem (kết tập).
 
 Chức năng dùng lại MatchApiDAO, PlayerApiDAO, MatchRestController, PlayerRestController, MatchDAO, PlayerDAO của Chơi online; biểu đồ chỉ vẽ các phương thức chức năng này dùng. Phần mới gồm MatchApiDAO.getHistory, MatchRestController.getHistory, MatchDAO.findByPlayer và Match.getOpponent.

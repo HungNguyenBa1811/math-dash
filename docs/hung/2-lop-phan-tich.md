@@ -62,7 +62,7 @@ Ghi phương án đã chọn và thời gian làm từng câu (bước 11–13) 
 - **Quan hệ giữa các thực thể** giữ đúng như Hình 2:
   - Challenge chứa thông tin 2 Player (kết tập).
   - Player – Match là n-n, qua lớp liên kết MatchPlayer.
-  - MathProblem là thành phần của Match (hợp thành).
+  - MathProblem là thành phần của Match (kết tập): thông tin 10 câu hỏi của đề nằm trong Match.
   - MatchPlayer – MathProblem là n-n, qua lớp liên kết Answer: mỗi người chơi trong trận làm 10 câu, mỗi câu được 2 người chơi làm; Answer giữ phương án đã chọn và thời gian làm câu.
 - **Match nhận nhiều phương thức nhất**, vì hầu hết xử lý của chức năng trả về một trận đấu. Các luật của trận đều nằm ở thực thể, không nằm ở giao diện; chấm từng câu là isCorrect() của Answer.
 
@@ -110,7 +110,7 @@ Số trận thắng, hòa, thua và tỉ lệ thắng trên biểu đồ tròn k
   - MatchDetailView: Match (trận đầy đủ, kết quả, điểm, đối thủ, thời gian làm bài), Answer (đúng / sai của từng câu).
 - **Quan hệ giữa các thực thể** giữ đúng như Hình 2:
   - Player – Match là n-n, qua lớp liên kết MatchPlayer.
-  - MathProblem là thành phần của Match (hợp thành); chi tiết trận cần đề để hiện đáp án đúng.
+  - MathProblem là thành phần của Match (kết tập); chi tiết trận cần đề để hiện đáp án đúng.
   - MatchPlayer – MathProblem là n-n, qua lớp liên kết Answer; chi tiết trận cần bài làm từng câu của 2 người.
 - **Lịch sử đấu và bảng xếp hạng dùng cùng luật thắng thua** với trận đấu: getResult(), getPoints(), getFinishTime() của Match; chi tiết trận dùng cùng luật chấm câu isCorrect() với lúc nộp bài. Không có luật nào được viết lại ở giao diện.
 

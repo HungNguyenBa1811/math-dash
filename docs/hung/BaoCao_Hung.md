@@ -233,8 +233,9 @@ Hai chức năng dùng 2 nơi lưu trữ:
 **Bước 4: Khóa.**
 - **Khóa chính:** id (AUTO_INCREMENT) ở mọi bảng.
 - **Khóa ngoại** đặt ở bảng phía n:
-  - tblMatchPlayer.tblMatchId → tblMatch.id và tblMathProblem.tblMatchId → tblMatch.id, có ON DELETE CASCADE đúng với quan hệ hợp thành.
-  - tblAnswer.tblMatchPlayerId → tblMatchPlayer.id và tblAnswer.tblMathProblemId → tblMathProblem.id, có ON DELETE CASCADE: xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người.
+  - tblMatchPlayer.tblMatchId → tblMatch.id và tblMathProblem.tblMatchId → tblMatch.id, có ON DELETE CASCADE.
+  - tblAnswer.tblMatchPlayerId → tblMatchPlayer.id và tblAnswer.tblMathProblemId → tblMathProblem.id, có ON DELETE CASCADE.
+  - Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người, vì khi trận không còn thì 2 dòng người chơi trong trận, 10 câu hỏi và bài làm không còn ý nghĩa.
   - tblMatchPlayer.tblPlayerId → tblPlayer.id.
 - **Ràng buộc duy nhất:** tblPlayer.username; tblMatchPlayer (tblMatchId, tblPlayerId); tblAnswer (tblMatchPlayerId, tblMathProblemId), mỗi người chơi trong trận chỉ có một bài làm cho mỗi câu.
 - Thứ tự câu trong đề là thứ tự id tăng dần, vì server chèn 10 câu theo đúng thứ tự trong một transaction. Thứ tự câu trong bài làm cũng là thứ tự tblMathProblemId tăng dần, nên tblAnswer không cần cột số thứ tự.
@@ -270,7 +271,7 @@ Firebase lưu dữ liệu dạng cây JSON nên không có bảng. Thiết kế 
 - Challenge → challenges: người được mời phải nhận lời mời ngay, người mời phải biết ngay lời mời được đồng ý hay bị từ chối.
 - Match, phần trận đang đấu → matches: 2 máy cần nhận cùng đề, biết đối thủ đã nộp bài, biết trận đã xong và lựa chọn chơi tiếp của đối thủ.
 - Không có node gốc:
-  - MathProblem và MatchPlayer: là thành phần của Match nên thành node con của matches (bước 3).
+  - MathProblem và MatchPlayer: nằm trong Match (kết tập) nên thành node con của matches (bước 3).
   - Answer: bài làm chỉ gửi qua REST lúc nộp và chỉ đọc lại khi trận đã xong, không cần đồng bộ tức thời.
 
 **Bước 2: Thuộc tính kiểu cơ bản thành field.**
@@ -285,10 +286,10 @@ Firebase lưu dữ liệu dạng cây JSON nên không có bảng. Thiết kế 
   - người chơi trong trận: displayName, submitted, forfeited.
 
 **Bước 3: Chuyển quan hệ giữa các lớp thành quan hệ giữa các node.**
-- Hợp thành thành node con:
+- MathProblem, MatchPlayer nằm trong Match (kết tập) nên thành node con của matches:
   - Match có 10 MathProblem → matches/{matchId}/questions/{i}.
   - Match có 2 MatchPlayer → matches/{matchId}/players/{playerId}.
-- Kết tập không lồng node mà giữ khóa của node kia:
+- Lớp đã có node gốc riêng thì không lồng node mà giữ khóa của node kia:
   - Challenge chứa thông tin 2 Player → challengerId, opponentId.
   - Lời mời được đồng ý dẫn tới một trận → matchId.
 - Diễn biến sau trận ghi thêm vào node trận: players/{playerId}/choice (continue / stop), nextMatchId (trận mới khi cả 2 chơi tiếp), stoppedBy (người dừng hoặc bỏ trận).
@@ -338,15 +339,15 @@ Cây dữ liệu thu được:
 - Thuộc tính boolean không có tiền tố is (forfeited → getter isForfeited()), để Jackson và Firebase SDK đọc đúng tên trường.
 - password đổi thành passwordHash vì chỉ lưu mật khẩu đã băm.
 
-**Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành.**
+**Bước 3: Chuyển quan hệ liên kết thành kết tập.**
 - Quan hệ n-n Player – Match qua lớp liên kết MatchPlayer chuyển thành:
-  - **MatchPlayer là thành phần của Match** (hợp thành, 1-2): người chơi trong trận không tồn tại nếu không có trận.
+  - **MatchPlayer là thành phần của Match** (kết tập, 1-2): thông tin 2 người chơi trong trận nằm trong Match.
   - **Player nằm trong MatchPlayer** (kết tập, n-1): người chơi tồn tại độc lập với trận.
 - Quan hệ n-n MatchPlayer – MathProblem qua lớp liên kết Answer chuyển thành:
-  - **Answer là thành phần của MatchPlayer** (hợp thành, 1-n): bài làm một câu chỉ có nghĩa khi thuộc về một người chơi trong trận; xóa trận thì bài làm cũng mất. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.
+  - **Answer là thành phần của MatchPlayer** (kết tập, 1-n): thông tin bài làm từng câu của một người nằm trong MatchPlayer của người đó. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.
   - **MathProblem nằm trong Answer** (kết tập, n-1): câu hỏi thuộc về đề của trận, tồn tại không phụ thuộc vào bài làm; mỗi câu hỏi có tối đa 2 Answer, mỗi người chơi trong trận một. Khi chấm bài và khi hiện chi tiết trận, mỗi Answer cần biết câu hỏi của nó để tự xác định đúng hay sai.
 - Giữ nguyên từ pha phân tích:
-  - MathProblem là thành phần của Match (hợp thành, 1-10).
+  - MathProblem là thành phần của Match (kết tập, 1-10): thông tin 10 câu hỏi của đề nằm trong Match.
   - Player nằm trong Challenge ở 2 vai trò người mời, người được mời (kết tập).
 
 **Bước 4: Bổ sung thuộc tính đối tượng.**
@@ -378,7 +379,7 @@ Player giữ thêm các giá trị dẫn xuất mà giao diện cần hiển th�
 *Hình 4: Biểu đồ lớp thực thể pha thiết kế cho Chơi online, Xem lịch sử đấu.*
 
 - Không còn đường liên kết trơn nào trên biểu đồ.
-- Lớp liên kết MatchPlayer trở thành thành phần (hình thoi đặc) của Match và chứa Player (hình thoi rỗng); lớp liên kết Answer trở thành thành phần (hình thoi đặc) của MatchPlayer và chứa MathProblem (hình thoi rỗng).
+- Lớp liên kết MatchPlayer trở thành thành phần của Match và chứa Player; lớp liên kết Answer trở thành thành phần của MatchPlayer và chứa MathProblem. Mọi quan hệ chứa trên biểu đồ đều là kết tập (hình thoi rỗng).
 - Player, Challenge, Match, MatchPlayer, MathProblem, Answer có ở **cả app và server** với cùng tên và cùng thuộc tính, để JSON đi qua REST ánh xạ thẳng vào đối tượng.
 - passwordHash chỉ có giá trị ở server; correctAnswer và bài làm từng câu của 2 người chỉ được gửi về app khi trận đã xong, để không ai biết trước đáp án hay xem được bài làm của đối thủ giữa trận.
 - Answer.problem không đi qua JSON. Answer thứ i ứng với câu thứ i của đề, nên bên nhận tự gắn lại câu hỏi vào bài làm.
@@ -556,7 +557,7 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
   - MainActivity, OnlineActivity và MatchActivity chứa thông tin người chơi trong thuộc tính me, nên Player kết tập vào 3 Activity này.
   - PlayerAdapter chứa danh sách Player.
   - MatchActivity chứa đề (10 MathProblem) và bài làm (10 Answer) trong questions, answers.
-- Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (hợp thành); MatchPlayer gồm các Answer (hợp thành, 10 khi đã nộp); Answer chứa thông tin MathProblem (kết tập, mỗi câu có 2 bài làm của 2 người).
+- Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (kết tập); MatchPlayer gồm các Answer (kết tập, 10 khi đã nộp); Answer chứa thông tin MathProblem (kết tập, mỗi câu có 2 bài làm của 2 người).
 
 **Quan hệ liên kết HTTP/JSON** giữa 2 package có 2 cặp:
 - MatchApiDAO – MatchRestController: trận đấu.
@@ -939,7 +940,7 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 - MatchHistoryAdapter giữ HistoryActivity để gọi lại onMatchClick khi một dòng được bấm.
 - Layout: OnlineActivity – activity_online.xml, HistoryActivity – activity_history.xml, MatchHistoryViewHolder – item_match_history.xml, RankingViewHolder – item_ranking.xml, MatchDetailActivity – activity_match_detail.xml, ProblemViewHolder – item_problem.xml.
 - **Kết tập:** HistoryActivity giữ me và danh sách trận; MatchHistoryAdapter giữ danh sách Match; RankingAdapter giữ danh sách Player; MatchDetailActivity giữ me và một Match; ProblemAdapter giữ 10 MathProblem và bài làm của 2 người. Hình thoi ở phía Activity hoặc Adapter.
-- Thực thể: MatchPlayer gồm các Answer (hợp thành); Answer chứa thông tin MathProblem (kết tập).
+- Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (kết tập); MatchPlayer gồm các Answer (kết tập); Answer chứa thông tin MathProblem (kết tập).
 
 Chức năng dùng lại MatchApiDAO, PlayerApiDAO, MatchRestController, PlayerRestController, MatchDAO, PlayerDAO của Chơi online; biểu đồ chỉ vẽ các phương thức chức năng này dùng. Phần mới gồm MatchApiDAO.getHistory, MatchRestController.getHistory, MatchDAO.findByPlayer và Match.getOpponent.
 
@@ -1114,7 +1115,7 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 - **Quan hệ giữa các thực thể** giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục A:
   - Challenge chứa thông tin 2 Player (kết tập).
   - Player – Match là n-n, qua lớp liên kết MatchPlayer.
-  - MathProblem là thành phần của Match (hợp thành).
+  - MathProblem là thành phần của Match (kết tập): thông tin 10 câu hỏi của đề nằm trong Match.
   - MatchPlayer – MathProblem là n-n, qua lớp liên kết Answer: mỗi người chơi trong trận làm 10 câu, mỗi câu được 2 người chơi làm; Answer giữ phương án đã chọn và thời gian làm câu.
 - **Match nhận nhiều phương thức nhất**, vì hầu hết xử lý của chức năng trả về một trận đấu. Các luật của trận đều nằm ở thực thể, không nằm ở giao diện; chấm từng câu là isCorrect() của Answer.
 - Ghi phương án đã chọn và thời gian làm từng câu là xử lý của MatchView, không phải phương thức của thực thể: giao diện đo thời gian từ lúc câu hiện ra tới lúc người chơi bấm một ô và giữ bài làm từng câu cho tới khi nộp. Giao diện không biết đáp án đúng nên không chấm; việc chấm nằm ở isCorrect() của Answer, dùng luật isCorrect() của MathProblem.
@@ -1129,7 +1130,7 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
   - MatchDetailView: Match (trận đầy đủ, kết quả, điểm, đối thủ, thời gian làm bài), Answer (đúng / sai của từng câu).
 - **Quan hệ giữa các thực thể** giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục A:
   - Player – Match là n-n, qua lớp liên kết MatchPlayer.
-  - MathProblem là thành phần của Match (hợp thành); chi tiết trận cần đề để hiện đáp án đúng.
+  - MathProblem là thành phần của Match (kết tập); chi tiết trận cần đề để hiện đáp án đúng.
   - MatchPlayer – MathProblem là n-n, qua lớp liên kết Answer; chi tiết trận cần bài làm từng câu của 2 người.
 - **Lịch sử đấu và bảng xếp hạng dùng cùng luật thắng thua** với trận đấu: getResult(), getPoints(), getFinishTime() của Match; chi tiết trận dùng cùng luật chấm câu isCorrect() với lúc nộp bài. Không có luật nào được viết lại ở giao diện.
 

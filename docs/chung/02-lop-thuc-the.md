@@ -84,9 +84,9 @@ Người chơi cũng có thể chơi với máy: người chơi chọn độ kh�
 - **Quan hệ kế thừa (generalization):** không có.
   - Trận đối kháng và ván đấu với máy dùng cùng luật thắng thua nhưng dữ liệu khác nhau. Trận có 2 người chơi thật và lưu trên server; ván với máy chỉ có một người chơi và lưu trên máy.
 - **Quan hệ gắn chặt (composition)**: thành phần không thể tồn tại nếu không có tổng thể.
-  - Câu hỏi là thành phần của trận đấu: đề chỉ được sinh ra cho một trận.
   - Câu hỏi là thành phần của ván đấu với máy.
 - **Quan hệ kết tập (aggregation)**: dùng cho các quan hệ 1-n, hình thoi đặt ở lớp chứa thông tin của lớp kia.
+  - Câu hỏi là thành phần của trận đấu: thông tin 10 câu hỏi của đề nằm trong thông tin trận.
   - Thông tin người chơi nằm trong thông tin lời mời, ở 2 vai trò người mời và người được mời.
   - Thông tin người chơi nằm trong thông tin ván đấu với máy.
   - Thông tin người chơi nằm trong thông tin quan hệ bạn bè, ở 2 vai trò người gửi và người nhận.
@@ -118,7 +118,7 @@ Kết quả thu được biểu đồ lớp thực thể pha phân tích toàn h
 Biểu đồ có 8 lớp thực thể.
 - **Phía đối kháng:**
   - Quan hệ n-n giữa Player và Match được tách bằng lớp liên kết MatchPlayer, nơi giữ số câu đúng, thời điểm nộp bài và trạng thái bỏ trận của từng người.
-  - Đề bài là các MathProblem gắn chặt vào Match (hình thoi đặc).
+  - Đề bài là các MathProblem nằm trong Match (hình thoi rỗng).
   - Quan hệ n-n giữa MatchPlayer và MathProblem được tách bằng lớp liên kết Answer, nơi giữ phương án đã chọn và thời gian làm câu của một người cho một câu. Bài làm của một người là các Answer của MatchPlayer đó.
   - Challenge chứa thông tin của 2 Player ở 2 vai trò người mời và người được mời.
 - **Phía chơi với máy:** BotGame chứa thông tin người chơi (hình thoi rỗng) và đề bài riêng của ván (hình thoi đặc).
@@ -183,20 +183,20 @@ Thuộc tính kiểu boolean đặt tên theo trạng thái, không có tiền t
 | BotGame | id: int, difficulty: int, correctCount: int, finishTime: long, botCorrectCount: int, botFinishTime: long, playedAt: Date |
 | Friendship | id: int, status: String, createdAt: Date |
 
-## B.3. Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành
+## B.3. Bước 3: Chuyển quan hệ liên kết thành kết tập
 
 - Quan hệ n-n Player – Match qua lớp liên kết MatchPlayer chuyển thành:
-  - **Match chứa MatchPlayer** (hợp thành, 1 – 2): người chơi trong trận chỉ có nghĩa khi thuộc về một trận; xóa trận thì 2 người chơi trong trận cũng mất.
+  - **Match chứa MatchPlayer** (kết tập, 1 – 2): MatchPlayer là thành phần của Match, thông tin 2 người chơi trong trận nằm trong Match.
   - **MatchPlayer chứa Player** (kết tập, n – 1): người chơi tồn tại độc lập với trận, mỗi người chơi trong trận chỉ tham chiếu đúng một người chơi.
 
   Lí do chọn hướng chứa này: khi xử lí (chấm bài, xác định kết quả, tính tổng điểm), hệ thống luôn lấy trận kèm cả 2 người chơi trong trận để so số câu đúng và thời gian làm bài.
 - Quan hệ n-n MatchPlayer – MathProblem qua lớp liên kết Answer chuyển thành:
-  - **MatchPlayer chứa Answer** (hợp thành, 1 – n): Answer là thành phần của MatchPlayer, kiểu 1-n. Bài làm một câu chỉ có nghĩa khi thuộc về một người chơi trong trận; xóa trận thì bài làm cũng mất. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.
+  - **MatchPlayer chứa Answer** (kết tập, 1 – n): Answer là thành phần của MatchPlayer, kiểu 1-n; thông tin bài làm từng câu của một người nằm trong MatchPlayer của người đó. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.
   - **Answer chứa MathProblem** (kết tập, n – 1): câu hỏi thuộc về đề của trận, tồn tại không phụ thuộc vào bài làm; mỗi Answer chỉ tham chiếu đúng một câu hỏi, mỗi câu hỏi có tối đa 2 Answer, mỗi người chơi trong trận một.
 
   Lí do chọn hướng chứa này: khi chấm bài và khi hiện chi tiết trận, hệ thống duyệt bài làm của từng người chơi trong trận; mỗi Answer cần biết câu hỏi của nó để tự xác định đúng hay sai.
 - Các quan hệ đã là kết tập / hợp thành từ pha phân tích giữ nguyên:
-  - Match chứa MathProblem (hợp thành, 1 – 10).
+  - Match chứa MathProblem (kết tập, 1 – 10).
   - BotGame chứa MathProblem (hợp thành, 1 – 10).
   - Challenge chứa Player 2 lần, ở vai trò người mời và người được mời (kết tập).
   - BotGame chứa Player (kết tập).
@@ -252,8 +252,8 @@ Server tính 3 giá trị đầu trong DAO, vì phải duyệt nhiều Match, r�
 
 So với pha phân tích:
 - Mọi lớp có thêm id; mọi thuộc tính có kiểu Java.
-- Lớp liên kết MatchPlayer trở thành thành phần (hình thoi đặc) của Match và chứa Player (hình thoi rỗng).
-- Lớp liên kết Answer trở thành thành phần (hình thoi đặc) của MatchPlayer và chứa MathProblem (hình thoi rỗng).
+- Lớp liên kết MatchPlayer trở thành thành phần của Match và chứa Player, cả 2 quan hệ đều là kết tập (hình thoi rỗng).
+- Lớp liên kết Answer trở thành thành phần của MatchPlayer và chứa MathProblem, cả 2 quan hệ đều là kết tập (hình thoi rỗng).
 - Mỗi quan hệ chứa được thể hiện bằng một thuộc tính đối tượng ở lớp chứa:
   - Challenge.challenger, Challenge.opponent.
   - Match.questions, Match.players.

@@ -207,8 +207,10 @@ Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Activity, REST.
 1. **Thêm thuộc tính khóa `id`** cho các lớp không kế thừa lớp khác. Với `Challenge`, khóa là push id kiểu `String` của Firebase.
 2. **Thêm kiểu dữ liệu** Java cho mọi thuộc tính.
 3. **Bỏ hết quan hệ liên kết (association)**, chuyển thành **kết tập (aggregation)** hoặc **hợp thành (composition)**. Ghi rõ "X là thành phần của Y, kiểu 1-n".
-   - Composition: thành phần không tồn tại nếu thiếu lớp chứa, ví dụ `MatchPlayer` trong `Match`.
-   - Aggregation: thành phần tồn tại độc lập, ví dụ `Player` trong `MatchPlayer`.
+   - Nhóm dùng **kết tập** cho `Match – MatchPlayer`, `Match – MathProblem`, `MatchPlayer – Answer` (và mọi quan hệ chứa khác của phần đối kháng). Không dùng hợp thành cho 3 quan hệ này, để tránh tranh cãi về điều kiện "thành phần không tồn tại nếu thiếu lớp chứa".
+   - Lý do kết tập viết theo quy tắc A2: thông tin A nằm trong B thì vẽ `A --<> B`, hình thoi ở phía B. Ví dụ: "MatchPlayer là thành phần của Match (kết tập, 1-2): thông tin 2 người chơi trong trận nằm trong Match". Không viết các câu lập luận kiểu "không tồn tại nếu thiếu lớp chứa", "xóa trận thì cũng mất" cho 3 quan hệ này.
+   - Hợp thành chỉ còn `BotGame – MathProblem` (phần của Hoàng), giữ nguyên.
+   - CSDL vẫn giữ `ON DELETE CASCADE` cho khóa ngoại về `tblMatch`, `tblMatchPlayer`, `tblMathProblem`; giải thích bằng lý do nghiệp vụ (xóa trận thì 2 dòng người chơi trong trận, 10 câu hỏi và bài làm không còn ý nghĩa), không viện dẫn hợp thành.
 4. **Thêm thuộc tính đối tượng** tương ứng:
    - "Y có một X" → `X x`.
    - "Y có danh sách X" → `List<X> listX`.
@@ -235,7 +237,7 @@ Kết quả: biểu đồ CSDL (bảng, kiểu cột, PK, FK, bội số) và c�
 **Firebase** (phần của Hùng): áp dụng cùng tinh thần:
 - Mỗi lớp là một node.
 - Thuộc tính thường là field.
-- Quan hệ hợp thành là node con, khóa là push id hoặc `uid`.
+- Lớp nằm trong lớp khác và không có node gốc riêng thì là node con, khóa là push id hoặc `uid`. Ví dụ: MathProblem, MatchPlayer nằm trong Match (kết tập) nên thành node con của `matches`.
 
 Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 

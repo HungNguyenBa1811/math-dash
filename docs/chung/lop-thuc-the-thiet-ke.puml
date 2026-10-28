@@ -104,10 +104,10 @@ class BotGame {
 
 Challenge "n" o-- "1" Player : challenger
 Challenge "n" o-- "1" Player : opponent
-Match "1" *-- "2" MatchPlayer
+Match "1" o-- "2" MatchPlayer
 MatchPlayer "n" o-- "1" Player
-Match "1" *-- "10" MathProblem
-MatchPlayer "1" *-- "n" Answer
+Match "1" o-- "10" MathProblem
+MatchPlayer "1" o-- "n" Answer
 Answer "n" o-- "1" MathProblem
 Friendship "n" o-- "1" Player : sender
 Friendship "n" o-- "1" Player : receiver
