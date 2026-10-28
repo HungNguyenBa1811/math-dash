@@ -12,10 +12,10 @@
 4. Hàm getPlayer() gọi lớp Player để đóng gói người chơi đang đăng nhập.
 5. Lớp Player trả đối tượng Player cho hàm getPlayer().
 6. Hàm getPlayer() trả đối tượng Player cho hàm onCreate().
-7. Hàm onCreate() gọi hàm goOnline() của chính nó.
-8. Hàm goOnline() mở một Thread và gọi hàm getById() của PlayerApiDAO để lấy tổng điểm mới nhất.
-9. Hàm onCreate() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính OnlineActivity làm PlayerListCallback.
-10. Hàm onCreate() gọi hàm watchIncoming() của ChallengeFirebaseDAO, truyền chính OnlineActivity làm ChallengeCallback, để nhận các lời mời gửi tới người chơi.
+7. Hàm onCreate() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính OnlineActivity làm PlayerListCallback.
+8. Hàm onCreate() gọi hàm watchIncoming() của ChallengeFirebaseDAO, truyền chính OnlineActivity làm ChallengeCallback, để nhận các lời mời gửi tới người chơi.
+9. Hàm onCreate() gọi hàm goOnline() của chính nó.
+10. Hàm goOnline() mở một Thread và gọi hàm getById() của PlayerApiDAO để lấy tổng điểm mới nhất.
 11. PlayerApiDAO gửi yêu cầu GET /api/players/{id} tới hàm getById() của PlayerRestController.
 12. Hàm getById() của PlayerRestController gọi hàm findById() của PlayerDAO.
 13. Hàm findById() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
@@ -31,7 +31,7 @@
 23. Khi danh sách online thay đổi, hàm onDataChange() của PresenceFirebaseDAO gọi hàm toPlayer() cho từng người chơi.
 24. Hàm toPlayer() gọi lớp Player để đóng gói người chơi kèm tổng điểm và trạng thái.
 25. Lớp Player trả đối tượng Player cho hàm toPlayer().
-26. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 9, chính là OnlineActivity, truyền danh sách người chơi online.
+26. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 7, chính là OnlineActivity, truyền danh sách người chơi online.
 27. Hàm onPlayersChanged() hiển thị tổng điểm của chính người chơi, rồi gọi hàm setPlayers() của PlayerAdapter với danh sách những người còn lại, xếp theo tổng điểm giảm dần.
 28. PlayerAdapter hiển thị danh sách người chơi online gồm tên, tổng điểm, trạng thái.
 29. Người chơi bấm vào tên một đối thủ đang rỗi.
@@ -61,9 +61,9 @@
   - Ghi người chơi vào danh sách online (bước 22).
   - Báo khi danh sách thay đổi (bước 23–26).
   - Chuyển lời mời giữa 2 máy (bước 31–40).
-- **Chỉ online khi ở màn Chơi online:** người chơi được ghi vào danh sách online khi mở OnlineActivity (bước 22). Khi rời màn này, hàm onDestroy() của OnlineActivity gỡ các theo dõi rồi gọi hàm goOffline() của PresenceFirebaseDAO. Lời mời thách đấu cũng chỉ nhận được trong lúc đó, vì watchIncoming() đăng ký ở bước 10.
-- **Bất đồng bộ:** hàm goOnline() mở Thread ở bước 8 rồi trả về ngay, nên onCreate() đăng ký theo dõi ở bước 9–10 trong lúc yêu cầu REST ở bước 11–21 còn đang chạy. watchOnlinePlayers(), watchIncoming(), watchChallenge() là lời đăng ký; kết quả đến sau qua onDataChange(). Bước 37 xảy ra khi đối thủ đồng ý ở đoạn B.
-- **Callback:** các FirebaseDAO không biết OnlineActivity, chỉ giữ interface PlayerListCallback, ChallengeCallback được truyền vào lúc đăng ký (bước 9, 10, 35). Bước 26 và 40 gọi qua interface đó; ở chức năng này đối tượng cài đặt là OnlineActivity.
+- **Chỉ online khi ở màn Chơi online:** người chơi được ghi vào danh sách online khi mở OnlineActivity (bước 22). Khi rời màn này, hàm onDestroy() của OnlineActivity gỡ các theo dõi rồi gọi hàm goOffline() của PresenceFirebaseDAO. Lời mời thách đấu cũng chỉ nhận được trong lúc đó, vì watchIncoming() đăng ký ở bước 8.
+- **Bất đồng bộ:** onCreate() đăng ký theo dõi ở bước 7–8 trước, rồi hàm goOnline() mở Thread ở bước 10 và trả về ngay; yêu cầu REST ở bước 11–21 chạy trên Thread đó. watchOnlinePlayers(), watchIncoming(), watchChallenge() là lời đăng ký; kết quả đến sau qua onDataChange(). Bước 37 xảy ra khi đối thủ đồng ý ở đoạn B.
+- **Callback:** các FirebaseDAO không biết OnlineActivity, chỉ giữ interface PlayerListCallback, ChallengeCallback được truyền vào lúc đăng ký (bước 7, 8, 35). Bước 26 và 40 gọi qua interface đó; ở chức năng này đối tượng cài đặt là OnlineActivity.
 - Bước 41–42 gỡ theo dõi lời mời đã gửi trước khi mở trận, để lần ghi sau của server lên lời mời không gọi lại onChallengeChanged().
 
 ### 1.2. Đoạn B: Nhận lời thách đấu

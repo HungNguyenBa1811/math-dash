@@ -32,7 +32,7 @@ MFD -> M : đóng gói Match
 M --> MFD : Match
 MFD -> GA : onSuccess() {MatchCallback}
 GA -> GA : startMatch()
-GA -> A ** : tạo bài làm rỗng
+GA -> A : tạo bài làm rỗng
 A --> GA : Answer
 GA -> GA : showQuestion()
 GA -> Q : getExpression()
@@ -40,7 +40,7 @@ Q --> GA : chuỗi phép tính
 GA -> Q : getAnswerOptions()
 Q --> GA : 4 phương án
 GA -> GA : optionText()
-GA -> T ** : createTimer()
+GA -> T : createTimer()
 GA -> T : start()
 GA -> PFD : watchOnlinePlayers()
 GA --> U : hiển thị ô thời gian, trạng thái đối thủ, nút Thoát

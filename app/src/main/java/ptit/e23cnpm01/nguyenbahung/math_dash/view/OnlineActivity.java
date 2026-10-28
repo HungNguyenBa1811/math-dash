@@ -63,9 +63,9 @@ public class OnlineActivity extends AppCompatActivity
         bindViews();
         me = new SessionDAO(this).getPlayer();
         txtMyName.setText(me.getDisplayName());
-        goOnline();
         presenceFirebaseDAO.watchOnlinePlayers(this);
         challengeFirebaseDAO.watchIncoming(me.getId(), this);
+        goOnline();
     }
 
     private void bindViews() {
