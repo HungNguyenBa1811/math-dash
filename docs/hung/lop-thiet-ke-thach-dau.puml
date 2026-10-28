@@ -45,16 +45,22 @@ package "Client (Android)" as PC {
     + onChallengeChanged(challenge : Challenge) : void
   }
   class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class FirebaseDAO <<control>> {
+    # {static} con : DatabaseReference
+    + FirebaseDAO()
   }
   class PresenceFirebaseDAO <<control>> {
+    + PresenceFirebaseDAO()
     + goOnline(player : Player) : void
     + watchOnlinePlayers(callback : PlayerListCallback) : void
     - toPlayer(id : String, data : DataSnapshot) : Player
   }
   class ChallengeFirebaseDAO <<control>> {
+    + ChallengeFirebaseDAO()
     + sendChallenge(challenger : Player, opponent : Player) : Challenge
     + watchIncoming(playerId : int, callback : ChallengeCallback) : void
     + watchChallenge(challengeId : String, callback : ChallengeCallback) : void
@@ -66,10 +72,12 @@ package "Client (Android)" as PC {
     # post(path : String, body : JSONObject) : JSONObject
   }
   class PlayerApiDAO <<control>> {
+    + PlayerApiDAO()
     + getById(id : int) : Player
     - toPlayer(json : JSONObject) : Player
   }
   class MatchApiDAO <<control>> {
+    + MatchApiDAO()
     + createMatch(challenge : Challenge) : Match
     - toMatch(json : JSONObject) : Match
   }
@@ -123,18 +131,24 @@ package "Server (Spring Boot)" as PS {
     - hideAnswers(match : Match) : Match
   }
   abstract class "DAO" as SDAO <<control>> {
+    # {static} con : Connection
+    + DAO()
   }
   class PlayerDAO <<control>> {
+    + PlayerDAO()
     + findById(id : int) : Player
     + getTotalPoints(playerId : int) : double
   }
   class MatchDAO <<control>> {
+    + MatchDAO()
     + insert(match : Match) : boolean
   }
   class ProblemDAO <<control>> {
+    + ProblemDAO()
     + generateProblems(count : int) : List<MathProblem>
   }
   class FirebaseAdminDAO <<control>> {
+    + FirebaseAdminDAO()
     + readChallengeStatus(challengeId : String) : String
     + readPresence(playerId : int) : Player
     + updateStatus(playerId : int, status : String) : void

@@ -36,12 +36,15 @@ package "Client (Android)" as PC {
   class "activity_history.xml" as xmlHistory
   class "item_match_history.xml" as xmlItemMatch
   class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
     # getArray(path : String) : JSONArray
   }
   class MatchApiDAO <<control>> {
+    + MatchApiDAO()
     + getHistory(playerId : int) : List<Match>
     - toMatch(json : JSONObject) : Match
   }
@@ -73,8 +76,11 @@ package "Server (Spring Boot)" as PS {
     + getHistory(playerId : int) : List<Match>
   }
   abstract class "DAO" as SDAO <<control>> {
+    # {static} con : Connection
+    + DAO()
   }
   class MatchDAO <<control>> {
+    + MatchDAO()
     + findByPlayer(playerId : int) : List<Match>
   }
 }

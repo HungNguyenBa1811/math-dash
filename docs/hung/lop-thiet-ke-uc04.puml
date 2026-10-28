@@ -59,6 +59,8 @@ package "Client (Android)" as PC {
   class "activity_match_detail.xml" as xmlDetail
   class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
@@ -66,11 +68,13 @@ package "Client (Android)" as PC {
     # getArray(path : String) : JSONArray
   }
   class MatchApiDAO <<control>> {
+    + MatchApiDAO()
     + getHistory(playerId : int) : List<Match>
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
   }
   class PlayerApiDAO <<control>> {
+    + PlayerApiDAO()
     + getRanking() : List<Player>
     - toPlayer(json : JSONObject) : Player
   }
@@ -133,15 +137,18 @@ package "Server (Spring Boot)" as PS {
     + getRanking() : List<Player>
   }
   abstract class "DAO" as SDAO <<control>> {
-
+    # {static} con : Connection
+    + DAO()
   }
   class MatchDAO <<control>> {
+    + MatchDAO()
     + findByPlayer(playerId : int) : List<Match>
     + findById(id : int) : Match
     + findFinished() : List<Match>
     - findAnswers(matchPlayerId : int, questions : List<MathProblem>) : List<Answer>
   }
   class PlayerDAO <<control>> {
+    + PlayerDAO()
     + getTotalPoints(playerId : int) : double
     + getRanking() : List<Player>
     + {static} rank(players : List<Player>, matches : List<Match>) : List<Player>

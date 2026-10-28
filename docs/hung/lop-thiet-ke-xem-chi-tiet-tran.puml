@@ -34,12 +34,15 @@ package "Client (Android)" as PC {
   class "activity_match_detail.xml" as xmlDetail
   class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
     # get(path : String) : JSONObject
   }
   class MatchApiDAO <<control>> {
+    + MatchApiDAO()
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
   }
@@ -95,12 +98,16 @@ package "Server (Spring Boot)" as PS {
     - findMatch(id : int) : Match
   }
   abstract class "DAO" as SDAO <<control>> {
+    # {static} con : Connection
+    + DAO()
   }
   class MatchDAO <<control>> {
+    + MatchDAO()
     + findById(id : int) : Match
     - findAnswers(matchPlayerId : int, questions : List<MathProblem>) : List<Answer>
   }
   class PlayerDAO <<control>> {
+    + PlayerDAO()
     + getTotalPoints(playerId : int) : double
   }
 }

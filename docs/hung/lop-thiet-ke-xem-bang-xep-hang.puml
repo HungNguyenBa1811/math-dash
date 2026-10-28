@@ -27,12 +27,15 @@ package "Client (Android)" as PC {
   class "activity_history.xml" as xmlHistory
   class "item_ranking.xml" as xmlItemRanking
   class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
     # getArray(path : String) : JSONArray
   }
   class PlayerApiDAO <<control>> {
+    + PlayerApiDAO()
     + getRanking() : List<Player>
     - toPlayer(json : JSONObject) : Player
   }
@@ -67,11 +70,15 @@ package "Server (Spring Boot)" as PS {
     + getRanking() : List<Player>
   }
   abstract class "DAO" as SDAO <<control>> {
+    # {static} con : Connection
+    + DAO()
   }
   class MatchDAO <<control>> {
+    + MatchDAO()
     + findFinished() : List<Match>
   }
   class PlayerDAO <<control>> {
+    + PlayerDAO()
     + getRanking() : List<Player>
     + {static} rank(players : List<Player>, matches : List<Match>) : List<Player>
     - {static} addMatch(match : Match, byId : Map<Integer, Player>, opponents : Map<Integer, Set<Integer>>, winTimes : Map<Integer, List<Long>>) : void

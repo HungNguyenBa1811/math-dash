@@ -137,7 +137,7 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 **Biểu đồ use case chi tiết:** use case con là một (hoặc vài) giao diện có tương tác với tác nhân, nối với use case chính bằng include, extend hoặc kế thừa; có include "Đăng nhập" như bài mẫu. Nút bấm, hộp thoại, bước trong luồng không phải use case (chức năng ≠ use case). Ví dụ UC03 chỉ có Đăng nhập, Thách đấu, Thi đấu; Từ chối, Thoát trận, Chơi tiếp là bước bên trong.
 
 **Đặc tả** (mục 1 của báo cáo):
-- Mỗi chức năng viết bằng **văn xuôi tự nhiên**, chia vài đoạn theo luồng nghiệp vụ, bắt đầu từ lúc người chơi đăng nhập. Không nối bước bằng `→`, không gạch đầu dòng, không in đậm nhãn; nhánh ngoại lệ để ở kịch bản ngoại lệ. Phần giải thích biểu đồ use case chi tiết cũng viết thành đoạn văn.
+- Mỗi chức năng viết bằng **văn xuôi tự nhiên trong 1 đoạn văn**, kể theo luồng nghiệp vụ, bắt đầu từ lúc người chơi đăng nhập. Không nối bước bằng `→`, không gạch đầu dòng, không in đậm nhãn; nhánh ngoại lệ để ở kịch bản ngoại lệ. Phần giải thích biểu đồ use case chi tiết cũng viết thành 1 đoạn văn.
 - Mỗi lần có giao diện hiện ra thì kể đủ thành phần của giao diện đó.
 
 > *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính. Giao diện chọn độ khó hiện ra với 3 nút Dễ, Trung bình và Khó. Sau khi người chơi chọn Trung bình, giao diện thi đấu hiện ô thời gian, dòng trạng thái của máy, dòng "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D và nút Thoát. …
@@ -269,7 +269,7 @@ App **không có lớp Controller riêng**: Activity xử lý sự kiện, đi�
 **3 package trên biểu đồ:** "Client (Android)", "Common (Java Library)", "Server (Spring Boot)". Thực thể chỉ vẽ một lần trong Common; DAO của app và DAO của server cùng nối vào đó. Đường `HTTP/JSON` nối `XxxApiDAO` với `XxxRestController`. Bản Visual Paradigm xếp ngang: Client trái, Common giữa, Server phải, nét đứt phân cách và nhãn từng vùng. Không vẽ Firebase hay MySQL thành lớp: chúng chỉ là kiểu thuộc tính (`DatabaseReference`, `Connection`) trong DAO cha.
 
 **Chỉ vẽ phần cốt lõi:**
-- Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); DAO không có thuộc tính, chỉ ghi phương thức; RestController chỉ giữ trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
+- Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); DAO cha giữ đối tượng kết nối (`con : Connection` ở server, `con : DatabaseReference` ở app; `SessionDAO` giữ `prefs : SharedPreferences`), mỗi DAO ghi hàm khởi tạo (`MatchDAO()`, `SessionDAO(context : Context)`) và phương thức, không ghi thuộc tính kiểu chuỗi (`BASE_URL`, `dbUrl`); `ApiDAO` không có đối tượng kết nối vì mỗi lời gọi tự mở `HttpURLConnection`; RestController chỉ giữ trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
 - Phương thức: chỉ ghi các phương thức có trong kịch bản v3 và tuần tự thiết kế, cùng phương thức nghiệp vụ của thực thể.
 - Không vẽ: View con (`TextView`, `Button`), biến tạm (`current`, `shownAt`, `timer`), cờ trạng thái (`started`, `submitted`), hằng số, listener, hàm override của Android không có trong kịch bản (`onDestroy`, `onBackPressed`, `onCreateViewHolder`, `getItemCount`), getter / setter, hàm riêng đóng gói phụ (`toProblem`, `toAnswers`). Các phần này để mã nguồn thể hiện; bảng mô tả lớp vẫn có thể nhắc tới.
 
