@@ -137,10 +137,10 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 **Biểu đồ use case chi tiết:** use case con là một (hoặc vài) giao diện có tương tác với tác nhân, nối với use case chính bằng include, extend hoặc kế thừa; có include "Đăng nhập" như bài mẫu. Nút bấm, hộp thoại, bước trong luồng không phải use case (chức năng ≠ use case). Ví dụ UC03 chỉ có Đăng nhập, Thách đấu, Thi đấu; Từ chối, Thoát trận, Chơi tiếp là bước bên trong.
 
 **Đặc tả** (mục 1 của báo cáo):
-- Mỗi chức năng viết **trong 1 dòng** (1 đoạn liền), theo dạng luồng nghiệp vụ, nối các bước bằng `→`, bắt đầu từ "Người chơi đăng nhập vào hệ thống", như bài mẫu "Sửa thông tin phòng". Không xuống dòng, không gạch đầu dòng; nhánh ngoại lệ để ở kịch bản ngoại lệ.
-- Mỗi lần có giao diện hiện ra thì liệt kê đủ thành phần của giao diện đó.
+- Mỗi chức năng viết bằng **văn xuôi tự nhiên**, chia vài đoạn theo luồng nghiệp vụ, bắt đầu từ lúc người chơi đăng nhập. Không nối bước bằng `→`, không gạch đầu dòng, không in đậm nhãn; nhánh ngoại lệ để ở kịch bản ngoại lệ. Phần giải thích biểu đồ use case chi tiết cũng viết thành đoạn văn.
+- Mỗi lần có giao diện hiện ra thì kể đủ thành phần của giao diện đó.
 
-> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D, nút Thoát → Người chơi bấm một ô, câu tiếp theo hiện ra → Làm xong 10 câu, nút Nộp bài hiện ra → …
+> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính. Giao diện chọn độ khó hiện ra với 3 nút Dễ, Trung bình và Khó. Sau khi người chơi chọn Trung bình, giao diện thi đấu hiện ô thời gian, dòng trạng thái của máy, dòng "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D và nút Thoát. …
 
 **Kịch bản chuẩn v1:**
 - Kịch bản v1 viết **mỗi use case con một bảng riêng**, 6 dòng: Use case, Actor, Tiền điều kiện, Hậu điều kiện, Sự kiện chính, Ngoại lệ. Sự kiện chính là một luồng hoàn chỉnh đánh số từ 1, không chia đoạn A, B, C, D; ngoại lệ đánh số theo bước rẽ nhánh của chính bảng đó (4a, 4a.1). Ngoại lệ: use case chính chỉ gồm các use case con include nối thành một luồng (Chơi online = Thách đấu + Thi đấu) thì gộp thành 1 bảng cho use case chính. Use case thuộc module người khác (Đăng nhập) không viết bảng.
@@ -262,10 +262,14 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 App **không có lớp Controller riêng**: Activity xử lý sự kiện, điều phối và gọi thẳng DAO (`ISSUES_PLAN.md` D16).
 
+**Biểu đồ theo use case:** ngoài biểu đồ cấp module, mỗi use case con có một biểu đồ lớp chi tiết riêng, chỉ gồm các lớp và phương thức use case đó dùng. Lớp chỉ làm đích chuyển màn (ví dụ MatchActivity ở Thách đấu) hiện tên, không có thành viên và chỉ nối với boundary.
+
+**Lớp cha dùng chung:** các Activity kế thừa `BaseActivity` (giữ `me : Player`, `onCreate`, `onClick`, nối `SessionDAO`); các Adapter kế thừa `BaseAdapter` (giữ `items : List<T>`, `onCreateViewHolder`, `getItemCount`). Kết tập `Player --<> BaseActivity` và liên kết `BaseActivity -- SessionDAO` chỉ vẽ một lần ở lớp cha.
+
 **3 package trên biểu đồ:** "Client (Android)", "Common (Java Library)", "Server (Spring Boot)". Thực thể chỉ vẽ một lần trong Common; DAO của app và DAO của server cùng nối vào đó. Đường `HTTP/JSON` nối `XxxApiDAO` với `XxxRestController`. Bản Visual Paradigm xếp ngang: Client trái, Common giữa, Server phải, nét đứt phân cách và nhãn từng vùng. Không vẽ Firebase hay MySQL thành lớp: chúng chỉ là kiểu thuộc tính (`DatabaseReference`, `Connection`) trong DAO cha.
 
 **Chỉ vẽ phần cốt lõi:**
-- Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); control giữ kết nối của DAO cha (`con`, `conn`, `BASE_URL`, `prefs`) và trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
+- Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); DAO không có thuộc tính, chỉ ghi phương thức; RestController chỉ giữ trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
 - Phương thức: chỉ ghi các phương thức có trong kịch bản v3 và tuần tự thiết kế, cùng phương thức nghiệp vụ của thực thể.
 - Không vẽ: View con (`TextView`, `Button`), biến tạm (`current`, `shownAt`, `timer`), cờ trạng thái (`started`, `submitted`), hằng số, listener, hàm override của Android không có trong kịch bản (`onDestroy`, `onBackPressed`, `onCreateViewHolder`, `getItemCount`), getter / setter, hàm riêng đóng gói phụ (`toProblem`, `toAnswers`). Các phần này để mã nguồn thể hiện; bảng mô tả lớp vẫn có thể nhắc tới.
 

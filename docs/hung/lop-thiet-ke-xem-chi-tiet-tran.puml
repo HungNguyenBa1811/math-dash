@@ -1,0 +1,143 @@
+@startuml lop-thiet-ke-xem-chi-tiet-tran
+!include _theme.iuml
+title Biểu đồ lớp chi tiết – Xem chi tiết trận
+
+package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
+  abstract class BaseAdapter <<boundary>> {
+    # items : List<T>
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
+    + getItemCount() : int
+  }
+  class HistoryActivity <<boundary>> {
+    + onMatchClick(match : Match) : void
+  }
+  class MatchDetailActivity <<boundary>> {
+    - match : Match
+    - loadMatch() : void
+    - showMatch(m : Match) : void
+    - showResult(result : String) : void
+    - stats(mp : MatchPlayer) : String
+  }
+  class ProblemAdapter <<boundary>> {
+    - myAnswers : List<Answer>
+    - opponentAnswers : List<Answer>
+    + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
+    - answerAt(answers : List<Answer>, position : int) : Answer
+    - showAnswer(view : TextView, answer : Answer) : void
+  }
+  class ProblemViewHolder <<boundary>>
+  class "activity_match_detail.xml" as xmlDetail
+  class "item_problem.xml" as xmlItemProblem
+  class SessionDAO <<control>> {
+    + getPlayer() : Player
+  }
+  abstract class ApiDAO <<control>> {
+    # get(path : String) : JSONObject
+  }
+  class MatchApiDAO <<control>> {
+    + getById(matchId : int) : Match
+    - toMatch(json : JSONObject) : Match
+  }
+}
+
+package "Common (Java Library)" as PM {
+  class Player <<entity>> {
+    - id : int
+    - displayName : String
+    - totalPoints : double
+  }
+  class Match <<entity>> {
+    - id : int
+    - endedAt : Date
+    - questions : List<MathProblem>
+    - players : List<MatchPlayer>
+    + getOpponent(playerId : int) : MatchPlayer
+    + getFinishTime(playerId : int) : long
+    + getResult(playerId : int) : String
+    + getPoints(playerId : int) : double
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - answers : List<Answer>
+    - correctCount : int
+    - submittedAt : Date
+    - forfeited : boolean
+    - player : Player
+  }
+  class Answer <<entity>> {
+    + {static} NONE : int
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
+    + isAnswered() : boolean
+    + isCorrect() : boolean
+  }
+  class MathProblem <<entity>> {
+    - id : int
+    - operand1 : int
+    - operand2 : int
+    - operator : String
+    - correctAnswer : int
+    + isCorrect(answer : int) : boolean
+    + getExpression() : String
+  }
+}
+
+package "Server (Spring Boot)" as PS {
+  class MatchRestController <<boundary>> {
+    + getById(id : int) : Match
+    - findMatch(id : int) : Match
+  }
+  abstract class "DAO" as SDAO <<control>> {
+  }
+  class MatchDAO <<control>> {
+    + findById(id : int) : Match
+    - findAnswers(matchPlayerId : int, questions : List<MathProblem>) : List<Answer>
+  }
+  class PlayerDAO <<control>> {
+    + getTotalPoints(playerId : int) : double
+  }
+}
+
+HistoryActivity --|> BaseActivity
+MatchDetailActivity --|> BaseActivity
+ProblemAdapter --|> BaseAdapter
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
+HistoryActivity -- MatchDetailActivity
+MatchDetailActivity -- ProblemAdapter
+ProblemAdapter -- ProblemViewHolder
+MatchDetailActivity -- xmlDetail
+ProblemViewHolder -- xmlItemProblem
+MatchDetailActivity o-- "1" Match
+ProblemAdapter o-- "10" MathProblem
+ProblemAdapter o-- "n" Answer
+MatchDetailActivity -- MatchApiDAO
+MatchApiDAO --|> ApiDAO
+SessionDAO -- Player
+MatchApiDAO -- Match
+Match "1" o-- "2" MatchPlayer
+Match "1" o-- "10" MathProblem
+MatchPlayer "n" o-- "1" Player
+MatchPlayer "1" o-- "n" Answer
+MathProblem "1" --o "n" Answer
+MatchRestController -- MatchDAO
+MatchRestController -- PlayerDAO
+PlayerDAO -- MatchDAO
+MatchDAO --|> SDAO
+PlayerDAO --|> SDAO
+MatchDAO -- Match
+PlayerDAO -- Player
+PlayerDAO -- Match
+MatchApiDAO -- MatchRestController : HTTP/JSON
+
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
+@enduml

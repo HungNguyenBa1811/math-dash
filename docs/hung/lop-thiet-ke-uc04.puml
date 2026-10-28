@@ -1,16 +1,23 @@
 @startuml lop-thiet-ke-uc04
 !include _theme.iuml
-title Biểu đồ lớp chi tiết – Xem lịch sử đấu
+title Biểu đồ lớp chi tiết – Module Xem lịch sử đấu
 
 package "Client (Android)" as PC {
-  class OnlineActivity <<boundary>> {
-    + onCreate(savedInstanceState : Bundle) : void
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
+  abstract class BaseAdapter <<boundary>> {
+    # items : List<T>
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
+    + getItemCount() : int
+  }
+  class OnlineActivity <<boundary>> {
+
+  }
   class HistoryActivity <<boundary>> {
-    - me : Player
     - matches : List<Match>
-    + onCreate(savedInstanceState : Bundle) : void
     - loadHistory() : void
     - showSummary(matches : List<Match>) : void
     + onTabSelected(tab : TabLayout.Tab) : void
@@ -22,28 +29,22 @@ package "Client (Android)" as PC {
     # onDraw(canvas : Canvas) : void
   }
   class MatchHistoryAdapter <<boundary>> {
-    - listMatch : List<Match>
     - myId : int
     + onBindViewHolder(holder : MatchHistoryViewHolder, position : int) : void
   }
   class MatchHistoryViewHolder <<boundary>>
   class RankingAdapter <<boundary>> {
-    - listPlayer : List<Player>
     - myId : int
   }
   class RankingViewHolder <<boundary>>
   class MatchDetailActivity <<boundary>> {
-    - me : Player
     - match : Match
-    - matchId : int
-    + onCreate(savedInstanceState : Bundle) : void
     - loadMatch() : void
     - showMatch(m : Match) : void
     - showResult(result : String) : void
     - stats(mp : MatchPlayer) : String
   }
   class ProblemAdapter <<boundary>> {
-    - listProblem : List<MathProblem>
     - myAnswers : List<Answer>
     - opponentAnswers : List<Answer>
     + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
@@ -58,11 +59,9 @@ package "Client (Android)" as PC {
   class "activity_match_detail.xml" as xmlDetail
   class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
-    - prefs : SharedPreferences
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
-    # {static} BASE_URL : String
     # get(path : String) : JSONObject
     # getArray(path : String) : JSONArray
   }
@@ -134,7 +133,7 @@ package "Server (Spring Boot)" as PS {
     + getRanking() : List<Player>
   }
   abstract class "DAO" as SDAO <<control>> {
-    # {static} conn : Connection
+
   }
   class MatchDAO <<control>> {
     + findByPlayer(playerId : int) : List<Match>
@@ -153,6 +152,14 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
+OnlineActivity --|> BaseActivity
+HistoryActivity --|> BaseActivity
+MatchDetailActivity --|> BaseActivity
+MatchHistoryAdapter --|> BaseAdapter
+RankingAdapter --|> BaseAdapter
+ProblemAdapter --|> BaseAdapter
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
 OnlineActivity -- HistoryActivity
 HistoryActivity -- MatchDetailActivity
 HistoryActivity -- PieChartView
@@ -168,18 +175,14 @@ MatchHistoryViewHolder -- xmlItemMatch
 RankingViewHolder -- xmlItemRanking
 MatchDetailActivity -- xmlDetail
 ProblemViewHolder -- xmlItemProblem
-HistoryActivity o-- "1" Player
 HistoryActivity o-- "n" Match
 MatchHistoryAdapter o-- "n" Match
 RankingAdapter o-- "n" Player
-MatchDetailActivity o-- "1" Player
 MatchDetailActivity o-- "1" Match
 ProblemAdapter o-- "10" MathProblem
 ProblemAdapter o-- "n" Answer
-HistoryActivity -- SessionDAO
 HistoryActivity -- MatchApiDAO
 HistoryActivity -- PlayerApiDAO
-MatchDetailActivity -- SessionDAO
 MatchDetailActivity -- MatchApiDAO
 MatchApiDAO --|> ApiDAO
 PlayerApiDAO --|> ApiDAO

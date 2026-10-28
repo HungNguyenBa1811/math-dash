@@ -1,18 +1,23 @@
 @startuml lop-thiet-ke-uc03
 !include _theme.iuml
-title Biểu đồ lớp chi tiết – Chơi online
+title Biểu đồ lớp chi tiết – Module Đấu đối kháng
 
 package "Client (Android)" as PC {
-  class MainActivity <<boundary>> {
-    - me : Player
-    + onCreate(savedInstanceState : Bundle) : void
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
+  abstract class BaseAdapter <<boundary>> {
+    # items : List<T>
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
+    + getItemCount() : int
+  }
+  class MainActivity <<boundary>> {
+
+  }
   class OnlineActivity <<boundary>> {
-    - me : Player
     - sentChallenge : Challenge
-    + onCreate(savedInstanceState : Bundle) : void
-    + onClick(v : View) : void
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
@@ -24,18 +29,13 @@ package "Client (Android)" as PC {
     - openMatch(matchId : int) : void
   }
   class PlayerAdapter <<boundary>> {
-    - listPlayer : List<Player>
     + setPlayers(players : List<Player>) : void
   }
   class PlayerViewHolder <<boundary>>
   class MatchActivity <<boundary>> {
-    - me : Player
     - matchId : int
-    - opponentId : int
     - questions : List<MathProblem>
     - answers : List<Answer>
-    + onCreate(savedInstanceState : Bundle) : void
-    + onClick(v : View) : void
     + onPlayersChanged(players : List<Player>) : void
     + onSuccess(match : Match) : void
     + onNextMatch(nextMatchId : int) : void
@@ -72,11 +72,10 @@ package "Client (Android)" as PC {
     + onFail(message : String) : void
   }
   class SessionDAO <<control>> {
-    - prefs : SharedPreferences
     + getPlayer() : Player
   }
   abstract class FirebaseDAO <<control>> {
-    # {static} con : DatabaseReference
+
   }
   class PresenceFirebaseDAO <<control>> {
     + goOnline(player : Player) : void
@@ -96,7 +95,6 @@ package "Client (Android)" as PC {
     - toMatch(matchId : int, data : DataSnapshot) : Match
   }
   abstract class ApiDAO <<control>> {
-    # {static} BASE_URL : String
     # get(path : String) : JSONObject
     # post(path : String, body : JSONObject) : JSONObject
   }
@@ -187,7 +185,7 @@ package "Server (Spring Boot)" as PS {
     - hideAnswers(match : Match) : Match
   }
   abstract class "DAO" as SDAO <<control>> {
-    # {static} conn : Connection
+
   }
   class PlayerDAO <<control>> {
     + findById(id : int) : Player
@@ -205,7 +203,6 @@ package "Server (Spring Boot)" as PS {
     + generateProblems(count : int) : List<MathProblem>
   }
   class FirebaseAdminDAO <<control>> {
-    - dbUrl : String
     + readChallengeStatus(challengeId : String) : String
     + readPresence(playerId : int) : Player
     + updateStatus(playerId : int, status : String) : void
@@ -219,6 +216,12 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
+MainActivity --|> BaseActivity
+OnlineActivity --|> BaseActivity
+MatchActivity --|> BaseActivity
+PlayerAdapter --|> BaseAdapter
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
 MainActivity -r- OnlineActivity
 OnlineActivity -r- MatchActivity
 OnlineActivity -- PlayerAdapter
@@ -227,9 +230,6 @@ MainActivity -- xmlMain
 OnlineActivity -- xmlOnline
 PlayerViewHolder -- xmlItemPlayer
 MatchActivity -- xmlMatch
-MainActivity o-- "1" Player
-OnlineActivity o-- "1" Player
-MatchActivity o-- "1" Player
 PlayerAdapter o-- "n" Player
 MatchActivity o-- "10" MathProblem
 MatchActivity o-- "10" Answer
@@ -238,9 +238,6 @@ OnlineActivity ..|> ChallengeCallback
 MatchActivity ..|> MatchCallback
 MatchActivity ..|> PlayerListCallback
 MatchActivity -- PresenceFirebaseDAO
-MainActivity -- SessionDAO
-OnlineActivity -- SessionDAO
-MatchActivity -- SessionDAO
 OnlineActivity -- PlayerApiDAO
 OnlineActivity -- PresenceFirebaseDAO
 OnlineActivity -- ChallengeFirebaseDAO

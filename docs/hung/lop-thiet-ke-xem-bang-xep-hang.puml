@@ -1,0 +1,113 @@
+@startuml lop-thiet-ke-xem-bang-xep-hang
+!include _theme.iuml
+title Biểu đồ lớp chi tiết – Xem bảng xếp hạng
+
+package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
+  abstract class BaseAdapter <<boundary>> {
+    # items : List<T>
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
+    + getItemCount() : int
+  }
+  class OnlineActivity <<boundary>> {
+  }
+  class HistoryActivity <<boundary>> {
+    + onTabSelected(tab : TabLayout.Tab) : void
+    - loadRanking() : void
+  }
+  class RankingAdapter <<boundary>> {
+    - myId : int
+  }
+  class RankingViewHolder <<boundary>>
+  class "activity_online.xml" as xmlOnline
+  class "activity_history.xml" as xmlHistory
+  class "item_ranking.xml" as xmlItemRanking
+  class SessionDAO <<control>> {
+    + getPlayer() : Player
+  }
+  abstract class ApiDAO <<control>> {
+    # getArray(path : String) : JSONArray
+  }
+  class PlayerApiDAO <<control>> {
+    + getRanking() : List<Player>
+    - toPlayer(json : JSONObject) : Player
+  }
+}
+
+package "Common (Java Library)" as PM {
+  class Player <<entity>> {
+    - id : int
+    - displayName : String
+    - totalPoints : double
+    - avgOpponentPoints : double
+    - avgWinTime : double
+  }
+  class Match <<entity>> {
+    - id : int
+    - endedAt : Date
+    - players : List<MatchPlayer>
+    + getFinishTime(playerId : int) : long
+    + getResult(playerId : int) : String
+    + getPoints(playerId : int) : double
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - submittedAt : Date
+    - forfeited : boolean
+    - player : Player
+  }
+}
+
+package "Server (Spring Boot)" as PS {
+  class PlayerRestController <<boundary>> {
+    + getRanking() : List<Player>
+  }
+  abstract class "DAO" as SDAO <<control>> {
+  }
+  class MatchDAO <<control>> {
+    + findFinished() : List<Match>
+  }
+  class PlayerDAO <<control>> {
+    + getRanking() : List<Player>
+    + {static} rank(players : List<Player>, matches : List<Match>) : List<Player>
+    - {static} addMatch(match : Match, byId : Map<Integer, Player>, opponents : Map<Integer, Set<Integer>>, winTimes : Map<Integer, List<Long>>) : void
+    - {static} averagePoints(ids : Set<Integer>, byId : Map<Integer, Player>) : double
+    - {static} averageSeconds(times : List<Long>) : double
+    - findAllPlayers() : List<Player>
+  }
+}
+
+OnlineActivity --|> BaseActivity
+HistoryActivity --|> BaseActivity
+RankingAdapter --|> BaseAdapter
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
+OnlineActivity -- HistoryActivity
+HistoryActivity -- RankingAdapter
+RankingAdapter -- RankingViewHolder
+OnlineActivity -- xmlOnline
+HistoryActivity -- xmlHistory
+RankingViewHolder -- xmlItemRanking
+RankingAdapter o-- "n" Player
+PlayerApiDAO --|> ApiDAO
+SessionDAO -- Player
+PlayerApiDAO -- Player
+Match "1" o-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
+PlayerRestController -- PlayerDAO
+PlayerDAO -- MatchDAO
+MatchDAO --|> SDAO
+PlayerDAO --|> SDAO
+MatchDAO -- Match
+PlayerDAO -- Player
+PlayerDAO -- Match
+PlayerApiDAO -- PlayerRestController : HTTP/JSON
+
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
+@enduml
