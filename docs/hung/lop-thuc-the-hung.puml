@@ -73,6 +73,7 @@ class MatchPlayer {
   - player : Player
 }
 class Answer {
+  + {static} NONE : int
   - id : int
   - selectedOption : int
   - answerTime : long
