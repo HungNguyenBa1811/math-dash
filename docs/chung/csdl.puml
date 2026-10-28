@@ -76,8 +76,8 @@ package "SQLite (app)" {
   entity "tblPlayer (bản sao)" as AP {
     * id : integer <<PK>>
     --
-    * username : text
-    * displayName : text
+    * username : varchar(255)
+    * displayName : varchar(255)
   }
   entity "tblBotGame" as ABG {
     * id : integer <<PK>>
@@ -87,7 +87,7 @@ package "SQLite (app)" {
     * finishTime : integer
     * botCorrectCount : integer
     * botFinishTime : integer
-    * playedAt : text
+    * playedAt : varchar(255)
     * tblPlayerId : integer <<FK>>
   }
 }

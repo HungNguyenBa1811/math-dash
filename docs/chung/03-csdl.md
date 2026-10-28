@@ -52,10 +52,10 @@ Chuyển kiểu:
 
 | Java | MySQL | SQLite |
 |---|---|---|
-| String | varchar(255) (toán tử: varchar(1)) | text |
+| String | varchar(255) (toán tử: varchar(1)) | varchar(255) |
 | int | integer(10) | integer |
 | long | bigint(20) | integer |
-| Date | datetime(3), có mili giây để so thời gian làm bài | text (dạng yyyy-MM-dd HH:mm:ss) |
+| Date | datetime(3), có mili giây để so thời gian làm bài | varchar(255) (dạng yyyy-MM-dd HH:mm:ss) |
 | boolean | tinyint(1) | integer (0 / 1) |
 
 answerOptions : List\<Integer> luôn có đúng 4 phần tử nên tách thành 4 cột option1 … option4, giữ đúng thứ tự đã xáo trộn.
@@ -241,8 +241,8 @@ CREATE TABLE tblFriendship (
 ```sql
 CREATE TABLE tblPlayer (
     id          INTEGER PRIMARY KEY,            -- cùng id với MySQL, không tự tăng
-    username    TEXT    NOT NULL,
-    displayName TEXT    NOT NULL
+    username    VARCHAR(255) NOT NULL,
+    displayName VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE tblBotGame (
@@ -252,7 +252,7 @@ CREATE TABLE tblBotGame (
     finishTime      INTEGER NOT NULL,             -- mili giây
     botCorrectCount INTEGER NOT NULL,
     botFinishTime   INTEGER NOT NULL,             -- mili giây
-    playedAt        TEXT    NOT NULL,
+    playedAt        VARCHAR(255) NOT NULL,
     tblPlayerId     INTEGER NOT NULL REFERENCES tblPlayer(id)
 );
 ```
