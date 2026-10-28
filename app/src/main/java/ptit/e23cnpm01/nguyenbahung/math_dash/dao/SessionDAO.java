@@ -3,7 +3,7 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class SessionDAO {
     private SharedPreferences prefs;

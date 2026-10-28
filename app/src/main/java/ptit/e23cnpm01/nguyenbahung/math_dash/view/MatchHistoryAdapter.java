@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Locale;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryViewHolder> {

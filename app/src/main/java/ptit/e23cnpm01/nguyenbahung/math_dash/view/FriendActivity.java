@@ -26,8 +26,8 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.FriendshipApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerListCallback;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PresenceFirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Friendship;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Friendship;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class FriendActivity extends AppCompatActivity implements View.OnClickListener, PlayerListCallback {
     private EditText edtUsername;

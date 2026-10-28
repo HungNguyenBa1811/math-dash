@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Answer;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 // Mỗi dòng một câu: đáp án đúng, bài làm của mình và của đối thủ

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 // Hàm đồng bộ, phải gọi trong Thread
 public class PlayerApiDAO extends ApiDAO {

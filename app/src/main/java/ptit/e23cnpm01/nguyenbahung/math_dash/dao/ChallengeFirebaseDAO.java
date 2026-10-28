@@ -12,8 +12,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Challenge;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 // Node challenges/{challengeId}
 public class ChallengeFirebaseDAO extends FirebaseDAO {

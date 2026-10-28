@@ -7,6 +7,7 @@ tomcat.*/
 local.properties
 .DS_Store
 app/build/
+common/build/
 scripts/preview/
 
 # File crash của Git Bash trên Windows
@@ -14,7 +15,9 @@ scripts/preview/
 
 # Backend
 server/target/
+common/target/
 server/src/main/resources/application-local.properties
+/application-local.properties
 server/src/main/resources/firebase-service-account.json
 
 # Thông tin kết nối MySQL trên Aiven

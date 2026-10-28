@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "math-dash"
 include(":app")
+include(":common")

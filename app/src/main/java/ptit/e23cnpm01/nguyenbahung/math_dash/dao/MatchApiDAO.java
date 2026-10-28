@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Answer;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Challenge;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 // Hàm đồng bộ, phải gọi trong Thread
 public class MatchApiDAO extends ApiDAO {

@@ -1,5 +1,9 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.entity;
 
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

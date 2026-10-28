@@ -31,9 +31,9 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerListCallback;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PresenceFirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Challenge;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 // Vào màn này mới online: người khác thấy mình trong danh sách và thách đấu được

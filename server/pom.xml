@@ -21,6 +21,12 @@
     </properties>
 
     <dependencies>
+        <!-- Lớp thực thể dùng chung với app, cài trước bằng mvn -f ../common/pom.xml install -->
+        <dependency>
+            <groupId>ptit.e23cnpm01.nguyenbahung</groupId>
+            <artifactId>mathdash-common</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!-- REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

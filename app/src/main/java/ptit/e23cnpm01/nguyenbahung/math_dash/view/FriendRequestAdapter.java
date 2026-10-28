@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Friendship;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Friendship;
 
 public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestViewHolder> {
     private List<Friendship> listFriendship = new ArrayList<>();

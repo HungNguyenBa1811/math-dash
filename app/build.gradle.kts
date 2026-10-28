@@ -54,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
