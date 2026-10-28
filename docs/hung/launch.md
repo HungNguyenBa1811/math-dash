@@ -100,7 +100,7 @@ Bước 1: Mỗi lớp thực thể cần lưu đề xuất một bảng.
 
 Bước 2: Thuộc tính kiểu cơ bản thành cột.
 - Bỏ thuộc tính kiểu đối tượng: BotGame.player, BotGame.questions.
-- Kiểu dữ liệu: String → text; int, long → integer; Date → text dạng yyyy-MM-dd HH:mm:ss.
+- Kiểu dữ liệu: String → varchar(255); int, long → integer; Date → varchar(255), lưu dạng yyyy-MM-dd HH:mm:ss. SQLite xếp varchar vào nhóm kiểu TEXT.
 - tblPlayer chỉ lấy các cột app cần khi không có mạng.
 - Kết quả:
   - tblPlayer: id, username, displayName.
@@ -119,7 +119,7 @@ Bước 5: Loại thuộc tính gây dư thừa.
 - Giữ lại có chủ đích: username, displayName trong tblPlayer của SQLite trùng với tblPlayer của MySQL. Đây là bản sao để chơi với máy khi mất mạng; bản sao được ghi đè mỗi lần đăng nhập nên luôn khớp bản chính.
 - Mọi cột đều không rỗng. finishTime và botFinishTime tính bằng mili giây.
 
-@csdl-sqlite.png
+@csdl-sqlite-vp.png
 
 Hình 2: Biểu đồ thiết kế CSDL SQLite trên client.
 
