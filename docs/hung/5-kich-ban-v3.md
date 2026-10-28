@@ -1,4 +1,4 @@
-# KỊCH BẢN v3 VÀ BIỂU ĐỒ TUẦN TỰ CHI TIẾT — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU, QUẢN LÝ BẠN BÈ
+# KỊCH BẢN v3 VÀ BIỂU ĐỒ TUẦN TỰ CHI TIẾT — CHƠI ONLINE, XEM LỊCH SỬ ĐẤU
 
 ---
 
@@ -50,9 +50,9 @@
 42. Hàm closeSentChallenge() gọi hàm stopWatchingSent() của ChallengeFirebaseDAO để gỡ theo dõi lời mời, rồi đóng hộp thoại chờ.
 43. Hàm onChallengeChanged() gọi hàm openMatch() để mở MatchActivity với mã trận trong lời mời.
 
-![Hình 26: Tuần tự thiết kế Chơi online – Gửi lời thách đấu](tuan-tu-thiet-ke-uc03a.png)
+![Hình 20: Tuần tự thiết kế Chơi online – Gửi lời thách đấu](tuan-tu-thiet-ke-uc03a.png)
 
-*Hình 26: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
+*Hình 20: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
 - Biểu đồ có 43 thông điệp.
 - MainActivity chỉ là điểm vào: nút Chơi online mở OnlineActivity (bước 1–2). Mọi việc của chức năng này, từ danh sách online tới lời mời, nằm ở OnlineActivity.
@@ -104,9 +104,9 @@
 34. MatchApiDAO trả đối tượng Match cho hàm acceptChallenge().
 35. Trong hàm runOnUiThread(), hàm acceptChallenge() gọi hàm openMatch() để mở MatchActivity với mã trận.
 
-![Hình 27: Tuần tự thiết kế Chơi online – Nhận lời thách đấu](tuan-tu-thiet-ke-uc03b.png)
+![Hình 21: Tuần tự thiết kế Chơi online – Nhận lời thách đấu](tuan-tu-thiet-ke-uc03b.png)
 
-*Hình 27: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
+*Hình 21: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
 - Biểu đồ có 35 thông điệp.
 - **Server sinh đề** (bước 19–22) và lưu đề vào MySQL cùng trận (bước 23–25), vì server cần đáp án để chấm bài sau này.
@@ -222,9 +222,9 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 98. Match trả về điểm trận của người chơi.
 99. MatchActivity hiển thị lớp kết quả gồm kết quả, số câu đúng, thời gian làm bài, điểm trận, tổng điểm và câu hỏi chơi tiếp cho người chơi.
 
-![Hình 28: Tuần tự thiết kế Chơi online – Thi đấu](tuan-tu-thiet-ke-uc03c.png)
+![Hình 22: Tuần tự thiết kế Chơi online – Thi đấu](tuan-tu-thiet-ke-uc03c.png)
 
-*Hình 28: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
+*Hình 22: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
 
 - Biểu đồ có 99 thông điệp.
 - Bước 2 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở đoạn A.
@@ -274,9 +274,9 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 29. Hàm openNextMatch() gọi hàm stopWatching() của MatchFirebaseDAO để ngừng theo dõi trận cũ.
 30. Hàm openNextMatch() mở MatchActivity mới với mã trận mới và đóng màn hiện tại; trận mới diễn ra như đoạn C.
 
-![Hình 29: Tuần tự thiết kế Chơi online – Chơi tiếp](tuan-tu-thiet-ke-uc03d.png)
+![Hình 23: Tuần tự thiết kế Chơi online – Chơi tiếp](tuan-tu-thiet-ke-uc03d.png)
 
-*Hình 29: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.*
+*Hình 23: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.*
 
 - Biểu đồ có 30 thông điệp, vẽ cho người chọn chơi tiếp trước.
 - Hàm continueMatch() chạy tuần tự (synchronized). Nếu 2 yêu cầu chơi tiếp đến cùng lúc, chỉ yêu cầu đến sau tạo trận mới, nên không sinh 2 trận.
@@ -367,9 +367,9 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 73. MatchDetailActivity gọi hàm finish(), quay về HistoryActivity.
 74. HistoryActivity hiển thị lại danh sách trận cho người chơi.
 
-![Hình 30: Tuần tự thiết kế Xem lịch sử đấu – Xem trận của tôi](tuan-tu-thiet-ke-uc04a.png)
+![Hình 24: Tuần tự thiết kế Xem lịch sử đấu – Xem trận của tôi](tuan-tu-thiet-ke-uc04a.png)
 
-*Hình 30: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
+*Hình 24: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
 - Biểu đồ có 74 thông điệp.
 - Bước 3–4 và 32–33 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
@@ -419,9 +419,9 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 36. HistoryActivity gọi hàm finish(), quay về OnlineActivity.
 37. OnlineActivity hiển thị lại màn Chơi online cho người chơi.
 
-![Hình 31: Tuần tự thiết kế Xem lịch sử đấu – Xem bảng xếp hạng](tuan-tu-thiet-ke-uc04b.png)
+![Hình 25: Tuần tự thiết kế Xem lịch sử đấu – Xem bảng xếp hạng](tuan-tu-thiet-ke-uc04b.png)
 
-*Hình 31: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
+*Hình 25: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 
 - Biểu đồ có 37 thông điệp.
 - Bước 4 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
@@ -430,118 +430,3 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 - **Các tiêu chí không lưu trong CSDL** mà được tính lại ở bước 19–27 bằng getPoints(), getResult(), getFinishTime() của Match. Bảng xếp hạng vì vậy luôn khớp với kết quả các trận.
 - rank() là hàm static, không truy cập CSDL: nhận danh sách người chơi và danh sách trận đã đọc ở bước 12–18 rồi chỉ tính toán, nên kiểm thử được bằng unit test.
 - Bảng xếp hạng là một thẻ của HistoryActivity nên không cần Activity riêng; chỉ lần chọn thẻ đầu tiên mới gọi server, các lần sau dùng lại danh sách đã tải.
-
----
-
-## 3. Chức năng "Quản lý bạn bè"
-
-### 3.1. Đoạn A: Gửi lời mời kết bạn
-
-1. Người chơi nhấn biểu tượng Bạn bè trên OnlineActivity.
-2. Hàm onClick() của OnlineActivity gọi hàm startActivity() mở FriendActivity.
-3. Hàm onCreate() của FriendActivity gọi hàm getPlayer() của SessionDAO.
-4. Hàm getPlayer() gọi lớp Player để đóng gói người chơi đang đăng nhập.
-5. Lớp Player trả đối tượng Player cho hàm getPlayer().
-6. Hàm getPlayer() trả đối tượng Player cho hàm onCreate().
-7. Hàm onCreate() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính FriendActivity làm PlayerListCallback, để theo dõi danh sách người chơi online.
-8. Hàm onCreate() gọi hàm loadFriendships() của chính nó.
-9. Hàm loadFriendships() mở một Thread và gọi hàm getFriendships() của FriendshipApiDAO.
-10. FriendshipApiDAO gửi yêu cầu GET /api/friendships?playerId={id} tới hàm getFriendships() của FriendshipRestController.
-11. Hàm getFriendships() của FriendshipRestController gọi hàm findByPlayer() của FriendshipDAO.
-12. Hàm findByPlayer() truy vấn bảng tblFriendship nối với tblPlayer, và gọi lớp Friendship để đóng gói từng quan hệ kèm người gửi, người nhận.
-13. Lớp Friendship trả đối tượng Friendship cho hàm findByPlayer().
-14. Hàm findByPlayer() trả danh sách Friendship cho hàm getFriendships().
-15. Với mỗi người gửi và người nhận, hàm getFriendships() gọi hàm getTotalPoints() của PlayerDAO.
-16. Hàm getTotalPoints() trả tổng điểm cho hàm getFriendships().
-17. Hàm getFriendships() trả danh sách quan hệ dạng JSON cho FriendshipApiDAO.
-18. Với mỗi phần tử JSON, hàm toFriendship() của FriendshipApiDAO gọi lớp Friendship để đóng gói.
-19. Lớp Friendship trả đối tượng Friendship cho FriendshipApiDAO.
-20. FriendshipApiDAO trả danh sách Friendship cho hàm loadFriendships().
-21. Trong hàm runOnUiThread(), hàm loadFriendships() gọi hàm showFriendships() của chính nó.
-22. Với mỗi quan hệ, hàm showFriendships() gọi hàm canAccept() của Friendship để biết đó có phải lời mời người chơi cần trả lời không.
-23. Friendship trả kết quả kiểm tra cho hàm showFriendships().
-24. Hàm showFriendships() gọi hàm setFriendships() của FriendRequestAdapter với các lời mời đã nhận.
-25. FriendRequestAdapter hiển thị danh sách lời mời đã nhận cho người chơi.
-26. Hàm showFriendships() gọi hàm setFriendships() của FriendAdapter với các bạn bè và lời mời đã gửi.
-27. Với mỗi quan hệ, hàm onBindViewHolder() của FriendAdapter gọi hàm getFriend() của Friendship.
-28. Friendship trả đối tượng Player của người bạn cho FriendAdapter.
-29. FriendAdapter hiển thị danh sách bạn bè gồm tên, tổng điểm hoặc dòng đang chờ trả lời.
-30. Khi danh sách online thay đổi, hàm onDataChange() của PresenceFirebaseDAO gọi hàm toPlayer() cho từng người chơi.
-31. Hàm toPlayer() gọi lớp Player để đóng gói người chơi kèm trạng thái.
-32. Lớp Player trả đối tượng Player cho hàm toPlayer().
-33. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 7, chính là FriendActivity, truyền danh sách người chơi online.
-34. Hàm onPlayersChanged() lấy id những người đang online và gọi hàm setOnlineIds() của FriendAdapter.
-35. FriendAdapter hiển thị trạng thái Online / Offline của từng người bạn.
-36. Người chơi nhập tên đăng nhập của một người và nhấn nút Kết bạn.
-37. Hàm onClick() của FriendActivity mở một Thread và gọi hàm sendRequest() của FriendshipApiDAO.
-38. FriendshipApiDAO gửi yêu cầu POST /api/friendships tới hàm sendRequest() của FriendshipRestController.
-39. Hàm sendRequest() gọi hàm findById() của PlayerDAO để lấy người gửi.
-40. Hàm findById() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
-41. Lớp Player trả đối tượng Player cho hàm findById().
-42. Hàm findById() trả đối tượng Player cho hàm sendRequest().
-43. Hàm sendRequest() gọi hàm findByUsername() của PlayerDAO để tìm người nhận theo tên đăng nhập.
-44. Hàm findByUsername() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
-45. Lớp Player trả đối tượng Player cho hàm findByUsername().
-46. Hàm findByUsername() trả đối tượng Player cho hàm sendRequest().
-47. Hàm sendRequest() gọi hàm existsBetween() của FriendshipDAO để kiểm tra giữa 2 người đã có quan hệ chưa.
-48. Hàm existsBetween() trả về chưa có quan hệ cho hàm sendRequest().
-49. Hàm sendRequest() gọi lớp Friendship để tạo lời mời đang chờ với người gửi, người nhận.
-50. Lớp Friendship trả đối tượng Friendship cho hàm sendRequest().
-51. Hàm sendRequest() gọi hàm insert() của FriendshipDAO.
-52. Hàm insert() ghi 1 dòng vào bảng tblFriendship, gán id vừa sinh và trả về thành công.
-53. Hàm sendRequest() gọi hàm getTotalPoints() của PlayerDAO cho người nhận.
-54. Hàm getTotalPoints() trả tổng điểm cho hàm sendRequest().
-55. Hàm sendRequest() trả lời mời dạng JSON cho FriendshipApiDAO.
-56. Hàm toFriendship() của FriendshipApiDAO gọi lớp Friendship để đóng gói dữ liệu JSON.
-57. Lớp Friendship trả đối tượng Friendship cho FriendshipApiDAO.
-58. FriendshipApiDAO trả đối tượng Friendship cho hàm onClick().
-59. Trong hàm runOnUiThread(), hàm onClick() thêm lời mời vào cuối danh sách bạn bè và gọi hàm setFriendships() của FriendAdapter.
-60. FriendAdapter hiển thị dòng người nhận với trạng thái đang chờ trả lời; FriendActivity hiển thị thông báo đã gửi lời mời.
-
-![Hình 32: Tuần tự thiết kế Quản lý bạn bè – Gửi lời mời kết bạn](tuan-tu-thiet-ke-uc07a.png)
-
-*Hình 32: Biểu đồ tuần tự chi tiết chức năng Quản lý bạn bè, đoạn A: Gửi lời mời kết bạn.*
-
-- Biểu đồ có 60 thông điệp.
-- **Lời gọi REST** có 2 lần: bước 10 lấy lời mời và bạn bè, bước 38 gửi lời mời. Server đi theo khuôn FriendshipRestController → FriendshipDAO, PlayerDAO → Friendship, Player.
-- **Firebase** chỉ dùng để biết bạn nào đang online (bước 7, 30–34). Bước 30 xảy ra mỗi khi có người vào hoặc rời màn Chơi online, nên trạng thái Online / Offline tự cập nhật mà không phải gọi server. PresenceFirebaseDAO gọi về qua interface PlayerListCallback (bước 33), dùng chung với OnlineActivity, MatchActivity của Chơi online.
-- **Luật nghiệp vụ** nằm ở thực thể Friendship: canAccept() tách lời mời đã nhận (bước 22), getFriend() lấy người còn lại trong quan hệ (bước 27). Kiểm tra trùng quan hệ theo cả 2 chiều nằm ở existsBetween() của FriendshipDAO (bước 47).
-- Lời gọi mạng chạy trong Thread (bước 9, 37). Phần vẽ giao diện chạy trong hàm runOnUiThread() (bước 21, 59).
-
-### 3.2. Đoạn B: Đồng ý lời mời kết bạn
-
-Người chơi là người nhận; FriendActivity đã hiển thị các lời mời đã nhận như bước 1–35 của đoạn A.
-
-1. Người chơi nhấn nút Đồng ý ở một lời mời trong danh sách lời mời đã nhận.
-2. Hàm onClick() của FriendRequestAdapter gọi hàm onAccept() của FriendActivity.
-3. Hàm onAccept() mở một Thread và gọi hàm accept() của FriendshipApiDAO.
-4. FriendshipApiDAO gửi yêu cầu POST /api/friendships/{id}/accept?playerId={id} tới hàm accept() của FriendshipRestController.
-5. Hàm accept() gọi hàm findFriendship() của chính nó.
-6. Hàm findFriendship() gọi hàm findById() của FriendshipDAO.
-7. Hàm findById() truy vấn bảng tblFriendship nối với tblPlayer, và gọi lớp Friendship để đóng gói kết quả.
-8. Lớp Friendship trả đối tượng Friendship cho hàm findById().
-9. Hàm findById() trả đối tượng Friendship cho hàm findFriendship(), hàm findFriendship() trả về cho hàm accept().
-10. Hàm accept() gọi hàm canAccept() của Friendship để kiểm tra lời mời còn đang chờ và người chơi là người nhận.
-11. Friendship trả về hợp lệ cho hàm accept().
-12. Hàm accept() gọi hàm updateStatus() của FriendshipDAO để chuyển lời mời sang trạng thái accepted.
-13. Hàm updateStatus() cập nhật bảng tblFriendship và trả về thành công.
-14. Hàm accept() gọi hàm getTotalPoints() của PlayerDAO cho người gửi lời mời.
-15. Hàm getTotalPoints() trả tổng điểm cho hàm accept().
-16. Hàm accept() trả quan hệ đã đồng ý dạng JSON cho FriendshipApiDAO.
-17. Hàm toFriendship() của FriendshipApiDAO gọi lớp Friendship để đóng gói dữ liệu JSON.
-18. Lớp Friendship trả đối tượng Friendship cho FriendshipApiDAO.
-19. FriendshipApiDAO trả đối tượng Friendship cho hàm onAccept().
-20. Trong hàm runOnUiThread(), hàm onAccept() bỏ lời mời khỏi danh sách lời mời đã nhận và gọi hàm setFriendships() của FriendRequestAdapter.
-21. Hàm onAccept() thêm quan hệ vào danh sách bạn bè và gọi hàm setFriendships() của FriendAdapter.
-22. Hàm onBindViewHolder() của FriendAdapter gọi hàm getFriend() của Friendship.
-23. Friendship trả đối tượng Player của người gửi cho FriendAdapter.
-24. FriendAdapter hiển thị người gửi trong danh sách bạn bè kèm tổng điểm và trạng thái online.
-
-![Hình 33: Tuần tự thiết kế Quản lý bạn bè – Đồng ý lời mời kết bạn](tuan-tu-thiet-ke-uc07b.png)
-
-*Hình 33: Biểu đồ tuần tự chi tiết chức năng Quản lý bạn bè, đoạn B: Đồng ý lời mời kết bạn.*
-
-- Biểu đồ có 24 thông điệp.
-- **Lời gọi REST** duy nhất là bước 4. Server không tin vào máy gửi yêu cầu: nó đọc lại lời mời từ CSDL qua findFriendship() (bước 5–9) rồi mới kiểm tra bằng canAccept() (bước 10).
-- updateStatus() chỉ cập nhật dòng đang pending, nên 2 lần nhấn Đồng ý liên tiếp không làm hỏng dữ liệu.
-- Trạng thái Online / Offline của người bạn mới lấy từ onlineIds mà FriendActivity đã có từ đoạn A, không cần gọi Firebase lại.

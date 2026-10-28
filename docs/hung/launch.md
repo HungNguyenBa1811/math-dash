@@ -1,19 +1,18 @@
 # BÁO CÁO THIẾT KẾ CÁ NHÂN — MATH DASH 1v1
 
 Sinh viên: Nguyễn Bá Hùng · Lớp: E23CNPM01
-Chức năng trình bày: Chơi online, Xem lịch sử đấu, Quản lý bạn bè
+Chức năng trình bày: Chơi online, Xem lịch sử đấu
 
 Phạm vi hệ thống:
 - Math Dash 1v1 là trò chơi giải toán nhanh trên Android: người chơi thách đấu nhau trên cùng một đề 10 câu trắc nghiệm, làm lần lượt từng câu, hoặc chơi với máy.
 - Hệ thống gồm một server và nhiều client:
   - App Android (client): Java, mô hình MVC 3 tầng entity – dao – view.
-  - Server Spring Boot: REST, MySQL. Lưu tài khoản, trận đấu, đề bài, bài làm từng câu, quan hệ bạn bè; sinh đề, chấm bài và làm trọng tài.
+  - Server Spring Boot: REST, MySQL. Lưu tài khoản, trận đấu, đề bài, bài làm từng câu; sinh đề, chấm bài và làm trọng tài.
   - Firebase Realtime Database: kênh báo tức thời giữa các máy: ai đang ở giao diện chơi online, lời mời thách đấu, diễn biến trận đang đấu.
 - Sau khi đăng nhập, giao diện chính chỉ có 2 nút chọn chế độ chơi: Chơi với máy, Chơi online. Nút Chơi online mở giao diện chơi online; người chơi chỉ có trong danh sách online và chỉ nhận được lời thách đấu khi đang ở giao diện này. Từ giao diện chơi online, 3 nút biểu tượng ở góc phải trên mở giao diện bạn bè, lịch sử đấu và bảng xếp hạng.
-- 3 chức năng thuộc 3 module:
+- 2 chức năng thuộc 2 module:
   - Chơi online thuộc module Đấu đối kháng.
   - Xem lịch sử đấu thuộc module Xem lịch sử đấu; module này đọc kết quả và bài làm từng câu của các trận chơi online và gồm cả bảng xếp hạng.
-  - Quản lý bạn bè thuộc module Bạn bè.
 
 ---
 
@@ -194,91 +193,12 @@ Bảng dữ liệu mẫu bảng xếp hạng:
 | 6 | NAM | 4,5 | 12 | 52,1 giây |
 | 7 | TUAN | 0 | 13,5 | — |
 
-### 1.3. Chức năng "Quản lý bạn bè"
-
-Dữ liệu mẫu:
-
-| Người chơi | Tên đăng nhập | Tên hiển thị | Tổng điểm | Đang online | Máy |
-|---|---|---|---|---|---|
-| Hùng | hung | HUNG | 13,5 | Có | Máy 1, người gửi lời mời |
-| Hoàng | hoang | HOANG | 9 | Có | Máy 2, người nhận lời mời |
-| Minh | minh | MINH | 15 | Có | Máy 3 |
-| Tuấn | tuan | TUAN | 0 | Không | |
-| Lan | lan | LAN | 13,5 | Không | |
-
-Quan hệ bạn bè có sẵn trước khi bắt đầu:
-
-| Người gửi | Người nhận | Trạng thái | Thời điểm gửi |
-|---|---|---|---|
-| MINH | HUNG | Đã là bạn bè | 20/10/2026 19:02 |
-| HUNG | TUAN | Đã là bạn bè | 22/10/2026 08:45 |
-| LAN | HUNG | Đang chờ trả lời | 26/10/2026 21:30 |
-
-#### 1.3.1. Biểu đồ use case chi tiết module Bạn bè
-
-@uc-chi-tiet-ban-be.png
-
-Hình 3: Biểu đồ use case chi tiết module Bạn bè.
-
-Người chơi khởi phát trực tiếp use case "Quản lý bạn bè" (UC07). Cả module chỉ có một giao diện bạn bè; use case con là các việc làm thay đổi quan hệ bạn bè:
-- include "Đăng nhập": người chơi phải đăng nhập trước khi quản lý bạn bè; use case này thuộc module Tài khoản.
-- "Kết bạn" extend "Quản lý bạn bè": người chơi gửi lời mời bằng tên đăng nhập của một người; người nhận đồng ý thì 2 người thành bạn bè, từ chối thì lời mời bị xóa.
-- "Hủy kết bạn" extend "Quản lý bạn bè": một trong 2 người xóa quan hệ bạn bè; người gửi cũng rút lại lời mời chưa được trả lời theo cách này.
-
-Đồng ý, Từ chối là bước của use case Kết bạn, không phải use case riêng.
-
-| Use case | Mô tả |
-|---|---|
-| Quản lý bạn bè (UC07) | Mở giao diện bạn bè để xem lời mời đã nhận, các bạn bè kèm tổng điểm và trạng thái Online / Offline, các lời mời mình đã gửi |
-| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
-| Kết bạn | Người chơi gửi lời mời bằng tên đăng nhập; người nhận đồng ý thì hai người trở thành bạn bè, từ chối thì lời mời bị xóa |
-| Hủy kết bạn | Xóa quan hệ bạn bè, hoặc rút lại lời mời mình đã gửi |
-
-#### 1.3.2. Mô tả chi tiết chức năng "Quản lý bạn bè"
-
-Người chơi đăng nhập vào hệ thống → Giao diện chính xuất hiện với 2 nút Chơi với máy, Chơi online → Người chơi nhấn Chơi online → Giao diện chơi online xuất hiện với: 3 nút biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của mình, danh sách người chơi online → Người chơi nhấn nút Bạn bè → Hệ thống lấy các lời mời kết bạn, các quan hệ bạn bè của người chơi và danh sách người đang online → Giao diện bạn bè xuất hiện với: tiêu đề Bạn bè, ô nhập tên đăng nhập và nút Kết bạn, mục "Lời mời kết bạn (số lời mời)" chỉ hiện khi có lời mời đã nhận, mỗi dòng gồm tên người gửi, nút Đồng ý, nút Từ chối, mục "Bạn bè (số người)" mỗi dòng gồm chấm trạng thái xanh Online hoặc xám Offline, tên, tổng điểm, nút Hủy kết bạn dạng biểu tượng ×, các lời mời mình đã gửi nằm cuối mục với chữ xám "Đang chờ trả lời", trạng thái Online / Offline tự cập nhật → Người chơi nhập tên đăng nhập của một người và nhấn Kết bạn → Hệ thống tìm người chơi theo tên đăng nhập, kiểm tra giữa 2 người chưa có lời mời hay quan hệ bạn bè nào và tạo lời mời đang chờ → Hệ thống thông báo "Đã gửi lời mời kết bạn tới <tên>", xóa trống ô tên đăng nhập và thêm dòng "<tên> · Đang chờ trả lời" vào cuối mục Bạn bè → Người nhận mở giao diện bạn bè trên máy của mình, thấy lời mời ở mục Lời mời kết bạn và nhấn Đồng ý → Hệ thống kiểm tra lời mời vẫn đang chờ, ghi nhận 2 người là bạn bè → Lời mời biến khỏi mục Lời mời kết bạn, người gửi hiện trong mục Bạn bè với tổng điểm và trạng thái → Người chơi nhấn × ở một người bạn → Hệ thống hỏi "Hủy kết bạn với <tên>?" với 2 nút Không, Hủy kết bạn → Người chơi nhấn Hủy kết bạn → Hệ thống xóa quan hệ bạn bè, dòng đó biến khỏi danh sách → Người chơi nhấn Back → Hệ thống quay về giao diện chơi online.
-
-#### 1.3.3. Kịch bản các use case của module Bạn bè
-
-##### 1.3.3.1. Quản lý bạn bè
-
-| | |
-|---|---|
-| Use case | Quản lý bạn bè |
-| Actor | Người chơi: Hùng ở máy 1 |
-| Tiền điều kiện | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online với thẻ thông tin HUNG · 13,5 điểm; người chơi và quan hệ bạn bè có sẵn như phần Dữ liệu mẫu của chức năng |
-| Hậu điều kiện | Hùng thấy lời mời kết bạn đã nhận và danh sách bạn bè kèm tổng điểm, trạng thái Online / Offline; dữ liệu không thay đổi; giao diện chơi online hiện lại |
-| Sự kiện chính | 1. Ở giao diện chơi online trên máy 1, Hùng nhấn nút biểu tượng Bạn bè ở góc phải trên.<br>2. Hệ thống lấy lời mời và quan hệ bạn bè của HUNG, cùng danh sách người chơi đang online. Giao diện bạn bè hiện lên gồm: thanh trên có tiêu đề BẠN BÈ; ô tên đăng nhập để trống; nút Kết bạn; mục Lời mời kết bạn (1) có dòng LAN với nút Đồng ý, nút Từ chối; mục Bạn bè (2) có 2 dòng ● Online (xanh) · MINH · 15 · × và ● Offline (xám) · TUAN · 0 · ×.<br>3. Hùng xem xong và nhấn Back.<br>4. Giao diện chơi online hiện lại. |
-| Ngoại lệ | 2a. Máy 1 không kết nối được server.<br>2a.1. Hệ thống báo "Không kết nối được máy chủ, kiểm tra kết nối mạng", 2 mục để trống. Kịch bản tiếp tục từ bước 3.<br>3a. Hùng nhập tên đăng nhập của một người và nhấn Kết bạn, hoặc nhấn Đồng ý, Từ chối ở mục Lời mời kết bạn.<br>3a.1. Kịch bản chuyển sang use case Kết bạn.<br>3b. Hùng nhấn × ở một dòng của mục Bạn bè.<br>3b.1. Kịch bản chuyển sang use case Hủy kết bạn. |
-
-##### 1.3.3.2. Kết bạn
-
-| | |
-|---|---|
-| Use case | Kết bạn |
-| Actor | Người chơi: Hùng ở máy 1 là người gửi lời mời, Hoàng ở máy 2 là người nhận; mỗi người là actor trên máy của mình |
-| Tiền điều kiện | Cả 2 người chơi đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online; người chơi và quan hệ bạn bè có sẵn như phần Dữ liệu mẫu của chức năng; giữa HUNG và HOANG chưa có lời mời hay quan hệ bạn bè nào |
-| Hậu điều kiện | Server lưu quan hệ bạn bè giữa HUNG và HOANG; mỗi người thấy người kia trong danh sách bạn bè |
-| Sự kiện chính | 1. Ở giao diện chơi online trên máy 1, Hùng nhấn nút biểu tượng Bạn bè ở góc phải trên.<br>2. Hệ thống lấy lời mời và quan hệ bạn bè của HUNG, cùng danh sách người chơi đang online. Giao diện bạn bè hiện lên gồm: thanh trên có tiêu đề BẠN BÈ; ô tên đăng nhập để trống; nút Kết bạn; mục Lời mời kết bạn (1) có dòng LAN với nút Đồng ý, nút Từ chối; mục Bạn bè (2) có 2 dòng ● Online (xanh) · MINH · 15 · × và ● Offline (xám) · TUAN · 0 · ×.<br>3. Hùng nhập "hoang" vào ô tên đăng nhập và nhấn Kết bạn.<br>4. Hệ thống tìm thấy người chơi HOANG, thấy giữa HUNG và HOANG chưa có lời mời hay quan hệ nào, tạo lời mời kết bạn đang chờ lúc 21:40 ngày 27/10/2026. Máy 1 thông báo "Đã gửi lời mời kết bạn tới HOANG", xóa trống ô tên đăng nhập. Mục Bạn bè đổi thành 3 dòng: ● Online (xanh) · MINH · 15 · ×; ● Offline (xám) · TUAN · 0 · ×; ● (xám) · HOANG · Đang chờ trả lời · ×.<br>5. Trên máy 2, Hoàng nhấn nút biểu tượng Bạn bè ở góc phải trên giao diện chơi online.<br>6. Hệ thống lấy lời mời và quan hệ bạn bè của HOANG. Giao diện bạn bè trên máy 2 hiện lên gồm: thanh trên có tiêu đề BẠN BÈ; ô tên đăng nhập để trống; nút Kết bạn; mục Lời mời kết bạn (1) có dòng HUNG với nút Đồng ý, nút Từ chối; mục Bạn bè (0) ghi "Chưa có bạn bè".<br>7. Hoàng nhấn Đồng ý ở dòng HUNG.<br>8. Hệ thống thấy lời mời vẫn đang chờ và HOANG là người nhận, ghi nhận HUNG và HOANG là bạn bè. Trên máy 2, mục Lời mời kết bạn ẩn đi; mục Bạn bè (1) có một dòng: ● Online (xanh) · HUNG · 13,5 điểm · ×.<br>9. Lần sau Hùng mở giao diện bạn bè trên máy 1, dòng HOANG trong mục Bạn bè đổi thành ● Online (xanh) · HOANG · 9 điểm · ×. |
-| Ngoại lệ | 2a. Hùng nhấn Từ chối ở dòng LAN.<br>2a.1. Hệ thống xóa lời mời của LAN; mục Lời mời kết bạn ẩn đi. LAN không nhận thông báo nào. Kịch bản tiếp tục từ bước 3.<br>3a. Hùng nhấn Kết bạn khi ô tên đăng nhập trống.<br>3a.1. Hệ thống báo "Vui lòng nhập tên đăng nhập", không gửi gì. Kịch bản tiếp tục từ bước 3.<br>4a. Hùng nhập "hoangg".<br>4a.1. Không có người chơi nào có tên đăng nhập này, hệ thống báo "Không tìm thấy người chơi", giữ nguyên nội dung ô để Hùng sửa. Kịch bản tiếp tục từ bước 3.<br>4b. Hùng nhập "hung".<br>4b.1. Hệ thống báo "Không thể kết bạn với chính mình". Kịch bản tiếp tục từ bước 3.<br>4c. Hùng nhập "minh", người đã là bạn, hoặc "lan", người đã gửi lời mời cho HUNG.<br>4c.1. Hệ thống báo "Đã có lời mời hoặc đã là bạn bè", không tạo lời mời mới. Muốn kết bạn với LAN thì Hùng nhấn Đồng ý ở dòng LAN của mục Lời mời kết bạn.<br>7a. Hoàng nhấn Từ chối ở dòng HUNG.<br>7a.1. Hệ thống xóa lời mời. Lần sau Hùng mở giao diện bạn bè, dòng HOANG · Đang chờ trả lời không còn. Use case kết thúc.<br>8a. Trước khi Hoàng nhấn Đồng ý, Hùng đã rút lại lời mời theo use case Hủy kết bạn.<br>8a.1. Hệ thống thấy lời mời không còn; máy 2 báo "Lời mời không còn" và dòng HUNG biến khỏi mục Lời mời kết bạn. Use case kết thúc. |
-
-##### 1.3.3.3. Hủy kết bạn
-
-| | |
-|---|---|
-| Use case | Hủy kết bạn |
-| Actor | Người chơi: Hùng ở máy 1 |
-| Tiền điều kiện | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện bạn bè trên máy 1 như bước 2 của use case Quản lý bạn bè; mục Bạn bè (2) có MINH và TUAN |
-| Hậu điều kiện | Server xóa quan hệ bạn bè giữa HUNG và TUAN; mục Bạn bè của HUNG chỉ còn MINH |
-| Sự kiện chính | 1. Hùng nhấn × ở dòng TUAN.<br>2. Hệ thống hỏi "Hủy kết bạn với TUAN?" với 2 nút Không, Hủy kết bạn.<br>3. Hùng nhấn Hủy kết bạn.<br>4. Hệ thống xóa quan hệ bạn bè giữa HUNG và TUAN. Dòng TUAN biến khỏi danh sách; mục Bạn bè (1) chỉ còn dòng ● Online (xanh) · MINH · 15 · ×. |
-| Ngoại lệ | 1a. Hùng đã gửi lời mời kết bạn tới HOANG ở use case Kết bạn và Hoàng chưa trả lời. Hùng nhấn × ở dòng HOANG · Đang chờ trả lời.<br>1a.1. Hùng xác nhận trên hộp thoại như bước 2–3.<br>1a.2. Hệ thống xóa lời mời; dòng HOANG biến khỏi mục Bạn bè. Nếu Hoàng nhấn Đồng ý sau đó thì máy 2 báo "Lời mời không còn" và dòng HUNG biến khỏi mục Lời mời kết bạn. Use case kết thúc.<br>3a. Hùng nhấn Không.<br>3a.1. Hộp thoại đóng, mục Bạn bè giữ nguyên. Use case kết thúc. |
-
 ---
 
 ## 2. Thiết kế cơ sở dữ liệu
 
-Ba chức năng dùng 2 nơi lưu trữ:
-- MySQL trên server: tài khoản, trận đấu, đề bài, kết quả chấm, bài làm từng câu và quan hệ bạn bè. Đây là nguồn dữ liệu của tổng điểm, lịch sử đấu, chi tiết trận và bảng xếp hạng.
+Hai chức năng dùng 2 nơi lưu trữ:
+- MySQL trên server: tài khoản, trận đấu, đề bài, kết quả chấm và bài làm từng câu. Đây là nguồn dữ liệu của tổng điểm, lịch sử đấu, chi tiết trận và bảng xếp hạng.
 - Firebase Realtime Database: người chơi đang online, lời mời, trận đang đấu. Dữ liệu này chỉ có ý nghĩa trong lúc chơi.
 
 ### 2.1. CSDL MySQL
@@ -289,11 +209,10 @@ Bước 1: Mỗi lớp thực thể cần lưu đề xuất một bảng.
 - MatchPlayer → tblMatchPlayer.
 - MathProblem → tblMathProblem: server phải giữ đề và đáp án để chấm bài và để xem lại trong lịch sử đấu.
 - Answer → tblAnswer: bài làm từng câu được lưu vì giao diện chi tiết trận cần hiện lại, với mỗi người chơi, từng câu đúng hay sai, phương án đã chọn và thời gian làm câu, kể cả khi trận đã xong từ lâu.
-- Friendship → tblFriendship.
 - Challenge không có bảng: lời mời chỉ có ý nghĩa vài giây, sau đó không chức năng nào tra lại.
 
 Bước 2: Thuộc tính kiểu cơ bản thành cột.
-- Bỏ thuộc tính kiểu đối tượng: Match.questions, Match.players, MatchPlayer.player, MatchPlayer.answers, Answer.problem, Friendship.sender, Friendship.receiver.
+- Bỏ thuộc tính kiểu đối tượng: Match.questions, Match.players, MatchPlayer.player, MatchPlayer.answers, Answer.problem.
 - Kiểu dữ liệu: String → varchar(255); int → integer(10); long → bigint(20); Date → datetime(3), có mili giây để so thời gian làm bài; boolean → tinyint(1).
 - answerOptions luôn có 4 phần tử nên tách thành 4 cột option1 … option4.
 - Kết quả:
@@ -302,7 +221,6 @@ Bước 2: Thuộc tính kiểu cơ bản thành cột.
   - tblMathProblem: id, operand1, operand2, operator, correctAnswer, option1, option2, option3, option4.
   - tblMatchPlayer: id, correctCount, submittedAt, forfeited.
   - tblAnswer: id, selectedOption, answerTime.
-  - tblFriendship: id, status, createdAt.
 
 Bước 3: Quan hệ giữa các bảng.
 - 1 tblMatch – n tblMatchPlayer (đúng 2 dòng mỗi trận).
@@ -310,7 +228,6 @@ Bước 3: Quan hệ giữa các bảng.
 - 1 tblMatchPlayer – n tblAnswer (đúng 10 dòng khi người chơi đã nộp bài; không có dòng nào nếu người chơi bỏ trận trước khi nộp).
 - 1 tblMathProblem – n tblAnswer (tối đa 2 dòng cho mỗi câu, mỗi người chơi trong trận một dòng).
 - 1 tblPlayer – n tblMatchPlayer.
-- 1 tblPlayer – n tblFriendship ở vai trò người gửi, và 1 tblPlayer – n tblFriendship ở vai trò người nhận. Quan hệ bạn bè n-n giữa người chơi với người chơi đã được tách bằng tblFriendship.
 - Quan hệ n-n tblPlayer – tblMatch đã được tách bằng tblMatchPlayer từ thiết kế lớp thực thể; quan hệ n-n tblMatchPlayer – tblMathProblem đã được tách bằng tblAnswer.
 
 Bước 4: Khóa.
@@ -319,8 +236,7 @@ Bước 4: Khóa.
   - tblMatchPlayer.tblMatchId → tblMatch.id và tblMathProblem.tblMatchId → tblMatch.id, có ON DELETE CASCADE đúng với quan hệ hợp thành.
   - tblAnswer.tblMatchPlayerId → tblMatchPlayer.id và tblAnswer.tblMathProblemId → tblMathProblem.id, có ON DELETE CASCADE: xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người.
   - tblMatchPlayer.tblPlayerId → tblPlayer.id.
-  - tblFriendship.tblPlayerSenderId và tblFriendship.tblPlayerReceiverId → tblPlayer.id. Hai khóa cùng trỏ tới tblPlayer nên tên khóa thêm vai trò. Có ON DELETE CASCADE: xóa người chơi thì quan hệ bạn bè của người đó cũng mất.
-- Ràng buộc duy nhất: tblPlayer.username; tblMatchPlayer (tblMatchId, tblPlayerId); tblAnswer (tblMatchPlayerId, tblMathProblemId), mỗi người chơi trong trận chỉ có một bài làm cho mỗi câu; tblFriendship (tblPlayerSenderId, tblPlayerReceiverId). Chiều ngược lại của quan hệ bạn bè được FriendshipDAO kiểm tra trước khi chèn.
+- Ràng buộc duy nhất: tblPlayer.username; tblMatchPlayer (tblMatchId, tblPlayerId); tblAnswer (tblMatchPlayerId, tblMathProblemId), mỗi người chơi trong trận chỉ có một bài làm cho mỗi câu.
 - Thứ tự câu trong đề là thứ tự id tăng dần, vì server chèn 10 câu theo đúng thứ tự trong một transaction. Thứ tự câu trong bài làm cũng là thứ tự tblMathProblemId tăng dần, nên tblAnswer không cần cột số thứ tự.
 
 Bước 5: Loại thuộc tính gây dư thừa.
@@ -329,7 +245,6 @@ Bước 5: Loại thuộc tính gây dư thừa.
   - Đúng / sai của một câu trong bài làm: so tblAnswer.selectedOption với correctAnswer của câu tương ứng trong tblMathProblem → Answer.isCorrect().
   - Tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng: tính từ các trận đã xong.
   - Tỉ lệ thắng / hòa / thua trong lịch sử đấu: đếm Match.getResult(playerId) trên các trận của người chơi.
-  - Trạng thái online của bạn bè: lấy từ Firebase, không lưu cùng quan hệ bạn bè.
   - tblMatch.status: trận đã xong khi và chỉ khi endedAt có giá trị.
 - Không cần lưu lâu dài: trạng thái rỗi / bận của người chơi (chỉ ở Firebase).
 - Giữ lại có chủ đích:
@@ -339,13 +254,12 @@ Bước 5: Loại thuộc tính gây dư thừa.
 
 @csdl-mysql.png
 
-Hình 4: Biểu đồ thiết kế CSDL MySQL cho chức năng Chơi online, Xem lịch sử đấu, Quản lý bạn bè.
+Hình 3: Biểu đồ thiết kế CSDL MySQL cho chức năng Chơi online, Xem lịch sử đấu.
 
 - tblMatch là trung tâm: 10 dòng tblMathProblem là đề, 2 dòng tblMatchPlayer nối trận với 2 người chơi.
 - Mỗi dòng tblMatchPlayer có các dòng tblAnswer là bài làm từng câu của người đó; mỗi dòng tblAnswer trỏ tới đúng một câu trong tblMathProblem.
 - Lịch sử đấu và bảng xếp hạng chỉ đọc tblPlayer, tblMatch, tblMatchPlayer; riêng chi tiết trận đọc thêm 10 dòng tblMathProblem và các dòng tblAnswer của 2 người.
 - Nộp bài ghi tblMatchPlayer và 10 dòng tblAnswer của người chơi trong cùng một transaction.
-- tblFriendship nối 2 dòng tblPlayer, một dòng là người gửi, một dòng là người nhận.
 
 ### 2.2. Dữ liệu trên Firebase Realtime Database
 
@@ -358,7 +272,6 @@ Bước 1: Mỗi lớp thực thể cần đồng bộ tức thời giữa các 
 - Không có node gốc:
   - MathProblem và MatchPlayer: là thành phần của Match nên thành node con của matches (bước 3).
   - Answer: bài làm chỉ gửi qua REST lúc nộp và chỉ đọc lại khi trận đã xong, không cần đồng bộ tức thời.
-  - Friendship: quan hệ bạn bè không đổi trong lúc chơi; giao diện bạn bè chỉ đọc presence để biết bạn nào đang online.
 
 Bước 2: Thuộc tính kiểu cơ bản thành field.
 - Bỏ thuộc tính kiểu đối tượng: Match.questions, Match.players, MatchPlayer.player, Challenge.challenger, Challenge.opponent.
@@ -413,10 +326,10 @@ Cây dữ liệu thu được:
 
 ## 3. Thiết kế lớp thực thể
 
-Đầu vào là biểu đồ lớp thực thể pha phân tích (Phụ lục A). Các lớp liên quan đến 3 chức năng: Player, Challenge, Match, MatchPlayer, MathProblem, Answer, Friendship.
+Đầu vào là biểu đồ lớp thực thể pha phân tích (Phụ lục A). Các lớp liên quan đến 2 chức năng: Player, Challenge, Match, MatchPlayer, MathProblem, Answer.
 
 Bước 1: Bổ sung thuộc tính khóa.
-- Thêm id : int cho Player, Match, MatchPlayer, MathProblem, Answer, Friendship.
+- Thêm id : int cho Player, Match, MatchPlayer, MathProblem, Answer.
 - Challenge có id : String là push id do Firebase sinh, vì lời mời chỉ nằm trên Firebase.
 
 Bước 2: Bổ sung kiểu dữ liệu.
@@ -435,7 +348,6 @@ Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành.
 - Giữ nguyên từ pha phân tích:
   - MathProblem là thành phần của Match (hợp thành, 1-10).
   - Player nằm trong Challenge ở 2 vai trò người mời, người được mời (kết tập).
-  - Player nằm trong Friendship ở 2 vai trò người gửi, người nhận (kết tập).
 
 Bước 4: Bổ sung thuộc tính đối tượng.
 - Challenge.challenger, Challenge.opponent : Player.
@@ -443,7 +355,6 @@ Bước 4: Bổ sung thuộc tính đối tượng.
 - MatchPlayer.player : Player.
 - MatchPlayer.answers : List\<Answer>. Answer thứ i của bài làm ứng với câu thứ i của đề.
 - Answer.problem : MathProblem.
-- Friendship.sender, Friendship.receiver : Player.
 
 Thuộc tính dẫn xuất được viết thành phương thức nghiệp vụ (hàm Java thuần, có unit test):
 
@@ -459,18 +370,16 @@ Thuộc tính dẫn xuất được viết thành phương thức nghiệp vụ 
 | Match | getResult(playerId : int) : String | WIN / LOSE / DRAW: bỏ trận thì thua; một người đúng hết thì người đó thắng; cả 2 có câu sai thì hòa; cả 2 đúng hết thì ai nhanh hơn thắng |
 | Match | getPoints(playerId : int) : double | 1 / 0,5 / 0 |
 | Match | getOpponent(playerId : int) : MatchPlayer | Người chơi còn lại trong trận, dùng cho lịch sử đấu |
-| Friendship | getFriend(playerId : int) : Player | Người còn lại trong quan hệ bạn bè |
-| Friendship | canAccept(playerId : int) : boolean | Lời mời đang chờ và playerId là người nhận |
 
 Player giữ thêm các giá trị dẫn xuất mà giao diện cần hiển thị cùng tên: totalPoints, avgOpponentPoints, avgWinTime do server tính; status lấy từ Firebase. Các giá trị này không có cột trong CSDL.
 
 @lop-thuc-the-hung.png
 
-Hình 5: Biểu đồ lớp thực thể pha thiết kế cho Chơi online, Xem lịch sử đấu, Quản lý bạn bè.
+Hình 4: Biểu đồ lớp thực thể pha thiết kế cho Chơi online, Xem lịch sử đấu.
 
 - Không còn đường liên kết trơn nào trên biểu đồ.
 - Lớp liên kết MatchPlayer trở thành thành phần (hình thoi đặc) của Match và chứa Player (hình thoi rỗng); lớp liên kết Answer trở thành thành phần (hình thoi đặc) của MatchPlayer và chứa MathProblem (hình thoi rỗng).
-- Player, Challenge, Match, MatchPlayer, MathProblem, Answer, Friendship có ở cả app và server với cùng tên và cùng thuộc tính, để JSON đi qua REST ánh xạ thẳng vào đối tượng.
+- Player, Challenge, Match, MatchPlayer, MathProblem, Answer có ở cả app và server với cùng tên và cùng thuộc tính, để JSON đi qua REST ánh xạ thẳng vào đối tượng.
 - passwordHash chỉ có giá trị ở server; correctAnswer và bài làm từng câu của 2 người chỉ được gửi về app khi trận đã xong, để không ai biết trước đáp án hay xem được bài làm của đối thủ giữa trận.
 - Answer.problem không đi qua JSON. Answer thứ i ứng với câu thứ i của đề, nên bên nhận tự gắn lại câu hỏi vào bài làm.
 
@@ -490,7 +399,6 @@ Lớp View sang Activity
 | MatchResultView | Overlay layoutResult nằm trong MatchActivity | activity_match.xml |
 | HistoryView | HistoryActivity + PieChartView + MatchHistoryAdapter + RankingAdapter | activity_history.xml, item_match_history.xml, item_ranking.xml |
 | MatchDetailView | MatchDetailActivity + ProblemAdapter | activity_match_detail.xml, item_problem.xml |
-| FriendView | FriendActivity + FriendRequestAdapter + FriendAdapter | activity_friend.xml, item_friend_request.xml, item_friend.xml |
 
 OnlineView là Activity riêng, tách khỏi giao diện chính:
 - Người chơi chỉ online khi đang ở OnlineActivity hoặc một màn mở từ đó: onCreate gọi goOnline ghi node presence, onDestroy gọi goOffline xóa node. Nhấn Back về MainActivity là offline, nên người đang ở giao diện chính hay đang chơi với máy không hiện trong danh sách online và không bị thách đấu.
@@ -531,12 +439,6 @@ Phương thức của thực thể sang Activity hoặc DAO
 | getResult(), getPoints(), getFinishTime() | Match | Giữ nguyên như ở Chơi online | Match |
 | getRanking() | Player | getRanking() : List\<Player> → getRanking() : List\<Player><br>getRanking() : List\<Player>, rank(players : List\<Player>, matches : List\<Match>) : List\<Player>, findFinished() : List\<Match> | PlayerApiDAO → PlayerRestController<br>PlayerDAO, MatchDAO |
 | Đếm thắng / hòa / thua của HistoryView | HistoryView | showSummary(matches : List\<Match>) : void<br>setData(wins : int, draws : int, losses : int) : void | HistoryActivity<br>PieChartView |
-| getFriendships() | Friendship | loadFriendships() : void, showFriendships(list : List\<Friendship>) : void<br>getFriendships(playerId : int) : List\<Friendship> → getFriendships(playerId : int) : List\<Friendship><br>findByPlayer(playerId : int) : List\<Friendship>, getTotalPoints(playerId : int) : double | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>FriendshipDAO, PlayerDAO |
-| getOnlinePlayers() | Player | watchOnlinePlayers(callback : PlayerListCallback) : void<br>onPlayersChanged(players : List\<Player>) : void, setOnlineIds(onlineIds : Set\<Integer>) : void | PresenceFirebaseDAO<br>FriendActivity, FriendAdapter |
-| sendRequest() | Friendship | onClick(v : View) : void<br>sendRequest(senderId : int, receiverUsername : String) : Friendship → sendRequest(body : Map\<String, String>) : Friendship<br>findById(id : int) : Player, findByUsername(username : String) : Player<br>existsBetween(playerId1 : int, playerId2 : int) : boolean, insert(friendship : Friendship) : boolean | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>PlayerDAO<br>FriendshipDAO |
-| accept() | Friendship | onAccept(friendship : Friendship) : void<br>accept(friendshipId : int, playerId : int) : Friendship → accept(id : int, playerId : int) : Friendship<br>findById(id : int) : Friendship, updateStatus(id : int, status : String) : boolean | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>FriendshipDAO |
-| delete() | Friendship | onReject(friendship : Friendship) : void, onUnfriend(friendship : Friendship) : void<br>delete(friendshipId : int, playerId : int) : void → delete(id : int, playerId : int) : void<br>delete(path : String) : void<br>findById(id : int) : Friendship, delete(id : int) : boolean | FriendActivity<br>FriendshipApiDAO → FriendshipRestController<br>ApiDAO<br>FriendshipDAO |
-| canAccept(), getFriend() | Friendship | Giữ nguyên, thêm tham số playerId : int | Friendship |
 
 Ghi phương án đã chọn và thời gian làm từng câu là xử lý của giao diện: chooseOption của MatchActivity ghi vào một Answer, không phải phương thức của thực thể. Answer chỉ giữ bài làm một câu và luật isCorrect; luật so phương án với đáp án vẫn nằm ở MathProblem.isCorrect.
 
@@ -547,10 +449,10 @@ Mỗi nơi lưu trữ có một lớp DAO cha giữ kết nối dùng chung; cá
 | Nơi lưu trữ | DAO cha | Giữ | DAO con dùng ở đây |
 |---|---|---|---|
 | App → Firebase | FirebaseDAO | con : DatabaseReference | PresenceFirebaseDAO, ChallengeFirebaseDAO, MatchFirebaseDAO |
-| App → REST | ApiDAO | BASE_URL; gửi / nhận JSON | PlayerApiDAO, MatchApiDAO, FriendshipApiDAO |
-| Server → MySQL | DAO | conn : Connection | PlayerDAO, MatchDAO, FriendshipDAO |
+| App → REST | ApiDAO | BASE_URL; gửi / nhận JSON | PlayerApiDAO, MatchApiDAO |
+| Server → MySQL | DAO | conn : Connection | PlayerDAO, MatchDAO |
 
-ApiDAO có 3 hàm gửi yêu cầu: get, post và delete; delete dùng để từ chối lời mời và hủy kết bạn.
+ApiDAO có 2 hàm gửi yêu cầu dùng ở đây: get và post.
 
 Các lớp không có lớp cha:
 - SessionDAO chỉ đọc SharedPreferences.
@@ -563,7 +465,7 @@ Các lớp không có lớp cha:
 
 @giao-dien-uc03.png
 
-Hình 6: Thiết kế giao diện chức năng Chơi online.
+Hình 5: Thiết kế giao diện chức năng Chơi online.
 
 Chức năng có 3 màn, 1 hộp thoại lời mời và 1 overlay, đi theo thứ tự MainActivity → OnlineActivity → hộp thoại lời mời trên máy người được mời → MatchActivity → overlay layoutResult.
 - Màn chính chỉ để chọn chế độ chơi: chữ MATH DASH, lời chào "Xin chào, HUNG", 2 nút lớn Chơi với máy và Chơi online. Góc phải thanh trên là nút biểu tượng đăng xuất.
@@ -579,7 +481,7 @@ Chức năng có 3 màn, 1 hộp thoại lời mời và 1 overlay, đi theo th�
 - Làm xong 10 câu, hết giờ, đang nộp hay đã nộp thì 4 ô và phép tính ẩn đi, thẻ câu hỏi chỉ còn một dòng thông báo: "Đã làm xong 10 câu", "Hết giờ", "Đang nộp bài...", "Đã nộp bài, đang chờ đối thủ...".
 - Overlay kết quả che màn thi đấu. Bảng so sánh 2 cột (Bạn, đối thủ) giúp người chơi thấy vì sao thắng: đúng hết hay nhanh hơn.
 
-Thanh trên của các màn Chơi online, Lịch sử đấu, Chi tiết trận, Bạn bè cùng một kiểu: tiêu đề chữ lớn căn trái, các nút biểu tượng đặt ở góc phải.
+Thanh trên của các màn Chơi online, Lịch sử đấu, Chi tiết trận cùng một kiểu: tiêu đề chữ lớn căn trái, các nút biểu tượng đặt ở góc phải.
 
 Bảng thành phần:
 
@@ -591,6 +493,7 @@ Bảng thành phần:
 | | txtMyPoints | TextView | "12,5 điểm" | outMyInfo |
 | | rvPlayers | RecyclerView | Danh sách người chơi online, bấm một dòng để thách đấu | outsubListPlayer |
 | | txtEmpty | TextView | "Chưa có ai khác online"; chỉ hiện khi danh sách rỗng | outsubListPlayer |
+| | btnFriends | ImageButton | Biểu tượng hai người, mở giao diện bạn bè; contentDescription "Bạn bè" | subFriends |
 | item_player.xml | txtName | TextView | Tên người chơi | một dòng của outsubListPlayer |
 | | txtPoints | TextView | Tổng điểm | một dòng của outsubListPlayer |
 | | txtStatus | TextView | Rỗi (xanh) / Bận (xám) | một dòng của outsubListPlayer |
@@ -615,21 +518,21 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
 
 @lop-thiet-ke-uc03.png
 
-Hình 7: Biểu đồ lớp chi tiết chức năng Chơi online.
+Hình 6: Biểu đồ lớp chi tiết chức năng Chơi online.
 
 Package "Client (Android)".
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
 | Boundary | MainActivity | Màn chính, cài đặt View.OnClickListener. Giữ người chơi đang đăng nhập (me) để ghi lời chào vào txtMyName. onClick của btnPlayOnline mở OnlineActivity; btnPlayBot mở DifficultyActivity của chức năng Chơi với máy; btnLogout gọi logout: SessionDAO.clear rồi mở LoginActivity |
-| Boundary | OnlineActivity | Màn Chơi online, cài đặt View.OnClickListener, PlayerListCallback và ChallengeCallback. Giữ người chơi đang đăng nhập (me), lời mời mình đã gửi và đang chờ trả lời (sentChallenge), id các lời mời tới mình đã hiện hộp thoại (shownChallenges), hộp thoại chờ (waitingDialog).<br>- onCreate gọi bindViews, lấy me bằng SessionDAO.getPlayer, gọi goOnline, rồi watchOnlinePlayers và watchIncoming, truyền chính nó (this) làm callback.<br>- goOnline gọi PlayerApiDAO.getById trong Thread để có tổng điểm mới, xong thì gọi PresenceFirebaseDAO.goOnline.<br>- onPlayersChanged hiện thông tin của mình, đưa những người còn lại vào PlayerAdapter, danh sách rỗng thì hiện txtEmpty.<br>- onPlayerClick: đối thủ bận thì hiện Toast; đã có sentChallenge thì bỏ qua; ngược lại sendChallenge, watchChallenge rồi showWaitingDialog hiện hộp thoại chờ có nút Hủy.<br>- onChallengeChanged: lời mời tới mình chưa có trong shownChallenges thì showChallengeDialog; lời mình gửi được đồng ý thì closeSentChallenge rồi openMatch(challenge.getMatchId()); bị từ chối thì closeSentChallenge và hiện Toast.<br>- closeSentChallenge gọi ChallengeFirebaseDAO.stopWatchingSent, xóa sentChallenge và đóng hộp thoại chờ.<br>- acceptChallenge gọi MatchApiDAO.createMatch trong Thread, xong thì openMatch. Nút Từ chối gọi ChallengeFirebaseDAO.rejectChallenge.<br>- onClick của 3 nút biểu tượng mở FriendActivity hoặc HistoryActivity, mô tả ở chức năng Xem lịch sử đấu và Quản lý bạn bè.<br>- onDestroy gọi stopWatching của PresenceFirebaseDAO và ChallengeFirebaseDAO rồi PresenceFirebaseDAO.goOffline: rời màn này là offline |
+| Boundary | OnlineActivity | Màn Chơi online, cài đặt View.OnClickListener, PlayerListCallback và ChallengeCallback. Giữ người chơi đang đăng nhập (me), lời mời mình đã gửi và đang chờ trả lời (sentChallenge), id các lời mời tới mình đã hiện hộp thoại (shownChallenges), hộp thoại chờ (waitingDialog).<br>- onCreate gọi bindViews, lấy me bằng SessionDAO.getPlayer, gọi goOnline, rồi watchOnlinePlayers và watchIncoming, truyền chính nó (this) làm callback.<br>- goOnline gọi PlayerApiDAO.getById trong Thread để có tổng điểm mới, xong thì gọi PresenceFirebaseDAO.goOnline.<br>- onPlayersChanged hiện thông tin của mình, đưa những người còn lại vào PlayerAdapter, danh sách rỗng thì hiện txtEmpty.<br>- onPlayerClick: đối thủ bận thì hiện Toast; đã có sentChallenge thì bỏ qua; ngược lại sendChallenge, watchChallenge rồi showWaitingDialog hiện hộp thoại chờ có nút Hủy.<br>- onChallengeChanged: lời mời tới mình chưa có trong shownChallenges thì showChallengeDialog; lời mình gửi được đồng ý thì closeSentChallenge rồi openMatch(challenge.getMatchId()); bị từ chối thì closeSentChallenge và hiện Toast.<br>- closeSentChallenge gọi ChallengeFirebaseDAO.stopWatchingSent, xóa sentChallenge và đóng hộp thoại chờ.<br>- acceptChallenge gọi MatchApiDAO.createMatch trong Thread, xong thì openMatch. Nút Từ chối gọi ChallengeFirebaseDAO.rejectChallenge.<br>- onClick của btnFriends mở giao diện bạn bè; btnHistory, btnRanking mở HistoryActivity, mô tả ở chức năng Xem lịch sử đấu.<br>- onDestroy gọi stopWatching của PresenceFirebaseDAO và ChallengeFirebaseDAO rồi PresenceFirebaseDAO.goOffline: rời màn này là offline |
 | Boundary | PlayerAdapter, PlayerViewHolder | PlayerAdapter kế thừa RecyclerView.Adapter, giữ danh sách Player và OnlineActivity chứa nó. setPlayers thay danh sách và vẽ lại. onClick của một dòng gọi OnlineActivity.onPlayerClick. PlayerViewHolder giữ 3 TextView của một dòng |
 | Boundary | MatchActivity | Màn thi đấu, cài đặt View.OnClickListener, MatchCallback và PlayerListCallback. Giữ me, mã trận (matchId, nhận qua Intent với khóa EXTRA_MATCH_ID), id đối thủ (opponentId), đồng hồ (timer, MATCH_MILLIS = 60 giây), đề (questions : List\<MathProblem>), bài làm (answers : List\<Answer>), chỉ số câu đang hiện (current) và thời điểm câu đó hiện ra (shownAt). 4 ô phương án gom thành mảng btnOptions : Button[4]; LETTERS giữ 4 chữ A, B, C, D. 6 cờ started, submitted, resultLoading, resultShown, opponentLeft, leaving chặn gọi lặp, vì onSuccess được gọi lại mỗi lần node trận thay đổi.<br>- onCreate gọi MatchFirebaseDAO.watchMatch, truyền chính nó làm MatchCallback.<br>- Lần đầu nhận trận có đề, onSuccess gọi startMatch: lưu opponentId bằng opponentOf, lấy đề vào questions, tạo 10 Answer rỗng, gọi showQuestion, createTimer rồi start, gọi PresenceFirebaseDAO.watchOnlinePlayers với chính nó làm PlayerListCallback.<br>- showQuestion hiện câu thứ current: số thứ tự "Câu 3/10", phép tính và chữ của 4 ô (optionText ghép chữ cái nhỏ với giá trị lớn), bật lại 4 ô và ghi shownAt = SystemClock.elapsedRealtime(). Khi current đã qua câu cuối thì showMessage "Đã làm xong 10 câu" và hiện btnSubmit.<br>- onClick của một ô gọi chooseOption(index): ghi giá trị phương án vào selectedOption và thời gian từ shownAt vào answerTime của answers[current], khóa 4 ô, làm mờ 3 ô không chọn, tăng current rồi sau NEXT_DELAY = 200 ms gọi lại showQuestion. Khóa 4 ô trong lúc chờ để bấm đúp không trả lời nhầm câu sau.<br>- showMessage ẩn 4 ô và phép tính, ghi thông báo vào txtProgress.<br>- onTick vẽ thời gian; onFinish showMessage "Hết giờ" rồi gọi submitAnswers; câu chưa làm giữ selectedOption = −1.<br>- submitAnswers (nút Nộp bài hoặc hết giờ) showMessage "Đang nộp bài...", gọi MatchApiDAO.submit(matchId, me.getId(), answers) trong Thread. Thành công thì onSubmitted hủy đồng hồ, ẩn btnSubmit, showMessage "Đã nộp bài, đang chờ đối thủ..."; lỗi thì onSubmitFailed hiện lại btnSubmit để nộp lại.<br>- Mỗi lần onSuccess gọi showOpponentStatus; trận đã xong thì loadResult gọi MatchApiDAO.getById rồi showResult.<br>- showResult dùng Match.getResult cho showResultTitle; showScores dùng getFinishTime, getPoints trên bản trận server trả về. mineOf, opponentOf tìm MatchPlayer của mình và của đối thủ.<br>- Nút Chơi tiếp / Dừng gọi sendChoice (MatchApiDAO.continueMatch). onNextMatch gọi openNextMatch: stopWatching trận cũ rồi mở trận mới. onStopped hiện Toast và đóng màn thi đấu, quay về màn Chơi online.<br>- Nút Thoát và onBackPressed gọi confirmLeave hỏi xác nhận rồi gọi leaveMatch (MatchApiDAO.forfeit).<br>- onPlayersChanged: khi trận đang đấu mà đối thủ biến khỏi danh sách online (mất kết nối), gọi forfeit(opponentId) thay cho đối thủ.<br>- onDestroy hủy đồng hồ, gọi stopWatching của MatchFirebaseDAO và PresenceFirebaseDAO.<br>Activity không tự chấm bài, không tự phân thắng thua |
 | Control | SessionDAO | Giữ prefs : SharedPreferences "session". getPlayer() đọc playerId, username, displayName và đóng gói thành Player. clear() xóa phiên khi đăng xuất |
 | Control | FirebaseDAO ← PresenceFirebaseDAO | FirebaseDAO giữ con (gốc Realtime Database). PresenceFirebaseDAO đọc / ghi node presence:<br>- goOnline ghi tên, tổng điểm, trạng thái free và đăng ký onDisconnect().removeValue(). goOffline xóa node của mình.<br>- watchOnlinePlayers / stopWatching thêm / gỡ ValueEventListener, giữ listener đang đăng ký trong watcher để gỡ đúng listener.<br>- toPlayer đóng gói một node thành Player. presenceRef trả node presence |
 | Control | FirebaseDAO ← ChallengeFirebaseDAO | Đọc / ghi node challenges:<br>- sendChallenge tạo node bằng push().<br>- watchIncoming lọc lời mời có opponentId là mình và status pending; giữ incomingQuery, incomingWatcher.<br>- watchChallenge theo dõi một lời mời đã gửi; giữ sentRef, sentWatcher.<br>- stopWatchingSent chỉ gỡ theo dõi lời mời đã gửi; stopWatching gỡ cả 2.<br>- rejectChallenge ghi status rejected.<br>- toChallenge đóng gói thành Challenge, dùng toPlayer cho người mời và người được mời. challengesRef trả node challenges |
 | Control | FirebaseDAO ← MatchFirebaseDAO | Chỉ đọc node matches/{matchId}; giữ matchRef và watcher để stopWatching gỡ đúng listener. toMatch đóng gói thành Match kèm 10 MathProblem (toProblem, không có đáp án) và 2 MatchPlayer (toMatchPlayer). Khi node có nextMatchId thì gọi onNextMatch; có stoppedBy thì gọi onStopped; còn lại gọi onSuccess. Mất kết nối thì gọi onFail với câu NETWORK_ERROR |
-| — | PlayerListCallback, ChallengeCallback, MatchCallback | Interface trả kết quả bất đồng bộ từ các FirebaseDAO về Activity. FirebaseDAO chỉ phụ thuộc vào interface, không biết Activity cụ thể; Activity truyền chính nó (this) khi gọi hàm watch... Nhờ vậy PresenceFirebaseDAO dùng chung cho OnlineActivity, MatchActivity và FriendActivity |
+| — | PlayerListCallback, ChallengeCallback, MatchCallback | Interface trả kết quả bất đồng bộ từ các FirebaseDAO về Activity. FirebaseDAO chỉ phụ thuộc vào interface, không biết Activity cụ thể; Activity truyền chính nó (this) khi gọi hàm watch... Nhờ vậy PresenceFirebaseDAO dùng chung cho OnlineActivity và MatchActivity |
 | Control | ApiDAO ← PlayerApiDAO | getById gửi GET /api/players/{id}; toPlayer đóng gói JSON thành Player. Hàm chạy đồng bộ nên phải gọi trong Thread |
 | Control | ApiDAO ← MatchApiDAO | ApiDAO giữ BASE_URL, câu báo lỗi mạng NETWORK_ERROR và các hàm gửi / nhận JSON bằng HttpURLConnection. 3 hàm riêng: open mở kết nối, readGet gửi GET, read đọc phản hồi và ném IOException kèm câu thông báo của server khi mã ≥ 400. MatchApiDAO có 5 hàm, mỗi hàm một API:<br>- createMatch: POST /api/matches.<br>- submit(matchId, playerId, answers): POST /api/matches/{id}/submit, thân gồm id người chơi và 10 bài làm, mỗi bài làm có selectedOption, answerTime.<br>- forfeit: POST /api/matches/{id}/forfeit.<br>- continueMatch: POST /api/matches/{id}/continue.<br>- getById: GET /api/matches/{id}.<br>toMatch đóng gói JSON trả về thành Match, dùng toProblem cho từng câu hỏi và toMatchPlayer cho từng người chơi trong trận; toMatchPlayer gọi toAnswers đóng gói bài làm, gắn câu thứ i của đề vào bài làm thứ i |
 | Entity | Player, Challenge, Match, MatchPlayer, Answer, MathProblem | Như thiết kế lớp thực thể. Answer là bài làm một câu: phương án đã chọn (selectedOption, NONE = −1 khi bỏ trống), thời gian làm câu (answerTime, mili giây) và câu hỏi tương ứng (problem). Các phương thức nghiệp vụ là hàm Java thuần, có unit test:<br>- MathProblem: isCorrect, getExpression.<br>- Answer: isAnswered, isCorrect.<br>- Match: countCorrect, isOver, getFinishTime, getResult, getPoints |
@@ -711,7 +614,7 @@ Firebase không phải một lớp trên biểu đồ: các FirebaseDAO ở app 
 
 @tuan-tu-thiet-ke-uc03a.png
 
-Hình 8: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.
+Hình 7: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.
 
 - Biểu đồ có 43 thông điệp.
 - MainActivity chỉ là điểm vào: nút Chơi online mở OnlineActivity (bước 1–2). Mọi việc của chức năng này, từ danh sách online tới lời mời, nằm ở OnlineActivity.
@@ -765,7 +668,7 @@ Hình 8: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn 
 
 @tuan-tu-thiet-ke-uc03b.png
 
-Hình 9: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.
+Hình 8: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.
 
 - Biểu đồ có 35 thông điệp.
 - Server sinh đề (bước 19–22) và lưu đề vào MySQL cùng trận (bước 23–25), vì server cần đáp án để chấm bài sau này.
@@ -883,7 +786,7 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 
 @tuan-tu-thiet-ke-uc03c.png
 
-Hình 10: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.
+Hình 9: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.
 
 - Biểu đồ có 99 thông điệp.
 - Bước 2 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở đoạn A.
@@ -935,7 +838,7 @@ Hình 10: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn
 
 @tuan-tu-thiet-ke-uc03d.png
 
-Hình 11: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.
+Hình 10: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.
 
 - Biểu đồ có 30 thông điệp, vẽ cho người chọn chơi tiếp trước.
 - Hàm continueMatch() chạy tuần tự (synchronized). Nếu 2 yêu cầu chơi tiếp đến cùng lúc, chỉ yêu cầu đến sau tạo trận mới, nên không sinh 2 trận.
@@ -948,7 +851,7 @@ Hình 11: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn
 
 @giao-dien-uc04.png
 
-Hình 12: Thiết kế giao diện chức năng Xem lịch sử đấu.
+Hình 11: Thiết kế giao diện chức năng Xem lịch sử đấu.
 
 Chức năng đi từ màn Chơi online: biểu tượng đồng hồ mở màn Lịch sử đấu ở thẻ Trận của tôi, biểu tượng bảng xếp hạng ở góc phải ngoài cùng mở thẳng thẻ Bảng xếp hạng. Màn Lịch sử đấu có thanh trên với tiêu đề LỊCH SỬ ĐẤU căn trái, dưới là 2 thẻ.
 - Thẻ Trận của tôi mở sẵn khi vào từ biểu tượng Lịch sử đấu. Trên cùng là thẻ tóm tắt: biểu đồ tròn dạng vành khuyên bên trái, giữa ghi tỉ lệ thắng to; chú giải 3 màu và tổng số trận bên phải. Người chơi thấy ngay phong độ của mình trước khi đọc từng trận.
@@ -957,7 +860,7 @@ Chức năng đi từ màn Chơi online: biểu tượng đồng hồ mở màn 
 
 @giao-dien-uc04b.png
 
-Hình 13: Thiết kế giao diện chi tiết trận.
+Hình 12: Thiết kế giao diện chi tiết trận.
 
 Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn trái, nội dung đi từ tổng quát tới chi tiết:
 - Trên cùng là số trận kèm thời điểm kết thúc, kết quả và điểm trận chữ to.
@@ -1002,7 +905,7 @@ Bảng thành phần:
 
 @lop-thiet-ke-uc04.png
 
-Hình 14: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.
+Hình 13: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.
 
 Package "Client (Android)".
 
@@ -1124,7 +1027,7 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 
 @tuan-tu-thiet-ke-uc04a.png
 
-Hình 15: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.
+Hình 14: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.
 
 - Biểu đồ có 74 thông điệp.
 - Bước 3–4 và 32–33 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
@@ -1176,7 +1079,7 @@ Hình 15: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấ
 
 @tuan-tu-thiet-ke-uc04b.png
 
-Hình 16: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.
+Hình 15: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.
 
 - Biểu đồ có 37 thông điệp.
 - Bước 4 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
@@ -1186,200 +1089,6 @@ Hình 16: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấ
 - rank() là hàm static, không truy cập CSDL: nhận danh sách người chơi và danh sách trận đã đọc ở bước 12–18 rồi chỉ tính toán, nên kiểm thử được bằng unit test.
 - Bảng xếp hạng là một thẻ của HistoryActivity nên không cần Activity riêng; chỉ lần chọn thẻ đầu tiên mới gọi server, các lần sau dùng lại danh sách đã tải.
 
-### 4.3. Chức năng "Quản lý bạn bè"
-
-#### 4.3.1. Thiết kế giao diện
-
-@giao-dien-uc07.png
-
-Hình 17: Thiết kế giao diện chức năng Quản lý bạn bè.
-
-Chức năng có 1 màn và 1 hộp thoại xác nhận, đi theo thứ tự OnlineActivity → FriendActivity → hộp thoại "Hủy kết bạn với <tên>?" khi nhấn ×.
-- Màn Chơi online có nút biểu tượng hai người ở góc phải thanh trên, đứng đầu trong 3 nút biểu tượng, mở màn Bạn bè.
-- Màn Bạn bè có thanh trên với tiêu đề BẠN BÈ căn trái, bên dưới chia 3 phần từ trên xuống:
-  1. Hàng nhập: ô tên đăng nhập chiếm phần lớn chiều ngang, nút Kết bạn bên phải. Gửi xong thì ô được xóa trống để gửi tiếp.
-  2. Mục "Lời mời kết bạn (n)": chỉ hiện khi có lời mời đã nhận, đặt trên cùng để người chơi thấy ngay. Mỗi dòng có tên người gửi, nút Đồng ý nổi bật, nút Từ chối viền mảnh để tránh bấm nhầm.
-  3. Mục "Bạn bè (n)": danh sách cuộn. Mỗi dòng có chấm xanh (Online) hoặc xám (Offline) bên trái, tên chữ đậm, dòng dưới là tổng điểm và chữ Online / Offline, nút × bên phải. Lời mời mình đã gửi nằm cuối, chữ nghiêng màu xám "Đang chờ trả lời". Chưa có ai thì hiện "Chưa có bạn bè".
-- Nút × là nút biểu tượng nên có mô tả "Hủy kết bạn" cho trình đọc màn hình. Hủy kết bạn luôn hỏi xác nhận vì không hoàn tác được.
-
-Bảng thành phần:
-
-| Màn | id trong layout | Loại View | Chức năng | Tên ở pha phân tích |
-|---|---|---|---|---|
-| OnlineActivity | btnFriends | ImageButton | Biểu tượng hai người, mở màn Bạn bè; contentDescription "Bạn bè" | subFriends |
-| FriendActivity | edtUsername | EditText | Ô nhập tên đăng nhập người muốn kết bạn | inUsername |
-| | btnAddFriend | Button | Kết bạn | subAddFriend |
-| | txtRequestsTitle | TextView | "Lời mời kết bạn (1)"; ẩn khi không có lời mời | outsubListRequest |
-| | rvRequests | RecyclerView | Danh sách lời mời đã nhận | outsubListRequest |
-| | txtFriendsTitle | TextView | "Bạn bè (3)" | outsubListFriend |
-| | txtEmpty | TextView | "Chưa có bạn bè"; chỉ hiện khi danh sách trống | outsubListFriend |
-| | rvFriends | RecyclerView | Danh sách bạn bè và lời mời đã gửi | outsubListFriend |
-| item_friend_request.xml | txtName | TextView | Tên người gửi | một dòng của outsubListRequest |
-| | btnAccept | Button | Đồng ý | một dòng của outsubListRequest |
-| | btnReject | Button | Từ chối | một dòng của outsubListRequest |
-| item_friend.xml | viewOnlineDot | View | Chấm tròn xanh / xám | một dòng của outsubListFriend |
-| | txtName | TextView | Tên người bạn | một dòng của outsubListFriend |
-| | txtPoints | TextView | "15 điểm"; lời mời đã gửi thì để trống | một dòng của outsubListFriend |
-| | txtStatus | TextView | Online / Offline / Đang chờ trả lời | một dòng của outsubListFriend |
-| | btnUnfriend | ImageButton | Hủy kết bạn hoặc rút lời mời, contentDescription "Hủy kết bạn" | một dòng của outsubListFriend |
-
-Các thông báo ngắn ("Đã gửi lời mời kết bạn tới HOANG", "Không tìm thấy người chơi", "Lời mời không còn"…) dùng Toast. Hộp thoại "Hủy kết bạn với TUAN?" dùng AlertDialog. Cả hai đều không phải thành phần của layout.
-
-#### 4.3.2. Biểu đồ lớp chi tiết
-
-@lop-thiet-ke-uc07.png
-
-Hình 18: Biểu đồ lớp chi tiết chức năng Quản lý bạn bè.
-
-Package "Client (Android)".
-
-| Loại | Lớp | Mô tả |
-|---|---|---|
-| Boundary | OnlineActivity | onClick của btnFriends mở FriendActivity |
-| Boundary | FriendActivity | Màn Bạn bè, cài đặt View.OnClickListener và PlayerListCallback; giữ người chơi đang đăng nhập (me), các lời mời đã nhận (requests), bạn bè và lời mời đã gửi (friends), id những người đang online (onlineIds).<br>- onCreate lấy me bằng SessionDAO.getPlayer, gọi bindViews (gắn các View, tạo FriendRequestAdapter cho rvRequests và FriendAdapter cho rvFriends, gắn sự kiện nút Kết bạn), gọi PresenceFirebaseDAO.watchOnlinePlayers rồi loadFriendships.<br>- loadFriendships gọi FriendshipApiDAO.getFriendships trong Thread, rồi trong runOnUiThread gọi showFriendships.<br>- showFriendships dùng Friendship.canAccept để tách lời mời mình cần trả lời vào requests, phần còn lại vào friends, rồi đưa vào 2 Adapter.<br>- onPlayersChanged lấy id những người đang online vào onlineIds và gọi FriendAdapter.setOnlineIds.<br>- onClick của nút Kết bạn kiểm tra ô không trống, gọi FriendshipApiDAO.sendRequest trong Thread, thêm lời mời vào cuối friends và hiện Toast.<br>- onAccept gọi FriendshipApiDAO.accept, chuyển quan hệ từ requests sang friends. onReject và onUnfriend (sau khi hỏi xác nhận) cùng gọi deleteFriendship, hàm này gọi FriendshipApiDAO.delete rồi bỏ quan hệ khỏi 2 danh sách.<br>- refreshTitles cập nhật số lời mời, số bạn và dòng "Chưa có bạn bè"; enableAddButton bật lại nút Kết bạn khi gửi lỗi.<br>- onDestroy gọi PresenceFirebaseDAO.stopWatching.<br>Lỗi server (không tìm thấy, đã có quan hệ, lời mời không còn) hiện bằng showToast: hàm này hiện Toast trong runOnUiThread với câu thông báo server trả về, gọi được từ Thread |
-| Boundary | FriendRequestAdapter, FriendRequestViewHolder | FriendRequestAdapter kế thừa RecyclerView.Adapter, giữ danh sách Friendship đã nhận. setFriendships thay danh sách và vẽ lại. onBindViewHolder hiện tên người gửi (sender); nút Đồng ý gọi FriendActivity.onAccept, nút Từ chối gọi FriendActivity.onReject. FriendRequestViewHolder giữ txtName, btnAccept, btnReject |
-| Boundary | FriendAdapter, FriendViewHolder | FriendAdapter giữ danh sách Friendship, id của người xem (playerId) và onlineIds. onBindViewHolder lấy người bạn bằng Friendship.getFriend(playerId):<br>- Quan hệ accepted: hiện tổng điểm, chấm xanh và Online nếu id người bạn có trong onlineIds, ngược lại chấm xám và Offline.<br>- Lời mời pending mình đã gửi: hiện "Đang chờ trả lời".<br>Nút × gọi FriendActivity.onUnfriend. setOnlineIds chỉ vẽ lại trạng thái, không gọi server. FriendViewHolder giữ viewOnlineDot, txtName, txtPoints, txtStatus, btnUnfriend |
-| — | PlayerListCallback | Interface trả danh sách người chơi online từ PresenceFirebaseDAO về FriendActivity; dùng chung với Chơi online |
-| Control | SessionDAO | Như ở Chơi online |
-| Control | FirebaseDAO ← PresenceFirebaseDAO | Như ở Chơi online. Chức năng này chỉ đọc node presence qua watchOnlinePlayers, stopWatching; không ghi gì lên Firebase |
-| Control | ApiDAO ← FriendshipApiDAO | ApiDAO có thêm delete(path) gửi yêu cầu DELETE. FriendshipApiDAO có 4 hàm, mỗi hàm một API:<br>- getFriendships: GET /api/friendships?playerId={id}.<br>- sendRequest: POST /api/friendships, thân gồm senderId và receiverUsername.<br>- accept: POST /api/friendships/{id}/accept?playerId={id}.<br>- delete: DELETE /api/friendships/{id}?playerId={id}.<br>toFriendship đóng gói JSON thành Friendship, dùng toPlayer cho người gửi và người nhận |
-| Entity | Friendship, Player | Như thiết kế lớp thực thể. Friendship có 2 phương thức nghiệp vụ là hàm Java thuần:<br>- getFriend(playerId): người còn lại trong quan hệ.<br>- canAccept(playerId): lời mời đang chờ và playerId là người nhận |
-
-Package "Server (Spring Boot)".
-
-| Loại | Lớp | Mô tả |
-|---|---|---|
-| Boundary | FriendshipRestController | - getFriendships(playerId) nhận GET /api/friendships: FriendshipDAO.findByPlayer, rồi gán tổng điểm cho người gửi và người nhận bằng PlayerDAO.getTotalPoints.<br>- sendRequest(body) nhận POST /api/friendships:<br>  1. PlayerDAO.findById lấy người gửi; PlayerDAO.findByUsername tìm người nhận, không có thì trả 404 "Không tìm thấy người chơi".<br>  2. Người nhận là người gửi thì trả 400 "Không thể kết bạn với chính mình".<br>  3. FriendshipDAO.existsBetween đúng thì trả 409 "Đã có lời mời hoặc đã là bạn bè".<br>  4. Tạo Friendship pending, FriendshipDAO.insert, trả 201 kèm lời mời.<br>- accept(id, playerId): FriendshipDAO.findById, không có thì trả 404 "Lời mời không còn"; Friendship.canAccept sai thì trả 403; đúng thì updateStatus accepted, gán tổng điểm và trả quan hệ.<br>- delete(id, playerId): FriendshipDAO.findById; playerId không phải người gửi hay người nhận thì trả 403; ngược lại FriendshipDAO.delete, trả 204.<br>Các hàm riêng: findFriendship gọi FriendshipDAO.findById, không có thì trả 404 "Lời mời không còn"; parseId đọc senderId, sai định dạng thì trả 400 |
-| Control | DAO ← FriendshipDAO | DAO giữ conn : Connection (JDBC). FriendshipDAO giữ câu SELECT dùng chung cho findByPlayer, findById.<br>- findByPlayer truy vấn tblFriendship có tblPlayerSenderId hoặc tblPlayerReceiverId bằng playerId, JOIN tblPlayer 2 lần để có người gửi và người nhận.<br>- findById đọc một quan hệ theo id, cùng cách JOIN.<br>- existsBetween kiểm tra có dòng nào giữa 2 người theo cả 2 chiều.<br>- insert ghi 1 dòng tblFriendship, gán id vừa sinh.<br>- updateStatus ghi status, chỉ khi dòng đang pending.<br>- delete xóa 1 dòng theo id.<br>- toFriendship đóng gói một dòng kết quả thành Friendship kèm 2 Player |
-| Control | DAO ← PlayerDAO | findById, findByUsername đọc tblPlayer; getTotalPoints như ở Chơi online. Cả 3 hàm thuộc phần chung, chức năng này chỉ gọi lại |
-| Entity | Friendship, Player | Cùng tên, cùng thuộc tính với phía app, để Jackson chuyển JSON thẳng vào đối tượng. passwordHash của Player không bao giờ trả ra JSON |
-
-Quan hệ giữa các lớp giao diện:
-- OnlineActivity – FriendActivity, FriendActivity – FriendRequestAdapter – FriendRequestViewHolder, FriendActivity – FriendAdapter – FriendViewHolder nối nhau bằng quan hệ liên kết.
-- Layout: OnlineActivity – activity_online.xml, FriendActivity – activity_friend.xml, FriendRequestViewHolder – item_friend_request.xml, FriendViewHolder – item_friend.xml.
-- FriendActivity thực thi interface PlayerListCallback.
-- Kết tập:
-  - FriendActivity chứa người chơi trong thuộc tính me, nên Player kết tập vào FriendActivity.
-  - FriendActivity, FriendRequestAdapter, FriendAdapter chứa danh sách Friendship, bội số n ở phía Friendship.
-  - Friendship chứa 2 Player ở vai trò sender và receiver, ở cả 2 package.
-
-Quan hệ liên kết HTTP/JSON giữa 2 package có 1 cặp: FriendshipApiDAO – FriendshipRestController.
-
-Trạng thái online của bạn bè đi qua Firebase, không đi qua server: PresenceFirebaseDAO đọc cùng node presence mà OnlineActivity đã ghi. Một người bạn hiện Online khi người đó đang ở màn Chơi online hoặc một màn mở từ đó.
-
-#### 4.3.3. Biểu đồ tuần tự chi tiết
-
-Đoạn A: Gửi lời mời kết bạn
-
-1. Người chơi nhấn biểu tượng Bạn bè trên OnlineActivity.
-2. Hàm onClick() của OnlineActivity gọi hàm startActivity() mở FriendActivity.
-3. Hàm onCreate() của FriendActivity gọi hàm getPlayer() của SessionDAO.
-4. Hàm getPlayer() gọi lớp Player để đóng gói người chơi đang đăng nhập.
-5. Lớp Player trả đối tượng Player cho hàm getPlayer().
-6. Hàm getPlayer() trả đối tượng Player cho hàm onCreate().
-7. Hàm onCreate() gọi hàm watchOnlinePlayers() của PresenceFirebaseDAO, truyền chính FriendActivity làm PlayerListCallback, để theo dõi danh sách người chơi online.
-8. Hàm onCreate() gọi hàm loadFriendships() của chính nó.
-9. Hàm loadFriendships() mở một Thread và gọi hàm getFriendships() của FriendshipApiDAO.
-10. FriendshipApiDAO gửi yêu cầu GET /api/friendships?playerId={id} tới hàm getFriendships() của FriendshipRestController.
-11. Hàm getFriendships() của FriendshipRestController gọi hàm findByPlayer() của FriendshipDAO.
-12. Hàm findByPlayer() truy vấn bảng tblFriendship nối với tblPlayer, và gọi lớp Friendship để đóng gói từng quan hệ kèm người gửi, người nhận.
-13. Lớp Friendship trả đối tượng Friendship cho hàm findByPlayer().
-14. Hàm findByPlayer() trả danh sách Friendship cho hàm getFriendships().
-15. Với mỗi người gửi và người nhận, hàm getFriendships() gọi hàm getTotalPoints() của PlayerDAO.
-16. Hàm getTotalPoints() trả tổng điểm cho hàm getFriendships().
-17. Hàm getFriendships() trả danh sách quan hệ dạng JSON cho FriendshipApiDAO.
-18. Với mỗi phần tử JSON, hàm toFriendship() của FriendshipApiDAO gọi lớp Friendship để đóng gói.
-19. Lớp Friendship trả đối tượng Friendship cho FriendshipApiDAO.
-20. FriendshipApiDAO trả danh sách Friendship cho hàm loadFriendships().
-21. Trong hàm runOnUiThread(), hàm loadFriendships() gọi hàm showFriendships() của chính nó.
-22. Với mỗi quan hệ, hàm showFriendships() gọi hàm canAccept() của Friendship để biết đó có phải lời mời người chơi cần trả lời không.
-23. Friendship trả kết quả kiểm tra cho hàm showFriendships().
-24. Hàm showFriendships() gọi hàm setFriendships() của FriendRequestAdapter với các lời mời đã nhận.
-25. FriendRequestAdapter hiển thị danh sách lời mời đã nhận cho người chơi.
-26. Hàm showFriendships() gọi hàm setFriendships() của FriendAdapter với các bạn bè và lời mời đã gửi.
-27. Với mỗi quan hệ, hàm onBindViewHolder() của FriendAdapter gọi hàm getFriend() của Friendship.
-28. Friendship trả đối tượng Player của người bạn cho FriendAdapter.
-29. FriendAdapter hiển thị danh sách bạn bè gồm tên, tổng điểm hoặc dòng đang chờ trả lời.
-30. Khi danh sách online thay đổi, hàm onDataChange() của PresenceFirebaseDAO gọi hàm toPlayer() cho từng người chơi.
-31. Hàm toPlayer() gọi lớp Player để đóng gói người chơi kèm trạng thái.
-32. Lớp Player trả đối tượng Player cho hàm toPlayer().
-33. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 7, chính là FriendActivity, truyền danh sách người chơi online.
-34. Hàm onPlayersChanged() lấy id những người đang online và gọi hàm setOnlineIds() của FriendAdapter.
-35. FriendAdapter hiển thị trạng thái Online / Offline của từng người bạn.
-36. Người chơi nhập tên đăng nhập của một người và nhấn nút Kết bạn.
-37. Hàm onClick() của FriendActivity mở một Thread và gọi hàm sendRequest() của FriendshipApiDAO.
-38. FriendshipApiDAO gửi yêu cầu POST /api/friendships tới hàm sendRequest() của FriendshipRestController.
-39. Hàm sendRequest() gọi hàm findById() của PlayerDAO để lấy người gửi.
-40. Hàm findById() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
-41. Lớp Player trả đối tượng Player cho hàm findById().
-42. Hàm findById() trả đối tượng Player cho hàm sendRequest().
-43. Hàm sendRequest() gọi hàm findByUsername() của PlayerDAO để tìm người nhận theo tên đăng nhập.
-44. Hàm findByUsername() truy vấn bảng tblPlayer và gọi lớp Player để đóng gói kết quả.
-45. Lớp Player trả đối tượng Player cho hàm findByUsername().
-46. Hàm findByUsername() trả đối tượng Player cho hàm sendRequest().
-47. Hàm sendRequest() gọi hàm existsBetween() của FriendshipDAO để kiểm tra giữa 2 người đã có quan hệ chưa.
-48. Hàm existsBetween() trả về chưa có quan hệ cho hàm sendRequest().
-49. Hàm sendRequest() gọi lớp Friendship để tạo lời mời đang chờ với người gửi, người nhận.
-50. Lớp Friendship trả đối tượng Friendship cho hàm sendRequest().
-51. Hàm sendRequest() gọi hàm insert() của FriendshipDAO.
-52. Hàm insert() ghi 1 dòng vào bảng tblFriendship, gán id vừa sinh và trả về thành công.
-53. Hàm sendRequest() gọi hàm getTotalPoints() của PlayerDAO cho người nhận.
-54. Hàm getTotalPoints() trả tổng điểm cho hàm sendRequest().
-55. Hàm sendRequest() trả lời mời dạng JSON cho FriendshipApiDAO.
-56. Hàm toFriendship() của FriendshipApiDAO gọi lớp Friendship để đóng gói dữ liệu JSON.
-57. Lớp Friendship trả đối tượng Friendship cho FriendshipApiDAO.
-58. FriendshipApiDAO trả đối tượng Friendship cho hàm onClick().
-59. Trong hàm runOnUiThread(), hàm onClick() thêm lời mời vào cuối danh sách bạn bè và gọi hàm setFriendships() của FriendAdapter.
-60. FriendAdapter hiển thị dòng người nhận với trạng thái đang chờ trả lời; FriendActivity hiển thị thông báo đã gửi lời mời.
-
-@tuan-tu-thiet-ke-uc07a.png
-
-Hình 19: Biểu đồ tuần tự chi tiết chức năng Quản lý bạn bè, đoạn A: Gửi lời mời kết bạn.
-
-- Biểu đồ có 60 thông điệp.
-- Lời gọi REST có 2 lần: bước 10 lấy lời mời và bạn bè, bước 38 gửi lời mời. Server đi theo khuôn FriendshipRestController → FriendshipDAO, PlayerDAO → Friendship, Player.
-- Firebase chỉ dùng để biết bạn nào đang online (bước 7, 30–34). Bước 30 xảy ra mỗi khi có người vào hoặc rời màn Chơi online, nên trạng thái Online / Offline tự cập nhật mà không phải gọi server. PresenceFirebaseDAO gọi về qua interface PlayerListCallback (bước 33), dùng chung với OnlineActivity, MatchActivity của Chơi online.
-- Luật nghiệp vụ nằm ở thực thể Friendship: canAccept() tách lời mời đã nhận (bước 22), getFriend() lấy người còn lại trong quan hệ (bước 27). Kiểm tra trùng quan hệ theo cả 2 chiều nằm ở existsBetween() của FriendshipDAO (bước 47).
-- Lời gọi mạng chạy trong Thread (bước 9, 37). Phần vẽ giao diện chạy trong hàm runOnUiThread() (bước 21, 59).
-
-Đoạn B: Đồng ý lời mời kết bạn
-
-Người chơi là người nhận; FriendActivity đã hiển thị các lời mời đã nhận như bước 1–35 của đoạn A.
-
-1. Người chơi nhấn nút Đồng ý ở một lời mời trong danh sách lời mời đã nhận.
-2. Hàm onClick() của FriendRequestAdapter gọi hàm onAccept() của FriendActivity.
-3. Hàm onAccept() mở một Thread và gọi hàm accept() của FriendshipApiDAO.
-4. FriendshipApiDAO gửi yêu cầu POST /api/friendships/{id}/accept?playerId={id} tới hàm accept() của FriendshipRestController.
-5. Hàm accept() gọi hàm findFriendship() của chính nó.
-6. Hàm findFriendship() gọi hàm findById() của FriendshipDAO.
-7. Hàm findById() truy vấn bảng tblFriendship nối với tblPlayer, và gọi lớp Friendship để đóng gói kết quả.
-8. Lớp Friendship trả đối tượng Friendship cho hàm findById().
-9. Hàm findById() trả đối tượng Friendship cho hàm findFriendship(), hàm findFriendship() trả về cho hàm accept().
-10. Hàm accept() gọi hàm canAccept() của Friendship để kiểm tra lời mời còn đang chờ và người chơi là người nhận.
-11. Friendship trả về hợp lệ cho hàm accept().
-12. Hàm accept() gọi hàm updateStatus() của FriendshipDAO để chuyển lời mời sang trạng thái accepted.
-13. Hàm updateStatus() cập nhật bảng tblFriendship và trả về thành công.
-14. Hàm accept() gọi hàm getTotalPoints() của PlayerDAO cho người gửi lời mời.
-15. Hàm getTotalPoints() trả tổng điểm cho hàm accept().
-16. Hàm accept() trả quan hệ đã đồng ý dạng JSON cho FriendshipApiDAO.
-17. Hàm toFriendship() của FriendshipApiDAO gọi lớp Friendship để đóng gói dữ liệu JSON.
-18. Lớp Friendship trả đối tượng Friendship cho FriendshipApiDAO.
-19. FriendshipApiDAO trả đối tượng Friendship cho hàm onAccept().
-20. Trong hàm runOnUiThread(), hàm onAccept() bỏ lời mời khỏi danh sách lời mời đã nhận và gọi hàm setFriendships() của FriendRequestAdapter.
-21. Hàm onAccept() thêm quan hệ vào danh sách bạn bè và gọi hàm setFriendships() của FriendAdapter.
-22. Hàm onBindViewHolder() của FriendAdapter gọi hàm getFriend() của Friendship.
-23. Friendship trả đối tượng Player của người gửi cho FriendAdapter.
-24. FriendAdapter hiển thị người gửi trong danh sách bạn bè kèm tổng điểm và trạng thái online.
-
-@tuan-tu-thiet-ke-uc07b.png
-
-Hình 20: Biểu đồ tuần tự chi tiết chức năng Quản lý bạn bè, đoạn B: Đồng ý lời mời kết bạn.
-
-- Biểu đồ có 24 thông điệp.
-- Lời gọi REST duy nhất là bước 4. Server không tin vào máy gửi yêu cầu: nó đọc lại lời mời từ CSDL qua findFriendship() (bước 5–9) rồi mới kiểm tra bằng canAccept() (bước 10).
-- updateStatus() chỉ cập nhật dòng đang pending, nên 2 lần nhấn Đồng ý liên tiếp không làm hỏng dữ liệu.
-- Trạng thái Online / Offline của người bạn mới lấy từ onlineIds mà FriendActivity đã có từ đoạn A, không cần gọi Firebase lại.
-
 ---
 
 ## Phụ lục: các bước phân tích
@@ -1388,13 +1097,13 @@ Hình 20: Biểu đồ tuần tự chi tiết chức năng Quản lý bạn bè,
 
 @../chung/lop-thuc-the-phan-tich.png
 
-Hình 21: Biểu đồ lớp thực thể pha phân tích toàn hệ thống.
+Hình 16: Biểu đồ lớp thực thể pha phân tích toàn hệ thống.
 
 ### B. Biểu đồ lớp pha phân tích
 
 @lop-phan-tich-uc03.png
 
-Hình 22: Biểu đồ lớp pha phân tích chức năng Chơi online.
+Hình 17: Biểu đồ lớp pha phân tích chức năng Chơi online.
 
 - 4 lớp View nối nhau bằng quan hệ liên kết theo luồng màn hình: MainView – OnlineView – MatchView – MatchResultView. MatchResultView quay về MatchView khi chơi tiếp, về OnlineView khi dừng.
 - Mỗi View nối với lớp thực thể nó gọi phương thức bằng quan hệ liên kết:
@@ -1412,7 +1121,7 @@ Hình 22: Biểu đồ lớp pha phân tích chức năng Chơi online.
 
 @lop-phan-tich-uc04.png
 
-Hình 23: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu.
+Hình 18: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu.
 
 - 3 lớp View nối nhau bằng quan hệ liên kết theo luồng màn hình: OnlineView – HistoryView – MatchDetailView. OnlineView mở HistoryView bằng subHistory hoặc subRanking.
 - Mỗi View nối với lớp thực thể nó gọi phương thức bằng quan hệ liên kết:
@@ -1423,26 +1132,6 @@ Hình 23: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu
   - MathProblem là thành phần của Match (hợp thành); chi tiết trận cần đề để hiện đáp án đúng.
   - MatchPlayer – MathProblem là n-n, qua lớp liên kết Answer; chi tiết trận cần bài làm từng câu của 2 người.
 - Lịch sử đấu và bảng xếp hạng dùng cùng luật thắng thua với trận đấu: getResult(), getPoints(), getFinishTime() của Match; chi tiết trận dùng cùng luật chấm câu isCorrect() với lúc nộp bài. Không có luật nào được viết lại ở giao diện.
-
-@lop-phan-tich-uc07.png
-
-Hình 24: Biểu đồ lớp pha phân tích chức năng Quản lý bạn bè.
-
-- Chức năng có 2 lớp View nối nhau bằng quan hệ liên kết: OnlineView mở FriendView.
-- FriendView nối với 2 lớp thực thể nó gọi phương thức:
-  - Friendship: lấy, gửi, đồng ý, xóa lời mời và quan hệ bạn bè.
-  - Player: lấy danh sách người chơi online để hiện trạng thái của bạn bè.
-- Quan hệ giữa các thực thể giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục A: Friendship chứa thông tin 2 Player ở 2 vai trò người gửi và người nhận (kết tập).
-- Friendship nhận mọi phương thức của chức năng, kể cả luật "chỉ người nhận mới đồng ý được" (canAccept()). Trạng thái online của bạn bè không lưu trong Friendship mà lấy từ danh sách online.
-
-Đối chiếu với kịch bản v1:
-
-| Thành phần trong kịch bản v1 | Thuộc tính |
-|---|---|
-| Nút Bạn bè | OnlineView.subFriends |
-| Ô tên đăng nhập, nút Kết bạn | FriendView.inUsername, subAddFriend |
-| Mục Lời mời kết bạn, nút Đồng ý, nút Từ chối | FriendView.outsubListRequest |
-| Mục Bạn bè, trạng thái, tổng điểm, dòng "Đang chờ trả lời", nút × | FriendView.outsubListFriend |
 
 ### C. Kịch bản v2 và biểu đồ tuần tự pha phân tích
 
@@ -1485,7 +1174,7 @@ Ngoại lệ 12a: Đối thủ từ chối lời mời.
 
 @tuan-tu-phan-tich-uc03a.png
 
-Hình 25: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn A: Gửi lời thách đấu.
+Hình 19: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn A: Gửi lời thách đấu.
 
 - Biểu đồ có 13 thông điệp, khớp với 13 bước của kịch bản chuẩn.
 - MainView chỉ mở OnlineView (bước 1–2). Người chơi chỉ vào danh sách online khi OnlineView gọi goOnline() (bước 3), nên chỉ người đang ở giao diện chơi online mới được người khác thấy và thách đấu.
@@ -1520,7 +1209,7 @@ Ngoại lệ 8a: Không tạo được trận.
 
 @tuan-tu-phan-tich-uc03b.png
 
-Hình 26: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn B: Nhận lời thách đấu.
+Hình 20: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn B: Nhận lời thách đấu.
 
 - Biểu đồ có 9 thông điệp, khớp với 9 bước của kịch bản chuẩn.
 - Lời mời chỉ tới được người chơi đang ở OnlineView, vì OnlineView là nơi đăng ký watchChallenge() (bước 1).
@@ -1580,7 +1269,7 @@ Ngoại lệ 16a: Đối thủ bỏ trận.
 
 @tuan-tu-phan-tich-uc03c.png
 
-Hình 27: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn C: Thi đấu.
+Hình 21: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn C: Thi đấu.
 
 - Biểu đồ có 24 thông điệp, khớp với 24 bước của kịch bản chuẩn. Khung loop 10 câu bọc bước 4–5.
 - Trong lúc làm bài, MatchView chỉ ghi phương án đã chọn và thời gian làm từng câu, không gọi thực thể nào và không báo đúng sai. Bài làm 10 câu được gửi một lần khi nộp (bước 8).
@@ -1622,7 +1311,7 @@ Ngoại lệ 8a: Đối thủ dừng chơi.
 
 @tuan-tu-phan-tich-uc03d.png
 
-Hình 28: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn D: Chơi tiếp.
+Hình 22: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn D: Chơi tiếp.
 
 - Biểu đồ có 10 thông điệp, khớp với 10 bước của kịch bản chuẩn, vẽ cho người chọn chơi tiếp trước.
 - Trận mới chỉ được tạo khi cả 2 người đã chọn chơi tiếp (bước 6–8). Người chọn sau đi theo ngoại lệ 3a.
@@ -1678,7 +1367,7 @@ Ngoại lệ 15a: Không lấy được chi tiết trận.
 
 @tuan-tu-phan-tich-uc04a.png
 
-Hình 29: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.
+Hình 23: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.
 
 - Biểu đồ có 31 thông điệp, khớp với 31 bước của kịch bản chuẩn.
 - Kết quả, điểm và đối thủ của từng dòng trong danh sách đều lấy từ Match (bước 5–10). Biểu đồ tròn là phép đếm trên các kết quả này, không lưu ở đâu.
@@ -1716,103 +1405,8 @@ Ngoại lệ 12a: Người chơi chọn thẻ Trận của tôi.
 
 @tuan-tu-phan-tich-uc04b.png
 
-Hình 30: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.
+Hình 24: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.
 
 - Biểu đồ có 14 thông điệp, khớp với 14 bước của kịch bản chuẩn.
 - Bảng xếp hạng mở thẳng từ nút Bảng xếp hạng của OnlineView (bước 1–2), không phải qua thẻ Trận của tôi; 2 thẻ vẫn thuộc cùng một HistoryView.
 - Lớp Player tính các tiêu chí dựa trên 3 phương thức của lớp Match (bước 4–9). Bảng xếp hạng vì vậy dùng đúng luật thắng thua của trận đấu.
-
-Quản lý bạn bè, đoạn A: Gửi lời mời kết bạn
-
-1. Người chơi nhấn nút Bạn bè trên OnlineView.
-2. OnlineView gọi FriendView.
-3. FriendView gọi hàm getFriendships() của lớp Friendship.
-4. Lớp Friendship trả về các lời mời kết bạn và quan hệ bạn bè của người chơi cho FriendView.
-5. FriendView gọi hàm getOnlinePlayers() của lớp Player.
-6. Lớp Player trả về danh sách người chơi online cho FriendView.
-7. FriendView gọi hàm getFriend() của lớp Friendship để lấy người còn lại trong từng quan hệ.
-8. Lớp Friendship trả về người bạn cho FriendView.
-9. FriendView hiển thị các lời mời đã nhận và danh sách bạn bè kèm tổng điểm, trạng thái online cho người chơi.
-10. Người chơi nhập tên đăng nhập của một người và nhấn Kết bạn trên FriendView.
-11. FriendView gọi hàm sendRequest() của lớp Friendship.
-12. Lớp Friendship tìm người nhận theo tên đăng nhập, tạo lời mời đang chờ và trả về cho FriendView.
-13. FriendView hiển thị thông báo đã gửi lời mời và thêm dòng đang chờ trả lời vào cuối danh sách bạn bè.
-
-Ngoại lệ 4a: Không lấy được danh sách bạn bè.
-
-- 4a.1. Lớp Friendship trả về lỗi cho FriendView.
-- 4a.2. FriendView hiển thị thông báo không kết nối được máy chủ, 2 danh sách để trống.
-
-Ngoại lệ 9a: Người chơi từ chối một lời mời đã nhận.
-
-- 9a.1. Người chơi nhấn Từ chối ở một lời mời trên FriendView.
-- 9a.2. FriendView gọi hàm delete() của lớp Friendship.
-- 9a.3. Lớp Friendship xóa lời mời và trả về cho FriendView.
-- 9a.4. FriendView bỏ lời mời khỏi danh sách lời mời đã nhận.
-
-Ngoại lệ 9b: Người chơi hủy kết bạn hoặc rút lại lời mời đã gửi.
-
-- 9b.1. Người chơi nhấn nút Hủy kết bạn ở một dòng của danh sách bạn bè trên FriendView.
-- 9b.2. FriendView hỏi người chơi có chắc muốn hủy kết bạn không.
-- 9b.3. Người chơi đồng ý.
-- 9b.4. FriendView gọi hàm delete() của lớp Friendship.
-- 9b.5. Lớp Friendship xóa quan hệ và trả về cho FriendView.
-- 9b.6. FriendView bỏ dòng đó khỏi danh sách bạn bè.
-
-Ngoại lệ 10a: Người chơi để trống ô tên đăng nhập.
-
-- 10a.1. FriendView hiển thị thông báo yêu cầu nhập tên đăng nhập, không gọi sendRequest().
-
-Ngoại lệ 12a: Không có người chơi nào có tên đăng nhập đã nhập.
-
-- 12a.1. Lớp Friendship trả về lỗi không tìm thấy người chơi cho FriendView.
-- 12a.2. FriendView hiển thị thông báo không tìm thấy người chơi, giữ nguyên nội dung ô tên đăng nhập.
-
-Ngoại lệ 12b: Tên đăng nhập là của chính người chơi.
-
-- 12b.1. Lớp Friendship trả về lỗi không thể kết bạn với chính mình cho FriendView.
-- 12b.2. FriendView hiển thị thông báo không thể kết bạn với chính mình.
-
-Ngoại lệ 12c: Hai người đã là bạn bè hoặc đã có lời mời giữa 2 người.
-
-- 12c.1. Lớp Friendship trả về lỗi đã có quan hệ cho FriendView.
-- 12c.2. FriendView hiển thị thông báo đã có lời mời hoặc đã là bạn bè, không thêm dòng mới.
-
-@tuan-tu-phan-tich-uc07a.png
-
-Hình 31: Biểu đồ tuần tự pha phân tích chức năng Quản lý bạn bè, đoạn A: Gửi lời mời kết bạn.
-
-- Biểu đồ có 13 thông điệp, khớp với 13 bước của kịch bản chuẩn.
-- Trạng thái online của bạn bè không nằm trong Friendship: FriendView lấy danh sách online từ Player (bước 5–6) rồi so với người bạn trong từng quan hệ (bước 7–8).
-- Việc tìm người nhận theo tên đăng nhập và kiểm tra trùng quan hệ nằm trong sendRequest() của Friendship (bước 12), không nằm ở giao diện.
-
-Quản lý bạn bè, đoạn B: Đồng ý lời mời kết bạn
-
-Người chơi là người nhận, đang ở FriendView; các lời mời đã nhận được hiển thị như bước 1–9 của đoạn A.
-
-1. Người chơi nhấn Đồng ý ở một lời mời trên FriendView.
-2. FriendView gọi hàm accept() của lớp Friendship.
-3. Lớp Friendship gọi hàm canAccept() của chính nó để kiểm tra lời mời còn đang chờ và người chơi là người nhận.
-4. Lớp Friendship chuyển lời mời sang trạng thái đã là bạn bè và trả về cho FriendView.
-5. FriendView gọi hàm getFriend() của lớp Friendship.
-6. Lớp Friendship trả về người gửi lời mời cho FriendView.
-7. FriendView bỏ lời mời khỏi danh sách lời mời đã nhận và hiển thị người gửi trong danh sách bạn bè cho người chơi.
-
-Ngoại lệ 1a: Người chơi từ chối lời mời.
-
-- 1a.1. Người chơi nhấn Từ chối ở lời mời trên FriendView.
-- 1a.2. FriendView gọi hàm delete() của lớp Friendship.
-- 1a.3. Lớp Friendship xóa lời mời và trả về cho FriendView.
-- 1a.4. FriendView bỏ lời mời khỏi danh sách lời mời đã nhận.
-
-Ngoại lệ 3a: Lời mời không còn, vì người gửi đã rút lại.
-
-- 3a.1. Lớp Friendship trả về lỗi lời mời không còn cho FriendView.
-- 3a.2. FriendView hiển thị thông báo lời mời không còn và bỏ lời mời khỏi danh sách lời mời đã nhận.
-
-@tuan-tu-phan-tich-uc07b.png
-
-Hình 32: Biểu đồ tuần tự pha phân tích chức năng Quản lý bạn bè, đoạn B: Đồng ý lời mời kết bạn.
-
-- Biểu đồ có 7 thông điệp, khớp với 7 bước của kịch bản chuẩn.
-- Luật "chỉ người nhận mới đồng ý được lời mời đang chờ" là phương thức canAccept() của Friendship (bước 3), nên không máy nào đồng ý thay cho người khác.

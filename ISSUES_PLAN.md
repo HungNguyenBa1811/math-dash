@@ -1,8 +1,10 @@
-# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 7: THEO ĐỀ 9 "GAME GIẢI TOÁN NHANH", DEMO 28/10)
+# KẾ HOẠCH ISSUE — MATH DASH 1v1 (BẢN 8: THEO ĐỀ 9 "GAME GIẢI TOÁN NHANH", DEMO 28/10)
 
 > Nguồn: đề bài số 9 (dán nguyên văn ở `REPORT_CONVENTION.md` mục 1), `CONVENTION.md` (quy ước code Android), `REPORT_CONVENTION.md` (yêu cầu báo cáo + quy trình OOAD), `docs/chung/01-pham-vi-use-case.md` (phạm vi).
 > Thành viên: **@HungNguyenBa1811** (Hùng – nhóm trưởng) · **@Minahn210** (Hoàng – thành viên 2).
 > Mỗi mục `[Mx-yy]` bên dưới là 1 GitHub issue. Số thứ tự trong mỗi milestone là thứ tự nên làm.
+
+**Bản 8 (28/10/2026):** bỏ Quản lý bạn bè khỏi báo cáo của Hùng cho gọn; code vẫn giữ. Báo cáo của Hùng còn 2 chức năng: Chơi online (UC03), Xem lịch sử đấu (UC04).
 
 **Thay đổi ở bản 7** (27/10, sửa giao diện cho đúng luồng chơi):
 - **Giao diện chính chỉ có 2 nút** Chơi với máy, Chơi online (và nút đăng xuất). Danh sách người chơi online, thách đấu, nhận lời mời chuyển sang màn mới `OnlineActivity`; thanh trên của màn này có 3 biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng (góc phải ngoài cùng, mở thẳng thẻ Bảng xếp hạng). Người chơi chỉ online khi đang ở `OnlineActivity`.
@@ -56,7 +58,7 @@
 | D10 | Lưu trữ phía app | SQLite: `tblPlayer` (bản sao), `tblBotGame`. SharedPreferences: phiên đăng nhập | Chơi với máy chạy khi mất mạng |
 | D11 | Lớp DAO | Mỗi nơi lưu trữ có **một lớp cha giữ kết nối**: app `DAO` (SQLite), `ApiDAO` (HTTP), `FirebaseDAO` (Firebase); server `DAO` (JDBC). Các DAO con kế thừa | Đúng tài liệu OOAD của môn |
 | D12 | Tên bảng | Tiền tố `tbl` + tên lớp; khóa ngoại `tbl<Bảng>Id` | Đúng bước 1 và 4 thiết kế CSDL |
-| D13 | Chia việc | Theo module (mục 2.1), mỗi người 3 chức năng, không trùng nhau. Phần chung Hùng làm, Hoàng duyệt PR. Đăng nhập / Đăng ký là code chung nhưng chỉ Hoàng trình bày | Mỗi người tối đa 3 chức năng; báo cáo cá nhân không trùng nội dung |
+| D13 | Chia việc | Theo module (mục 2.1), mỗi người tối đa 3 chức năng, không trùng nhau; từ bản 8 báo cáo của Hùng trình bày 2 chức năng UC03, UC04. Phần chung Hùng làm, Hoàng duyệt PR. Đăng nhập / Đăng ký là code chung nhưng chỉ Hoàng trình bày | Mỗi người tối đa 3 chức năng; báo cáo cá nhân không trùng nội dung |
 | D14 | Thứ tự OOAD | Phần chung làm **trước khi code**. Phân tích và thiết kế từng chức năng: Hùng đã viết trước (thiết kế dẫn code), Hoàng làm sau demo | Kịp demo |
 | D15 | Báo cáo | Mỗi người **một file riêng**, chỉ lấy phần chung liên quan chức năng của mình | Đề ghi "bài làm cá nhân" |
 | D16 | Kiến trúc app | MVC 3 tầng `entity` – `dao` – `view`. Activity xử lý sự kiện, điều phối và hiển thị; **không có lớp Controller riêng**. Luật nghiệp vụ là hàm Java thuần trên entity; truy cập dữ liệu (SQLite, REST, Firebase) chỉ nằm trong DAO | Khớp mô hình boundary – DAO – entity của bài mẫu |
@@ -75,7 +77,7 @@
 | UC04 | Xem lịch sử đấu (trận của tôi, chi tiết trận, bảng xếp hạng) | Người chơi | Xem lịch sử đấu | **Hùng** |
 | UC05 | Chơi với máy | Người chơi | Chơi với máy | **Hoàng** |
 | UC06 | Quản lý thông tin người chơi | Quản trị viên | Quản trị | **Hoàng** |
-| UC07 | Quản lý bạn bè | Người chơi | Bạn bè | **Hùng** |
+| UC07 | Quản lý bạn bè | Người chơi | Bạn bè | **Hùng** code; không trình bày trong báo cáo từ bản 8 |
 
 Label theo UC: `uc-tai-khoan` (UC01, UC02), `uc-choi-online` (UC03), `uc-lich-su` (UC04), `uc-choi-voi-may` (UC05), `uc-quan-tri` (UC06), `uc-ban-be` (UC07).
 
@@ -509,6 +511,7 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 - **Constraint:** Không đổi cột của `tblPlayer`; phần code của Hoàng không phải sửa.
 
 ### [M2-10] UC07 Quản lý bạn bè · @HungNguyenBa1811
+- **Ghi chú bản 8:** code giữ nguyên; chức năng này không còn trong báo cáo của Hùng.
 - **Phụ thuộc:** M1-08, M2-01.
 - **Mô tả:** Người chơi gửi lời mời kết bạn bằng tên đăng nhập, đồng ý hoặc từ chối lời mời, xem bạn bè kèm trạng thái online, hủy kết bạn.
 - **Input:** `docs/chung/01-pham-vi-use-case.md` chức năng "Quản lý bạn bè"; `docs/hung/4-lop-thiet-ke.md` mục 3; API mục 2.4.
@@ -573,8 +576,9 @@ matches/{matchId}          status ("playing" | "finished"), startedAt,
 
 ### Mô tả milestone (dùng làm description cho Milestone `M3 - Phan tich`)
 
-**Người phụ trách:** Hùng làm UC03, UC04, UC07; Hoàng làm UC01, UC02, UC05, UC06.
-**Thời gian:** 29/10 → **04/11/2026**. Phần UC03, UC04, UC07 của Hùng đã viết trước để dẫn code.
+**Người phụ trách:** Hùng làm UC03, UC04; Hoàng làm UC01, UC02, UC05, UC06.
+**Thời gian:** 29/10 → **04/11/2026**. Phần UC03, UC04 của Hùng đã viết trước để dẫn code.
+**Ghi chú bản 8:** phần UC07 Quản lý bạn bè trong M3-01, M3-03, M3-05 đã bỏ khỏi tài liệu của Hùng; code vẫn giữ.
 
 **Mục tiêu.** Bước phân tích OOAD cho từng chức năng demo:
 - Biểu đồ use case chi tiết của module.
@@ -653,8 +657,9 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 
 ### Mô tả milestone (dùng làm description cho Milestone `M4 - Thiet ke & Bao cao`)
 
-**Người phụ trách:** Hùng làm UC03, UC04, UC07 và báo cáo của Hùng; Hoàng làm UC01, UC02, UC05, UC06 và báo cáo của Hoàng.
+**Người phụ trách:** Hùng làm UC03, UC04 và báo cáo của Hùng; Hoàng làm UC01, UC02, UC05, UC06 và báo cáo của Hoàng.
 **Thời gian:** 05/11 → **15/11/2026**. Biểu đồ thiết kế xong trước 11/11; 12–15/11 hoàn thiện báo cáo và đọc chéo.
+**Ghi chú bản 8:** phần UC07 Quản lý bạn bè trong M4-01, M4-03, M4-05 đã bỏ khỏi tài liệu và báo cáo của Hùng; code vẫn giữ.
 
 **Mục tiêu.** Biểu đồ lớp chi tiết và tuần tự chi tiết cho từng chức năng, **khớp code thật**, rồi ghép thành báo cáo cá nhân đúng khung đề.
 - Chức năng có gọi server (UC03, UC04, UC06, UC07, Đăng nhập) vẽ theo quy ước 2 package "Client (Android)" và "Server (Spring Boot)" ở `REPORT_CONVENTION.md`.
@@ -712,7 +717,7 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
 - **Requirement:** Giống M4-03.
 - **Constraint:** Mọi hàm trên biểu đồ có trong M4-02.
 
-### [M4-05] Báo cáo cá nhân – Hùng (Chơi online, Xem lịch sử đấu, Quản lý bạn bè) · @HungNguyenBa1811
+### [M4-05] Báo cáo cá nhân – Hùng (Chơi online, Xem lịch sử đấu) · @HungNguyenBa1811
 - **Phụ thuộc:** M1-02, M1-03, M3-01, M4-01, M4-03.
 - **Mô tả:** Báo cáo thiết kế cá nhân của Hùng, đúng khung ở `REPORT_CONVENTION.md` mục 2. Bản nháp Markdown: `docs/hung/BaoCao_Hung.md`.
 - **Input:** `REPORT_CONVENTION.md`; tài liệu trong `docs/chung/` và `docs/hung/`.
@@ -723,17 +728,14 @@ Lớp thực thể đã có ở M1-02; thiếu lớp thì mở PR bổ sung tài
     | Mục | Nội dung | Lấy từ |
     |---|---|---|
     | 1 | Mô tả chi tiết các chức năng bằng ngôn ngữ tự nhiên | M3-01 |
-    | 2 | Thiết kế CSDL: MySQL `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, `tblFriendship` và cây Firebase | M1-03 |
-    | 3 | Thiết kế lớp thực thể: `Player`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `MathProblem`, `Friendship` | M1-02 |
+    | 2 | Thiết kế CSDL: MySQL `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer` và cây Firebase | M1-03 |
+    | 3 | Thiết kế lớp thực thể: `Player`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `MathProblem` | M1-02 |
     | 4.1.1 | Chơi online: thiết kế giao diện | M4-01 |
     | 4.1.2 | Chơi online: biểu đồ lớp chi tiết (client + server) | M4-01 |
     | 4.1.3 | Chơi online: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
     | 4.2.1 | Xem lịch sử đấu: thiết kế giao diện | M4-01 |
     | 4.2.2 | Xem lịch sử đấu: biểu đồ lớp chi tiết (client + server) | M4-01 |
     | 4.2.3 | Xem lịch sử đấu: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
-    | 4.3.1 | Quản lý bạn bè: thiết kế giao diện | M4-01 |
-    | 4.3.2 | Quản lý bạn bè: biểu đồ lớp chi tiết (client + server) | M4-01 |
-    | 4.3.3 | Quản lý bạn bè: kịch bản v3 + biểu đồ tuần tự chi tiết | M4-03 |
 
 - **Requirement:** Mọi mục đã tick; tick đủ checklist `REPORT_CONVENTION.md` mục 5; Hoàng đã đọc lại.
 - **Constraint:** Bài cá nhân, tự viết; phần CSDL và lớp thực thể chỉ lấy phần liên quan chức năng của mình.
@@ -791,7 +793,7 @@ Sau demo: M3-01/02 ─> M3-03/04 ─> M3-05/06 ─> M4-01/02 ─> M4-03/04 ─> 
 1. Đối thủ mất kết nối tự xử thua (giữ "bấm Thoát thì bị xử thua").
 2. Security Rules chi tiết (giữ "app không ghi được `matches`").
 3. Tìm theo tên ở màn quản trị.
-4. UC07 Quản lý bạn bè (đưa vào báo cáo, demo nếu kịp).
+4. UC07 Quản lý bạn bè (demo nếu kịp; từ bản 8 không đưa vào báo cáo).
 5. Màn chi tiết trận của UC04 (giữ danh sách và biểu đồ tròn).
 
 Không cắt: server sinh đề + chấm + trọng tài, chơi tiếp, bảng xếp hạng 3 tiêu chí, vì đây là yêu cầu nguyên văn của đề.
