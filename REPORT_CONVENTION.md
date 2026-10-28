@@ -258,9 +258,16 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 |---|---|
 | Boundary | App: `XxxActivity`, Adapter. Server: `XxxRestController` |
 | Control | App: DAO (`XxxDAO`, `XxxApiDAO`, `XxxFirebaseDAO`, `ProblemDAO`, `SessionDAO`). Server: DAO |
-| Entity | Lớp ở D1 (cùng tên ở app và server) |
+| Entity | Lớp ở D1, nằm trong thư viện dùng chung `common` (`mathdash-common.jar`) mà app và server cùng nhập |
 
 App **không có lớp Controller riêng**: Activity xử lý sự kiện, điều phối và gọi thẳng DAO (`ISSUES_PLAN.md` D16).
+
+**3 package trên biểu đồ:** "Client (Android)", "Common (Java Library)", "Server (Spring Boot)". Thực thể chỉ vẽ một lần trong Common; DAO của app và DAO của server cùng nối vào đó. Đường `HTTP/JSON` nối `XxxApiDAO` với `XxxRestController`. Bản Visual Paradigm xếp ngang: Client trái, Common giữa, Server phải, nét đứt phân cách và nhãn từng vùng. Không vẽ Firebase hay MySQL thành lớp: chúng chỉ là kiểu thuộc tính (`DatabaseReference`, `Connection`) trong DAO cha.
+
+**Chỉ vẽ phần cốt lõi:**
+- Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); control giữ kết nối của DAO cha (`con`, `conn`, `BASE_URL`, `prefs`) và trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
+- Phương thức: chỉ ghi các phương thức có trong kịch bản v3 và tuần tự thiết kế, cùng phương thức nghiệp vụ của thực thể.
+- Không vẽ: View con (`TextView`, `Button`), biến tạm (`current`, `shownAt`, `timer`), cờ trạng thái (`started`, `submitted`), hằng số, listener, hàm override của Android không có trong kịch bản (`onDestroy`, `onBackPressed`, `onCreateViewHolder`, `getItemCount`), getter / setter, hàm riêng đóng gói phụ (`toProblem`, `toAnswers`). Các phần này để mã nguồn thể hiện; bảng mô tả lớp vẫn có thể nhắc tới.
 
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `MatchActivity`), layout tương ứng `activity_main.xml`, `activity_match.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 

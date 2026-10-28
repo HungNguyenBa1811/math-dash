@@ -262,7 +262,7 @@ So với pha phân tích:
   - BotGame.player, BotGame.questions.
   - Friendship.sender, Friendship.receiver.
 
-Các lớp Player, MathProblem, Match, MatchPlayer, Answer, Friendship có mặt ở **cả app và server** với cùng tên và cùng thuộc tính, để dữ liệu JSON đi qua REST ánh xạ thẳng vào đối tượng.
+Các lớp Player, Challenge, MathProblem, Match, MatchPlayer, Answer, Friendship nằm trong một project Java riêng là common, đóng gói thành thư viện mathdash-common.jar. App Android và server Spring Boot cùng nhập thư viện này, nên dữ liệu JSON đi qua REST ánh xạ thẳng vào cùng một lớp ở 2 phía. BotGame chỉ dùng cho Chơi với máy nên nằm ở app.
 - passwordHash chỉ có giá trị ở server; app không bao giờ giữ mật khẩu.
 - correctAnswer của câu hỏi chỉ được gửi về app sau khi trận đã xong, để không ai biết trước đáp án.
 - Bài làm từng câu của 2 người cũng chỉ được gửi về app sau khi trận đã xong, để không ai xem được bài làm của đối thủ giữa trận.
