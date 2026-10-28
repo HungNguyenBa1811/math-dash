@@ -136,7 +136,7 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 
 **Biểu đồ use case chi tiết:** use case con là một (hoặc vài) giao diện có tương tác với tác nhân, nối với use case chính bằng include, extend hoặc kế thừa; có include "Đăng nhập" như bài mẫu. Nút bấm, hộp thoại, bước trong luồng không phải use case (chức năng ≠ use case). Ví dụ UC03 chỉ có Đăng nhập, Thách đấu, Thi đấu; Từ chối, Thoát trận, Chơi tiếp là bước bên trong.
 
-**Đặc tả** (mục 1 của báo cáo): mục 1 chỉ có **1 đoạn văn** mô tả chung cả hệ thống bằng ngôn ngữ tự nhiên, kể lần lượt các chức năng của mình, không chia theo module. Biểu đồ use case chi tiết và kịch bản v1 đặt ở Phụ lục A.
+**Đặc tả** (mục 1 của báo cáo): mục 1 tên "Mô tả hệ thống bằng ngôn ngữ tự nhiên", chỉ có **1 đoạn văn** mô tả chung cả hệ thống (tài khoản, quản trị, chơi với máy, chơi online, lịch sử đấu, bảng xếp hạng), không chia theo module, không đi vào chi tiết giao diện; lấy từ đoạn mô tả hệ thống ở `docs/chung/02-lop-thuc-the.md` A.1. Biểu đồ use case chi tiết và kịch bản v1 đặt ở Phụ lục A.
 - Mỗi chức năng viết bằng **văn xuôi tự nhiên trong 1 đoạn văn**, kể theo luồng nghiệp vụ, bắt đầu từ lúc người chơi đăng nhập. Không nối bước bằng `→`, không gạch đầu dòng, không in đậm nhãn; nhánh ngoại lệ để ở kịch bản ngoại lệ. Phần giải thích biểu đồ use case chi tiết cũng viết thành 1 đoạn văn.
 - Mỗi lần có giao diện hiện ra thì kể đủ thành phần của giao diện đó.
 
