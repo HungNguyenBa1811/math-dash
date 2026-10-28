@@ -18,172 +18,7 @@
 
 ## 1. Mô tả chi tiết các chức năng
 
-### 1.1. Chức năng "Chơi online"
-
-#### 1.1.1. Biểu đồ use case chi tiết module Đấu đối kháng
-
-![Hình 1](uc-chi-tiet-doi-khang.png)
-
-*Hình 1: Biểu đồ use case chi tiết module Đấu đối kháng.*
-
-Người chơi khởi phát trực tiếp use case Chơi online (UC03). Use case này include 3 use case. Đăng nhập thuộc module Tài khoản: người chơi phải đăng nhập rồi mới chơi online được. Thách đấu diễn ra ở giao diện chơi online, nơi người chơi xem danh sách người đang online và bấm vào tên một người đang rỗi để mời; người được mời đồng ý hoặc từ chối trên hộp thoại lời mời. Thi đấu diễn ra ở giao diện thi đấu: 2 người làm lần lượt 10 câu rồi nộp bài, sau đó giao diện kết quả hiện kết quả, điểm trận và hỏi có chơi tiếp không. Hủy lời mời, Từ chối, Thoát trận, Chơi tiếp và Dừng là các bước bên trong Thách đấu và Thi đấu nên không tách thành use case riêng.
-
-| Use case | Mô tả |
-|---|---|
-| Chơi online (UC03) | Vào giao diện chơi online, thách đấu một người chơi online, thi đấu trên cùng đề do server sinh, nhận kết quả do server xác định |
-| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
-| Thách đấu | Người chơi chọn một người đang rỗi trong danh sách online và gửi lời mời; người được mời đồng ý thì server sinh đề, tạo trận và đưa cả 2 vào trận, từ chối thì người mời nhận thông báo |
-| Thi đấu | Hai người làm cùng đề 10 câu, mỗi lần một câu, trong tối đa 60 giây, nộp bài; server lưu bài làm từng câu, chấm, xác định kết quả, cộng điểm; sau trận hai người chọn chơi tiếp hoặc dừng |
-
-#### 1.1.2. Mô tả chi tiết chức năng "Chơi online"
-
-Sau khi đăng nhập, người chơi vào giao diện chính. Giao diện này có chữ MATH DASH, lời chào "Xin chào, <tên>", 2 nút Chơi với máy và Chơi online, và nút biểu tượng Đăng xuất ở góc phải trên. Khi người chơi nhấn Chơi online, hệ thống ghi người chơi vào danh sách online với trạng thái Rỗi rồi mở giao diện chơi online. Góc phải trên của giao diện có 3 nút biểu tượng Bạn bè, Lịch sử đấu và Bảng xếp hạng. Bên dưới là thẻ tên và tổng điểm của người chơi, tiếp theo là danh sách những người khác đang ở giao diện chơi online, xếp theo tổng điểm giảm dần. Mỗi dòng ghi tên, tổng điểm và trạng thái Rỗi màu xanh hoặc Bận màu xám. Danh sách tự cập nhật khi có người vào, có người rời đi hoặc đổi trạng thái. Người chơi bấm vào tên một người đang rỗi để thách đấu. Hệ thống gửi lời mời tới máy người đó, còn máy người mời hiện hộp thoại "Đang chờ <tên> trả lời..." có nút Hủy. Máy người được mời hiện hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" với 2 nút Đồng ý và Từ chối. Khi người được mời nhấn Đồng ý, server kiểm tra cả 2 vẫn online và đang rỗi, sinh đề 10 câu, tạo trận, chuyển cả 2 sang Bận và gửi đề cho cả 2 máy. Giao diện thi đấu hiện trên cả 2 máy, mỗi lần một câu. Phía trên có ô thời gian đếm ngược từ 01:00 và dòng trạng thái "<tên đối thủ> đang làm bài". Ở giữa là dòng "Câu 1/10" và phép tính chữ lớn. Phía dưới là 4 ô phương án xếp 2 × 2, A màu đỏ, B màu xanh dương, C màu vàng, D màu xanh lá, cùng nút Thoát. Khi người chơi bấm một ô, hệ thống ghi phương án đã chọn và thời gian làm câu tính từ lúc câu hiện ra, rồi hiện câu tiếp theo mà chưa báo đúng hay sai. Làm xong câu thứ 10 thì 4 ô ẩn đi, giao diện hiện dòng "Đã làm xong 10 câu" và nút Nộp bài. Khi người chơi nhấn Nộp bài, server ghi thời điểm nộp, lưu bài làm từng câu và chấm bài. Giao diện hiện "Đã nộp bài, đang chờ đối thủ...", còn trên máy đối thủ dòng trạng thái đổi thành "<tên> đã nộp bài". Khi cả 2 đã nộp, server xác định kết quả, cộng điểm trận, cập nhật tổng điểm và báo cho cả 2 máy. Giao diện kết quả hiện đè lên giao diện thi đấu. Dòng đầu là THẮNG! màu xanh, THUA! màu đỏ hoặc HÒA! màu vàng. Bên dưới là số câu đúng và thời gian làm bài của 2 người, điểm trận được cộng cùng tổng điểm mới, và câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng. Người chơi nhấn Chơi tiếp thì giao diện hiện "Đang chờ đối thủ...". Khi đối thủ cũng nhấn Chơi tiếp, server sinh đề mới, tạo trận mới và cả 2 máy vào giao diện thi đấu của trận đó.
-
-#### 1.1.3. Kịch bản UC03 "Chơi online"
-
-**Dữ liệu mẫu:**
-
-| Người chơi | Tên đăng nhập | Tên hiển thị | Tổng điểm | Trạng thái | Máy |
-|---|---|---|---|---|---|
-| Hùng | hung | HUNG | 12,5 | Rỗi | Máy 1, người mời |
-| Hoàng | hoang | HOANG | 9 | Rỗi | Máy 2, người được mời |
-| Minh | minh | MINH | 15 | Bận | Máy 3, đang đấu với người khác |
-| Lan | lan | LAN | 4,5 | Rỗi | Máy 4 |
-
-Trận số 37 bắt đầu lúc 20:15:03,0 ngày 25/10/2026. Đề bài server sinh cho trận 37:
-
-| Câu | Phép tính | Ô A | Ô B | Ô C | Ô D | Đáp án đúng |
-|---|---|---|---|---|---|---|
-| 1 | 12 + 7 | 17 | 19 | 21 | 18 | B · 19 |
-| 2 | 9 × 6 | 48 | 54 | 56 | 63 | B · 54 |
-| 3 | 45 − 18 | 27 | 23 | 33 | 37 | A · 27 |
-| 4 | 8 × 7 | 54 | 56 | 48 | 64 | B · 56 |
-| 5 | 36 + 25 | 51 | 61 | 59 | 71 | B · 61 |
-| 6 | 72 − 39 | 33 | 43 | 31 | 37 | A · 33 |
-| 7 | 7 × 12 | 74 | 84 | 82 | 96 | B · 84 |
-| 8 | 58 + 27 | 75 | 85 | 83 | 95 | B · 85 |
-| 9 | 91 − 46 | 45 | 55 | 35 | 47 | A · 45 |
-| 10 | 6 × 15 | 80 | 90 | 96 | 75 | B · 90 |
-
-Bài làm của HUNG và HOANG trong trận 37. Thời gian làm câu tính từ lúc câu hiện ra tới lúc người chơi bấm chọn:
-
-| Câu | HUNG chọn | Thời gian | HOANG chọn | Thời gian |
-|---|---|---|---|---|
-| 1 | 19 | 3,1 giây | 19 | 4,0 giây |
-| 2 | 54 | 4,0 giây | 54 | 4,4 giây |
-| 3 | 27 | 3,4 giây | 27 | 4,0 giây |
-| 4 | 56 | 3,8 giây | 56 | 4,7 giây |
-| 5 | 61 | 3,7 giây | 61 | 4,3 giây |
-| 6 | 33 | 3,5 giây | 33 | 4,1 giây |
-| 7 | 84 | 4,1 giây | 84 | 4,9 giây |
-| 8 | 85 | 3,2 giây | 85 | 3,8 giây |
-| 9 | 45 | 3,6 giây | 45 | 4,4 giây |
-| 10 | 90 | 2,8 giây | 90 | 3,7 giây |
-| Tổng | 10/10 câu đúng | 35,2 giây | 10/10 câu đúng | 42,3 giây |
-
-HUNG nhấn Nộp bài ở giây 38,2, HOANG ở giây 45,6, tính từ lúc trận bắt đầu.
-
-| | |
-|---|---|
-| **Use case** | Chơi online (UC03), gồm Thách đấu, Thi đấu |
-| **Actor** | Người chơi: Hùng ở máy 1 là người mời, Hoàng ở máy 2 là người được mời; mỗi người là actor trên máy của mình |
-| **Tiền điều kiện** | Cả 2 người chơi đã đăng nhập, máy có kết nối mạng; Hùng đang ở giao diện chính trên máy 1; Hoàng đã vào giao diện chơi online trên máy 2; MINH đang đấu với người khác trên máy 3 |
-| **Hậu điều kiện** | Trận 37 được lưu trên server cùng đề, bài làm từng câu, số câu đúng và thời gian nộp bài của 2 người; tổng điểm của HUNG thành 13,5, của HOANG giữ 9; cả 2 thấy cùng một kết quả; trận 38 bắt đầu |
-| **Sự kiện chính** | 1. Trên máy 1, giao diện chính của Hùng hiện lên gồm: tiêu đề MATH DASH; lời chào "Xin chào, HUNG"; 2 nút **Chơi với máy**, **Chơi online**; nút Đăng xuất dạng biểu tượng ở góc phải trên.<br>2. Hùng nhấn **Chơi online**.<br>3. Hệ thống ghi HUNG vào danh sách online với trạng thái Rỗi. Giao diện chơi online hiện lên gồm: thanh trên có tiêu đề CHƠI ONLINE và 3 nút biểu tượng **Bạn bè**, **Lịch sử đấu**, **Bảng xếp hạng** ở góc phải trên; thẻ thông tin HUNG · 12,5 điểm; mục Người chơi online gồm 3 dòng MINH · 15 · Bận, HOANG · 9 · Rỗi, LAN · 4,5 · Rỗi. Trên máy 2 và máy 4, dòng HUNG · 12,5 · Rỗi xuất hiện trong danh sách.<br>4. Hùng bấm vào dòng HOANG.<br>5. Hệ thống thấy HOANG đang rỗi, gửi lời mời tới máy 2. Máy 1 hiện hộp thoại "Đang chờ HOANG trả lời..." với nút **Hủy**.<br>6. Trên máy 2, ở giao diện chơi online của Hoàng, hộp thoại "HUNG (12,5 điểm) thách đấu bạn" hiện lên với 2 nút **Đồng ý**, **Từ chối**.<br>7. Hoàng nhấn **Đồng ý**.<br>8. Server kiểm tra HUNG và HOANG vẫn online và đang rỗi. Server sinh đề 10 câu như bảng đề bài trận 37 ở phần Dữ liệu mẫu, tạo trận số 37 bắt đầu lúc 20:15:03,0 ngày 25/10/2026, chuyển HUNG và HOANG sang Bận, rồi gửi đề cho cả 2 máy.<br>9. Máy 2 chuyển sang giao diện thi đấu. Cùng lúc, máy 1 đóng hộp thoại chờ và chuyển sang giao diện thi đấu. Trên máy của Lan, HUNG và HOANG chuyển sang Bận.<br>10. Giao diện thi đấu trên máy 1 hiện câu 1, gồm: ô thời gian 01:00 đếm ngược mỗi giây; dòng trạng thái "HOANG đang làm bài"; dòng "Câu 1/10"; phép tính "12 + 7 = ?"; 4 ô phương án **A** 17 màu đỏ, **B** 19 màu xanh dương, **C** 21 màu vàng, **D** 18 màu xanh lá; nút **Thoát**. Máy 2 hiện cùng câu 1, dòng trạng thái là "HUNG đang làm bài".<br>11. Sau 3,1 giây, Hùng bấm ô **B** 19.<br>12. Hệ thống ghi câu 1 của HUNG: phương án 19, thời gian 3,1 giây. Ô B giữ nguyên, 3 ô còn lại mờ đi, không báo đúng hay sai. Câu 2 hiện ra: "Câu 2/10", "9 × 6 = ?", **A** 48, **B** 54, **C** 56, **D** 63.<br>13. Các bước 11–12 lặp lại tới câu 10. Hùng lần lượt chọn 54, 27, 56, 61, 33, 84, 85, 45, 90, thời gian từng câu như bảng bài làm trận 37 ở phần Dữ liệu mẫu.<br>14. Sau khi Hùng chọn ở câu 10, thẻ câu hỏi chỉ còn dòng "Đã làm xong 10 câu", 4 ô ẩn đi, nút **Nộp bài** hiện cạnh nút **Thoát**. Ô thời gian còn 00:22.<br>15. Hùng nhấn **Nộp bài**.<br>16. Máy 1 hiện "Đang nộp bài...". Server nhận bài làm của HUNG lúc 20:15:41,2, tức thời gian làm bài 38,2 giây, lưu phương án và thời gian làm từng câu, chấm đúng 10/10 câu. Máy 1 ẩn nút Nộp bài, hiện "Đã nộp bài, đang chờ đối thủ...". Trên máy 2, dòng trạng thái đổi thành "HUNG đã nộp bài".<br>17. Hoàng làm xong 10 câu và nhấn **Nộp bài** trên máy 2.<br>18. Server nhận bài làm của HOANG lúc 20:15:48,6, tức 45,6 giây, lưu bài làm từng câu, chấm đúng 10/10 câu.<br>19. Server xác định kết quả: không ai bỏ trận, cả 2 đúng hết, HUNG nộp nhanh hơn nên HUNG thắng. HUNG được 1 điểm, tổng điểm thành 13,5; HOANG được 0 điểm, tổng điểm giữ 9. Server lưu trận và báo cả 2 máy.<br>20. Giao diện kết quả hiện đè lên giao diện thi đấu trên máy 1, gồm: dòng kết quả **THẮNG!** màu xanh; dòng Bạn 10/10 câu đúng · 38,2 giây; dòng HOANG 10/10 câu đúng · 45,6 giây; dòng điểm +1 điểm · Tổng điểm: 13,5; câu hỏi "Chơi tiếp?"; 2 nút **Chơi tiếp**, **Dừng**. Máy 2 hiện **THUA!** màu đỏ, +0 điểm, tổng điểm 9.<br>21. Hùng nhấn **Chơi tiếp**.<br>22. Máy 1 ẩn 2 nút, hiện "Đang chờ đối thủ...".<br>23. Hoàng nhấn **Chơi tiếp** trên máy 2.<br>24. Server sinh đề mới, câu đầu là 23 + 48, tạo trận số 38 và gửi đề cho cả 2 máy.<br>25. Cả 2 máy hiện giao diện thi đấu của trận 38: ô thời gian 01:00, "Câu 1/10", "23 + 48 = ?". Trận 38 diễn ra như các bước 10–20. |
-| **Ngoại lệ** | 3a. Không có ai khác online, chỉ có HUNG ở giao diện chơi online.<br>3a.1. Mục Người chơi online hiện "Chưa có ai khác online"; danh sách tự hiện người chơi khi có người vào. Kịch bản tiếp tục từ bước 4 khi có người vào giao diện chơi online.<br>3b. Hùng nhấn Back ở giao diện chơi online.<br>3b.1. Hệ thống xóa HUNG khỏi danh sách online; máy 1 về giao diện chính. Trên máy 2 và máy 4, dòng HUNG biến khỏi danh sách; không ai thách đấu được HUNG cho tới khi Hùng nhấn lại **Chơi online**. Use case kết thúc.<br>4a. Hùng bấm vào dòng MINH.<br>4a.1. MINH đang Bận nên hệ thống báo "MINH đang bận", không gửi lời mời, giữ nguyên giao diện chơi online. Kịch bản tiếp tục từ bước 4.<br>5a. Hùng nhấn **Hủy** trên hộp thoại chờ.<br>5a.1. Lời mời bị hủy, máy 1 ở lại giao diện chơi online.<br>5a.2. Nếu Hoàng nhấn **Đồng ý** sau đó thì server thấy lời mời đã hủy nên không tạo trận; máy 2 báo "Không bắt đầu được trận đấu". Use case kết thúc.<br>7a. Hoàng nhấn **Từ chối**.<br>7a.1. Máy 2 đóng hộp thoại. Máy 1 đóng hộp thoại chờ và báo "HOANG đã từ chối lời mời"; Hùng vẫn ở giao diện chơi online, có thể mời người khác. Kịch bản tiếp tục từ bước 4.<br>8a. Hùng rời giao diện chơi online hoặc tắt ứng dụng trước khi Hoàng nhấn **Đồng ý**.<br>8a.1. Server thấy HUNG không còn online nên không tạo trận. Máy 2 báo "Không bắt đầu được trận đấu" và ở lại giao diện chơi online. Use case kết thúc.<br>11a. Hùng mới làm xong 8 câu thì ô thời gian về 00:00.<br>11a.1. Thẻ câu hỏi hiện "Hết giờ", hệ thống tự nộp bài; câu 9 và câu 10 ghi là bỏ trống và tính là sai, HUNG đúng 8/10. Kịch bản tiếp tục từ bước 16 với thời gian làm bài của HUNG là 60 giây.<br>11b. Đang làm bài ở một trong các bước 11–15, Hùng nhấn **Thoát**.<br>11b.1. Hệ thống hỏi "Thoát sẽ bị xử thua?" với 2 nút **Ở lại**, **Thoát**.<br>11b.2. Hùng nhấn **Thoát**.<br>11b.3. Server xử HUNG thua, HOANG thắng và được 1 điểm, tổng điểm thành 10, rồi trả cả 2 về Rỗi. Máy 1 về giao diện chơi online. Máy 2 báo "Đối thủ đã thoát, bạn thắng" và hiện giao diện kết quả **THẮNG!** chỉ có nút **Về menu**, không hỏi chơi tiếp. Use case kết thúc.<br>11b.4. Nếu ở bước 11b.2 Hùng nhấn **Ở lại** thì hộp thoại đóng, Hùng tiếp tục làm bài ở câu đang làm, ô thời gian vẫn chạy. Kịch bản tiếp tục từ bước 11.<br>11c. Đang ở một trong các bước 11–17, máy 2 mất mạng khi Hoàng đang làm bài.<br>11c.1. HOANG biến khỏi danh sách online; hệ thống xử HOANG bỏ trận.<br>11c.2. Máy 1 báo "Đối thủ đã thoát, bạn thắng" và hiện giao diện kết quả **THẮNG!** chỉ có nút **Về menu**, như bước 11b.3. Use case kết thúc.<br>15a. Hùng đã làm xong 10 câu nhưng chưa nhấn **Nộp bài** thì ô thời gian về 00:00.<br>15a.1. Hệ thống tự nộp đủ 10 câu. Kịch bản tiếp tục từ bước 16 với thời gian làm bài của HUNG là 60 giây.<br>16a. Máy 1 không kết nối được server khi nộp bài.<br>16a.1. Hệ thống báo "Không kết nối được máy chủ, kiểm tra kết nối mạng", nút **Nộp bài** hiện lại để Hùng nộp lại; ô thời gian vẫn chạy. Kịch bản tiếp tục từ bước 15.<br>19a. Hoàng chọn ô **A** 74 ở câu 7 nên chỉ đúng 9/10, dù nộp ở giây 30,0.<br>19a.1. HUNG đúng hết nên server xác định HUNG thắng, không xét thời gian. Kịch bản tiếp tục từ bước 20.<br>19b. HUNG chọn ô **B** 23 ở câu 3, HOANG chọn ô **C** 35 ở câu 9; cả 2 đều có câu sai.<br>19b.1. Server xác định hòa, mỗi người được 0,5 điểm: tổng điểm HUNG thành 13, HOANG thành 9,5.<br>19b.2. Giao diện kết quả hiện **HÒA!** màu vàng. Kịch bản tiếp tục từ bước 21.<br>23a. Hoàng nhấn **Dừng**.<br>23a.1. Server trả HUNG và HOANG về Rỗi. Máy 2 về giao diện chơi online. Máy 1 báo "Đối thủ đã dừng chơi" và về giao diện chơi online. Use case kết thúc. |
-
-### 1.2. Chức năng "Xem lịch sử đấu"
-
-#### 1.2.1. Biểu đồ use case chi tiết module Xem lịch sử đấu
-
-![Hình 2](uc-chi-tiet-lich-su-dau.png)
-
-*Hình 2: Biểu đồ use case chi tiết module Xem lịch sử đấu.*
-
-Người chơi khởi phát trực tiếp use case Xem lịch sử đấu (UC04). Use case này include Đăng nhập của module Tài khoản, vì người chơi phải đăng nhập rồi mới xem được lịch sử đấu. Xem chi tiết trận và Xem bảng xếp hạng là 2 use case extend Xem lịch sử đấu. Ở giao diện lịch sử đấu, người chơi có thể bấm vào một trận để mở giao diện chi tiết trận. Người chơi cũng có thể mở thẻ Bảng xếp hạng, bằng cách chọn thẻ này khi đang xem lịch sử đấu hoặc nhấn nút Bảng xếp hạng ở giao diện chơi online.
-
-| Use case | Mô tả |
-|---|---|
-| Xem lịch sử đấu (UC04) | Xem tỉ lệ thắng / hòa / thua dạng biểu đồ tròn và danh sách các trận chơi online mình đã đấu, trận mới nhất đứng đầu |
-| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
-| Xem chi tiết trận | Xem đối thủ, kết quả, điểm trận, số câu đúng và thời gian làm bài của 2 bên; 10 câu của đề, mỗi câu có phép tính kèm đáp án đúng và bài làm của từng người: đúng / sai, phương án đã chọn, thời gian làm câu |
-| Xem bảng xếp hạng | Xem thứ hạng mọi người chơi theo tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng |
-
-#### 1.2.2. Mô tả chi tiết chức năng "Xem lịch sử đấu"
-
-Sau khi đăng nhập, người chơi nhấn Chơi online ở giao diện chính. Giao diện chơi online có 3 nút biểu tượng Bạn bè, Lịch sử đấu và Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của người chơi, và danh sách người chơi online. Khi người chơi nhấn nút Lịch sử đấu, hệ thống lấy các trận chơi online đã kết thúc mà người chơi tham gia, trận mới nhất đứng đầu. Giao diện lịch sử đấu có tiêu đề Lịch sử đấu và 2 thẻ Trận của tôi, Bảng xếp hạng, trong đó thẻ Trận của tôi được mở sẵn. Trên cùng thẻ là biểu đồ tròn chia 3 phần Thắng màu xanh lá, Hòa màu vàng, Thua màu đỏ; giữa biểu đồ ghi tỉ lệ thắng, bên cạnh ghi số trận thắng, hòa, thua và tổng số trận. Dưới biểu đồ là danh sách trận. Mỗi dòng có dải màu theo kết quả, tên đối thủ, số trận, THẮNG / HÒA / THUA, điểm trận, số câu đúng của mình và của đối thủ, và thời điểm kết thúc. Người chơi bấm vào một trận để xem chi tiết. Hệ thống lấy trận đó kèm đề, đáp án đúng và bài làm từng câu của 2 người. Giao diện chi tiết trận có tiêu đề Chi tiết trận, dòng "Trận #<số trận> · <ngày giờ kết thúc>", dòng kết quả THẮNG!, THUA! hoặc HÒA! kèm điểm trận, và khung so sánh tên, số câu đúng, thời gian làm bài của mình với của đối thủ. Mục Từng câu có hàng tiêu đề cột #, Câu, tên mình, tên đối thủ và 10 dòng. Mỗi dòng ghi số thứ tự, phép tính kèm đáp án đúng, và một ô cho mỗi người chơi: dấu ✓ màu xanh hoặc ✗ màu đỏ, kèm phương án đã chọn và thời gian làm câu. Câu bỏ trống ghi "Bỏ trống". Người chơi nhấn Back để quay lại giao diện lịch sử đấu. Để xem bảng xếp hạng, người chơi chọn thẻ Bảng xếp hạng, hoặc nhấn nút Bảng xếp hạng ở giao diện chơi online để mở thẳng thẻ này. Hệ thống lấy mọi người chơi và các trận đã kết thúc rồi xếp hạng theo tổng điểm giảm dần. Ai cùng tổng điểm thì xếp theo trung bình tổng điểm của các đối thủ đã gặp, giảm dần. Ai trùng cả 2 tiêu chí thì xếp theo trung bình thời gian làm bài trong các trận thắng, tăng dần; người chưa thắng trận nào ghi "—" và đứng sau. Mỗi dòng của bảng ghi hạng, tên, tổng điểm, trung bình điểm đối thủ và trung bình thời gian thắng; dòng của chính người chơi được tô nổi bật. Người chơi nhấn Back để quay về giao diện chơi online.
-
-#### 1.2.3. Kịch bản các use case của module Xem lịch sử đấu
-
-##### 1.2.3.1. Xem lịch sử đấu
-
-| | |
-|---|---|
-| **Use case** | Xem lịch sử đấu |
-| **Actor** | Người chơi: Hùng |
-| **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online với thẻ thông tin HUNG · 13,5 điểm; Hùng đã đấu 20 trận online, trận gần nhất là trận số 37 |
-| **Hậu điều kiện** | Hùng thấy tỉ lệ thắng / hòa / thua và danh sách các trận đã đấu; dữ liệu không thay đổi; giao diện chơi online hiện lại |
-| **Sự kiện chính** | 1. Ở giao diện chơi online, Hùng nhấn nút biểu tượng **Lịch sử đấu** ở góc phải trên.<br>2. Hệ thống lấy 20 trận đã kết thúc của HUNG, trận mới nhất đứng đầu. Giao diện lịch sử đấu hiện lên, thẻ **Trận của tôi** được mở sẵn, gồm: thanh trên có tiêu đề LỊCH SỬ ĐẤU; 2 thẻ **Trận của tôi** đang chọn và Bảng xếp hạng; biểu đồ tròn Thắng 60%, Hòa 15%, Thua 25%, giữa biểu đồ ghi "60% thắng"; chú giải "Thắng 12 · Hòa 3 · Thua 5 · 20 trận"; danh sách trận như bảng dữ liệu mẫu danh sách trận của HUNG bên dưới, cuộn xuống để xem các trận cũ hơn. Tổng điểm trận của 20 trận là 12 × 1 + 3 × 0,5 = 13,5, khớp với tổng điểm của HUNG.<br>3. Hùng xem danh sách rồi nhấn Back.<br>4. Giao diện chơi online hiện lại. |
-| **Ngoại lệ** | 2a. Người chơi chưa đấu trận nào: TUAN vừa đăng ký, mở Lịch sử đấu.<br>2a.1. Biểu đồ tròn để trống, chú giải ghi "Thắng 0 · Hòa 0 · Thua 0 · 0 trận", danh sách hiện "Bạn chưa đấu trận nào". Kịch bản tiếp tục từ bước 3.<br>2b. Máy mất mạng hoặc server không phản hồi.<br>2b.1. Hệ thống báo "Không tải được lịch sử đấu, kiểm tra kết nối mạng", biểu đồ và danh sách để trống. Kịch bản tiếp tục từ bước 3.<br>2c. Trong danh sách có trận đối thủ bỏ trận: ở trận #28, HOANG nhấn Thoát giữa trận nên bị xử thua.<br>2c.1. Dòng của trận #28 ghi "THẮNG · Đối thủ bỏ trận"; trên máy của Hoàng, dòng này ghi "THUA · Bạn bỏ trận".<br>3a. Hùng bấm vào một dòng trận.<br>3a.1. Kịch bản chuyển sang use case Xem chi tiết trận.<br>3b. Hùng chọn thẻ Bảng xếp hạng.<br>3b.1. Kịch bản chuyển sang use case Xem bảng xếp hạng, từ bước 2. |
-
-Bảng dữ liệu mẫu danh sách trận của HUNG:
-
-| Trận | Đối thủ | Kết quả | Điểm | Câu đúng | Kết thúc |
-|---|---|---|---|---|---|
-| #37 | HOANG | THẮNG | +1 | 10 – 10 | 25/10 20:15 |
-| #35 | LAN | HÒA | +0,5 | 9 – 8 | 25/10 19:58 |
-| #33 | MINH | THUA | +0 | 10 – 10 | 25/10 19:40 |
-| #28 | HOANG | THẮNG · Đối thủ bỏ trận | +1 | 6 – 3 | 24/10 20:47 |
-| … | … | … | … | … | … |
-
-##### 1.2.3.2. Xem chi tiết trận
-
-| | |
-|---|---|
-| **Use case** | Xem chi tiết trận |
-| **Actor** | Người chơi: Hùng |
-| **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở thẻ Trận của tôi của giao diện lịch sử đấu với danh sách trận như bảng dữ liệu mẫu danh sách trận của HUNG ở use case Xem lịch sử đấu |
-| **Hậu điều kiện** | Hùng thấy kết quả, điểm trận, số câu đúng, thời gian làm bài của 2 bên và bài làm từng câu của trận 37; dữ liệu không thay đổi; giao diện lịch sử đấu hiện lại |
-| **Sự kiện chính** | 1. Hùng bấm vào dòng trận #37.<br>2. Hệ thống lấy trận 37 kèm đề, đáp án đúng và bài làm từng câu của HUNG và HOANG. Giao diện chi tiết trận hiện lên gồm: thanh trên có tiêu đề CHI TIẾT TRẬN; dòng "Trận #37 · 25/10/2026 20:15"; dòng kết quả **THẮNG!** màu xanh · +1 điểm; khung so sánh gồm cột HUNG 10/10 câu · 38,2 giây và cột HOANG 10/10 câu · 45,6 giây; mục Từng câu như bảng dữ liệu mẫu bài làm từng câu trận 37 bên dưới. Mỗi ô bài làm hiện 2 dòng: dòng trên là dấu ✓ màu xanh kèm phương án đã chọn, dòng dưới là thời gian làm câu. Ví dụ câu 1: HUNG chọn đúng 19 sau 3,1 giây, HOANG chọn đúng 19 sau 4,0 giây.<br>3. Hùng xem xong và nhấn Back.<br>4. Giao diện lịch sử đấu hiện lại ở thẻ Trận của tôi, danh sách giữ nguyên vị trí. |
-| **Ngoại lệ** | 1a. Hùng bấm vào trận #35 với LAN, HÒA 9 – 8, có câu sai và câu bỏ trống.<br>1a.1. Giao diện chi tiết trận hiện như bước 2. Ở câu 3 của trận này, HUNG chọn sai nên ô của HUNG hiện "✗ 23" màu đỏ, dòng dưới "5,2 s". LAN chưa làm câu 10 khi hết giờ nên ô của LAN ở câu 10 hiện "Bỏ trống" màu xám. Kịch bản tiếp tục từ bước 3.<br>1b. Hùng cuộn xuống và bấm vào trận #12 với AN. AN nhấn Thoát ở câu 4 khi chưa nộp bài nên không có bài làm.<br>1b.1. Cột AN ở khung so sánh ghi "Bỏ trận", mọi ô bài làm của AN ở mục Từng câu ghi "—". Kịch bản tiếp tục từ bước 3.<br>2a. Máy mất mạng khi Hùng bấm vào trận #37.<br>2a.1. Hệ thống báo "Không tải được chi tiết trận, kiểm tra kết nối mạng"; giao diện chi tiết trận chỉ có dòng "Trận #37", các mục kết quả và từng câu để trống. Kịch bản tiếp tục từ bước 3. |
-
-Bảng dữ liệu mẫu bài làm từng câu trận 37:
-
-| # | Câu | HUNG | HOANG |
-|---|---|---|---|
-| 1 | 12 + 7 = 19 | ✓ 19 · 3,1 s | ✓ 19 · 4,0 s |
-| 2 | 9 × 6 = 54 | ✓ 54 · 4,0 s | ✓ 54 · 4,4 s |
-| 3 | 45 − 18 = 27 | ✓ 27 · 3,4 s | ✓ 27 · 4,0 s |
-| 4 | 8 × 7 = 56 | ✓ 56 · 3,8 s | ✓ 56 · 4,7 s |
-| 5 | 36 + 25 = 61 | ✓ 61 · 3,7 s | ✓ 61 · 4,3 s |
-| 6 | 72 − 39 = 33 | ✓ 33 · 3,5 s | ✓ 33 · 4,1 s |
-| 7 | 7 × 12 = 84 | ✓ 84 · 4,1 s | ✓ 84 · 4,9 s |
-| 8 | 58 + 27 = 85 | ✓ 85 · 3,2 s | ✓ 85 · 3,8 s |
-| 9 | 91 − 46 = 45 | ✓ 45 · 3,6 s | ✓ 45 · 4,4 s |
-| 10 | 6 × 15 = 90 | ✓ 90 · 2,8 s | ✓ 90 · 3,7 s |
-
-##### 1.2.3.3. Xem bảng xếp hạng
-
-| | |
-|---|---|
-| **Use case** | Xem bảng xếp hạng |
-| **Actor** | Người chơi: Hùng |
-| **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online; hệ thống có 7 người chơi với tổng điểm và các trận đã kết thúc như bảng dữ liệu mẫu bảng xếp hạng bên dưới |
-| **Hậu điều kiện** | Hùng thấy thứ hạng của mọi người chơi; dữ liệu không thay đổi; giao diện chơi online hiện lại |
-| **Sự kiện chính** | 1. Ở giao diện chơi online, Hùng nhấn nút biểu tượng **Bảng xếp hạng** ở góc phải ngoài cùng.<br>2. Hệ thống lấy mọi người chơi và các trận đã kết thúc, tính 3 tiêu chí rồi sắp xếp. Giao diện lịch sử đấu hiện lên với thẻ **Bảng xếp hạng** được mở sẵn, thẻ Trận của tôi nằm bên cạnh để chọn qua lại. Thẻ Bảng xếp hạng hiện danh sách như bảng dữ liệu mẫu bảng xếp hạng bên dưới, dòng HUNG được tô nổi bật. HUNG và LAN cùng 13,5 điểm, HUNG đã gặp các đối thủ mạnh hơn, 11 so với 9, nên đứng trên. AN và NAM trùng cả 2 tiêu chí đầu, AN thắng nhanh hơn nên đứng trên.<br>3. Hùng xem danh sách rồi nhấn Back.<br>4. Giao diện chơi online hiện lại. |
-| **Ngoại lệ** | 1a. Đang ở thẻ Trận của tôi của giao diện lịch sử đấu, Hùng chọn thẻ Bảng xếp hạng.<br>1a.1. Kịch bản tiếp tục từ bước 2.<br>2a. Máy mất mạng khi Hùng mở thẻ Bảng xếp hạng.<br>2a.1. Hệ thống báo "Không tải được bảng xếp hạng, kiểm tra kết nối mạng", danh sách để trống.<br>2a.2. Hùng chọn thẻ Trận của tôi rồi chọn lại thẻ Bảng xếp hạng để tải lại. Kịch bản tiếp tục từ bước 2.<br>3a. Đang ở thẻ Bảng xếp hạng, Hùng chọn thẻ Trận của tôi.<br>3a.1. Giao diện hiện biểu đồ tròn và danh sách trận như bước 2 của use case Xem lịch sử đấu; Hùng bấm vào một trận để xem chi tiết như use case Xem chi tiết trận. |
-
-Bảng dữ liệu mẫu bảng xếp hạng:
-
-| Hạng | Tên | Tổng điểm | TB điểm đối thủ | TB thời gian thắng |
-|---|---|---|---|---|
-| 1 | MINH | 15 | 10,5 | 41,3 giây |
-| 2 | **HUNG** (dòng nổi bật) | 13,5 | 11 | 39,8 giây |
-| 3 | LAN | 13,5 | 9 | 44,0 giây |
-| 4 | HOANG | 9 | 13,5 | 47,2 giây |
-| 5 | AN | 4,5 | 12 | 49,0 giây |
-| 6 | NAM | 4,5 | 12 | 52,1 giây |
-| 7 | TUAN | 0 | 13,5 | — |
+Math Dash 1v1 là trò chơi giải toán nhanh gồm một server và nhiều máy client; server lưu tài khoản, trận đấu, đề bài và bài làm của người chơi. Sau khi đăng nhập, người chơi vào giao diện chính có chữ MATH DASH, lời chào "Xin chào, <tên>", 2 nút Chơi với máy, Chơi online và nút Đăng xuất ở góc phải trên. Khi người chơi nhấn Chơi online, hệ thống ghi người chơi vào danh sách online với trạng thái Rỗi và mở giao diện chơi online, gồm 3 nút biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải trên, thẻ tên và tổng điểm của người chơi, và danh sách những người khác đang ở giao diện này xếp theo tổng điểm giảm dần; mỗi dòng ghi tên, tổng điểm và trạng thái Rỗi màu xanh hoặc Bận màu xám, và danh sách tự cập nhật khi có người vào, rời đi hoặc đổi trạng thái. Người chơi bấm vào tên một người đang rỗi để thách đấu: máy người mời hiện hộp thoại "Đang chờ <tên> trả lời..." có nút Hủy, còn máy người được mời hiện hộp thoại "<tên> (<tổng điểm> điểm) thách đấu bạn" với 2 nút Đồng ý và Từ chối. Khi người được mời đồng ý, server kiểm tra cả 2 vẫn online và đang rỗi, sinh đề 10 câu, tạo trận, chuyển cả 2 sang Bận và gửi đề cho cả 2 máy. Giao diện thi đấu hiện mỗi lần một câu, với ô thời gian đếm ngược từ 01:00, dòng trạng thái "<tên đối thủ> đang làm bài", dòng "Câu 1/10", phép tính chữ lớn, 4 ô phương án xếp 2 × 2 gồm A màu đỏ, B màu xanh dương, C màu vàng, D màu xanh lá, và nút Thoát. Mỗi lần người chơi bấm một ô, hệ thống ghi phương án đã chọn và thời gian làm câu tính từ lúc câu hiện ra, rồi hiện câu tiếp theo mà chưa báo đúng hay sai; làm xong câu thứ 10 thì 4 ô ẩn đi, giao diện hiện dòng "Đã làm xong 10 câu" và nút Nộp bài. Khi người chơi nộp bài, server ghi thời điểm nộp, lưu bài làm từng câu và chấm bài, còn trên máy đối thủ dòng trạng thái đổi thành "<tên> đã nộp bài". Khi cả 2 đã nộp, server xác định kết quả: ai đúng hết và nộp nhanh hơn thì thắng, cả 2 đều có câu sai thì hòa; thắng được 1 điểm, hòa 0,5 điểm, thua 0 điểm. Server cập nhật tổng điểm và báo cho cả 2 máy. Giao diện kết quả hiện đè lên giao diện thi đấu với dòng THẮNG! màu xanh, THUA! màu đỏ hoặc HÒA! màu vàng, số câu đúng và thời gian làm bài của 2 người, điểm trận cùng tổng điểm mới, và câu hỏi "Chơi tiếp?" với 2 nút Chơi tiếp, Dừng; nếu cả 2 cùng chọn Chơi tiếp thì server sinh đề mới và tạo trận mới. Từ giao diện chơi online, người chơi nhấn nút Lịch sử đấu để xem các trận chơi online đã đấu. Giao diện lịch sử đấu có 2 thẻ Trận của tôi và Bảng xếp hạng. Thẻ Trận của tôi gồm biểu đồ tròn chia 3 phần Thắng màu xanh lá, Hòa màu vàng, Thua màu đỏ, giữa ghi tỉ lệ thắng, bên cạnh ghi số trận thắng, hòa, thua và tổng số trận; bên dưới là danh sách trận, trận mới nhất ở trên, mỗi dòng có dải màu theo kết quả, tên đối thủ, số trận, kết quả, điểm trận, số câu đúng của 2 bên và thời điểm kết thúc. Bấm vào một trận, người chơi thấy giao diện chi tiết trận với dòng "Trận #<số trận> · <ngày giờ kết thúc>", kết quả kèm điểm trận, khung so sánh số câu đúng và thời gian làm bài của 2 người, và mục Từng câu gồm 10 dòng; mỗi dòng có phép tính kèm đáp án đúng và ô bài làm của từng người ghi ✓ màu xanh hoặc ✗ màu đỏ kèm phương án đã chọn và thời gian làm câu, câu bỏ trống ghi "Bỏ trống". Thẻ Bảng xếp hạng mở được bằng cách chọn thẻ hoặc nhấn nút Bảng xếp hạng ở giao diện chơi online. Thẻ này liệt kê mọi người chơi với hạng, tên, tổng điểm, trung bình điểm đối thủ và trung bình thời gian thắng, dòng của chính người chơi được tô nổi bật. Người chơi xếp theo tổng điểm giảm dần; cùng tổng điểm thì theo trung bình tổng điểm các đối thủ đã gặp, giảm dần; trùng cả 2 thì theo trung bình thời gian làm bài trong các trận thắng, tăng dần; người chưa thắng trận nào ghi "—" và đứng sau.
 
 ---
 
@@ -245,9 +80,9 @@ Hai chức năng dùng 2 nơi lưu trữ:
   - correctCount suy ra được bằng cách đếm các dòng tblAnswer đúng của người chơi trong trận. Tuy vậy, kết quả trận, lịch sử đấu, tổng điểm và bảng xếp hạng đều đọc correctCount của mọi trận đã xong mà không cần đề và bài làm; giữ cột này thì không phải đọc và chấm lại 20 dòng tblAnswer cho mỗi trận.
 - Chỉ endedAt và submittedAt được rỗng (trận đang đấu, người chưa nộp). tblAnswer.selectedOption có mặc định −1 (bỏ trống), tblAnswer.answerTime có mặc định 0. Mật khẩu chỉ lưu dạng băm BCrypt.
 
-![Hình 3](csdl-mysql.png)
+![Hình 1](csdl-mysql.png)
 
-*Hình 3: Biểu đồ thiết kế CSDL MySQL cho chức năng Chơi online, Xem lịch sử đấu.*
+*Hình 1: Biểu đồ thiết kế CSDL MySQL cho chức năng Chơi online, Xem lịch sử đấu.*
 
 - tblMatch là trung tâm: 10 dòng tblMathProblem là đề, 2 dòng tblMatchPlayer nối trận với 2 người chơi.
 - Mỗi dòng tblMatchPlayer có các dòng tblAnswer là bài làm từng câu của người đó; mỗi dòng tblAnswer trỏ tới đúng một câu trong tblMathProblem.
@@ -319,7 +154,7 @@ Cây dữ liệu thu được:
 
 ## 3. Thiết kế lớp thực thể
 
-Đầu vào là biểu đồ lớp thực thể pha phân tích (Phụ lục A). Các lớp liên quan đến 2 chức năng: Player, Challenge, Match, MatchPlayer, MathProblem, Answer.
+Đầu vào là biểu đồ lớp thực thể pha phân tích (Phụ lục B). Các lớp liên quan đến 2 chức năng: Player, Challenge, Match, MatchPlayer, MathProblem, Answer.
 
 **Bước 1: Bổ sung thuộc tính khóa.**
 - Thêm id : int cho Player, Match, MatchPlayer, MathProblem, Answer.
@@ -366,9 +201,9 @@ Thuộc tính dẫn xuất được viết thành **phương thức nghiệp v�
 
 Player giữ thêm các giá trị dẫn xuất mà giao diện cần hiển thị cùng tên: totalPoints, avgOpponentPoints, avgWinTime do server tính; status lấy từ Firebase. Các giá trị này không có cột trong CSDL.
 
-![Hình 4](lop-thuc-the-hung.png)
+![Hình 2](lop-thuc-the-hung.png)
 
-*Hình 4: Biểu đồ lớp thực thể pha thiết kế cho Chơi online, Xem lịch sử đấu.*
+*Hình 2: Biểu đồ lớp thực thể pha thiết kế cho Chơi online, Xem lịch sử đấu.*
 
 - Không còn đường liên kết trơn nào trên biểu đồ.
 - Lớp liên kết MatchPlayer trở thành thành phần của Match và chứa Player; lớp liên kết Answer trở thành thành phần của MatchPlayer và chứa MathProblem. Mọi quan hệ chứa trên biểu đồ đều là kết tập (hình thoi rỗng).
@@ -456,9 +291,9 @@ Các lớp không có lớp cha:
 
 #### 4.1.1. Thiết kế giao diện
 
-![Hình 5](giao-dien-uc03.png)
+![Hình 3](giao-dien-uc03.png)
 
-*Hình 5: Thiết kế giao diện chức năng Chơi online.*
+*Hình 3: Thiết kế giao diện chức năng Chơi online.*
 
 Chức năng có 3 màn, 1 hộp thoại lời mời và 1 overlay, đi theo thứ tự MainActivity → OnlineActivity → hộp thoại lời mời trên máy người được mời → MatchActivity → overlay layoutResult.
 - **Màn chính** chỉ để chọn chế độ chơi: chữ MATH DASH, lời chào "Xin chào, HUNG", 2 nút lớn Chơi với máy và Chơi online. Góc phải thanh trên là nút biểu tượng đăng xuất.
@@ -509,9 +344,9 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
 
 #### 4.1.2. Biểu đồ lớp chi tiết
 
-![Hình 6](lop-thiet-ke-uc03-vp.png)
+![Hình 4](lop-thiet-ke-uc03-vp.png)
 
-*Hình 6: Biểu đồ lớp chi tiết chức năng Chơi online.*
+*Hình 4: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
 Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) ở giữa, Server (Spring Boot) bên phải. Package Common là thư viện mathdash-common.jar chứa các lớp thực thể; DAO của app và DAO của server cùng dùng một bộ thực thể này. Mỗi lớp chỉ ghi thuộc tính cốt lõi và các phương thức có trong kịch bản; DAO cha ghi đối tượng kết nối dùng chung (con), mỗi DAO ghi hàm khởi tạo và các phương thức; DAO không ghi thuộc tính kiểu chuỗi như địa chỉ server. Phần chung của các Activity và các Adapter nằm ở 2 lớp cha BaseActivity, BaseAdapter. Các View con, biến tạm, cờ trạng thái và hàm override của Android như onDestroy, onBackPressed nằm trong mã nguồn.
 
@@ -570,17 +405,17 @@ Biểu đồ của module gồm mọi lớp của cả 2 use case con nên khá 
 
 ##### 4.1.2.1. Use case Thách đấu
 
-![Hình 7: Biểu đồ lớp chi tiết use case Thách đấu](lop-thiet-ke-thach-dau-vp.png)
+![Hình 5: Biểu đồ lớp chi tiết use case Thách đấu](lop-thiet-ke-thach-dau-vp.png)
 
-*Hình 7: Biểu đồ lớp chi tiết use case Thách đấu.*
+*Hình 5: Biểu đồ lớp chi tiết use case Thách đấu.*
 
 Biểu đồ gồm các lớp của giao diện chính, giao diện chơi online và hộp thoại lời mời. MatchActivity chỉ hiện tên vì đây là màn được mở khi trận bắt đầu. Phía app, PresenceFirebaseDAO đưa người chơi vào danh sách online sau khi PlayerApiDAO lấy tổng điểm mới nhất; ChallengeFirebaseDAO gửi và theo dõi lời mời; MatchApiDAO.createMatch gọi server tạo trận. Phía server, MatchRestController.create kiểm tra lời mời và trạng thái 2 người qua FirebaseAdminDAO, sinh đề bằng ProblemDAO, lưu trận bằng MatchDAO.insert rồi ghi trận lên Firebase. Thực thể dùng ở đây là Player, Challenge, Match, MatchPlayer và MathProblem.
 
 ##### 4.1.2.2. Use case Thi đấu
 
-![Hình 8: Biểu đồ lớp chi tiết use case Thi đấu](lop-thiet-ke-thi-dau-vp.png)
+![Hình 6: Biểu đồ lớp chi tiết use case Thi đấu](lop-thiet-ke-thi-dau-vp.png)
 
-*Hình 8: Biểu đồ lớp chi tiết use case Thi đấu.*
+*Hình 6: Biểu đồ lớp chi tiết use case Thi đấu.*
 
 Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận và gọi lại MatchActivity qua MatchCallback; PresenceFirebaseDAO cho biết đối thủ còn online hay không. MatchApiDAO gửi bài làm bằng submit, gửi lựa chọn chơi tiếp bằng continueMatch và lấy kết quả bằng getById. Phía server, MatchRestController chấm bài bằng Match.countCorrect, lưu bài làm bằng MatchDAO.updateSubmission, kết thúc trận bằng endMatch và cập nhật tổng điểm qua PlayerDAO.getTotalPoints, FirebaseAdminDAO.updatePoints. Khi cả 2 chọn chơi tiếp, ProblemDAO sinh đề mới và MatchDAO.insert lưu trận mới. Thực thể dùng ở đây là Player, Match, MatchPlayer, Answer và MathProblem.
 
@@ -632,9 +467,9 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 42. Hàm closeSentChallenge() gọi hàm stopWatchingSent() của ChallengeFirebaseDAO để gỡ theo dõi lời mời, rồi đóng hộp thoại chờ.
 43. Hàm onChallengeChanged() gọi hàm openMatch() để mở MatchActivity với mã trận trong lời mời.
 
-![Hình 9](tuan-tu-thiet-ke-uc03a.png)
+![Hình 7](tuan-tu-thiet-ke-uc03a.png)
 
-*Hình 9: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
+*Hình 7: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
 - Biểu đồ có 43 thông điệp.
 - MainActivity chỉ là điểm vào: nút Chơi online mở OnlineActivity (bước 1–2). Mọi việc của chức năng này, từ danh sách online tới lời mời, nằm ở OnlineActivity.
@@ -686,9 +521,9 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 34. MatchApiDAO trả đối tượng Match cho hàm acceptChallenge().
 35. Trong hàm runOnUiThread(), hàm acceptChallenge() gọi hàm openMatch() để mở MatchActivity với mã trận.
 
-![Hình 10](tuan-tu-thiet-ke-uc03b.png)
+![Hình 8](tuan-tu-thiet-ke-uc03b.png)
 
-*Hình 10: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
+*Hình 8: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
 - Biểu đồ có 35 thông điệp.
 - **Server sinh đề** (bước 19–22) và lưu đề vào MySQL cùng trận (bước 23–25), vì server cần đáp án để chấm bài sau này.
@@ -804,9 +639,9 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 98. Match trả về điểm trận của người chơi.
 99. MatchActivity hiển thị lớp kết quả gồm kết quả, số câu đúng, thời gian làm bài, điểm trận, tổng điểm và câu hỏi chơi tiếp cho người chơi.
 
-![Hình 11](tuan-tu-thiet-ke-uc03c.png)
+![Hình 9](tuan-tu-thiet-ke-uc03c.png)
 
-*Hình 11: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
+*Hình 9: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
 
 - Biểu đồ có 99 thông điệp.
 - Bước 2 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở đoạn A.
@@ -856,9 +691,9 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 29. Hàm openNextMatch() gọi hàm stopWatching() của MatchFirebaseDAO để ngừng theo dõi trận cũ.
 30. Hàm openNextMatch() mở MatchActivity mới với mã trận mới và đóng màn hiện tại; trận mới diễn ra như đoạn C.
 
-![Hình 12](tuan-tu-thiet-ke-uc03d.png)
+![Hình 10](tuan-tu-thiet-ke-uc03d.png)
 
-*Hình 12: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.*
+*Hình 10: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.*
 
 - Biểu đồ có 30 thông điệp, vẽ cho người chọn chơi tiếp trước.
 - Hàm continueMatch() chạy tuần tự (synchronized). Nếu 2 yêu cầu chơi tiếp đến cùng lúc, chỉ yêu cầu đến sau tạo trận mới, nên không sinh 2 trận.
@@ -869,18 +704,18 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 
 #### 4.2.1. Thiết kế giao diện
 
-![Hình 13](giao-dien-uc04.png)
+![Hình 11](giao-dien-uc04.png)
 
-*Hình 13: Thiết kế giao diện chức năng Xem lịch sử đấu.*
+*Hình 11: Thiết kế giao diện chức năng Xem lịch sử đấu.*
 
 Chức năng đi từ màn Chơi online: biểu tượng đồng hồ mở màn Lịch sử đấu ở thẻ Trận của tôi, biểu tượng bảng xếp hạng ở góc phải ngoài cùng mở thẳng thẻ Bảng xếp hạng. Màn Lịch sử đấu có thanh trên với tiêu đề LỊCH SỬ ĐẤU căn trái, dưới là 2 thẻ.
 - **Thẻ Trận của tôi** mở sẵn khi vào từ biểu tượng Lịch sử đấu. Trên cùng là thẻ tóm tắt: biểu đồ tròn dạng vành khuyên bên trái, giữa ghi tỉ lệ thắng to; chú giải 3 màu và tổng số trận bên phải. Người chơi thấy ngay phong độ của mình trước khi đọc từng trận.
 - **Danh sách trận** nằm dưới thẻ tóm tắt, trận mới nhất ở trên. Mỗi dòng là một item_match_history.xml có dải màu bên trái theo kết quả: xanh lá thắng, vàng hòa, đỏ thua. Dòng trên ghi đối thủ, số trận, kết quả, điểm trận; dòng dưới ghi số câu đúng 2 bên và thời điểm kết thúc. Trận có người bỏ trận ghi thêm "Đối thủ bỏ trận" hoặc "Bạn bỏ trận".
 - **Thẻ Bảng xếp hạng** giữ nguyên bố cục bảng xếp hạng: hàng tiêu đề cột cố định, mỗi dòng là một item_ranking.xml, dòng của người xem có nền màu nhấn.
 
-![Hình 14](giao-dien-uc04b.png)
+![Hình 12](giao-dien-uc04b.png)
 
-*Hình 14: Thiết kế giao diện chi tiết trận.*
+*Hình 12: Thiết kế giao diện chi tiết trận.*
 
 Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn trái, nội dung đi từ tổng quát tới chi tiết:
 - Trên cùng là số trận kèm thời điểm kết thúc, kết quả và điểm trận chữ to.
@@ -923,9 +758,9 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 
 #### 4.2.2. Biểu đồ lớp chi tiết
 
-![Hình 15](lop-thiet-ke-uc04-vp.png)
+![Hình 13](lop-thiet-ke-uc04-vp.png)
 
-*Hình 15: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
+*Hình 13: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
 Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) ở giữa, Server (Spring Boot) bên phải. Package Common là thư viện mathdash-common.jar chứa các lớp thực thể; DAO của app và DAO của server cùng dùng một bộ thực thể này. Mỗi lớp chỉ ghi thuộc tính cốt lõi và các phương thức có trong kịch bản; DAO cha ghi đối tượng kết nối dùng chung (con), mỗi DAO ghi hàm khởi tạo và các phương thức; DAO không ghi thuộc tính kiểu chuỗi như địa chỉ server. Phần chung của các Activity và các Adapter nằm ở 2 lớp cha BaseActivity, BaseAdapter. Các View con, biến tạm, cờ trạng thái và hàm override của Android như onDestroy, onBackPressed nằm trong mã nguồn.
 
@@ -974,25 +809,25 @@ Mỗi biểu đồ dưới đây chỉ có các lớp và phương thức mà m�
 
 ##### 4.2.2.1. Use case Xem lịch sử đấu
 
-![Hình 16: Biểu đồ lớp chi tiết use case Xem lịch sử đấu](lop-thiet-ke-xem-lich-su-vp.png)
+![Hình 14: Biểu đồ lớp chi tiết use case Xem lịch sử đấu](lop-thiet-ke-xem-lich-su-vp.png)
 
-*Hình 16: Biểu đồ lớp chi tiết use case Xem lịch sử đấu.*
+*Hình 14: Biểu đồ lớp chi tiết use case Xem lịch sử đấu.*
 
 OnlineActivity mở HistoryActivity. PieChartView vẽ tỉ lệ thắng, hòa, thua và MatchHistoryAdapter hiện danh sách trận. MatchDetailActivity chỉ hiện tên vì đây là màn mở ra khi bấm một trận. MatchApiDAO.getHistory gọi MatchRestController.getHistory, và MatchDAO.findByPlayer đọc các trận đã kết thúc của người chơi. Thực thể dùng ở đây là Player, Match và MatchPlayer; lịch sử đấu không kèm đề và bài làm.
 
 ##### 4.2.2.2. Use case Xem chi tiết trận
 
-![Hình 17: Biểu đồ lớp chi tiết use case Xem chi tiết trận](lop-thiet-ke-xem-chi-tiet-tran-vp.png)
+![Hình 15: Biểu đồ lớp chi tiết use case Xem chi tiết trận](lop-thiet-ke-xem-chi-tiet-tran-vp.png)
 
-*Hình 17: Biểu đồ lớp chi tiết use case Xem chi tiết trận.*
+*Hình 15: Biểu đồ lớp chi tiết use case Xem chi tiết trận.*
 
 HistoryActivity.onMatchClick mở MatchDetailActivity. MatchDetailActivity lấy trận bằng MatchApiDAO.getById rồi gắn ProblemAdapter để hiện 10 câu cùng bài làm của 2 người. Phía server, MatchRestController.getById đọc đề và bài làm bằng MatchDAO.findById, findAnswers, rồi gán tổng điểm bằng PlayerDAO.getTotalPoints. Thực thể dùng ở đây là Player, Match, MatchPlayer, Answer và MathProblem.
 
 ##### 4.2.2.3. Use case Xem bảng xếp hạng
 
-![Hình 18: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng](lop-thiet-ke-xem-bang-xep-hang-vp.png)
+![Hình 16: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng](lop-thiet-ke-xem-bang-xep-hang-vp.png)
 
-*Hình 18: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng.*
+*Hình 16: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng.*
 
 OnlineActivity mở HistoryActivity ở thẻ Bảng xếp hạng; onTabSelected gọi loadRanking và RankingAdapter hiện danh sách. PlayerApiDAO.getRanking gọi PlayerRestController.getRanking. PlayerDAO lấy mọi người chơi bằng findAllPlayers, lấy các trận đã xong bằng MatchDAO.findFinished, rồi rank tính 3 tiêu chí qua addMatch, averagePoints, averageSeconds. Thực thể dùng ở đây là Player, Match và MatchPlayer.
 
@@ -1078,9 +913,9 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 73. MatchDetailActivity gọi hàm finish(), quay về HistoryActivity.
 74. HistoryActivity hiển thị lại danh sách trận cho người chơi.
 
-![Hình 19](tuan-tu-thiet-ke-uc04a.png)
+![Hình 17](tuan-tu-thiet-ke-uc04a.png)
 
-*Hình 19: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
+*Hình 17: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
 - Biểu đồ có 74 thông điệp.
 - Bước 3–4 và 32–33 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
@@ -1130,9 +965,9 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 36. HistoryActivity gọi hàm finish(), quay về OnlineActivity.
 37. OnlineActivity hiển thị lại màn Chơi online cho người chơi.
 
-![Hình 20](tuan-tu-thiet-ke-uc04b.png)
+![Hình 18](tuan-tu-thiet-ke-uc04b.png)
 
-*Hình 20: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
+*Hình 18: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 
 - Biểu đồ có 37 thông điệp.
 - Bước 4 lược bỏ thông điệp đóng gói Player bên trong SessionDAO, vì đã vẽ ở chức năng Chơi online.
@@ -1146,13 +981,170 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 
 ## Phụ lục: các bước phân tích
 
-### A. Lớp thực thể pha phân tích
+### A. Biểu đồ use case chi tiết và kịch bản v1
+
+#### A.1. Biểu đồ use case chi tiết module Đấu đối kháng
+
+![Hình 19](uc-chi-tiet-doi-khang.png)
+
+*Hình 19: Biểu đồ use case chi tiết module Đấu đối kháng.*
+
+Người chơi khởi phát trực tiếp use case Chơi online (UC03). Use case này include 3 use case. Đăng nhập thuộc module Tài khoản: người chơi phải đăng nhập rồi mới chơi online được. Thách đấu diễn ra ở giao diện chơi online, nơi người chơi xem danh sách người đang online và bấm vào tên một người đang rỗi để mời; người được mời đồng ý hoặc từ chối trên hộp thoại lời mời. Thi đấu diễn ra ở giao diện thi đấu: 2 người làm lần lượt 10 câu rồi nộp bài, sau đó giao diện kết quả hiện kết quả, điểm trận và hỏi có chơi tiếp không. Hủy lời mời, Từ chối, Thoát trận, Chơi tiếp và Dừng là các bước bên trong Thách đấu và Thi đấu nên không tách thành use case riêng.
+
+| Use case | Mô tả |
+|---|---|
+| Chơi online (UC03) | Vào giao diện chơi online, thách đấu một người chơi online, thi đấu trên cùng đề do server sinh, nhận kết quả do server xác định |
+| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
+| Thách đấu | Người chơi chọn một người đang rỗi trong danh sách online và gửi lời mời; người được mời đồng ý thì server sinh đề, tạo trận và đưa cả 2 vào trận, từ chối thì người mời nhận thông báo |
+| Thi đấu | Hai người làm cùng đề 10 câu, mỗi lần một câu, trong tối đa 60 giây, nộp bài; server lưu bài làm từng câu, chấm, xác định kết quả, cộng điểm; sau trận hai người chọn chơi tiếp hoặc dừng |
+
+#### A.2. Kịch bản UC03 "Chơi online"
+
+**Dữ liệu mẫu:**
+
+| Người chơi | Tên đăng nhập | Tên hiển thị | Tổng điểm | Trạng thái | Máy |
+|---|---|---|---|---|---|
+| Hùng | hung | HUNG | 12,5 | Rỗi | Máy 1, người mời |
+| Hoàng | hoang | HOANG | 9 | Rỗi | Máy 2, người được mời |
+| Minh | minh | MINH | 15 | Bận | Máy 3, đang đấu với người khác |
+| Lan | lan | LAN | 4,5 | Rỗi | Máy 4 |
+
+Trận số 37 bắt đầu lúc 20:15:03,0 ngày 25/10/2026. Đề bài server sinh cho trận 37:
+
+| Câu | Phép tính | Ô A | Ô B | Ô C | Ô D | Đáp án đúng |
+|---|---|---|---|---|---|---|
+| 1 | 12 + 7 | 17 | 19 | 21 | 18 | B · 19 |
+| 2 | 9 × 6 | 48 | 54 | 56 | 63 | B · 54 |
+| 3 | 45 − 18 | 27 | 23 | 33 | 37 | A · 27 |
+| 4 | 8 × 7 | 54 | 56 | 48 | 64 | B · 56 |
+| 5 | 36 + 25 | 51 | 61 | 59 | 71 | B · 61 |
+| 6 | 72 − 39 | 33 | 43 | 31 | 37 | A · 33 |
+| 7 | 7 × 12 | 74 | 84 | 82 | 96 | B · 84 |
+| 8 | 58 + 27 | 75 | 85 | 83 | 95 | B · 85 |
+| 9 | 91 − 46 | 45 | 55 | 35 | 47 | A · 45 |
+| 10 | 6 × 15 | 80 | 90 | 96 | 75 | B · 90 |
+
+Bài làm của HUNG và HOANG trong trận 37. Thời gian làm câu tính từ lúc câu hiện ra tới lúc người chơi bấm chọn:
+
+| Câu | HUNG chọn | Thời gian | HOANG chọn | Thời gian |
+|---|---|---|---|---|
+| 1 | 19 | 3,1 giây | 19 | 4,0 giây |
+| 2 | 54 | 4,0 giây | 54 | 4,4 giây |
+| 3 | 27 | 3,4 giây | 27 | 4,0 giây |
+| 4 | 56 | 3,8 giây | 56 | 4,7 giây |
+| 5 | 61 | 3,7 giây | 61 | 4,3 giây |
+| 6 | 33 | 3,5 giây | 33 | 4,1 giây |
+| 7 | 84 | 4,1 giây | 84 | 4,9 giây |
+| 8 | 85 | 3,2 giây | 85 | 3,8 giây |
+| 9 | 45 | 3,6 giây | 45 | 4,4 giây |
+| 10 | 90 | 2,8 giây | 90 | 3,7 giây |
+| Tổng | 10/10 câu đúng | 35,2 giây | 10/10 câu đúng | 42,3 giây |
+
+HUNG nhấn Nộp bài ở giây 38,2, HOANG ở giây 45,6, tính từ lúc trận bắt đầu.
+
+| | |
+|---|---|
+| **Use case** | Chơi online (UC03), gồm Thách đấu, Thi đấu |
+| **Actor** | Người chơi: Hùng ở máy 1 là người mời, Hoàng ở máy 2 là người được mời; mỗi người là actor trên máy của mình |
+| **Tiền điều kiện** | Cả 2 người chơi đã đăng nhập, máy có kết nối mạng; Hùng đang ở giao diện chính trên máy 1; Hoàng đã vào giao diện chơi online trên máy 2; MINH đang đấu với người khác trên máy 3 |
+| **Hậu điều kiện** | Trận 37 được lưu trên server cùng đề, bài làm từng câu, số câu đúng và thời gian nộp bài của 2 người; tổng điểm của HUNG thành 13,5, của HOANG giữ 9; cả 2 thấy cùng một kết quả; trận 38 bắt đầu |
+| **Sự kiện chính** | 1. Trên máy 1, giao diện chính của Hùng hiện lên gồm: tiêu đề MATH DASH; lời chào "Xin chào, HUNG"; 2 nút **Chơi với máy**, **Chơi online**; nút Đăng xuất dạng biểu tượng ở góc phải trên.<br>2. Hùng nhấn **Chơi online**.<br>3. Hệ thống ghi HUNG vào danh sách online với trạng thái Rỗi. Giao diện chơi online hiện lên gồm: thanh trên có tiêu đề CHƠI ONLINE và 3 nút biểu tượng **Bạn bè**, **Lịch sử đấu**, **Bảng xếp hạng** ở góc phải trên; thẻ thông tin HUNG · 12,5 điểm; mục Người chơi online gồm 3 dòng MINH · 15 · Bận, HOANG · 9 · Rỗi, LAN · 4,5 · Rỗi. Trên máy 2 và máy 4, dòng HUNG · 12,5 · Rỗi xuất hiện trong danh sách.<br>4. Hùng bấm vào dòng HOANG.<br>5. Hệ thống thấy HOANG đang rỗi, gửi lời mời tới máy 2. Máy 1 hiện hộp thoại "Đang chờ HOANG trả lời..." với nút **Hủy**.<br>6. Trên máy 2, ở giao diện chơi online của Hoàng, hộp thoại "HUNG (12,5 điểm) thách đấu bạn" hiện lên với 2 nút **Đồng ý**, **Từ chối**.<br>7. Hoàng nhấn **Đồng ý**.<br>8. Server kiểm tra HUNG và HOANG vẫn online và đang rỗi. Server sinh đề 10 câu như bảng đề bài trận 37 ở phần Dữ liệu mẫu, tạo trận số 37 bắt đầu lúc 20:15:03,0 ngày 25/10/2026, chuyển HUNG và HOANG sang Bận, rồi gửi đề cho cả 2 máy.<br>9. Máy 2 chuyển sang giao diện thi đấu. Cùng lúc, máy 1 đóng hộp thoại chờ và chuyển sang giao diện thi đấu. Trên máy của Lan, HUNG và HOANG chuyển sang Bận.<br>10. Giao diện thi đấu trên máy 1 hiện câu 1, gồm: ô thời gian 01:00 đếm ngược mỗi giây; dòng trạng thái "HOANG đang làm bài"; dòng "Câu 1/10"; phép tính "12 + 7 = ?"; 4 ô phương án **A** 17 màu đỏ, **B** 19 màu xanh dương, **C** 21 màu vàng, **D** 18 màu xanh lá; nút **Thoát**. Máy 2 hiện cùng câu 1, dòng trạng thái là "HUNG đang làm bài".<br>11. Sau 3,1 giây, Hùng bấm ô **B** 19.<br>12. Hệ thống ghi câu 1 của HUNG: phương án 19, thời gian 3,1 giây. Ô B giữ nguyên, 3 ô còn lại mờ đi, không báo đúng hay sai. Câu 2 hiện ra: "Câu 2/10", "9 × 6 = ?", **A** 48, **B** 54, **C** 56, **D** 63.<br>13. Các bước 11–12 lặp lại tới câu 10. Hùng lần lượt chọn 54, 27, 56, 61, 33, 84, 85, 45, 90, thời gian từng câu như bảng bài làm trận 37 ở phần Dữ liệu mẫu.<br>14. Sau khi Hùng chọn ở câu 10, thẻ câu hỏi chỉ còn dòng "Đã làm xong 10 câu", 4 ô ẩn đi, nút **Nộp bài** hiện cạnh nút **Thoát**. Ô thời gian còn 00:22.<br>15. Hùng nhấn **Nộp bài**.<br>16. Máy 1 hiện "Đang nộp bài...". Server nhận bài làm của HUNG lúc 20:15:41,2, tức thời gian làm bài 38,2 giây, lưu phương án và thời gian làm từng câu, chấm đúng 10/10 câu. Máy 1 ẩn nút Nộp bài, hiện "Đã nộp bài, đang chờ đối thủ...". Trên máy 2, dòng trạng thái đổi thành "HUNG đã nộp bài".<br>17. Hoàng làm xong 10 câu và nhấn **Nộp bài** trên máy 2.<br>18. Server nhận bài làm của HOANG lúc 20:15:48,6, tức 45,6 giây, lưu bài làm từng câu, chấm đúng 10/10 câu.<br>19. Server xác định kết quả: không ai bỏ trận, cả 2 đúng hết, HUNG nộp nhanh hơn nên HUNG thắng. HUNG được 1 điểm, tổng điểm thành 13,5; HOANG được 0 điểm, tổng điểm giữ 9. Server lưu trận và báo cả 2 máy.<br>20. Giao diện kết quả hiện đè lên giao diện thi đấu trên máy 1, gồm: dòng kết quả **THẮNG!** màu xanh; dòng Bạn 10/10 câu đúng · 38,2 giây; dòng HOANG 10/10 câu đúng · 45,6 giây; dòng điểm +1 điểm · Tổng điểm: 13,5; câu hỏi "Chơi tiếp?"; 2 nút **Chơi tiếp**, **Dừng**. Máy 2 hiện **THUA!** màu đỏ, +0 điểm, tổng điểm 9.<br>21. Hùng nhấn **Chơi tiếp**.<br>22. Máy 1 ẩn 2 nút, hiện "Đang chờ đối thủ...".<br>23. Hoàng nhấn **Chơi tiếp** trên máy 2.<br>24. Server sinh đề mới, câu đầu là 23 + 48, tạo trận số 38 và gửi đề cho cả 2 máy.<br>25. Cả 2 máy hiện giao diện thi đấu của trận 38: ô thời gian 01:00, "Câu 1/10", "23 + 48 = ?". Trận 38 diễn ra như các bước 10–20. |
+| **Ngoại lệ** | 3a. Không có ai khác online, chỉ có HUNG ở giao diện chơi online.<br>3a.1. Mục Người chơi online hiện "Chưa có ai khác online"; danh sách tự hiện người chơi khi có người vào. Kịch bản tiếp tục từ bước 4 khi có người vào giao diện chơi online.<br>3b. Hùng nhấn Back ở giao diện chơi online.<br>3b.1. Hệ thống xóa HUNG khỏi danh sách online; máy 1 về giao diện chính. Trên máy 2 và máy 4, dòng HUNG biến khỏi danh sách; không ai thách đấu được HUNG cho tới khi Hùng nhấn lại **Chơi online**. Use case kết thúc.<br>4a. Hùng bấm vào dòng MINH.<br>4a.1. MINH đang Bận nên hệ thống báo "MINH đang bận", không gửi lời mời, giữ nguyên giao diện chơi online. Kịch bản tiếp tục từ bước 4.<br>5a. Hùng nhấn **Hủy** trên hộp thoại chờ.<br>5a.1. Lời mời bị hủy, máy 1 ở lại giao diện chơi online.<br>5a.2. Nếu Hoàng nhấn **Đồng ý** sau đó thì server thấy lời mời đã hủy nên không tạo trận; máy 2 báo "Không bắt đầu được trận đấu". Use case kết thúc.<br>7a. Hoàng nhấn **Từ chối**.<br>7a.1. Máy 2 đóng hộp thoại. Máy 1 đóng hộp thoại chờ và báo "HOANG đã từ chối lời mời"; Hùng vẫn ở giao diện chơi online, có thể mời người khác. Kịch bản tiếp tục từ bước 4.<br>8a. Hùng rời giao diện chơi online hoặc tắt ứng dụng trước khi Hoàng nhấn **Đồng ý**.<br>8a.1. Server thấy HUNG không còn online nên không tạo trận. Máy 2 báo "Không bắt đầu được trận đấu" và ở lại giao diện chơi online. Use case kết thúc.<br>11a. Hùng mới làm xong 8 câu thì ô thời gian về 00:00.<br>11a.1. Thẻ câu hỏi hiện "Hết giờ", hệ thống tự nộp bài; câu 9 và câu 10 ghi là bỏ trống và tính là sai, HUNG đúng 8/10. Kịch bản tiếp tục từ bước 16 với thời gian làm bài của HUNG là 60 giây.<br>11b. Đang làm bài ở một trong các bước 11–15, Hùng nhấn **Thoát**.<br>11b.1. Hệ thống hỏi "Thoát sẽ bị xử thua?" với 2 nút **Ở lại**, **Thoát**.<br>11b.2. Hùng nhấn **Thoát**.<br>11b.3. Server xử HUNG thua, HOANG thắng và được 1 điểm, tổng điểm thành 10, rồi trả cả 2 về Rỗi. Máy 1 về giao diện chơi online. Máy 2 báo "Đối thủ đã thoát, bạn thắng" và hiện giao diện kết quả **THẮNG!** chỉ có nút **Về menu**, không hỏi chơi tiếp. Use case kết thúc.<br>11b.4. Nếu ở bước 11b.2 Hùng nhấn **Ở lại** thì hộp thoại đóng, Hùng tiếp tục làm bài ở câu đang làm, ô thời gian vẫn chạy. Kịch bản tiếp tục từ bước 11.<br>11c. Đang ở một trong các bước 11–17, máy 2 mất mạng khi Hoàng đang làm bài.<br>11c.1. HOANG biến khỏi danh sách online; hệ thống xử HOANG bỏ trận.<br>11c.2. Máy 1 báo "Đối thủ đã thoát, bạn thắng" và hiện giao diện kết quả **THẮNG!** chỉ có nút **Về menu**, như bước 11b.3. Use case kết thúc.<br>15a. Hùng đã làm xong 10 câu nhưng chưa nhấn **Nộp bài** thì ô thời gian về 00:00.<br>15a.1. Hệ thống tự nộp đủ 10 câu. Kịch bản tiếp tục từ bước 16 với thời gian làm bài của HUNG là 60 giây.<br>16a. Máy 1 không kết nối được server khi nộp bài.<br>16a.1. Hệ thống báo "Không kết nối được máy chủ, kiểm tra kết nối mạng", nút **Nộp bài** hiện lại để Hùng nộp lại; ô thời gian vẫn chạy. Kịch bản tiếp tục từ bước 15.<br>19a. Hoàng chọn ô **A** 74 ở câu 7 nên chỉ đúng 9/10, dù nộp ở giây 30,0.<br>19a.1. HUNG đúng hết nên server xác định HUNG thắng, không xét thời gian. Kịch bản tiếp tục từ bước 20.<br>19b. HUNG chọn ô **B** 23 ở câu 3, HOANG chọn ô **C** 35 ở câu 9; cả 2 đều có câu sai.<br>19b.1. Server xác định hòa, mỗi người được 0,5 điểm: tổng điểm HUNG thành 13, HOANG thành 9,5.<br>19b.2. Giao diện kết quả hiện **HÒA!** màu vàng. Kịch bản tiếp tục từ bước 21.<br>23a. Hoàng nhấn **Dừng**.<br>23a.1. Server trả HUNG và HOANG về Rỗi. Máy 2 về giao diện chơi online. Máy 1 báo "Đối thủ đã dừng chơi" và về giao diện chơi online. Use case kết thúc. |
+
+#### A.3. Biểu đồ use case chi tiết module Xem lịch sử đấu
+
+![Hình 20](uc-chi-tiet-lich-su-dau.png)
+
+*Hình 20: Biểu đồ use case chi tiết module Xem lịch sử đấu.*
+
+Người chơi khởi phát trực tiếp use case Xem lịch sử đấu (UC04). Use case này include Đăng nhập của module Tài khoản, vì người chơi phải đăng nhập rồi mới xem được lịch sử đấu. Xem chi tiết trận và Xem bảng xếp hạng là 2 use case extend Xem lịch sử đấu. Ở giao diện lịch sử đấu, người chơi có thể bấm vào một trận để mở giao diện chi tiết trận. Người chơi cũng có thể mở thẻ Bảng xếp hạng, bằng cách chọn thẻ này khi đang xem lịch sử đấu hoặc nhấn nút Bảng xếp hạng ở giao diện chơi online.
+
+| Use case | Mô tả |
+|---|---|
+| Xem lịch sử đấu (UC04) | Xem tỉ lệ thắng / hòa / thua dạng biểu đồ tròn và danh sách các trận chơi online mình đã đấu, trận mới nhất đứng đầu |
+| Đăng nhập | Người chơi nhập tên đăng nhập, mật khẩu để vào hệ thống |
+| Xem chi tiết trận | Xem đối thủ, kết quả, điểm trận, số câu đúng và thời gian làm bài của 2 bên; 10 câu của đề, mỗi câu có phép tính kèm đáp án đúng và bài làm của từng người: đúng / sai, phương án đã chọn, thời gian làm câu |
+| Xem bảng xếp hạng | Xem thứ hạng mọi người chơi theo tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng |
+
+#### A.4. Kịch bản các use case của module Xem lịch sử đấu
+
+##### A.4.1. Xem lịch sử đấu
+
+| | |
+|---|---|
+| **Use case** | Xem lịch sử đấu |
+| **Actor** | Người chơi: Hùng |
+| **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online với thẻ thông tin HUNG · 13,5 điểm; Hùng đã đấu 20 trận online, trận gần nhất là trận số 37 |
+| **Hậu điều kiện** | Hùng thấy tỉ lệ thắng / hòa / thua và danh sách các trận đã đấu; dữ liệu không thay đổi; giao diện chơi online hiện lại |
+| **Sự kiện chính** | 1. Ở giao diện chơi online, Hùng nhấn nút biểu tượng **Lịch sử đấu** ở góc phải trên.<br>2. Hệ thống lấy 20 trận đã kết thúc của HUNG, trận mới nhất đứng đầu. Giao diện lịch sử đấu hiện lên, thẻ **Trận của tôi** được mở sẵn, gồm: thanh trên có tiêu đề LỊCH SỬ ĐẤU; 2 thẻ **Trận của tôi** đang chọn và Bảng xếp hạng; biểu đồ tròn Thắng 60%, Hòa 15%, Thua 25%, giữa biểu đồ ghi "60% thắng"; chú giải "Thắng 12 · Hòa 3 · Thua 5 · 20 trận"; danh sách trận như bảng dữ liệu mẫu danh sách trận của HUNG bên dưới, cuộn xuống để xem các trận cũ hơn. Tổng điểm trận của 20 trận là 12 × 1 + 3 × 0,5 = 13,5, khớp với tổng điểm của HUNG.<br>3. Hùng xem danh sách rồi nhấn Back.<br>4. Giao diện chơi online hiện lại. |
+| **Ngoại lệ** | 2a. Người chơi chưa đấu trận nào: TUAN vừa đăng ký, mở Lịch sử đấu.<br>2a.1. Biểu đồ tròn để trống, chú giải ghi "Thắng 0 · Hòa 0 · Thua 0 · 0 trận", danh sách hiện "Bạn chưa đấu trận nào". Kịch bản tiếp tục từ bước 3.<br>2b. Máy mất mạng hoặc server không phản hồi.<br>2b.1. Hệ thống báo "Không tải được lịch sử đấu, kiểm tra kết nối mạng", biểu đồ và danh sách để trống. Kịch bản tiếp tục từ bước 3.<br>2c. Trong danh sách có trận đối thủ bỏ trận: ở trận #28, HOANG nhấn Thoát giữa trận nên bị xử thua.<br>2c.1. Dòng của trận #28 ghi "THẮNG · Đối thủ bỏ trận"; trên máy của Hoàng, dòng này ghi "THUA · Bạn bỏ trận".<br>3a. Hùng bấm vào một dòng trận.<br>3a.1. Kịch bản chuyển sang use case Xem chi tiết trận.<br>3b. Hùng chọn thẻ Bảng xếp hạng.<br>3b.1. Kịch bản chuyển sang use case Xem bảng xếp hạng, từ bước 2. |
+
+Bảng dữ liệu mẫu danh sách trận của HUNG:
+
+| Trận | Đối thủ | Kết quả | Điểm | Câu đúng | Kết thúc |
+|---|---|---|---|---|---|
+| #37 | HOANG | THẮNG | +1 | 10 – 10 | 25/10 20:15 |
+| #35 | LAN | HÒA | +0,5 | 9 – 8 | 25/10 19:58 |
+| #33 | MINH | THUA | +0 | 10 – 10 | 25/10 19:40 |
+| #28 | HOANG | THẮNG · Đối thủ bỏ trận | +1 | 6 – 3 | 24/10 20:47 |
+| … | … | … | … | … | … |
+
+##### A.4.2. Xem chi tiết trận
+
+| | |
+|---|---|
+| **Use case** | Xem chi tiết trận |
+| **Actor** | Người chơi: Hùng |
+| **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở thẻ Trận của tôi của giao diện lịch sử đấu với danh sách trận như bảng dữ liệu mẫu danh sách trận của HUNG ở use case Xem lịch sử đấu |
+| **Hậu điều kiện** | Hùng thấy kết quả, điểm trận, số câu đúng, thời gian làm bài của 2 bên và bài làm từng câu của trận 37; dữ liệu không thay đổi; giao diện lịch sử đấu hiện lại |
+| **Sự kiện chính** | 1. Hùng bấm vào dòng trận #37.<br>2. Hệ thống lấy trận 37 kèm đề, đáp án đúng và bài làm từng câu của HUNG và HOANG. Giao diện chi tiết trận hiện lên gồm: thanh trên có tiêu đề CHI TIẾT TRẬN; dòng "Trận #37 · 25/10/2026 20:15"; dòng kết quả **THẮNG!** màu xanh · +1 điểm; khung so sánh gồm cột HUNG 10/10 câu · 38,2 giây và cột HOANG 10/10 câu · 45,6 giây; mục Từng câu như bảng dữ liệu mẫu bài làm từng câu trận 37 bên dưới. Mỗi ô bài làm hiện 2 dòng: dòng trên là dấu ✓ màu xanh kèm phương án đã chọn, dòng dưới là thời gian làm câu. Ví dụ câu 1: HUNG chọn đúng 19 sau 3,1 giây, HOANG chọn đúng 19 sau 4,0 giây.<br>3. Hùng xem xong và nhấn Back.<br>4. Giao diện lịch sử đấu hiện lại ở thẻ Trận của tôi, danh sách giữ nguyên vị trí. |
+| **Ngoại lệ** | 1a. Hùng bấm vào trận #35 với LAN, HÒA 9 – 8, có câu sai và câu bỏ trống.<br>1a.1. Giao diện chi tiết trận hiện như bước 2. Ở câu 3 của trận này, HUNG chọn sai nên ô của HUNG hiện "✗ 23" màu đỏ, dòng dưới "5,2 s". LAN chưa làm câu 10 khi hết giờ nên ô của LAN ở câu 10 hiện "Bỏ trống" màu xám. Kịch bản tiếp tục từ bước 3.<br>1b. Hùng cuộn xuống và bấm vào trận #12 với AN. AN nhấn Thoát ở câu 4 khi chưa nộp bài nên không có bài làm.<br>1b.1. Cột AN ở khung so sánh ghi "Bỏ trận", mọi ô bài làm của AN ở mục Từng câu ghi "—". Kịch bản tiếp tục từ bước 3.<br>2a. Máy mất mạng khi Hùng bấm vào trận #37.<br>2a.1. Hệ thống báo "Không tải được chi tiết trận, kiểm tra kết nối mạng"; giao diện chi tiết trận chỉ có dòng "Trận #37", các mục kết quả và từng câu để trống. Kịch bản tiếp tục từ bước 3. |
+
+Bảng dữ liệu mẫu bài làm từng câu trận 37:
+
+| # | Câu | HUNG | HOANG |
+|---|---|---|---|
+| 1 | 12 + 7 = 19 | ✓ 19 · 3,1 s | ✓ 19 · 4,0 s |
+| 2 | 9 × 6 = 54 | ✓ 54 · 4,0 s | ✓ 54 · 4,4 s |
+| 3 | 45 − 18 = 27 | ✓ 27 · 3,4 s | ✓ 27 · 4,0 s |
+| 4 | 8 × 7 = 56 | ✓ 56 · 3,8 s | ✓ 56 · 4,7 s |
+| 5 | 36 + 25 = 61 | ✓ 61 · 3,7 s | ✓ 61 · 4,3 s |
+| 6 | 72 − 39 = 33 | ✓ 33 · 3,5 s | ✓ 33 · 4,1 s |
+| 7 | 7 × 12 = 84 | ✓ 84 · 4,1 s | ✓ 84 · 4,9 s |
+| 8 | 58 + 27 = 85 | ✓ 85 · 3,2 s | ✓ 85 · 3,8 s |
+| 9 | 91 − 46 = 45 | ✓ 45 · 3,6 s | ✓ 45 · 4,4 s |
+| 10 | 6 × 15 = 90 | ✓ 90 · 2,8 s | ✓ 90 · 3,7 s |
+
+##### A.4.3. Xem bảng xếp hạng
+
+| | |
+|---|---|
+| **Use case** | Xem bảng xếp hạng |
+| **Actor** | Người chơi: Hùng |
+| **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online; hệ thống có 7 người chơi với tổng điểm và các trận đã kết thúc như bảng dữ liệu mẫu bảng xếp hạng bên dưới |
+| **Hậu điều kiện** | Hùng thấy thứ hạng của mọi người chơi; dữ liệu không thay đổi; giao diện chơi online hiện lại |
+| **Sự kiện chính** | 1. Ở giao diện chơi online, Hùng nhấn nút biểu tượng **Bảng xếp hạng** ở góc phải ngoài cùng.<br>2. Hệ thống lấy mọi người chơi và các trận đã kết thúc, tính 3 tiêu chí rồi sắp xếp. Giao diện lịch sử đấu hiện lên với thẻ **Bảng xếp hạng** được mở sẵn, thẻ Trận của tôi nằm bên cạnh để chọn qua lại. Thẻ Bảng xếp hạng hiện danh sách như bảng dữ liệu mẫu bảng xếp hạng bên dưới, dòng HUNG được tô nổi bật. HUNG và LAN cùng 13,5 điểm, HUNG đã gặp các đối thủ mạnh hơn, 11 so với 9, nên đứng trên. AN và NAM trùng cả 2 tiêu chí đầu, AN thắng nhanh hơn nên đứng trên.<br>3. Hùng xem danh sách rồi nhấn Back.<br>4. Giao diện chơi online hiện lại. |
+| **Ngoại lệ** | 1a. Đang ở thẻ Trận của tôi của giao diện lịch sử đấu, Hùng chọn thẻ Bảng xếp hạng.<br>1a.1. Kịch bản tiếp tục từ bước 2.<br>2a. Máy mất mạng khi Hùng mở thẻ Bảng xếp hạng.<br>2a.1. Hệ thống báo "Không tải được bảng xếp hạng, kiểm tra kết nối mạng", danh sách để trống.<br>2a.2. Hùng chọn thẻ Trận của tôi rồi chọn lại thẻ Bảng xếp hạng để tải lại. Kịch bản tiếp tục từ bước 2.<br>3a. Đang ở thẻ Bảng xếp hạng, Hùng chọn thẻ Trận của tôi.<br>3a.1. Giao diện hiện biểu đồ tròn và danh sách trận như bước 2 của use case Xem lịch sử đấu; Hùng bấm vào một trận để xem chi tiết như use case Xem chi tiết trận. |
+
+Bảng dữ liệu mẫu bảng xếp hạng:
+
+| Hạng | Tên | Tổng điểm | TB điểm đối thủ | TB thời gian thắng |
+|---|---|---|---|---|
+| 1 | MINH | 15 | 10,5 | 41,3 giây |
+| 2 | **HUNG** (dòng nổi bật) | 13,5 | 11 | 39,8 giây |
+| 3 | LAN | 13,5 | 9 | 44,0 giây |
+| 4 | HOANG | 9 | 13,5 | 47,2 giây |
+| 5 | AN | 4,5 | 12 | 49,0 giây |
+| 6 | NAM | 4,5 | 12 | 52,1 giây |
+| 7 | TUAN | 0 | 13,5 | — |
+
+### B. Lớp thực thể pha phân tích
 
 ![Hình 21](../chung/lop-thuc-the-phan-tich.png)
 
 *Hình 21: Biểu đồ lớp thực thể pha phân tích toàn hệ thống.*
 
-### B. Biểu đồ lớp pha phân tích
+### C. Biểu đồ lớp pha phân tích
 
 ![Hình 22](lop-phan-tich-uc03.png)
 
@@ -1164,7 +1156,7 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
   - OnlineView: Player (vào danh sách online, danh sách online), Challenge (lời mời), Match (tạo trận).
   - MatchView: Match (theo dõi trận, nộp bài, thoát trận).
   - MatchResultView: Match (kết quả, điểm, chơi tiếp).
-- **Quan hệ giữa các thực thể** giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục A:
+- **Quan hệ giữa các thực thể** giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục B:
   - Challenge chứa thông tin 2 Player (kết tập).
   - Player – Match là n-n, qua lớp liên kết MatchPlayer.
   - MathProblem là thành phần của Match (kết tập): thông tin 10 câu hỏi của đề nằm trong Match.
@@ -1180,13 +1172,13 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 - Mỗi View nối với lớp thực thể nó gọi phương thức bằng **quan hệ liên kết**:
   - HistoryView: Match (lịch sử, kết quả, điểm, đối thủ), Player (bảng xếp hạng).
   - MatchDetailView: Match (trận đầy đủ, kết quả, điểm, đối thủ, thời gian làm bài), Answer (đúng / sai của từng câu).
-- **Quan hệ giữa các thực thể** giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục A:
+- **Quan hệ giữa các thực thể** giữ đúng như biểu đồ lớp thực thể pha phân tích ở Phụ lục B:
   - Player – Match là n-n, qua lớp liên kết MatchPlayer.
   - MathProblem là thành phần của Match (kết tập); chi tiết trận cần đề để hiện đáp án đúng.
   - MatchPlayer – MathProblem là n-n, qua lớp liên kết Answer; chi tiết trận cần bài làm từng câu của 2 người.
 - **Lịch sử đấu và bảng xếp hạng dùng cùng luật thắng thua** với trận đấu: getResult(), getPoints(), getFinishTime() của Match; chi tiết trận dùng cùng luật chấm câu isCorrect() với lúc nộp bài. Không có luật nào được viết lại ở giao diện.
 
-### C. Kịch bản v2 và biểu đồ tuần tự pha phân tích
+### D. Kịch bản v2 và biểu đồ tuần tự pha phân tích
 
 **Chơi online, đoạn A: Gửi lời thách đấu**
 
