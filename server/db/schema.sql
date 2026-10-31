@@ -5,7 +5,6 @@
 CREATE DATABASE IF NOT EXISTS mathdash CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE mathdash;
 
-DROP TABLE IF EXISTS tblFriendship;
 DROP TABLE IF EXISTS tblAnswer;
 DROP TABLE IF EXISTS tblMatchPlayer;
 DROP TABLE IF EXISTS tblMathProblem;
@@ -68,18 +67,6 @@ CREATE TABLE tblAnswer (
     UNIQUE KEY uq_answer (tblMatchPlayerId, tblMathProblemId),
     FOREIGN KEY (tblMatchPlayerId) REFERENCES tblMatchPlayer(id) ON DELETE CASCADE,
     FOREIGN KEY (tblMathProblemId) REFERENCES tblMathProblem(id) ON DELETE CASCADE
-);
-
-CREATE TABLE tblFriendship (
-    id                  INT(10)     NOT NULL AUTO_INCREMENT,
-    status              VARCHAR(10) NOT NULL DEFAULT 'pending',  -- pending | accepted
-    createdAt           DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    tblPlayerSenderId   INT(10)     NOT NULL,
-    tblPlayerReceiverId INT(10)     NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_friendship (tblPlayerSenderId, tblPlayerReceiverId),
-    FOREIGN KEY (tblPlayerSenderId)   REFERENCES tblPlayer(id) ON DELETE CASCADE,
-    FOREIGN KEY (tblPlayerReceiverId) REFERENCES tblPlayer(id) ON DELETE CASCADE
 );
 
 -- Tài khoản quản trị tạo sẵn: admin / admin123 (đổi mật khẩu sau khi cài đặt)

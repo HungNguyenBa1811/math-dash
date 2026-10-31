@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,8 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
@@ -30,27 +31,25 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerListCallback;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PresenceFirebaseDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Challenge;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Challenge;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 // Vào màn này mới online: người khác thấy mình trong danh sách và thách đấu được
-public class OnlineActivity extends AppCompatActivity
-        implements View.OnClickListener, PlayerListCallback, ChallengeCallback {
+public class OnlineActivity extends BaseActivity implements PlayerListCallback, ChallengeCallback {
     private TextView txtMyName;
     private TextView txtMyPoints;
     private TextView txtEmpty;
     private RecyclerView rvPlayers;
-    private ImageButton btnFriends;
     private ImageButton btnHistory;
     private ImageButton btnRanking;
-    private Player me;
     private PlayerAdapter playerAdapter;
     private AlertDialog waitingDialog;
     private Challenge sentChallenge;
     private Set<String> shownChallenges = new HashSet<>();
+    // Hộp thoại lời mời đang mở, theo id lời mời
+    private Map<String, AlertDialog> challengeDialogs = new HashMap<>();
     private PlayerApiDAO playerApiDAO = new PlayerApiDAO();
     private PresenceFirebaseDAO presenceFirebaseDAO = new PresenceFirebaseDAO();
     private ChallengeFirebaseDAO challengeFirebaseDAO = new ChallengeFirebaseDAO();
@@ -61,7 +60,6 @@ public class OnlineActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online);
         bindViews();
-        me = new SessionDAO(this).getPlayer();
         txtMyName.setText(me.getDisplayName());
         goOnline();
         presenceFirebaseDAO.watchOnlinePlayers(this);
@@ -73,22 +71,18 @@ public class OnlineActivity extends AppCompatActivity
         txtMyPoints = findViewById(R.id.txtMyPoints);
         txtEmpty = findViewById(R.id.txtEmpty);
         rvPlayers = findViewById(R.id.rvPlayers);
-        btnFriends = findViewById(R.id.btnFriends);
         btnHistory = findViewById(R.id.btnHistory);
         btnRanking = findViewById(R.id.btnRanking);
         playerAdapter = new PlayerAdapter(this);
         rvPlayers.setLayoutManager(new LinearLayoutManager(this));
         rvPlayers.setAdapter(playerAdapter);
-        btnFriends.setOnClickListener(this);
         btnHistory.setOnClickListener(this);
         btnRanking.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v == btnFriends) {
-            startActivity(new Intent(this, FriendActivity.class));
-        } else if (v == btnHistory) {
+        if (v == btnHistory) {
             startActivity(new Intent(this, HistoryActivity.class));
         } else if (v == btnRanking) {
             Intent intent = new Intent(this, HistoryActivity.class);
@@ -163,7 +157,10 @@ public class OnlineActivity extends AppCompatActivity
     @Override
     public void onChallengeChanged(Challenge challenge) {
         if (challenge.getOpponent().getId() == me.getId()) {
-            if (shownChallenges.add(challenge.getId())) {
+            if (!Challenge.PENDING.equals(challenge.getStatus())) {
+                // Người mời đã hủy: lời mời kết thúc
+                closeChallengeDialog(challenge.getId());
+            } else if (shownChallenges.add(challenge.getId())) {
                 showChallengeDialog(challenge);
             }
             return;
@@ -196,7 +193,7 @@ public class OnlineActivity extends AppCompatActivity
     private void showChallengeDialog(final Challenge challenge) {
         String message = getString(R.string.msg_challenge, challenge.getChallenger().getDisplayName(),
                 PointFormat.format(challenge.getChallenger().getTotalPoints()));
-        new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton(R.string.btn_accept, new DialogInterface.OnClickListener() {
@@ -212,6 +209,14 @@ public class OnlineActivity extends AppCompatActivity
                     }
                 })
                 .show();
+        challengeDialogs.put(challenge.getId(), dialog);
+    }
+
+    private void closeChallengeDialog(String challengeId) {
+        AlertDialog dialog = challengeDialogs.remove(challengeId);
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 
     private void acceptChallenge(final Challenge challenge) {

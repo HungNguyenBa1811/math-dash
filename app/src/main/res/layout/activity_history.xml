@@ -57,45 +57,103 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txtWins"
-                    style="@style/RetroText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:textColor="@color/arcade_green"
-                    tools:text="● Thắng   12" />
-
-                <TextView
-                    android:id="@+id/txtDraws"
-                    style="@style/RetroText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:textColor="@color/arcade_amber"
-                    tools:text="● Hòa      3" />
-
-                <TextView
-                    android:id="@+id/txtLosses"
-                    style="@style/RetroText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:textColor="@color/arcade_red"
-                    tools:text="● Thua     5" />
-
-                <View
+                <!-- Chú thích: chấm màu, tên, số trận -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/arcade_panel_stroke" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/RetroText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/legend_dot"
+                        android:textColor="@color/arcade_green" />
+
+                    <TextView
+                        style="@style/RetroText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_win" />
+
+                    <TextView
+                        android:id="@+id/txtWins"
+                        style="@style/RetroText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_zero"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/RetroText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/legend_dot"
+                        android:textColor="@color/arcade_amber" />
+
+                    <TextView
+                        style="@style/RetroText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_draw" />
+
+                    <TextView
+                        android:id="@+id/txtDraws"
+                        style="@style/RetroText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_zero"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/RetroText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/legend_dot"
+                        android:textColor="@color/arcade_red" />
+
+                    <TextView
+                        style="@style/RetroText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_lose" />
+
+                    <TextView
+                        android:id="@+id/txtLosses"
+                        style="@style/RetroText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_zero"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/txtTotal"
                     style="@style/RetroText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/label_zero_matches"
                     android:textStyle="bold"
                     tools:text="20 trận" />
             </LinearLayout>
@@ -143,7 +201,8 @@
                 android:layout_weight="0.6"
                 android:text="#"
                 android:textColor="@color/arcade_cyan"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/RetroText"
@@ -152,7 +211,8 @@
                 android:layout_weight="2"
                 android:text="@string/col_name"
                 android:textColor="@color/arcade_cyan"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/RetroText"
@@ -162,7 +222,8 @@
                 android:gravity="end"
                 android:text="@string/col_points"
                 android:textColor="@color/arcade_cyan"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/RetroText"
@@ -172,7 +233,8 @@
                 android:gravity="end"
                 android:text="@string/col_avg_opponent"
                 android:textColor="@color/arcade_cyan"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 style="@style/RetroText"
@@ -182,7 +244,8 @@
                 android:gravity="end"
                 android:text="@string/col_avg_win_time"
                 android:textColor="@color/arcade_cyan"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

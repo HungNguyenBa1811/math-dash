@@ -2,19 +2,21 @@
 
 Spring Boot (Java 17, Maven), JDBC thuần tới MySQL, đăng nhập bằng tên đăng nhập + mật khẩu (băm BCrypt), đọc Firebase qua REST API.
 
+Lớp thực thể (`Player`, `Match`, `MatchPlayer`, `MathProblem`, `Answer`, `Challenge`) nằm ở project `common/` tại thư mục gốc repo, dùng chung với app. Các lệnh dưới chạy trong thư mục `server/`.
+
 ## 1. Tạo CSDL
 
 ```
 mysql -u root -p < db/schema.sql
 ```
 
-Script **xóa và tạo lại** 6 bảng `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, `tblFriendship`, rồi chèn sẵn tài khoản quản trị `admin` / `admin123`.
+Script **xóa và tạo lại** 5 bảng `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, rồi chèn sẵn tài khoản quản trị `admin` / `admin123`.
 
-CSDL đang chạy (không muốn mất dữ liệu) thì chỉ thêm bảng mới:
+CSDL đang chạy (không muốn mất dữ liệu) thì chạy lần lượt các bản cập nhật:
 
 ```
-mysql -u <user> -p mathdash < db/migrate-6-friendship.sql
 mysql -u <user> -p mathdash < db/migrate-7-answer.sql
+mysql -u <user> -p mathdash < db/migrate-8-drop-friendship.sql
 ```
 
 ## 2. Cấu hình
@@ -25,7 +27,10 @@ Sao chép `src/main/resources/application-local.properties.example` thành `appl
 
 ## 3. Chạy
 
+Cài jar lớp thực thể dùng chung vào kho Maven trên máy (làm lại mỗi khi sửa `common/`):
+
 ```
+mvn -f ../common/pom.xml install
 mvn spring-boot:run
 ```
 
@@ -34,6 +39,7 @@ Server chạy ở `http://localhost:8080`; máy ảo Android gọi về bằng `
 ## 4. Kiểm thử
 
 ```
+mvn -f ../common/pom.xml install
 mvn test
 ```
 
@@ -45,8 +51,12 @@ mvn test
 ## 6. Deploy lên Render
 
 - MySQL đặt ở dịch vụ ngoài (ví dụ Aiven, gói Free), tạo bảng bằng `db/schema.sql`.
-- Render: Web Service, Root Directory `server`, Language `Docker` (dùng `server/Dockerfile`).
-- **Environment → Secret Files** thêm file `application-local.properties` (Dockerfile chép vào `src/main/resources/` lúc build):
+- Render: Web Service, Language `Docker`. Server cần project `common/` nên build context là gốc repo:
+  - Root Directory để trống.
+  - Dockerfile Path `server/Dockerfile`.
+  - Docker Build Context Directory `.` (`.dockerignore` ở gốc repo chỉ gửi `common/` và `server/`).
+  - Build Filters, Included Paths: `server/**` và `common/**`, để commit chỉ sửa app không deploy lại.
+- **Environment → Secret Files** thêm file `application-local.properties` (Dockerfile chép vào `server/src/main/resources/` lúc build):
 
 ```
 db.url=jdbc:mysql://<host>:<port>/mathdash?sslMode=REQUIRED&serverTimezone=UTC&autoReconnect=true

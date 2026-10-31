@@ -1,0 +1,212 @@
+@startuml lop-thiet-ke-thach-dau
+!include _theme.iuml
+title Biểu đồ lớp chi tiết – Thách đấu
+
+package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
+  abstract class BaseAdapter <<boundary>> {
+    # items : List<T>
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
+    + getItemCount() : int
+  }
+  class MainActivity <<boundary>> {
+  }
+  class OnlineActivity <<boundary>> {
+    - sentChallenge : Challenge
+    + onPlayersChanged(players : List<Player>) : void
+    + onChallengeChanged(challenge : Challenge) : void
+    + onPlayerClick(opponent : Player) : void
+    - goOnline() : void
+    - showWaitingDialog(opponent : Player) : void
+    - showChallengeDialog(challenge : Challenge) : void
+    - acceptChallenge(challenge : Challenge) : void
+    - closeSentChallenge() : void
+    - openMatch(matchId : int) : void
+  }
+  class PlayerAdapter <<boundary>> {
+    + setPlayers(players : List<Player>) : void
+  }
+  class PlayerViewHolder <<boundary>>
+  class MatchActivity <<boundary>> {
+  }
+  class "activity_main.xml" as xmlMain
+  class "activity_online.xml" as xmlOnline
+  class "item_player.xml" as xmlItemPlayer
+  class "activity_match.xml" as xmlMatch
+
+  interface PlayerListCallback {
+    + onPlayersChanged(players : List<Player>) : void
+  }
+  interface ChallengeCallback {
+    + onChallengeChanged(challenge : Challenge) : void
+  }
+  class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
+    + getPlayer() : Player
+  }
+  abstract class FirebaseDAO <<control>> {
+    # {static} con : DatabaseReference
+    + FirebaseDAO()
+  }
+  class PresenceFirebaseDAO <<control>> {
+    + PresenceFirebaseDAO()
+    + goOnline(player : Player) : void
+    + watchOnlinePlayers(callback : PlayerListCallback) : void
+    - toPlayer(id : String, data : DataSnapshot) : Player
+  }
+  class ChallengeFirebaseDAO <<control>> {
+    + ChallengeFirebaseDAO()
+    + sendChallenge(challenger : Player, opponent : Player) : Challenge
+    + watchIncoming(playerId : int, callback : ChallengeCallback) : void
+    + watchChallenge(challengeId : String, callback : ChallengeCallback) : void
+    + stopWatchingSent() : void
+    - toChallenge(id : String, data : DataSnapshot) : Challenge
+  }
+  abstract class ApiDAO <<control>> {
+    # get(path : String) : JSONObject
+    # post(path : String, body : JSONObject) : JSONObject
+  }
+  class PlayerApiDAO <<control>> {
+    + PlayerApiDAO()
+    + getById(id : int) : Player
+    - toPlayer(json : JSONObject) : Player
+  }
+  class MatchApiDAO <<control>> {
+    + MatchApiDAO()
+    + createMatch(challenge : Challenge) : Match
+    - toMatch(json : JSONObject) : Match
+  }
+}
+
+package "Common (Java Library)" as PM {
+  class Player <<entity>> {
+    - id : int
+    - username : String
+    - displayName : String
+    - totalPoints : double
+    - status : String
+  }
+  class Challenge <<entity>> {
+    - id : String
+    - status : String
+    - createdAt : Date
+    - matchId : int
+    - challenger : Player
+    - opponent : Player
+  }
+  class Match <<entity>> {
+    - id : int
+    - status : String
+    - startedAt : Date
+    - questions : List<MathProblem>
+    - players : List<MatchPlayer>
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - player : Player
+  }
+  class MathProblem <<entity>> {
+    - id : int
+    - operand1 : int
+    - operand2 : int
+    - operator : String
+    - correctAnswer : int
+    - answerOptions : List<Integer>
+  }
+}
+
+package "Server (Spring Boot)" as PS {
+  class PlayerRestController <<boundary>> {
+    + getById(id : int) : Player
+  }
+  class MatchRestController <<boundary>> {
+    + create(challenge : Challenge) : Match
+    - startMatch(p1 : Player, p2 : Player) : Match
+    - setStatus(match : Match, status : String) : void
+    - hideAnswers(match : Match) : Match
+  }
+  abstract class "DAO" as SDAO <<control>> {
+    # {static} con : Connection
+    + DAO()
+  }
+  class PlayerDAO <<control>> {
+    + PlayerDAO()
+    + findById(id : int) : Player
+    + getTotalPoints(playerId : int) : double
+  }
+  class MatchDAO <<control>> {
+    + MatchDAO()
+    + insert(match : Match) : boolean
+  }
+  class ProblemDAO <<control>> {
+    + ProblemDAO()
+    + generateProblems(count : int) : List<MathProblem>
+  }
+  class FirebaseAdminDAO <<control>> {
+    + FirebaseAdminDAO()
+    + readChallengeStatus(challengeId : String) : String
+    + readPresence(playerId : int) : Player
+    + updateStatus(playerId : int, status : String) : void
+    + updateChallenge(challengeId : String, status : String, matchId : int) : void
+    + writeMatch(match : Match) : void
+  }
+}
+
+MainActivity --|> BaseActivity
+OnlineActivity --|> BaseActivity
+MatchActivity --|> BaseActivity
+PlayerAdapter --|> BaseAdapter
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
+MainActivity -r- OnlineActivity
+OnlineActivity -r- MatchActivity
+OnlineActivity -- PlayerAdapter
+PlayerAdapter -- PlayerViewHolder
+MainActivity -- xmlMain
+OnlineActivity -- xmlOnline
+PlayerViewHolder -- xmlItemPlayer
+MatchActivity -- xmlMatch
+PlayerAdapter o-- "n" Player
+OnlineActivity ..|> PlayerListCallback
+OnlineActivity ..|> ChallengeCallback
+OnlineActivity -- PlayerApiDAO
+OnlineActivity -- PresenceFirebaseDAO
+OnlineActivity -- ChallengeFirebaseDAO
+OnlineActivity -- MatchApiDAO
+PresenceFirebaseDAO --|> FirebaseDAO
+ChallengeFirebaseDAO --|> FirebaseDAO
+PlayerApiDAO --|> ApiDAO
+MatchApiDAO --|> ApiDAO
+SessionDAO -- Player
+PresenceFirebaseDAO -- Player
+PlayerApiDAO -- Player
+ChallengeFirebaseDAO -- Challenge
+MatchApiDAO -- Match
+Challenge "n" o-- "2" Player
+Match "1" o-- "2" MatchPlayer
+Match "1" o-- "10" MathProblem
+MatchPlayer "n" o-- "1" Player
+PlayerRestController -- PlayerDAO
+MatchRestController -- MatchDAO
+MatchRestController -- PlayerDAO
+MatchRestController -- ProblemDAO
+MatchRestController -- FirebaseAdminDAO
+PlayerDAO --|> SDAO
+MatchDAO --|> SDAO
+PlayerDAO -- Player
+MatchDAO -- Match
+ProblemDAO -- MathProblem
+FirebaseAdminDAO -- Player
+MatchRestController -- Challenge
+PlayerApiDAO -- PlayerRestController : HTTP/JSON
+MatchApiDAO -- MatchRestController : HTTP/JSON
+
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
+@enduml

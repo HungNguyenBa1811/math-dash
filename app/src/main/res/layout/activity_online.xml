@@ -9,18 +9,12 @@
     android:layout_margin="16dp"
     tools:context=".view.OnlineActivity">
 
-    <!-- Thanh trên: tiêu đề, nút Bạn bè, Lịch sử đấu, Bảng xếp hạng ở góc phải -->
+    <!-- Thanh trên: tiêu đề, nút Lịch sử đấu, Bảng xếp hạng ở góc phải -->
     <LinearLayout style="@style/TopBar">
 
         <TextView
             style="@style/TopBarTitle"
             android:text="@string/title_online" />
-
-        <ImageButton
-            android:id="@+id/btnFriends"
-            style="@style/IconButton"
-            android:contentDescription="@string/desc_friends"
-            android:src="@drawable/ic_friends" />
 
         <ImageButton
             android:id="@+id/btnHistory"
@@ -71,7 +65,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="8dp"
         android:text="@string/title_online_players"
-        android:textColor="@color/arcade_cyan" />
+        android:textColor="@color/arcade_cyan"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/txtEmpty"

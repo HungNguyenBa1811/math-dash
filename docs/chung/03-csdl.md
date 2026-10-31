@@ -4,7 +4,7 @@ Hệ thống có 3 nơi lưu dữ liệu, mỗi nơi giữ một loại dữ li�
 
 | Nơi lưu | Giữ gì | Vì sao |
 |---|---|---|
-| **MySQL** (server) | Tài khoản người chơi, các trận đối kháng cùng đề bài và bài làm từng câu, quan hệ bạn bè | Server lưu toàn bộ thông tin dùng chung giữa các máy |
+| **MySQL** (server) | Tài khoản người chơi, các trận đối kháng cùng đề bài và bài làm từng câu | Server lưu toàn bộ thông tin dùng chung giữa các máy |
 | **Firebase Realtime Database** | Người chơi đang online và trạng thái, lời mời thách đấu, diễn biến trận đang đấu | Các máy cần thấy thay đổi của nhau ngay lập tức; chỉ server và người trong cuộc ghi |
 | **SQLite** (app) | Các ván đấu với máy, bản sao người chơi đang đăng nhập | Chơi với máy phải chạy được khi không có mạng |
 
@@ -21,7 +21,6 @@ Hệ thống có 3 nơi lưu dữ liệu, mỗi nơi giữ một loại dữ li�
 | MatchPlayer | tblMatchPlayer | MySQL |
 | MathProblem | tblMathProblem | MySQL |
 | Answer | tblAnswer | MySQL |
-| Friendship | tblFriendship | MySQL |
 | BotGame | tblBotGame | SQLite |
 | Player (bản sao) | tblPlayer | SQLite |
 
@@ -46,16 +45,15 @@ Bỏ qua các thuộc tính kiểu đối tượng:
 - player, answers của MatchPlayer.
 - problem của Answer.
 - player, questions của BotGame.
-- sender, receiver của Friendship.
 
 Chuyển kiểu:
 
 | Java | MySQL | SQLite |
 |---|---|---|
-| String | varchar(255) (toán tử: varchar(1)) | text |
+| String | varchar(255) (toán tử: varchar(1)) | varchar(255) |
 | int | integer(10) | integer |
 | long | bigint(20) | integer |
-| Date | datetime(3), có mili giây để so thời gian làm bài | text (dạng yyyy-MM-dd HH:mm:ss) |
+| Date | datetime(3), có mili giây để so thời gian làm bài | varchar(255) (dạng yyyy-MM-dd HH:mm:ss) |
 | boolean | tinyint(1) | integer (0 / 1) |
 
 answerOptions : List\<Integer> luôn có đúng 4 phần tử nên tách thành 4 cột option1 … option4, giữ đúng thứ tự đã xáo trộn.
@@ -68,7 +66,6 @@ answerOptions : List\<Integer> luôn có đúng 4 phần tử nên tách thành 
 | tblMatchPlayer | id, correctCount, submittedAt, forfeited |
 | tblAnswer | id, selectedOption, answerTime |
 | tblBotGame | id, difficulty, correctCount, finishTime, botCorrectCount, botFinishTime, playedAt |
-| tblFriendship | id, status, createdAt |
 | tblPlayer (SQLite) | id, username, displayName |
 
 Bảng tblPlayer bản sao trên SQLite **chỉ lấy các cột app cần khi không có mạng**.
@@ -81,9 +78,8 @@ Bảng tblPlayer bản sao trên SQLite **chỉ lấy các cột app cần khi k
 - 1 tblMathProblem – n tblAnswer (tối đa 2 dòng cho mỗi câu, mỗi người chơi trong trận một dòng).
 - 1 tblPlayer – n tblMatchPlayer (MySQL).
 - 1 tblPlayer – n tblBotGame (SQLite).
-- 1 tblPlayer – n tblFriendship ở vai trò người gửi, và 1 tblPlayer – n tblFriendship ở vai trò người nhận (MySQL).
 
-Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được tách bằng bảng tblMatchPlayer từ pha thiết kế lớp thực thể; quan hệ n-n tblMatchPlayer – tblMathProblem đã được tách bằng bảng tblAnswer; quan hệ bạn bè giữa người chơi với người chơi đã được tách bằng bảng tblFriendship. Không có quan hệ 1-1 nào cần gộp bảng.
+Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được tách bằng bảng tblMatchPlayer từ pha thiết kế lớp thực thể; quan hệ n-n tblMatchPlayer – tblMathProblem đã được tách bằng bảng tblAnswer. Không có quan hệ 1-1 nào cần gộp bảng.
 
 ### Bước 4: Bổ sung khóa
 
@@ -98,18 +94,15 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 - 1 tblMatch – n tblMathProblem → tblMathProblem có khóa ngoại tblMatchId.
 - 1 tblMatchPlayer – n tblAnswer → tblAnswer có khóa ngoại tblMatchPlayerId.
 - 1 tblMathProblem – n tblAnswer → tblAnswer có khóa ngoại tblMathProblemId.
-- Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người (ON DELETE CASCADE), đúng với quan hệ hợp thành ở thiết kế lớp thực thể.
+- Xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người (ON DELETE CASCADE), vì khi trận không còn thì 2 dòng người chơi trong trận, 10 câu hỏi và bài làm không còn ý nghĩa.
 - 1 tblPlayer – n tblMatchPlayer → tblMatchPlayer có khóa ngoại tblPlayerId.
 - 1 tblPlayer – n tblBotGame → tblBotGame có khóa ngoại tblPlayerId.
-- tblFriendship có 2 khóa ngoại cùng trỏ tới tblPlayer, nên tên khóa thêm vai trò: tblPlayerSenderId (người gửi), tblPlayerReceiverId (người nhận). Xóa người chơi thì xóa luôn các quan hệ bạn bè của người đó (ON DELETE CASCADE), vì quan hệ bạn bè không còn ý nghĩa khi thiếu một bên.
 
 **Ràng buộc duy nhất:**
 - tblPlayer.username: không có 2 tài khoản trùng tên đăng nhập.
 - tblPlayer.role chỉ nhận player hoặc admin. Tài khoản admin được chèn sẵn trong schema.sql.
 - tblMatchPlayer (tblMatchId, tblPlayerId): một người chơi chỉ có một dòng trong một trận.
 - tblAnswer (tblMatchPlayerId, tblMathProblemId): một người chơi trong trận chỉ có một bài làm cho mỗi câu.
-- tblFriendship (tblPlayerSenderId, tblPlayerReceiverId): không gửi trùng lời mời. Chiều ngược lại (B đã gửi cho A thì A không gửi cho B) được FriendshipDAO kiểm tra trước khi chèn.
-- tblFriendship.status chỉ nhận pending hoặc accepted.
 
 **Thứ tự câu hỏi:** thứ tự câu trong đề là thứ tự id tăng dần của tblMathProblem. Server chèn 10 câu theo đúng thứ tự đề trong một transaction, nên không cần cột số thứ tự riêng. Thứ tự câu trong bài làm cũng là thứ tự tblMathProblemId tăng dần, giống thứ tự đề, nên tblAnswer cũng không cần cột số thứ tự.
 
@@ -139,7 +132,7 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 - Hai cột được phép rỗng:
   - tblMatch.endedAt rỗng khi trận đang đấu.
   - tblMatchPlayer.submittedAt rỗng khi người chơi chưa nộp bài, hoặc đã bỏ trận mà chưa nộp.
-- Mọi cột khác đều NOT NULL. correctCount và forfeited có mặc định 0; tblAnswer.selectedOption có mặc định −1 (bỏ trống), tblAnswer.answerTime có mặc định 0; tblFriendship.status có mặc định pending.
+- Mọi cột khác đều NOT NULL. correctCount và forfeited có mặc định 0; tblAnswer.selectedOption có mặc định −1 (bỏ trống), tblAnswer.answerTime có mặc định 0.
 
 ### Kết quả
 
@@ -147,11 +140,10 @@ Không còn quan hệ n-n: quan hệ n-n tblPlayer – tblMatch đã được t�
 
 *Hình 4: Biểu đồ thiết kế CSDL của Math Dash 1v1.*
 
-- **Phía MySQL có 6 bảng.** tblMatch là trung tâm của phần đối kháng:
+- **Phía MySQL có 5 bảng.** tblMatch là trung tâm của phần đối kháng:
   - 10 dòng tblMathProblem là đề bài.
   - 2 dòng tblMatchPlayer nối trận với 2 dòng tblPlayer.
   - Mỗi dòng tblMatchPlayer có các dòng tblAnswer là bài làm từng câu của người đó; mỗi dòng tblAnswer trỏ tới đúng một câu trong tblMathProblem.
-- tblFriendship nối 2 dòng tblPlayer với nhau, một dòng là người gửi, một dòng là người nhận.
 - **Phía SQLite có 2 bảng.** tblBotGame nối tới bản sao tblPlayer bằng khóa ngoại thật.
 - Hai CSDL không nối trực tiếp với nhau; chúng chỉ chung id người chơi.
 
@@ -222,18 +214,6 @@ CREATE TABLE tblAnswer (
     FOREIGN KEY (tblMatchPlayerId) REFERENCES tblMatchPlayer(id) ON DELETE CASCADE,
     FOREIGN KEY (tblMathProblemId) REFERENCES tblMathProblem(id) ON DELETE CASCADE
 );
-
-CREATE TABLE tblFriendship (
-    id                  INT(10)     NOT NULL AUTO_INCREMENT,
-    status              VARCHAR(10) NOT NULL DEFAULT 'pending',  -- pending | accepted
-    createdAt           DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    tblPlayerSenderId   INT(10)     NOT NULL,
-    tblPlayerReceiverId INT(10)     NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_friendship (tblPlayerSenderId, tblPlayerReceiverId),
-    FOREIGN KEY (tblPlayerSenderId)   REFERENCES tblPlayer(id) ON DELETE CASCADE,
-    FOREIGN KEY (tblPlayerReceiverId) REFERENCES tblPlayer(id) ON DELETE CASCADE
-);
 ```
 
 **SQLite** (trong DatabaseHelper.onCreate; bật khóa ngoại bằng db.setForeignKeyConstraintsEnabled(true) trong onConfigure):
@@ -241,8 +221,8 @@ CREATE TABLE tblFriendship (
 ```sql
 CREATE TABLE tblPlayer (
     id          INTEGER PRIMARY KEY,            -- cùng id với MySQL, không tự tăng
-    username    TEXT    NOT NULL,
-    displayName TEXT    NOT NULL
+    username    VARCHAR(255) NOT NULL,
+    displayName VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE tblBotGame (
@@ -252,7 +232,7 @@ CREATE TABLE tblBotGame (
     finishTime      INTEGER NOT NULL,             -- mili giây
     botCorrectCount INTEGER NOT NULL,
     botFinishTime   INTEGER NOT NULL,             -- mili giây
-    playedAt        TEXT    NOT NULL,
+    playedAt        VARCHAR(255) NOT NULL,
     tblPlayerId     INTEGER NOT NULL REFERENCES tblPlayer(id)
 );
 ```
@@ -274,10 +254,6 @@ CREATE TABLE tblBotGame (
 | Các trận đã xong | tblMatch JOIN tblMatchPlayer JOIN tblPlayer WHERE endedAt IS NOT NULL | MatchDAO (server) |
 | Bảng xếp hạng | Lấy mọi tblPlayer có role = 'player' và mọi trận đã xong kèm 2 dòng tblMatchPlayer, tính 3 tiêu chí ở Java rồi sắp xếp | PlayerDAO (server) |
 | Lịch sử đấu | tblMatch JOIN tblMatchPlayer JOIN tblPlayer WHERE endedAt IS NOT NULL AND tblMatch.id IN (SELECT tblMatchId FROM tblMatchPlayer WHERE tblPlayerId = ?) ORDER BY endedAt DESC | MatchDAO (server) |
-| Bạn bè của người chơi | tblFriendship JOIN tblPlayer (2 lần, cho người gửi và người nhận) WHERE tblPlayerSenderId = ? OR tblPlayerReceiverId = ? | FriendshipDAO (server) |
-| Gửi lời mời kết bạn | Kiểm tra chưa có dòng nào giữa 2 người theo cả 2 chiều, rồi INSERT INTO tblFriendship | FriendshipDAO (server) |
-| Đồng ý kết bạn | UPDATE tblFriendship SET status = 'accepted' WHERE id = ? AND status = 'pending' | FriendshipDAO (server) |
-| Từ chối, hủy kết bạn | DELETE FROM tblFriendship WHERE id = ? | FriendshipDAO (server) |
 | Lưu ván với máy | INSERT INTO tblBotGame | BotGameDAO (app) |
 
 Tổng điểm và bảng xếp hạng được tính ở Java thay vì bằng một câu SQL, vì luật thắng thua có nhiều nhánh: bỏ trận, đúng hết, so thời gian. Luật này đã có trong Match.getResult(), và một luật chỉ nên viết ở một nơi.
@@ -289,7 +265,7 @@ Tổng điểm và bảng xếp hạng được tính ở Java thay vì bằng m
 Firebase là CSDL dạng cây JSON, không có bảng. Ánh xạ từ lớp thực thể theo cùng tinh thần 5 bước ở trên:
 - Mỗi lớp là một node; mỗi đối tượng là một node con có khóa riêng.
 - Thuộc tính kiểu cơ bản là field.
-- Quan hệ hợp thành là node con nằm bên trong.
+- Lớp nằm trong lớp khác là node con nằm bên trong: MathProblem, MatchPlayer nằm trong Match (kết tập) nên thành node con của matches.
 
 | Lớp | Node | Khóa |
 |---|---|---|
@@ -299,37 +275,30 @@ Firebase là CSDL dạng cây JSON, không có bảng. Ánh xạ từ lớp th�
 | MathProblem (thành phần của Match) | matches/{matchId}/questions/{i} | Thứ tự câu trong đề, 0 – 9 |
 | MatchPlayer (thành phần của Match) | matches/{matchId}/players/{playerId} | id người chơi |
 
-```
-presence/{playerId}
-    displayName : String
-    totalPoints : double
-    status      : "free" | "busy"
-
-challenges/{challengeId}
-    challengerId   : int
-    challengerName : String
-    challengerPoints : double
-    opponentId     : int
-    opponentName   : String
-    status         : "pending" | "accepted" | "rejected"
-    createdAt      : ServerValue.TIMESTAMP
-    matchId        : int                         (có khi status = accepted)
-
-matches/{matchId}
-    status    : "playing" | "finished"
-    startedAt : long
-    questions/
-        {i} : { operand1 : int, operand2 : int, operator : String, answerOptions : [int, int, int, int] }
-    players/
-        {playerId} : {
-            displayName : String
-            submitted   : bool
-            forfeited   : bool
-            choice      : "continue" | "stop"        (có sau khi trận xong)
-        }
-    nextMatchId : int                            (có khi cả 2 chơi tiếp)
-    stoppedBy   : int                            (có khi một người dừng hoặc thoát)
-```
+| Node | Field | Kiểu | Ghi chú |
+|---|---|---|---|
+| presence/{playerId} | displayName | String | |
+| | totalPoints | double | |
+| | status | String | free hoặc busy |
+| challenges/{challengeId} | challengerId | int | |
+| | challengerName | String | |
+| | challengerPoints | double | |
+| | opponentId | int | |
+| | opponentName | String | |
+| | status | String | pending, accepted hoặc rejected |
+| | createdAt | long | giờ của Firebase lúc tạo lời mời |
+| | matchId | int | có khi status là accepted |
+| matches/{matchId} | status | String | playing hoặc finished |
+| | startedAt | long | |
+| | nextMatchId | int | có khi cả 2 chơi tiếp |
+| | stoppedBy | int | có khi một người dừng hoặc thoát |
+| matches/{matchId}/questions/{i} | operand1, operand2 | int | i là thứ tự câu trong đề, 0 – 9 |
+| | operator | String | |
+| | answerOptions | danh sách 4 số int | |
+| matches/{matchId}/players/{playerId} | displayName | String | |
+| | submitted | boolean | |
+| | forfeited | boolean | |
+| | choice | String | continue hoặc stop, có sau khi trận xong |
 
 **Ai ghi node nào:**
 - presence/{playerId}:

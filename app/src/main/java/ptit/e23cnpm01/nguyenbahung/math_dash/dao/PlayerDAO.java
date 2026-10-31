@@ -3,7 +3,7 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 import android.content.ContentValues;
 import android.content.Context;
 
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class PlayerDAO extends DAO {
 

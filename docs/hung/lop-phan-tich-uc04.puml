@@ -65,7 +65,7 @@ MatchDetailView -- Match
 MatchDetailView -- Answer
 Player "n" -- "n" Match
 (Player, Match) .. MatchPlayer
-Match "1" *-- "10" MathProblem
+Match "1" o-- "10" MathProblem
 MatchPlayer "n" -- "n" MathProblem
 (MatchPlayer, MathProblem) .. Answer
 @enduml

@@ -66,11 +66,14 @@ Thiết kế chi tiết: lớp thực thể [`docs/chung/02-lop-thuc-the.md`](do
 ```
 math-dash/
 ├── app/src/main/java/ptit/e23cnpm01/nguyenbahung/math_dash/
-│   ├── entity/   Player, MathProblem, Challenge, Match, MatchPlayer, BotGame
+│   ├── entity/   BotGame
 │   ├── dao/      DAO (SQLite), ApiDAO (REST), FirebaseDAO + các DAO con, SessionDAO, ProblemDAO
 │   ├── view/     LoginActivity, RegisterActivity, MainActivity, MatchActivity, RankingActivity,
 │   │             DifficultyActivity, BotGameActivity, AdminActivity, PlayerDetailActivity
 │   └── util/     PointFormat
+├── common/src/main/java/ptit/e23cnpm01/nguyenbahung/mathdash/entity/
+│                 Player, MathProblem, Challenge, Match, MatchPlayer, Answer
+│                 (lớp thực thể dùng chung, app và server cùng dùng jar này)
 ├── server/       Spring Boot (xem server/README.md)
 ├── docs/
 │   ├── chung/    phạm vi + use case, lớp thực thể, CSDL
@@ -94,6 +97,7 @@ Dòng lệnh:
 ```powershell
 .\gradlew.bat test            # unit test của app
 .\gradlew.bat assembleDebug   # app/build/outputs/apk/debug/app-debug.apk
+mvn -f common/pom.xml install # cài jar lớp thực thể dùng chung, làm trước khi build server
 cd server; mvn test           # unit test của server
 ```
 

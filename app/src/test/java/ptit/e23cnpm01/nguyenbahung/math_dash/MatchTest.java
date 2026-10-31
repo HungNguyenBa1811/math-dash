@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.ProblemDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Answer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.entity.BotGame;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class MatchTest {
     private static final int HUNG = 1;

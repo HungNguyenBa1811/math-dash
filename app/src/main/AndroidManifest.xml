@@ -55,13 +55,6 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Quản lý bạn bè -->
-        <activity
-            android:name=".view.FriendActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
         <!-- Chơi với máy -->
         <activity
             android:name=".view.DifficultyActivity"

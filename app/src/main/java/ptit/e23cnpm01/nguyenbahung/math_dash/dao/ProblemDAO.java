@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MathProblem;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 
 // Giống hệt ProblemDAO phía server
 public class ProblemDAO {

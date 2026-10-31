@@ -1,0 +1,11 @@
+# Build context là gốc repo, chỉ gửi những gì server/Dockerfile cần
+*
+!common/pom.xml
+!common/src
+!server/pom.xml
+!server/src
+!application-local.properties
+!server/Dockerfile
+# Bí mật trên máy dev không đưa vào image
+server/src/main/resources/application-local.properties
+server/src/main/resources/firebase-service-account.json

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,14 +15,12 @@ import java.util.Locale;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchApiDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.MatchPlayer;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-public class MatchDetailActivity extends AppCompatActivity {
-    private Player me;
+public class MatchDetailActivity extends BaseActivity {
     private Match match;
     private int matchId;
     private TextView txtTitle;
@@ -53,7 +50,6 @@ public class MatchDetailActivity extends AppCompatActivity {
         txtOpponentColumn = findViewById(R.id.txtOpponentColumn);
         rvProblems = findViewById(R.id.rvProblems);
         rvProblems.setLayoutManager(new LinearLayoutManager(this));
-        me = new SessionDAO(this).getPlayer();
         matchId = getIntent().getIntExtra(HistoryActivity.EXTRA_MATCH_ID, 0);
         txtTitle.setText(getString(R.string.detail_title, matchId));
         loadMatch();
@@ -119,7 +115,7 @@ public class MatchDetailActivity extends AppCompatActivity {
         }
         long time = match.getFinishTime(mp.getPlayer().getId());
         String seconds = time == Long.MAX_VALUE ? getString(R.string.label_no_time)
-                : getString(R.string.label_seconds, PointFormat.format(Math.round(time / 100.0) / 10.0));
+                : getString(R.string.label_seconds, PointFormat.formatSeconds(time / 1000.0));
         return getString(R.string.detail_stats, mp.getCorrectCount(), seconds);
     }
 }

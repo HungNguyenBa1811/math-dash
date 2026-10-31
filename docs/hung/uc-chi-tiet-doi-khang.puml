@@ -25,24 +25,14 @@ actor "Người chơi" as A1
 
 rectangle "Module Đấu đối kháng" {
   usecase "Chơi online" as UC03
-  usecase "Xem danh sách người chơi online" as DS
-  usecase "//Vào trận đấu//" as VTD
-  usecase "Gửi lời thách đấu" as GUI
-  usecase "Nhận lời thách đấu" as NHAN
-  usecase "Từ chối lời thách đấu" as TC
-  usecase "Thi đấu" as TD
-  usecase "Thoát trận" as TT
-  usecase "Chơi tiếp" as CT
+  usecase "Thách đấu" as TD
+  usecase "Thi đấu" as TDAU
+  usecase "Đăng nhập" as DN
 }
 
 A1 --> UC03
 
-UC03 ..> DS : <<include>>
-UC03 ..> VTD : <<include>>
+UC03 ..> DN : <<include>>
 UC03 ..> TD : <<include>>
-GUI --|> VTD
-NHAN --|> VTD
-TC ..> NHAN : <<extend>>
-TT ..> TD : <<extend>>
-CT ..> TD : <<extend>>
+UC03 ..> TDAU : <<include>>
 @enduml

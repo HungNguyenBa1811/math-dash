@@ -7,7 +7,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,17 +20,15 @@ import java.util.List;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Match;
-import ptit.e23cnpm01.nguyenbahung.math_dash.entity.Player;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
+public class HistoryActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
     public static final String EXTRA_MATCH_ID = "matchId";
     // Thẻ mở sẵn khi vào màn: 0 là Trận của tôi, TAB_RANKING là Bảng xếp hạng
     public static final String EXTRA_TAB = "tab";
     public static final int TAB_RANKING = 1;
 
-    private Player me;
     private List<Match> matches;
     private TabLayout tabLayout;
     private LinearLayout layoutMyMatches;
@@ -68,8 +65,6 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
         tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_my_matches));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.tab_ranking));
         tabLayout.addOnTabSelectedListener(this);
-        me = new SessionDAO(this).getPlayer();
-        showSummary(null);
         loadHistory();
         if (getIntent().getIntExtra(EXTRA_TAB, 0) == TAB_RANKING) {
             tabLayout.selectTab(tabLayout.getTabAt(TAB_RANKING));
@@ -102,22 +97,20 @@ public class HistoryActivity extends AppCompatActivity implements TabLayout.OnTa
         int wins = 0;
         int draws = 0;
         int losses = 0;
-        if (matches != null) {
-            for (Match m : matches) {
-                String result = m.getResult(me.getId());
-                if (Match.WIN.equals(result)) {
-                    wins++;
-                } else if (Match.DRAW.equals(result)) {
-                    draws++;
-                } else {
-                    losses++;
-                }
+        for (Match m : matches) {
+            String result = m.getResult(me.getId());
+            if (Match.WIN.equals(result)) {
+                wins++;
+            } else if (Match.DRAW.equals(result)) {
+                draws++;
+            } else {
+                losses++;
             }
         }
         pieChart.setData(wins, draws, losses);
-        txtWins.setText(getString(R.string.label_wins, wins));
-        txtDraws.setText(getString(R.string.label_draws, draws));
-        txtLosses.setText(getString(R.string.label_losses, losses));
+        txtWins.setText(String.valueOf(wins));
+        txtDraws.setText(String.valueOf(draws));
+        txtLosses.setText(String.valueOf(losses));
         txtTotal.setText(getString(R.string.label_total_matches, wins + draws + losses));
     }
 

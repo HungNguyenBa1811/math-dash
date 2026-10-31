@@ -25,7 +25,7 @@
 > - (Trung bình) Người chơi thi đấu với máy
 > - (Dễ) Quản lí thông tin người chơi, xem BXH
 
-Ánh xạ sang use case của nhóm: "thách đấu và đấu đối kháng" là UC03 Chơi online; "xem BXH" là thẻ Bảng xếp hạng trong UC04 Xem lịch sử đấu; "thi đấu với máy" là UC05 Chơi với máy; "quản lí thông tin người chơi" là UC06, do quản trị viên thực hiện. Nhóm thêm UC07 Quản lý bạn bè và phần lịch sử đấu của UC04 để mỗi người có đủ 3 chức năng riêng.
+Ánh xạ sang use case của nhóm: "thách đấu và đấu đối kháng" là UC03 Chơi online; "xem BXH" là thẻ Bảng xếp hạng trong UC04 Xem lịch sử đấu; "thi đấu với máy" là UC05 Chơi với máy; "quản lí thông tin người chơi" là UC06, do quản trị viên thực hiện. Nhóm thêm phần lịch sử đấu của UC04 để mỗi người có chức năng riêng.
 
 ### 1.2. Yêu cầu báo cáo
 
@@ -52,7 +52,7 @@
 
 **Hệ quả cho nhóm:**
 - Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Mỗi người tối đa 3 chức năng, phân công ở `ISSUES_PLAN.md` mục 2.1, **không trùng nhau** (bản 6, 27/10):
-  - Hùng: Chơi online (module Đấu đối kháng), Xem lịch sử đấu (module Xem lịch sử đấu, gồm bảng xếp hạng), Quản lý bạn bè (module Bạn bè).
+  - Hùng: Chơi online (module Đấu đối kháng), Xem lịch sử đấu (module Xem lịch sử đấu, gồm bảng xếp hạng).
   - Hoàng: Đăng ký và Đăng nhập (module Tài khoản), Chơi với máy (module Chơi với máy), Quản lý thông tin người chơi (module Quản trị).
 - Mỗi người **một file báo cáo riêng**. Không viết chung, không chép nguyên phần của người kia.
 - **Phần chung** gồm use case tổng quát, lớp thực thể, CSDL:
@@ -100,7 +100,6 @@ Không phải module: một màn hình hay một bước con (Xem chi tiết tr�
 | Xem lịch sử đấu | UC04 Xem lịch sử đấu | Match, MatchPlayer, Answer, MathProblem (chỉ đọc), Player | Hùng |
 | Chơi với máy | UC05 Chơi với máy | BotGame | Hoàng |
 | Quản trị | UC06 Quản lý thông tin người chơi | Player | Hoàng |
-| Bạn bè | UC07 Quản lý bạn bè | Friendship | Hùng |
 
 ---
 
@@ -134,13 +133,16 @@ A1 Kịch bản v1 ─> A2 Lớp thực thể ─┐              D1 Lớp thự
 
 ### A1. Đặc tả + kịch bản v1 (Người chơi ↔ Hệ thống)
 
-**Đặc tả** (mục 1 của báo cáo):
-- Viết theo dạng luồng nghiệp vụ, nối các bước bằng `→`.
-- Mỗi lần có giao diện hiện ra thì liệt kê đủ thành phần của giao diện đó.
+**Biểu đồ use case chi tiết:** use case con là một (hoặc vài) giao diện có tương tác với tác nhân, nối với use case chính bằng include, extend hoặc kế thừa; có include "Đăng nhập" như bài mẫu. Nút bấm, hộp thoại, bước trong luồng không phải use case (chức năng ≠ use case). Ví dụ UC03 chỉ có Đăng nhập, Thách đấu, Thi đấu; Từ chối, Thoát trận, Chơi tiếp là bước bên trong.
 
-> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính → Giao diện chọn độ khó xuất hiện với 3 nút: Dễ, Trung bình, Khó → Người chơi chọn Trung bình → Giao diện thi đấu xuất hiện với: ô thời gian, dòng trạng thái của máy, "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D, nút Thoát → Người chơi bấm một ô, câu tiếp theo hiện ra → Làm xong 10 câu, nút Nộp bài hiện ra → …
+**Đặc tả** (mục 1 của báo cáo): mục 1 tên "Mô tả hệ thống bằng ngôn ngữ tự nhiên", chỉ có **1 đoạn văn** mô tả chung cả hệ thống (tài khoản, quản trị, chơi với máy, chơi online, lịch sử đấu, bảng xếp hạng), không chia theo module, không đi vào chi tiết giao diện; lấy từ đoạn mô tả hệ thống ở `docs/chung/02-lop-thuc-the.md` A.1. Biểu đồ use case chi tiết và kịch bản v1 đặt ở Phụ lục A.
+- Mỗi chức năng viết bằng **văn xuôi tự nhiên trong 1 đoạn văn**, kể theo luồng nghiệp vụ, bắt đầu từ lúc người chơi đăng nhập. Không nối bước bằng `→`, không gạch đầu dòng, không in đậm nhãn; nhánh ngoại lệ để ở kịch bản ngoại lệ. Phần giải thích biểu đồ use case chi tiết cũng viết thành 1 đoạn văn.
+- Mỗi lần có giao diện hiện ra thì kể đủ thành phần của giao diện đó.
+
+> *Chơi với máy:* Người chơi nhấn Chơi với máy ở giao diện chính. Giao diện chọn độ khó hiện ra với 3 nút Dễ, Trung bình và Khó. Sau khi người chơi chọn Trung bình, giao diện thi đấu hiện ô thời gian, dòng trạng thái của máy, dòng "Câu 1/10", phép tính chữ lớn, 4 ô phương án A, B, C, D và nút Thoát. …
 
 **Kịch bản chuẩn v1:**
+- Kịch bản v1 viết **mỗi use case con một bảng riêng**, 6 dòng: Use case, Actor, Tiền điều kiện, Hậu điều kiện, Sự kiện chính, Ngoại lệ. Sự kiện chính là một luồng hoàn chỉnh đánh số từ 1, không chia đoạn A, B, C, D; ngoại lệ đánh số theo bước rẽ nhánh của chính bảng đó (4a, 4a.1). Ngoại lệ: use case chính chỉ gồm các use case con include nối thành một luồng (Chơi online = Thách đấu + Thi đấu) thì gộp thành 1 bảng cho use case chính. Use case thuộc module người khác (Đăng nhập) không viết bảng.
 - Các bước đánh số, xen kẽ hành động của Người chơi và phản hồi của Hệ thống.
 - Dùng **dữ liệu cụ thể** (tên `HUNG`, phép tính `12 + 7`, điểm `120`). Có danh sách thì vẽ bảng dữ liệu mẫu.
 
@@ -204,8 +206,10 @@ Pha phân tích chưa có kiểu dữ liệu, chưa có DAO, Activity, REST.
 1. **Thêm thuộc tính khóa `id`** cho các lớp không kế thừa lớp khác. Với `Challenge`, khóa là push id kiểu `String` của Firebase.
 2. **Thêm kiểu dữ liệu** Java cho mọi thuộc tính.
 3. **Bỏ hết quan hệ liên kết (association)**, chuyển thành **kết tập (aggregation)** hoặc **hợp thành (composition)**. Ghi rõ "X là thành phần của Y, kiểu 1-n".
-   - Composition: thành phần không tồn tại nếu thiếu lớp chứa, ví dụ `MatchPlayer` trong `Match`.
-   - Aggregation: thành phần tồn tại độc lập, ví dụ `Player` trong `MatchPlayer`.
+   - Nhóm dùng **kết tập** cho `Match – MatchPlayer`, `Match – MathProblem`, `MatchPlayer – Answer` (và mọi quan hệ chứa khác của phần đối kháng). Không dùng hợp thành cho 3 quan hệ này, để tránh tranh cãi về điều kiện "thành phần không tồn tại nếu thiếu lớp chứa".
+   - Lý do kết tập viết theo quy tắc A2: thông tin A nằm trong B thì vẽ `A --<> B`, hình thoi ở phía B. Ví dụ: "MatchPlayer là thành phần của Match (kết tập, 1-2): thông tin 2 người chơi trong trận nằm trong Match". Không viết các câu lập luận kiểu "không tồn tại nếu thiếu lớp chứa", "xóa trận thì cũng mất" cho 3 quan hệ này.
+   - Hợp thành chỉ còn `BotGame – MathProblem` (phần của Hoàng), giữ nguyên.
+   - CSDL vẫn giữ `ON DELETE CASCADE` cho khóa ngoại về `tblMatch`, `tblMatchPlayer`, `tblMathProblem`; giải thích bằng lý do nghiệp vụ (xóa trận thì 2 dòng người chơi trong trận, 10 câu hỏi và bài làm không còn ý nghĩa), không viện dẫn hợp thành.
 4. **Thêm thuộc tính đối tượng** tương ứng:
    - "Y có một X" → `X x`.
    - "Y có danh sách X" → `List<X> listX`.
@@ -232,7 +236,7 @@ Kết quả: biểu đồ CSDL (bảng, kiểu cột, PK, FK, bội số) và c�
 **Firebase** (phần của Hùng): áp dụng cùng tinh thần:
 - Mỗi lớp là một node.
 - Thuộc tính thường là field.
-- Quan hệ hợp thành là node con, khóa là push id hoặc `uid`.
+- Lớp nằm trong lớp khác và không có node gốc riêng thì là node con, khóa là push id hoặc `uid`. Ví dụ: MathProblem, MatchPlayer nằm trong Match (kết tập) nên thành node con của `matches`.
 
 Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
@@ -253,9 +257,20 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 |---|---|
 | Boundary | App: `XxxActivity`, Adapter. Server: `XxxRestController` |
 | Control | App: DAO (`XxxDAO`, `XxxApiDAO`, `XxxFirebaseDAO`, `ProblemDAO`, `SessionDAO`). Server: DAO |
-| Entity | Lớp ở D1 (cùng tên ở app và server) |
+| Entity | Lớp ở D1, nằm trong thư viện dùng chung `common` (`mathdash-common.jar`) mà app và server cùng nhập |
 
 App **không có lớp Controller riêng**: Activity xử lý sự kiện, điều phối và gọi thẳng DAO (`ISSUES_PLAN.md` D16).
+
+**Biểu đồ theo use case:** ngoài biểu đồ cấp module, mỗi use case con có một biểu đồ lớp chi tiết riêng, chỉ gồm các lớp và phương thức use case đó dùng. Lớp chỉ làm đích chuyển màn (ví dụ MatchActivity ở Thách đấu) hiện tên, không có thành viên và chỉ nối với boundary.
+
+**Lớp cha dùng chung:** các Activity kế thừa `BaseActivity` (giữ `me : Player`, `onCreate`, `onClick`, nối `SessionDAO`); các Adapter kế thừa `BaseAdapter` (giữ `items : List<T>`, `onCreateViewHolder`, `getItemCount`). Kết tập `Player --<> BaseActivity` và liên kết `BaseActivity -- SessionDAO` chỉ vẽ một lần ở lớp cha.
+
+**3 package trên biểu đồ:** "Client (Android)", "Common (Java Library)", "Server (Spring Boot)". Thực thể chỉ vẽ một lần trong Common; DAO của app và DAO của server cùng nối vào đó. Đường `HTTP/JSON` nối `XxxApiDAO` với `XxxRestController`. Bản Visual Paradigm xếp ngang: Client trái, Common giữa, Server phải, nét đứt phân cách và nhãn từng vùng. Không vẽ Firebase hay MySQL thành lớp: chúng chỉ là kiểu thuộc tính (`DatabaseReference`, `Connection`) trong DAO cha.
+
+**Chỉ vẽ phần cốt lõi:**
+- Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); DAO cha giữ đối tượng kết nối (`con : Connection` ở server, `con : DatabaseReference` ở app; `SessionDAO` giữ `prefs : SharedPreferences`), mỗi DAO ghi hàm khởi tạo (`MatchDAO()`, `SessionDAO(context : Context)`) và phương thức, không ghi thuộc tính kiểu chuỗi (`BASE_URL`, `dbUrl`); `ApiDAO` không có đối tượng kết nối vì mỗi lời gọi tự mở `HttpURLConnection`; RestController chỉ giữ trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
+- Phương thức: chỉ ghi các phương thức có trong kịch bản v3 và tuần tự thiết kế, cùng phương thức nghiệp vụ của thực thể.
+- Không vẽ: View con (`TextView`, `Button`), biến tạm (`current`, `shownAt`, `timer`), cờ trạng thái (`started`, `submitted`), hằng số, listener, hàm override của Android không có trong kịch bản (`onDestroy`, `onBackPressed`, `onCreateViewHolder`, `getItemCount`), getter / setter, hàm riêng đóng gói phụ (`toProblem`, `toAnswers`). Các phần này để mã nguồn thể hiện; bảng mô tả lớp vẫn có thể nhắc tới.
 
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `MatchActivity`), layout tương ứng `activity_main.xml`, `activity_match.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 
@@ -359,7 +374,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
   - Không nêu dữ liệu cụ thể: mã phòng, câu hỏi, điểm của ai bao nhiêu, kết quả WIN/LOSE. Viết "hiển thị điểm", "trả về kết quả trận".
   - Hàm ghi đầy đủ dạng "hàm onFinish()", không ghi tham số truyền vào.
   - Biểu đồ tuần tự đi kèm cũng vậy: tác nhân "Người chơi", thông điệp ghi hàm không tham số, không có dữ liệu cụ thể.
-- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành đoạn văn và danh sách lồng nhau, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL và cây dữ liệu Firebase. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
+- **Không dùng định dạng backtick** ở mọi tài liệu trong docs/: tên lớp, hàm, bảng, id viết chữ thường. Đặc tả dạng luồng viết thành 1 dòng, không đặt trong khối code. Chỉ giữ khối code cho câu lệnh SQL; cây dữ liệu Firebase viết thành bảng (node, khóa, field) để dán được vào file báo cáo. Ký tự < và * trong tên kiểu (List\<Match>) phải thoát bằng dấu \.
 - **Kịch bản v1** chỉ có Người chơi và Hệ thống, không có tên lớp, tên hàm, thuật ngữ kỹ thuật.
 
 ---
@@ -370,7 +385,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
 |---|---|---|---|---|---|
 | `docs/chung/01-pham-vi-use-case.md` | Phạm vi, UC tổng quát | Mở đầu, cả 2 báo cáo | #22 M1-01 | Hùng / Hoàng | — |
 | `docs/chung/02-lop-thuc-the.md` | A2, D1 | Mục 3, cả 2 báo cáo | #23 M1-02 | Hùng / Hoàng | 01 |
-| `docs/chung/03-csdl.md` | D2 | Mục 2: Hoàng phần SQLite + `tblPlayer` của MySQL, Hùng phần MySQL (gồm `tblFriendship`) + Firebase | #24 M1-03 | Hùng / Hoàng | 02 phần B |
+| `docs/chung/03-csdl.md` | D2 | Mục 2: Hoàng phần SQLite + `tblPlayer` của MySQL, Hùng phần MySQL + Firebase | #24 M1-03 | Hùng / Hoàng | 02 phần B |
 | `docs/hung/1-kich-ban-v1.md` | A1 | Mục 1 | #37 M3-01 | Hùng / Hoàng | 01 |
 | `docs/hung/2-lop-phan-tich.md` | A3 | Phụ lục | #39 M3-03 | Hùng / Hoàng | v1, 02 phần A |
 | `docs/hung/3-kich-ban-v2.md` | A4 | Phụ lục | #41 M3-05 | Hùng / Hoàng | v1, 2-lop-phan-tich |
@@ -379,17 +394,17 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
 | `docs/hung/BaoCao_Hung.md` | Bản nháp báo cáo | Toàn bộ | #47 M4-05 | Hùng / Hoàng | Các file trên |
 | `docs/hung/launch.md` | Bản báo cáo để dán vào file online (ảnh dạng @file.png, không in đậm) | Toàn bộ | #47 M4-05 | Hùng / Hoàng | Sinh từ BaoCao_Hung.md |
 
-Lớp thực thể theo báo cáo: Hùng (UC03, UC04, UC07) dùng `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Answer`, `Friendship`; Hoàng (UC01, UC02, UC05, UC06) dùng `Player`, `MathProblem`, `BotGame`, `Match`, `MatchPlayer`.
+Lớp thực thể theo báo cáo: Hùng (UC03, UC04) dùng `Player`, `MathProblem`, `Challenge`, `Match`, `MatchPlayer`, `Answer`; Hoàng (UC01, UC02, UC05, UC06) dùng `Player`, `MathProblem`, `BotGame`, `Match`, `MatchPlayer`.
 
 Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28/10/2026.
 
-**Trạng thái tài liệu của Hùng:** viết trước khi code, thiết kế dẫn code. Tên lớp, hàm trong `4-lop-thiet-ke.md` là chữ ký code M2-02 → M2-05, M2-09, M2-10 phải theo; code buộc phải khác thì sửa tài liệu theo code trước khi nộp.
+**Trạng thái tài liệu của Hùng:** viết trước khi code, thiết kế dẫn code. Tên lớp, hàm trong `4-lop-thiet-ke.md` là chữ ký code M2-02 → M2-05, M2-09 phải theo; code buộc phải khác thì sửa tài liệu theo code trước khi nộp.
 
 **Bản 5 (26/10/2026):** toàn bộ tài liệu chung và tài liệu UC03, UC04, Đăng nhập – đăng ký của Hùng viết lại theo đề 9. Code trên `main` vẫn là bản 4 (phòng mã 6 số, lịch sử đấu), phải làm lại theo M1-04 → M2-05.
 
-**Bản 6 (27/10/2026):** Đăng nhập – đăng ký chuyển hẳn sang báo cáo của Hoàng; tài liệu của Hùng bỏ phần này, UC04 đổi thành Xem lịch sử đấu (gộp bảng xếp hạng), thêm UC07 Quản lý bạn bè.
+**Bản 6 (27/10/2026):** Đăng nhập – đăng ký chuyển hẳn sang báo cáo của Hoàng; tài liệu của Hùng bỏ phần này, UC04 đổi thành Xem lịch sử đấu (gộp bảng xếp hạng).
 
-**Bản 7 (27/10/2026):** tài liệu đồng bộ với giao diện mới: giao diện chính (MainView / MainActivity) chỉ có Chơi với máy, Chơi online; thêm OnlineView / OnlineActivity giữ danh sách online, thách đấu và 3 biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng; giao diện thi đấu mỗi lần một câu với 4 ô A–D (outQuestion, subOptions / btnOptions); thêm thực thể Answer, bảng tblAnswer; chi tiết trận hiện đúng / sai và thời gian từng câu (outListAnswer). Phần chung (Answer, tblAnswer) cần Hoàng duyệt.
+**Bản 7 (27/10/2026):** tài liệu đồng bộ với giao diện mới: giao diện chính (MainView / MainActivity) chỉ có Chơi với máy, Chơi online; thêm OnlineView / OnlineActivity giữ danh sách online, thách đấu và 2 biểu tượng Lịch sử đấu, Bảng xếp hạng; giao diện thi đấu mỗi lần một câu với 4 ô A–D (outQuestion, subOptions / btnOptions); thêm thực thể Answer, bảng tblAnswer; chi tiết trận hiện đúng / sai và thời gian từng câu (outListAnswer). Phần chung (Answer, tblAnswer) cần Hoàng duyệt.
 
 **Việc còn lại trước khi nộp (Hùng):**
 1. Thay hình phác thảo giao diện bằng ảnh chụp app thật (M2-08).

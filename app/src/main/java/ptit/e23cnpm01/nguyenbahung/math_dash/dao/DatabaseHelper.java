@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "math_dash.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -21,8 +21,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE tblPlayer ("
                 + "id INTEGER PRIMARY KEY, "
-                + "username TEXT NOT NULL, "
-                + "displayName TEXT NOT NULL)");
+                + "username VARCHAR(255) NOT NULL, "
+                + "displayName VARCHAR(255) NOT NULL)");
         db.execSQL("CREATE TABLE tblBotGame ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "difficulty INTEGER NOT NULL CHECK (difficulty BETWEEN 1 AND 3), "
@@ -30,7 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "finishTime INTEGER NOT NULL, "
                 + "botCorrectCount INTEGER NOT NULL, "
                 + "botFinishTime INTEGER NOT NULL, "
-                + "playedAt TEXT NOT NULL, "
+                + "playedAt VARCHAR(255) NOT NULL, "
                 + "tblPlayerId INTEGER NOT NULL REFERENCES tblPlayer(id))");
     }
 

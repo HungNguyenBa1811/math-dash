@@ -27,10 +27,10 @@ OA -> SD : onCreate(): getPlayer()
 SD -> P : đóng gói Player
 P --> SD : Player
 SD --> OA : Player
-OA -> OA : goOnline()
-OA -> PAD : getById() {Thread}
 OA -> PFD : watchOnlinePlayers()
 OA -> CFD : watchIncoming()
+OA -> OA : goOnline()
+OA -> PAD : getById() {Thread}
 PAD -> PRC : GET /api/players/{id} → getById()
 PRC -> PD : findById()
 PD -> SP : đóng gói Player

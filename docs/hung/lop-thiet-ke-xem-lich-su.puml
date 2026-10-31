@@ -1,0 +1,118 @@
+@startuml lop-thiet-ke-xem-lich-su
+!include _theme.iuml
+title Biểu đồ lớp chi tiết – Xem lịch sử đấu
+
+package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
+  abstract class BaseAdapter <<boundary>> {
+    # items : List<T>
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
+    + getItemCount() : int
+  }
+  class OnlineActivity <<boundary>> {
+  }
+  class HistoryActivity <<boundary>> {
+    - matches : List<Match>
+    - loadHistory() : void
+    - showSummary(matches : List<Match>) : void
+    + onMatchClick(match : Match) : void
+  }
+  class PieChartView <<boundary>> {
+    + setData(wins : int, draws : int, losses : int) : void
+    # onDraw(canvas : Canvas) : void
+  }
+  class MatchHistoryAdapter <<boundary>> {
+    - myId : int
+    + onBindViewHolder(holder : MatchHistoryViewHolder, position : int) : void
+  }
+  class MatchHistoryViewHolder <<boundary>>
+  class MatchDetailActivity <<boundary>> {
+  }
+  class "activity_online.xml" as xmlOnline
+  class "activity_history.xml" as xmlHistory
+  class "item_match_history.xml" as xmlItemMatch
+  class SessionDAO <<control>> {
+    - prefs : SharedPreferences
+    + SessionDAO(context : Context)
+    + getPlayer() : Player
+  }
+  abstract class ApiDAO <<control>> {
+    # getArray(path : String) : JSONArray
+  }
+  class MatchApiDAO <<control>> {
+    + MatchApiDAO()
+    + getHistory(playerId : int) : List<Match>
+    - toMatch(json : JSONObject) : Match
+  }
+}
+
+package "Common (Java Library)" as PM {
+  class Player <<entity>> {
+    - id : int
+    - displayName : String
+  }
+  class Match <<entity>> {
+    - id : int
+    - endedAt : Date
+    - players : List<MatchPlayer>
+    + getOpponent(playerId : int) : MatchPlayer
+    + getResult(playerId : int) : String
+    + getPoints(playerId : int) : double
+  }
+  class MatchPlayer <<entity>> {
+    - id : int
+    - correctCount : int
+    - forfeited : boolean
+    - player : Player
+  }
+}
+
+package "Server (Spring Boot)" as PS {
+  class MatchRestController <<boundary>> {
+    + getHistory(playerId : int) : List<Match>
+  }
+  abstract class "DAO" as SDAO <<control>> {
+    # {static} con : Connection
+    + DAO()
+  }
+  class MatchDAO <<control>> {
+    + MatchDAO()
+    + findByPlayer(playerId : int) : List<Match>
+  }
+}
+
+OnlineActivity --|> BaseActivity
+HistoryActivity --|> BaseActivity
+MatchDetailActivity --|> BaseActivity
+MatchHistoryAdapter --|> BaseAdapter
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
+OnlineActivity -- HistoryActivity
+HistoryActivity -- MatchDetailActivity
+HistoryActivity -- PieChartView
+HistoryActivity -- MatchHistoryAdapter
+MatchHistoryAdapter -- MatchHistoryViewHolder
+OnlineActivity -- xmlOnline
+HistoryActivity -- xmlHistory
+MatchHistoryViewHolder -- xmlItemMatch
+HistoryActivity o-- "n" Match
+MatchHistoryAdapter o-- "n" Match
+HistoryActivity -- MatchApiDAO
+MatchApiDAO --|> ApiDAO
+SessionDAO -- Player
+MatchApiDAO -- Match
+Match "1" o-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
+MatchRestController -- MatchDAO
+MatchDAO --|> SDAO
+MatchDAO -- Match
+MatchApiDAO -- MatchRestController : HTTP/JSON
+
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
+@enduml
