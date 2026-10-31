@@ -16,7 +16,7 @@ CSDL đang chạy (không muốn mất dữ liệu) thì chạy lần lượt c�
 
 ```
 mysql -u <user> -p mathdash < db/migrate-7-answer.sql
-mysql -u <user> -p mathdash < db/migrate-8-types.sql
+mysql -u <user> -p mathdash < db/migrate-8-drop-friendship.sql
 ```
 
 ## 2. Cấu hình
