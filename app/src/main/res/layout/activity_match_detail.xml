@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/arcade_amber"
+        android:textStyle="bold"
         tools:text="+1 điểm" />
 
     <!-- So sánh 2 bên: cột trái là mình, cột phải là đối thủ -->
@@ -98,6 +99,7 @@
                 style="@style/RetroText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textStyle="bold"
                 tools:text="HOANG" />
 
             <TextView
@@ -118,7 +120,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="@string/detail_problems"
-        android:textColor="@color/arcade_cyan" />
+        android:textColor="@color/arcade_cyan"
+        android:textStyle="bold" />
 
     <!-- Tiêu đề cột: câu, phép tính kèm đáp án đúng, bài làm của mình, bài làm của đối thủ -->
     <LinearLayout

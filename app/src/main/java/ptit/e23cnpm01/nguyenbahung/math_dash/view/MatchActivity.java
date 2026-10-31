@@ -2,6 +2,7 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONException;
 
@@ -30,7 +30,6 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchCallback;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchFirebaseDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerListCallback;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PresenceFirebaseDAO;
-import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
@@ -39,8 +38,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 // Không chấm bài ở app: mọi kết quả lấy từ server
-public class MatchActivity extends AppCompatActivity
-        implements View.OnClickListener, MatchCallback, PlayerListCallback {
+public class MatchActivity extends BaseActivity implements MatchCallback, PlayerListCallback {
     public static final String EXTRA_MATCH_ID = "matchId";
     private static final long MATCH_MILLIS = 60_000;
     // Khóa 4 ô một lúc sau khi chọn để bấm đúp không trả lời nhầm câu sau
@@ -57,13 +55,15 @@ public class MatchActivity extends AppCompatActivity
     private Button btnExit;
     private LinearLayout layoutResult;
     private TextView txtResult;
-    private TextView txtMyResult;
-    private TextView txtOpponentResult;
+    private TextView txtOpponentName;
+    private TextView txtMyCorrect;
+    private TextView txtOpponentCorrect;
+    private TextView txtMyTime;
+    private TextView txtOpponentTime;
     private TextView txtPoints;
     private TextView txtContinue;
     private Button btnContinue;
     private Button btnStop;
-    private Player me;
     private int matchId;
     private int opponentId;
     private List<MathProblem> questions = new ArrayList<>();
@@ -79,7 +79,9 @@ public class MatchActivity extends AppCompatActivity
     private boolean submitted;
     private boolean resultLoading;
     private boolean resultShown;
-    private boolean opponentLeft;
+    // Firebase báo đối thủ có stoppedBy trước khi mình có kết quả; đối thủ bị xử bỏ trận
+    private boolean opponentStopped;
+    private boolean opponentForfeited;
     private boolean leaving;
 
     @Override
@@ -87,7 +89,6 @@ public class MatchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match);
         bindViews();
-        me = new SessionDAO(this).getPlayer();
         matchId = getIntent().getIntExtra(EXTRA_MATCH_ID, 0);
         matchFirebaseDAO.watchMatch(matchId, this);
     }
@@ -116,8 +117,11 @@ public class MatchActivity extends AppCompatActivity
     private void bindResultViews() {
         layoutResult = findViewById(R.id.layoutResult);
         txtResult = findViewById(R.id.txtResult);
-        txtMyResult = findViewById(R.id.txtMyResult);
-        txtOpponentResult = findViewById(R.id.txtOpponentResult);
+        txtOpponentName = findViewById(R.id.txtOpponentName);
+        txtMyCorrect = findViewById(R.id.txtMyCorrect);
+        txtOpponentCorrect = findViewById(R.id.txtOpponentCorrect);
+        txtMyTime = findViewById(R.id.txtMyTime);
+        txtOpponentTime = findViewById(R.id.txtOpponentTime);
         txtPoints = findViewById(R.id.txtPoints);
         txtContinue = findViewById(R.id.txtContinue);
         btnContinue = findViewById(R.id.btnContinue);
@@ -181,20 +185,26 @@ public class MatchActivity extends AppCompatActivity
         }
     }
 
+    // stoppedBy là đối thủ: hoặc bỏ trận giữa trận, hoặc chọn Dừng sau khi có kết quả.
+    // Server ghi stoppedBy và status là 2 lần ghi, nên hàm này có thể được gọi 2 lần
     @Override
     public void onStopped(int playerId) {
         if (playerId == me.getId() || leaving) {
             return;
         }
-        if (resultShown) {
-            leaving = true;
-            showToast(getString(R.string.msg_opponent_stopped));
-            finish();
-        } else if (!opponentLeft) {
-            opponentLeft = true;
-            showToast(getString(R.string.msg_opponent_left));
+        if (!resultShown) {
+            // Chưa có kết quả thì chưa biết là bỏ trận hay Dừng: tải kết quả rồi showResult() phân biệt
+            opponentStopped = true;
             loadResult();
+        } else if (!opponentForfeited) {
+            leaveAfterStop();
         }
+    }
+
+    private void leaveAfterStop() {
+        leaving = true;
+        showToast(getString(R.string.msg_opponent_stopped));
+        finish();
     }
 
     @Override
@@ -205,7 +215,7 @@ public class MatchActivity extends AppCompatActivity
     // Đối thủ rời danh sách online giữa trận: coi như bỏ trận
     @Override
     public void onPlayersChanged(List<Player> players) {
-        if (!started || resultShown || opponentLeft || leaving) {
+        if (!started || resultShown || opponentStopped || leaving) {
             return;
         }
         for (Player p : players) {
@@ -278,10 +288,11 @@ public class MatchActivity extends AppCompatActivity
         return text;
     }
 
-    // Thay câu hỏi và 4 ô bằng một dòng thông báo
+    // Thay câu hỏi bằng một dòng thông báo chữ đậm; 4 ô ẩn nhưng vẫn giữ chỗ
     private void showMessage(String message) {
-        layoutOptions.setVisibility(View.GONE);
+        layoutOptions.setVisibility(View.INVISIBLE);
         txtExpression.setVisibility(View.GONE);
+        txtProgress.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
         txtProgress.setText(message);
     }
 
@@ -347,7 +358,7 @@ public class MatchActivity extends AppCompatActivity
         if (timer != null) {
             timer.cancel();
         }
-        btnSubmit.setVisibility(View.GONE);
+        btnSubmit.setVisibility(View.INVISIBLE);
         showMessage(getString(R.string.msg_submitted));
     }
 
@@ -427,11 +438,20 @@ public class MatchActivity extends AppCompatActivity
         if (timer != null) {
             timer.cancel();
         }
+        MatchPlayer opponent = opponentOf(match);
+        opponentForfeited = opponent.isForfeited();
+        boolean forfeited = opponentForfeited || mineOf(match).isForfeited();
+        if (opponentStopped && !forfeited) {
+            // Đối thủ đã chọn Dừng: cả 2 về màn Chơi online
+            leaveAfterStop();
+            return;
+        }
+        if (opponentForfeited) {
+            showToast(getString(R.string.msg_opponent_left));
+        }
         layoutResult.setVisibility(View.VISIBLE);
         showResultTitle(match.getResult(me.getId()));
         showScores(match);
-        MatchPlayer opponent = opponentOf(match);
-        boolean forfeited = opponent.isForfeited() || mineOf(match).isForfeited();
         txtContinue.setVisibility(forfeited ? View.GONE : View.VISIBLE);
         btnContinue.setVisibility(forfeited ? View.GONE : View.VISIBLE);
         btnStop.setText(forfeited ? R.string.btn_back_to_menu : R.string.btn_stop);
@@ -449,10 +469,11 @@ public class MatchActivity extends AppCompatActivity
     private void showScores(Match match) {
         MatchPlayer mine = mineOf(match);
         MatchPlayer opponent = opponentOf(match);
-        txtMyResult.setText(getString(R.string.label_my_result, mine.getCorrectCount(),
-                formatTime(match.getFinishTime(me.getId()))));
-        txtOpponentResult.setText(getString(R.string.label_opponent_result, opponent.getPlayer().getDisplayName(),
-                opponent.getCorrectCount(), formatTime(match.getFinishTime(opponent.getPlayer().getId()))));
+        txtOpponentName.setText(opponent.getPlayer().getDisplayName());
+        txtMyCorrect.setText(getString(R.string.label_correct_count, mine.getCorrectCount()));
+        txtOpponentCorrect.setText(getString(R.string.label_correct_count, opponent.getCorrectCount()));
+        txtMyTime.setText(formatTime(match.getFinishTime(me.getId())));
+        txtOpponentTime.setText(formatTime(match.getFinishTime(opponent.getPlayer().getId())));
         txtPoints.setText(getString(R.string.label_match_points, PointFormat.format(match.getPoints(me.getId())),
                 PointFormat.format(mine.getPlayer().getTotalPoints())));
     }
@@ -511,7 +532,7 @@ public class MatchActivity extends AppCompatActivity
         if (millis == Long.MAX_VALUE) {
             return getString(R.string.label_no_time);
         }
-        return getString(R.string.label_seconds, PointFormat.format(Math.round(millis / 100.0) / 10.0));
+        return getString(R.string.label_seconds, PointFormat.formatSeconds(millis / 1000.0));
     }
 
     private void showToast(final String message) {

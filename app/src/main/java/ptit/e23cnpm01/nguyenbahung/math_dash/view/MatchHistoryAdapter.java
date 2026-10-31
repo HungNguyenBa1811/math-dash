@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -17,14 +16,13 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryViewHolder> {
+public class MatchHistoryAdapter extends BaseAdapter<Match, MatchHistoryViewHolder> {
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault());
-    private List<Match> listMatch;
     private int myId;
     private HistoryActivity activity;
 
     public MatchHistoryAdapter(List<Match> matches, int myId, HistoryActivity activity) {
-        this.listMatch = matches;
+        this.items = matches;
         this.myId = myId;
         this.activity = activity;
     }
@@ -38,7 +36,7 @@ public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MatchHistoryViewHolder holder, int position) {
-        final Match match = listMatch.get(position);
+        final Match match = items.get(position);
         Context context = holder.itemView.getContext();
         MatchPlayer opponent = match.getOpponent(myId);
         // Dòng của chính mình trong trận là đối thủ của đối thủ
@@ -59,18 +57,19 @@ public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryViewHo
         }
         holder.viewResultBar.setBackgroundColor(context.getColor(color));
         holder.txtResult.setTextColor(context.getColor(color));
-        String text = context.getString(resultText);
-        if (opponent.isForfeited()) {
-            text += " · " + context.getString(R.string.history_opponent_forfeited);
-        } else if (mine.isForfeited()) {
-            text += " · " + context.getString(R.string.history_me_forfeited);
-        }
-        holder.txtResult.setText(text);
+        holder.txtResult.setText(resultText);
         holder.txtOpponent.setText(context.getString(R.string.history_opponent,
                 opponent.getPlayer().getDisplayName(), match.getId()));
         holder.txtPoints.setText("+" + PointFormat.format(match.getPoints(myId)));
-        holder.txtScore.setText(context.getString(R.string.history_score,
-                mine.getCorrectCount(), opponent.getCorrectCount()));
+        // "6 – 3 câu · Đối thủ bỏ trận"
+        String score = context.getString(R.string.history_score,
+                mine.getCorrectCount(), opponent.getCorrectCount());
+        if (opponent.isForfeited()) {
+            score += " · " + context.getString(R.string.history_opponent_forfeited);
+        } else if (mine.isForfeited()) {
+            score += " · " + context.getString(R.string.history_me_forfeited);
+        }
+        holder.txtScore.setText(score);
         holder.txtEndedAt.setText(match.getEndedAt() == null ? "" : timeFormat.format(match.getEndedAt()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,10 +77,5 @@ public class MatchHistoryAdapter extends RecyclerView.Adapter<MatchHistoryViewHo
                 activity.onMatchClick(match);
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return listMatch.size();
     }
 }

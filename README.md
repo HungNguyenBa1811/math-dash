@@ -72,7 +72,7 @@ math-dash/
 │   │             DifficultyActivity, BotGameActivity, AdminActivity, PlayerDetailActivity
 │   └── util/     PointFormat
 ├── common/src/main/java/ptit/e23cnpm01/nguyenbahung/mathdash/entity/
-│                 Player, MathProblem, Challenge, Match, MatchPlayer, Answer, Friendship
+│                 Player, MathProblem, Challenge, Match, MatchPlayer, Answer
 │                 (lớp thực thể dùng chung, app và server cùng dùng jar này)
 ├── server/       Spring Boot (xem server/README.md)
 ├── docs/

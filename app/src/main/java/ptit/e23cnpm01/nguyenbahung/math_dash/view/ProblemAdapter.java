@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -17,13 +16,12 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 // Mỗi dòng một câu: đáp án đúng, bài làm của mình và của đối thủ
-public class ProblemAdapter extends RecyclerView.Adapter<ProblemViewHolder> {
-    private List<MathProblem> listProblem;
+public class ProblemAdapter extends BaseAdapter<MathProblem, ProblemViewHolder> {
     private List<Answer> myAnswers;
     private List<Answer> opponentAnswers;
 
     public ProblemAdapter(List<MathProblem> problems, List<Answer> myAnswers, List<Answer> opponentAnswers) {
-        this.listProblem = problems;
+        this.items = problems;
         this.myAnswers = myAnswers;
         this.opponentAnswers = opponentAnswers;
     }
@@ -37,16 +35,13 @@ public class ProblemAdapter extends RecyclerView.Adapter<ProblemViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
-        MathProblem p = listProblem.get(position);
+        MathProblem p = items.get(position);
         holder.txtIndex.setText(String.valueOf(position + 1));
         holder.txtExpression.setText(p.getExpression().replace("?", String.valueOf(p.getCorrectAnswer())));
-        showAnswer(holder.txtMyAnswer, answerAt(myAnswers, position));
-        showAnswer(holder.txtOpponentAnswer, answerAt(opponentAnswers, position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return listProblem.size();
+        Answer mine = answerAt(myAnswers, position);
+        Answer opponent = answerAt(opponentAnswers, position);
+        showAnswer(holder.txtMyAnswer, mine);
+        showAnswer(holder.txtOpponentAnswer, opponent);
     }
 
     // Bỏ trận khi chưa nộp thì không có bài làm
@@ -65,7 +60,7 @@ public class ProblemAdapter extends RecyclerView.Adapter<ProblemViewHolder> {
         int text = answer.isCorrect() ? R.string.answer_correct : R.string.answer_wrong;
         int color = answer.isCorrect() ? R.color.arcade_green : R.color.arcade_red;
         String seconds = context.getString(R.string.label_seconds_short,
-                PointFormat.format(Math.round(answer.getAnswerTime() / 100.0) / 10.0));
+                PointFormat.formatSeconds(answer.getAnswerTime() / 1000.0));
         view.setText(context.getString(text, answer.getSelectedOption()) + "\n" + seconds);
         view.setTextColor(context.getColor(color));
     }

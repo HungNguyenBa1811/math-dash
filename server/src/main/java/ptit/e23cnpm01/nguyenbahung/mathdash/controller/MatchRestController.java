@@ -86,6 +86,7 @@ public class MatchRestController {
             matchDAO.updateForfeit(id, playerId);
             findPlayer(match, playerId).setForfeited(true);
             endMatch(match);
+            firebaseAdminDAO.writeForfeited(id, playerId);
             firebaseAdminDAO.writeStopped(id, playerId);
             firebaseAdminDAO.writeFinished(id);
             setStatus(match, Player.FREE);

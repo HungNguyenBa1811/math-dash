@@ -9,6 +9,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +26,11 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
     // Người mời tắt app thì lời mời tự bị xóa
     public Challenge sendChallenge(Player challenger, Player opponent) {
         DatabaseReference ref = challengesRef().push();
+        Challenge challenge = new Challenge();
+        challenge.setId(ref.getKey());
+        challenge.setStatus(Challenge.PENDING);
+        challenge.setChallenger(challenger);
+        challenge.setOpponent(opponent);
         Map<String, Object> data = new HashMap<>();
         data.put("challengerId", challenger.getId());
         data.put("challengerName", challenger.getDisplayName());
@@ -35,11 +41,6 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         data.put("createdAt", ServerValue.TIMESTAMP);
         ref.onDisconnect().removeValue();
         ref.setValue(data);
-        Challenge challenge = new Challenge();
-        challenge.setId(ref.getKey());
-        challenge.setStatus(Challenge.PENDING);
-        challenge.setChallenger(challenger);
-        challenge.setOpponent(opponent);
         return challenge;
     }
 
@@ -48,11 +49,9 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         incomingWatcher = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Gửi cả lời mời đã bị hủy để máy người được mời đóng hộp thoại
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    Challenge challenge = toChallenge(child.getKey(), child);
-                    if (Challenge.PENDING.equals(challenge.getStatus())) {
-                        callback.onChallengeChanged(challenge);
-                    }
+                    callback.onChallengeChanged(toChallenge(child.getKey(), child));
                 }
             }
 
@@ -110,6 +109,8 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         challenge.getChallenger().setTotalPoints(points == null ? 0 : points);
         Integer matchId = data.child("matchId").getValue(Integer.class);
         challenge.setMatchId(matchId == null ? 0 : matchId);
+        Long createdAt = data.child("createdAt").getValue(Long.class);
+        challenge.setCreatedAt(createdAt == null ? null : new Date(createdAt));
         return challenge;
     }
 

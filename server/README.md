@@ -2,7 +2,7 @@
 
 Spring Boot (Java 17, Maven), JDBC thuần tới MySQL, đăng nhập bằng tên đăng nhập + mật khẩu (băm BCrypt), đọc Firebase qua REST API.
 
-Lớp thực thể (`Player`, `Match`, `MatchPlayer`, `MathProblem`, `Answer`, `Challenge`, `Friendship`) nằm ở project `common/` tại thư mục gốc repo, dùng chung với app. Các lệnh dưới chạy trong thư mục `server/`.
+Lớp thực thể (`Player`, `Match`, `MatchPlayer`, `MathProblem`, `Answer`, `Challenge`) nằm ở project `common/` tại thư mục gốc repo, dùng chung với app. Các lệnh dưới chạy trong thư mục `server/`.
 
 ## 1. Tạo CSDL
 
@@ -10,13 +10,13 @@ Lớp thực thể (`Player`, `Match`, `MatchPlayer`, `MathProblem`, `Answer`, `
 mysql -u root -p < db/schema.sql
 ```
 
-Script **xóa và tạo lại** 6 bảng `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, `tblFriendship`, rồi chèn sẵn tài khoản quản trị `admin` / `admin123`.
+Script **xóa và tạo lại** 5 bảng `tblPlayer`, `tblMatch`, `tblMathProblem`, `tblMatchPlayer`, `tblAnswer`, rồi chèn sẵn tài khoản quản trị `admin` / `admin123`.
 
-CSDL đang chạy (không muốn mất dữ liệu) thì chỉ thêm bảng mới:
+CSDL đang chạy (không muốn mất dữ liệu) thì chạy lần lượt các bản cập nhật:
 
 ```
-mysql -u <user> -p mathdash < db/migrate-6-friendship.sql
 mysql -u <user> -p mathdash < db/migrate-7-answer.sql
+mysql -u <user> -p mathdash < db/migrate-8-types.sql
 ```
 
 ## 2. Cấu hình

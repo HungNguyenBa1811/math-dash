@@ -121,7 +121,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Hàng dưới: Thoát; Nộp bài chỉ hiện khi đã làm xong 10 câu -->
+        <!-- Hàng dưới: Thoát nửa trái; Nộp bài nửa phải, chỉ hiện khi đã làm xong 10 câu -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,9 +142,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 android:text="@string/btn_submit"
-                android:visibility="gone"
+                android:visibility="invisible"
                 tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
@@ -170,21 +170,104 @@
             android:textSize="40sp"
             tools:text="THẮNG!" />
 
-        <TextView
-            android:id="@+id/txtMyResult"
-            style="@style/RetroText"
-            android:layout_width="wrap_content"
+        <!-- Bảng so sánh 2 bên: cột trái là mình, cột phải là đối thủ -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            tools:text="Bạn: 10/10 câu đúng · 38,2 giây" />
+            android:background="@drawable/bg_retro_card"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-        <TextView
-            android:id="@+id/txtOpponentResult"
-            style="@style/RetroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            tools:text="HOANG: 10/10 câu đúng · 45,6 giây" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/RetroText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/label_you"
+                    android:textColor="@color/arcade_cyan"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtOpponentName"
+                    style="@style/RetroText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:textColor="@color/arcade_text_dim"
+                    android:textStyle="bold"
+                    tools:text="HOANG" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/arcade_panel_stroke" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtMyCorrect"
+                    style="@style/RetroText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    tools:text="10/10 câu đúng" />
+
+                <TextView
+                    android:id="@+id/txtOpponentCorrect"
+                    style="@style/RetroText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    tools:text="10/10 câu đúng" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtMyTime"
+                    style="@style/RetroText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    tools:text="38,2 giây" />
+
+                <TextView
+                    android:id="@+id/txtOpponentTime"
+                    style="@style/RetroText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    tools:text="45,6 giây" />
+            </LinearLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtPoints"
@@ -193,6 +276,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textColor="@color/arcade_amber"
+            android:textStyle="bold"
             tools:text="+1 điểm · Tổng điểm: 13,5" />
 
         <TextView

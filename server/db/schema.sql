@@ -17,8 +17,8 @@ CREATE TABLE tblPlayer (
     username     VARCHAR(255) NOT NULL,
     passwordHash VARCHAR(255) NOT NULL,                   -- mật khẩu đã băm BCrypt
     displayName  VARCHAR(255) NOT NULL,
-    role         VARCHAR(10)  NOT NULL DEFAULT 'player',  -- player | admin
-    createdAt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    role         VARCHAR(255) NOT NULL DEFAULT 'player',  -- player | admin
+    createdAt    DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     PRIMARY KEY (id),
     UNIQUE KEY uq_player_username (username)
 );
@@ -31,16 +31,16 @@ CREATE TABLE tblMatch (
 );
 
 CREATE TABLE tblMathProblem (
-    id            INT(10)    NOT NULL AUTO_INCREMENT,
-    operand1      INT(10)    NOT NULL,
-    operand2      INT(10)    NOT NULL,
-    operator      VARCHAR(1) NOT NULL,
-    correctAnswer INT(10)    NOT NULL,
-    option1       INT(10)    NOT NULL,
-    option2       INT(10)    NOT NULL,
-    option3       INT(10)    NOT NULL,
-    option4       INT(10)    NOT NULL,
-    tblMatchId    INT(10)    NOT NULL,
+    id            INT(10)      NOT NULL AUTO_INCREMENT,
+    operand1      INT(10)      NOT NULL,
+    operand2      INT(10)      NOT NULL,
+    operator      VARCHAR(255) NOT NULL,
+    correctAnswer INT(10)      NOT NULL,
+    option1       INT(10)      NOT NULL,
+    option2       INT(10)      NOT NULL,
+    option3       INT(10)      NOT NULL,
+    option4       INT(10)      NOT NULL,
+    tblMatchId    INT(10)      NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (tblMatchId) REFERENCES tblMatch(id) ON DELETE CASCADE
 );
@@ -68,18 +68,6 @@ CREATE TABLE tblAnswer (
     UNIQUE KEY uq_answer (tblMatchPlayerId, tblMathProblemId),
     FOREIGN KEY (tblMatchPlayerId) REFERENCES tblMatchPlayer(id) ON DELETE CASCADE,
     FOREIGN KEY (tblMathProblemId) REFERENCES tblMathProblem(id) ON DELETE CASCADE
-);
-
-CREATE TABLE tblFriendship (
-    id                  INT(10)     NOT NULL AUTO_INCREMENT,
-    status              VARCHAR(10) NOT NULL DEFAULT 'pending',  -- pending | accepted
-    createdAt           DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    tblPlayerSenderId   INT(10)     NOT NULL,
-    tblPlayerReceiverId INT(10)     NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_friendship (tblPlayerSenderId, tblPlayerReceiverId),
-    FOREIGN KEY (tblPlayerSenderId)   REFERENCES tblPlayer(id) ON DELETE CASCADE,
-    FOREIGN KEY (tblPlayerReceiverId) REFERENCES tblPlayer(id) ON DELETE CASCADE
 );
 
 -- Tài khoản quản trị tạo sẵn: admin / admin123 (đổi mật khẩu sau khi cài đặt)

@@ -26,8 +26,10 @@ public class MathProblem {
         return answer == correctAnswer;
     }
 
+    // Phép trừ hiện bằng dấu "−" cho dễ đọc; operator vẫn lưu là "-"
     public String getExpression() {
-        return operand1 + " " + operator + " " + operand2 + " = ?";
+        String sign = "-".equals(operator) ? "−" : operator;
+        return operand1 + " " + sign + " " + operand2 + " = ?";
     }
 
     public int getId() {

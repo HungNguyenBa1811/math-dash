@@ -26,6 +26,7 @@ public class PieChartView extends View {
         percentPaint.setFakeBoldText(true);
         percentPaint.setColor(context.getColor(R.color.arcade_text_bright));
         labelPaint.setTextAlign(Paint.Align.CENTER);
+        labelPaint.setFakeBoldText(true);
         labelPaint.setColor(context.getColor(R.color.arcade_text_dim));
     }
 

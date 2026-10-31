@@ -90,6 +90,10 @@ public class FirebaseAdminDAO {
         send("PUT", "matches/" + matchId + "/nextMatchId", nextMatchId);
     }
 
+    public void writeForfeited(int matchId, int playerId) throws IOException, InterruptedException {
+        send("PUT", "matches/" + matchId + "/players/" + playerId + "/forfeited", true);
+    }
+
     public void writeStopped(int matchId, int playerId) throws IOException, InterruptedException {
         send("PUT", "matches/" + matchId + "/stoppedBy", playerId);
     }

@@ -22,7 +22,6 @@
     <string name="title_online_players">NGƯỜI CHƠI ONLINE</string>
     <string name="label_points">%1$s điểm</string>
     <string name="msg_no_online">Chưa có ai khác online</string>
-    <string name="desc_friends">Bạn bè</string>
     <string name="desc_history">Lịch sử đấu</string>
     <string name="desc_ranking">Bảng xếp hạng</string>
     <string name="status_free">Rỗi</string>
@@ -53,8 +52,8 @@
     <string name="result_win">THẮNG!</string>
     <string name="result_lose">THUA!</string>
     <string name="result_draw">HÒA!</string>
-    <string name="label_my_result">Bạn: %1$d/10 câu đúng · %2$s</string>
-    <string name="label_opponent_result">%1$s: %2$d/10 câu đúng · %3$s</string>
+    <string name="label_you">Bạn</string>
+    <string name="label_correct_count">%1$d/10 câu đúng</string>
     <string name="label_match_points">+%1$s điểm · Tổng điểm: %2$s</string>
     <string name="label_seconds">%1$s giây</string>
     <string name="label_seconds_short">%1$s s</string>
@@ -82,10 +81,13 @@
     <string name="tab_my_matches">Trận của tôi</string>
     <string name="tab_ranking">Bảng xếp hạng</string>
     <string name="label_win_rate">thắng</string>
-    <string name="label_wins">● Thắng  %1$d</string>
-    <string name="label_draws">● Hòa    %1$d</string>
-    <string name="label_losses">● Thua   %1$d</string>
+    <string name="label_win">Thắng</string>
+    <string name="label_draw">Hòa</string>
+    <string name="label_lose">Thua</string>
     <string name="label_total_matches">%1$d trận</string>
+    <string name="label_zero_matches">0 trận</string>
+    <string name="legend_dot">●</string>
+    <string name="label_zero">0</string>
     <string name="msg_no_matches">Bạn chưa đấu trận nào</string>
     <string name="msg_history_error">Không tải được lịch sử đấu, kiểm tra kết nối mạng</string>
     <string name="msg_detail_error">Không tải được chi tiết trận, kiểm tra kết nối mạng</string>
