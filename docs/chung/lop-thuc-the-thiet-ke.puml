@@ -80,15 +80,6 @@ class Answer {
   + isAnswered() : boolean
   + isCorrect() : boolean
 }
-class Friendship {
-  - id : int
-  - status : String
-  - createdAt : Date
-  - sender : Player
-  - receiver : Player
-  + getFriend(playerId : int) : Player
-  + canAccept(playerId : int) : boolean
-}
 class BotGame {
   - id : int
   - difficulty : int
@@ -109,8 +100,6 @@ MatchPlayer "n" o-- "1" Player
 Match "1" o-- "10" MathProblem
 MatchPlayer "1" o-- "n" Answer
 Answer "n" o-- "1" MathProblem
-Friendship "n" o-- "1" Player : sender
-Friendship "n" o-- "1" Player : receiver
 BotGame "n" o-- "1" Player
 BotGame "1" *-- "10" MathProblem
 Match -[hidden]- BotGame

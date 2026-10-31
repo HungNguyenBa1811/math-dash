@@ -25,7 +25,7 @@
 > - (Trung bình) Người chơi thi đấu với máy
 > - (Dễ) Quản lí thông tin người chơi, xem BXH
 
-Ánh xạ sang use case của nhóm: "thách đấu và đấu đối kháng" là UC03 Chơi online; "xem BXH" là thẻ Bảng xếp hạng trong UC04 Xem lịch sử đấu; "thi đấu với máy" là UC05 Chơi với máy; "quản lí thông tin người chơi" là UC06, do quản trị viên thực hiện. Nhóm thêm UC07 Quản lý bạn bè và phần lịch sử đấu của UC04 để mỗi người có đủ 3 chức năng riêng. Từ bản 8, báo cáo của Hùng chỉ trình bày UC03, UC04; UC07 chỉ có trong code.
+Ánh xạ sang use case của nhóm: "thách đấu và đấu đối kháng" là UC03 Chơi online; "xem BXH" là thẻ Bảng xếp hạng trong UC04 Xem lịch sử đấu; "thi đấu với máy" là UC05 Chơi với máy; "quản lí thông tin người chơi" là UC06, do quản trị viên thực hiện. Nhóm thêm phần lịch sử đấu của UC04 để mỗi người có chức năng riêng.
 
 ### 1.2. Yêu cầu báo cáo
 
@@ -51,8 +51,8 @@
 | Nộp báo cáo thiết kế cá nhân | **15/11/2026** |
 
 **Hệ quả cho nhóm:**
-- Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Mỗi người tối đa 3 chức năng, phân công ở `ISSUES_PLAN.md` mục 2.1, **không trùng nhau** (bản 8, 28/10):
-  - Hùng: Chơi online (module Đấu đối kháng), Xem lịch sử đấu (module Xem lịch sử đấu, gồm bảng xếp hạng). Quản lý bạn bè (module Bạn bè) vẫn có trong code nhưng không trình bày trong báo cáo.
+- Ai **demo** chức năng nào thì **tự code và tự vẽ** chức năng đó. Mỗi người tối đa 3 chức năng, phân công ở `ISSUES_PLAN.md` mục 2.1, **không trùng nhau** (bản 6, 27/10):
+  - Hùng: Chơi online (module Đấu đối kháng), Xem lịch sử đấu (module Xem lịch sử đấu, gồm bảng xếp hạng).
   - Hoàng: Đăng ký và Đăng nhập (module Tài khoản), Chơi với máy (module Chơi với máy), Quản lý thông tin người chơi (module Quản trị).
 - Mỗi người **một file báo cáo riêng**. Không viết chung, không chép nguyên phần của người kia.
 - **Phần chung** gồm use case tổng quát, lớp thực thể, CSDL:
@@ -100,7 +100,6 @@ Không phải module: một màn hình hay một bước con (Xem chi tiết tr�
 | Xem lịch sử đấu | UC04 Xem lịch sử đấu | Match, MatchPlayer, Answer, MathProblem (chỉ đọc), Player | Hùng |
 | Chơi với máy | UC05 Chơi với máy | BotGame | Hoàng |
 | Quản trị | UC06 Quản lý thông tin người chơi | Player | Hoàng |
-| Bạn bè | UC07 Quản lý bạn bè | Friendship | Hùng; chỉ có trong code, không đưa vào báo cáo từ bản 8 |
 
 ---
 
@@ -386,7 +385,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
 |---|---|---|---|---|---|
 | `docs/chung/01-pham-vi-use-case.md` | Phạm vi, UC tổng quát | Mở đầu, cả 2 báo cáo | #22 M1-01 | Hùng / Hoàng | — |
 | `docs/chung/02-lop-thuc-the.md` | A2, D1 | Mục 3, cả 2 báo cáo | #23 M1-02 | Hùng / Hoàng | 01 |
-| `docs/chung/03-csdl.md` | D2 | Mục 2: Hoàng phần SQLite + `tblPlayer` của MySQL, Hùng phần MySQL + Firebase; báo cáo của Hùng không dùng `tblFriendship` | #24 M1-03 | Hùng / Hoàng | 02 phần B |
+| `docs/chung/03-csdl.md` | D2 | Mục 2: Hoàng phần SQLite + `tblPlayer` của MySQL, Hùng phần MySQL + Firebase | #24 M1-03 | Hùng / Hoàng | 02 phần B |
 | `docs/hung/1-kich-ban-v1.md` | A1 | Mục 1 | #37 M3-01 | Hùng / Hoàng | 01 |
 | `docs/hung/2-lop-phan-tich.md` | A3 | Phụ lục | #39 M3-03 | Hùng / Hoàng | v1, 02 phần A |
 | `docs/hung/3-kich-ban-v2.md` | A4 | Phụ lục | #41 M3-05 | Hùng / Hoàng | v1, 2-lop-phan-tich |
@@ -399,15 +398,13 @@ Lớp thực thể theo báo cáo: Hùng (UC03, UC04) dùng `Player`, `MathProbl
 
 Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28/10/2026.
 
-**Trạng thái tài liệu của Hùng:** viết trước khi code, thiết kế dẫn code. Tên lớp, hàm trong `4-lop-thiet-ke.md` là chữ ký code M2-02 → M2-05, M2-09, M2-10 phải theo; code buộc phải khác thì sửa tài liệu theo code trước khi nộp.
+**Trạng thái tài liệu của Hùng:** viết trước khi code, thiết kế dẫn code. Tên lớp, hàm trong `4-lop-thiet-ke.md` là chữ ký code M2-02 → M2-05, M2-09 phải theo; code buộc phải khác thì sửa tài liệu theo code trước khi nộp.
 
 **Bản 5 (26/10/2026):** toàn bộ tài liệu chung và tài liệu UC03, UC04, Đăng nhập – đăng ký của Hùng viết lại theo đề 9. Code trên `main` vẫn là bản 4 (phòng mã 6 số, lịch sử đấu), phải làm lại theo M1-04 → M2-05.
 
-**Bản 6 (27/10/2026):** Đăng nhập – đăng ký chuyển hẳn sang báo cáo của Hoàng; tài liệu của Hùng bỏ phần này, UC04 đổi thành Xem lịch sử đấu (gộp bảng xếp hạng), thêm UC07 Quản lý bạn bè.
+**Bản 6 (27/10/2026):** Đăng nhập – đăng ký chuyển hẳn sang báo cáo của Hoàng; tài liệu của Hùng bỏ phần này, UC04 đổi thành Xem lịch sử đấu (gộp bảng xếp hạng).
 
-**Bản 7 (27/10/2026):** tài liệu đồng bộ với giao diện mới: giao diện chính (MainView / MainActivity) chỉ có Chơi với máy, Chơi online; thêm OnlineView / OnlineActivity giữ danh sách online, thách đấu và 3 biểu tượng Bạn bè, Lịch sử đấu, Bảng xếp hạng; giao diện thi đấu mỗi lần một câu với 4 ô A–D (outQuestion, subOptions / btnOptions); thêm thực thể Answer, bảng tblAnswer; chi tiết trận hiện đúng / sai và thời gian từng câu (outListAnswer). Phần chung (Answer, tblAnswer) cần Hoàng duyệt.
-
-**Bản 8 (28/10/2026):** bỏ Quản lý bạn bè khỏi báo cáo của Hùng cho gọn; code vẫn giữ.
+**Bản 7 (27/10/2026):** tài liệu đồng bộ với giao diện mới: giao diện chính (MainView / MainActivity) chỉ có Chơi với máy, Chơi online; thêm OnlineView / OnlineActivity giữ danh sách online, thách đấu và 2 biểu tượng Lịch sử đấu, Bảng xếp hạng; giao diện thi đấu mỗi lần một câu với 4 ô A–D (outQuestion, subOptions / btnOptions); thêm thực thể Answer, bảng tblAnswer; chi tiết trận hiện đúng / sai và thời gian từng câu (outListAnswer). Phần chung (Answer, tblAnswer) cần Hoàng duyệt.
 
 **Việc còn lại trước khi nộp (Hùng):**
 1. Thay hình phác thảo giao diện bằng ảnh chụp app thật (M2-08).

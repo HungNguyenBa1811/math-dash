@@ -124,7 +124,7 @@ Mọi thành phần giao diện nêu trong kịch bản v1 đều có ở lớp 
 |---|---|
 | Nút Chơi với máy, nút Chơi online | MainView.subPlayBot, subPlayOnline |
 | Thẻ thông tin của mình, danh sách người chơi online | OnlineView.outMyInfo, outsubListPlayer |
-| Nút Bạn bè, nút Lịch sử đấu, nút Bảng xếp hạng | OnlineView.subFriends, subHistory, subRanking |
+| Nút Lịch sử đấu, nút Bảng xếp hạng | OnlineView.subHistory, subRanking |
 | Ô thời gian, trạng thái đối thủ, số thứ tự câu và phép tính, 4 ô phương án A, B, C, D, nút Nộp bài, nút Thoát | MatchView.outTimer, outOpponentStatus, outQuestion, subOptions, subSubmit, subExit |
 | Dòng kết quả, kết quả của mình, của đối thủ, điểm, nút Chơi tiếp, nút Dừng | MatchResultView.outResult, outMyResult, outOpponentResult, outPoints, subContinue, subStop |
 | Biểu đồ tròn, số trận thắng / hòa / thua, danh sách trận, thẻ Bảng xếp hạng, danh sách xếp hạng | HistoryView.outWinRateChart, outSummary, outsubListMatch, subTabRanking, outListRanking |
