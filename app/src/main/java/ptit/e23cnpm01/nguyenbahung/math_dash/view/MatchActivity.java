@@ -36,11 +36,11 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-// Không chấm bài ở app
+// Answers are not graded in the app
 public class MatchActivity extends BaseActivity implements MatchCallback, PlayerListCallback {
     public static final String EXTRA_MATCH_ID = "matchId";
     private static final long MATCH_MILLIS = 60_000;
-    // Khóa 4 ô một lúc sau khi chọn để bấm đúp không trả lời nhầm câu sau
+    // Lock all 4 tiles briefly after a pick so a double tap does not answer the next question
     private static final long NEXT_DELAY = 200;
     private static final String[] LETTERS = {"A", "B", "C", "D"};
 
@@ -67,7 +67,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
     private int opponentId;
     private List<MathProblem> questions = new ArrayList<>();
     private List<Answer> answers = new ArrayList<>();
-    // Chỉ số câu đang hiện và thời điểm câu đó hiện ra
+    // Index of the current question and the time it was shown
     private int current;
     private long shownAt;
     private CountDownTimer timer;
@@ -78,7 +78,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
     private boolean submitted;
     private boolean resultLoading;
     private boolean resultShown;
-    // Firebase báo đối thủ có stoppedBy trước khi mình có kết quả; đối thủ bị xử bỏ trận
+    // Firebase reported stoppedBy for the opponent before our result arrived; the opponent forfeited
     private boolean opponentStopped;
     private boolean opponentForfeited;
     private boolean leaving;
@@ -184,15 +184,15 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         }
     }
 
-    // stoppedBy là đối thủ
-    // Server ghi stoppedBy và status là 2 lần ghi, nên hàm này có thể được gọi 2 lần
+    // stoppedBy is the opponent
+    // The server writes stoppedBy and status separately, so this may be called twice
     @Override
     public void onStopped(int playerId) {
         if (playerId == me.getId() || leaving) {
             return;
         }
         if (!resultShown) {
-            // Chưa có kết quả thì chưa biết là bỏ trận hay Dừng
+            // Without a result we cannot tell a forfeit from a Stop
             opponentStopped = true;
             loadResult();
         } else if (!opponentForfeited) {
@@ -211,7 +211,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         showToast(message);
     }
 
-    // Đối thủ rời danh sách online giữa trận
+    // The opponent left the online list mid-match
     @Override
     public void onPlayersChanged(List<Player> players) {
         if (!started || resultShown || opponentStopped || leaving) {
@@ -238,7 +238,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         presenceFirebaseDAO.watchOnlinePlayers(this);
     }
 
-    // Hiện câu thứ current; làm xong cả 10 câu thì hiện nút Nộp bài
+    // Show question current; show the Submit button once all 10 are answered
     private void showQuestion() {
         if (submitted) {
             return;
@@ -259,7 +259,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         shownAt = SystemClock.elapsedRealtime();
     }
 
-    // Ghi phương án đã chọn và thời gian làm câu, làm mờ 3 ô còn lại rồi sang câu sau
+    // Record the chosen option and time taken, dim the other 3 tiles, then move on
     private void chooseOption(int index) {
         if (submitted || current >= questions.size()) {
             return;
@@ -280,14 +280,14 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         }, NEXT_DELAY);
     }
 
-    // "A" nhỏ ở trên, giá trị lớn ở dưới
+    // Small "A" on top, large value below
     private CharSequence optionText(int index, int value) {
         SpannableString text = new SpannableString(LETTERS[index] + "\n" + value);
         text.setSpan(new RelativeSizeSpan(0.5f), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return text;
     }
 
-    // Thay câu hỏi bằng một dòng thông báo chữ đậm; 4 ô ẩn nhưng vẫn giữ chỗ
+    // Replace the question with a bold message; the 4 tiles are hidden but keep their space
     private void showMessage(String message) {
         layoutOptions.setVisibility(View.INVISIBLE);
         txtExpression.setVisibility(View.GONE);
@@ -440,7 +440,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         opponentForfeited = opponent.isForfeited();
         boolean forfeited = opponentForfeited || mineOf(match).isForfeited();
         if (opponentStopped && !forfeited) {
-            // Đối thủ đã chọn Dừng
+            // The opponent chose Stop
             leaveAfterStop();
             return;
         }
@@ -525,7 +525,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         return match.getPlayers().get(0);
     }
 
-    // 38200 ms → "38,2 giây"; chưa nộp → "—"
+    // 38200 ms -> "38,2 giây"; not submitted -> "—"
     private String formatTime(long millis) {
         if (millis == Long.MAX_VALUE) {
             return getString(R.string.label_no_time);

@@ -10,7 +10,7 @@ import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Hàm đồng bộ, phải gọi trong Thread
+// Blocking calls, must run on a background Thread
 public class PlayerApiDAO extends ApiDAO {
 
     public void register(String username, String password, String displayName) throws IOException, JSONException {
@@ -41,7 +41,7 @@ public class PlayerApiDAO extends ApiDAO {
         return list;
     }
 
-    // Các trường dẫn xuất có thể vắng
+    // Derived fields may be missing
     private Player toPlayer(JSONObject json) throws JSONException {
         Player player = new Player(json.getInt("id"), json.optString("username"), json.getString("displayName"));
         player.setRole(json.optString("role", Player.ROLE_PLAYER));

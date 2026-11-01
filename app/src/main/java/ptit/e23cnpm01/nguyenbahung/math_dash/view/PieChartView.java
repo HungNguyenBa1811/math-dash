@@ -11,7 +11,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
-// Biểu đồ vành khuyên thắng / hòa / thua, tự vẽ bằng Canvas
+// Win / draw / loss donut chart drawn with Canvas
 public class PieChartView extends View {
     private int wins;
     private int draws;
@@ -54,7 +54,7 @@ public class PieChartView extends View {
             arcPaint.setColor(getContext().getColor(R.color.line));
             canvas.drawArc(oval, 0, 360, false, arcPaint);
         } else {
-            // Từ đỉnh, theo chiều kim đồng hồ
+            // From the top, clockwise
             float start = -90;
             start = drawPart(canvas, start, wins, total, R.color.win);
             start = drawPart(canvas, start, draws, total, R.color.draw_fill);
@@ -71,7 +71,7 @@ public class PieChartView extends View {
         canvas.drawText(getContext().getString(R.string.label_win_rate), cx, cy + size * 0.16f, labelPaint);
     }
 
-    // Trả về góc bắt đầu của cung kế tiếp
+    // Returns the start angle of the next arc
     private float drawPart(Canvas canvas, float start, int count, int total, int colorRes) {
         if (count == 0) {
             return start;

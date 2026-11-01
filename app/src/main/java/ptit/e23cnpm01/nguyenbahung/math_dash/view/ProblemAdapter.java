@@ -15,7 +15,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-// Mỗi dòng một câu
+// One row per question
 public class ProblemAdapter extends BaseAdapter<MathProblem, ProblemViewHolder> {
     private List<Answer> myAnswers;
     private List<Answer> opponentAnswers;
@@ -44,12 +44,12 @@ public class ProblemAdapter extends BaseAdapter<MathProblem, ProblemViewHolder> 
         showAnswer(holder.txtOpponentAnswer, opponent);
     }
 
-    // Bỏ trận khi chưa nộp thì không có bài làm
+    // A forfeit before submitting has no answers
     private Answer answerAt(List<Answer> answers, int position) {
         return position < answers.size() ? answers.get(position) : null;
     }
 
-    // "✓ 19" xanh hoặc "✗ 18" đỏ, dòng dưới là thời gian làm câu
+    // Green "✓ 19" or red "✗ 18", with the time taken below
     private void showAnswer(TextView view, Answer answer) {
         Context context = view.getContext();
         if (answer == null || !answer.isAnswered()) {

@@ -40,7 +40,7 @@ public class MatchHistoryAdapter extends BaseAdapter<Match, MatchHistoryViewHold
         final Match match = items.get(position);
         Context context = holder.itemView.getContext();
         MatchPlayer opponent = match.getOpponent(myId);
-        // Dòng của chính mình trong trận là đối thủ của đối thủ
+        // Our own row is the opponent's opponent
         MatchPlayer mine = match.getOpponent(opponent.getPlayer().getId());
         String result = match.getResult(myId);
 
@@ -66,7 +66,7 @@ public class MatchHistoryAdapter extends BaseAdapter<Match, MatchHistoryViewHold
         holder.txtOpponent.setText(context.getString(R.string.history_opponent,
                 opponent.getPlayer().getDisplayName(), match.getId()));
         holder.txtPoints.setText("+" + PointFormat.format(match.getPoints(myId)));
-        // "6 – 3 câu · Đối thủ bỏ trận"
+        // e.g. "6 – 3 câu · Đối thủ bỏ trận"
         String score = context.getString(R.string.history_score,
                 mine.getCorrectCount(), opponent.getCorrectCount());
         if (opponent.isForfeited()) {

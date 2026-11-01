@@ -72,7 +72,7 @@ public abstract class ApiDAO {
         return conn;
     }
 
-    // Lỗi HTTP
+    // HTTP error
     private String read(HttpURLConnection conn, int code) throws IOException, JSONException {
         InputStream in = code < 400 ? conn.getInputStream() : conn.getErrorStream();
         StringBuilder text = new StringBuilder();

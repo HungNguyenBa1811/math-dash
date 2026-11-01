@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-// Điểm: 13 → "13", 12.5 → "12,5"; giây: 44 → "44,0", 38.24 → "38,2"
+// Points: 13 -> "13", 12.5 -> "12,5"; seconds: 44 -> "44,0", 38.24 -> "38,2"
 public final class PointFormat {
     private static final DecimalFormatSymbols VI = new DecimalFormatSymbols(new Locale("vi", "VN"));
     private static final DecimalFormat FORMAT = new DecimalFormat("0.#", VI);

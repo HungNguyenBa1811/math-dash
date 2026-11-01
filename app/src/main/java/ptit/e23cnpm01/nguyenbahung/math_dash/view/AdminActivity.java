@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 
-// Màn quản lý người chơi của quản trị viên
+// Admin screen for managing players
 public class AdminActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnLogout;
 
@@ -30,7 +30,7 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // Đăng xuất
+    // Log out
     private void logout() {
         new SessionDAO(this).clear();
         startActivity(new Intent(this, LoginActivity.class));

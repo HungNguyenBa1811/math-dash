@@ -7,7 +7,7 @@ import java.util.Random;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 
-// Giống hệt ProblemDAO phía server
+// Identical to the server-side ProblemDAO
 public class ProblemDAO {
     private static final String[] OPERATORS = {"+", "-", "×"};
     private static final int OPTION_COUNT = 4;
@@ -31,7 +31,7 @@ public class ProblemDAO {
         return list;
     }
 
-    // + -: toán hạng 1–99, kết quả không âm; ×: toán hạng 2–15
+    // + and -: operands 1-99, non-negative result; x: operands 2-15
     public MathProblem generateProblem() {
         String operator = OPERATORS[random.nextInt(OPERATORS.length)];
         if (operator.equals("×")) {

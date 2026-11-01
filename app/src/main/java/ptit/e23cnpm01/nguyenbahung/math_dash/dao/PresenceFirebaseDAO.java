@@ -18,7 +18,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 public class PresenceFirebaseDAO extends FirebaseDAO {
     private ValueEventListener watcher;
 
-    // Mất kết nối thì node tự bị xóa
+    // The node is removed automatically on disconnect
     public void goOnline(Player player) {
         DatabaseReference ref = presenceRef().child(String.valueOf(player.getId()));
         ref.onDisconnect().removeValue();
@@ -47,7 +47,7 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Giữ danh sách cũ
+                // Keep the previous list
             }
         };
         presenceRef().addValueEventListener(watcher);

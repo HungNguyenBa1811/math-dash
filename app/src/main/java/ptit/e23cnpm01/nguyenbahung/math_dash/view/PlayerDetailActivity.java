@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
-// Thông tin một người chơi
+// Details of one player
 public class PlayerDetailActivity extends AppCompatActivity {
 
     @Override

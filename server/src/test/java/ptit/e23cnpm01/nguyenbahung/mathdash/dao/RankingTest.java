@@ -41,12 +41,12 @@ class RankingTest {
         Player hoang = player(2, "HOANG");
         Player lan = player(3, "LAN");
         List<Match> matches = Arrays.asList(
-                match(hung, 10, 38, hoang, 10, 45),   // HUNG thắng, 38 giây
-                match(lan, 10, 40, hoang, 9, 30),     // LAN thắng, 40 giây
-                match(hung, 8, 20, lan, 9, 25));      // hòa
+                match(hung, 10, 38, hoang, 10, 45),   // HUNG wins, 38 s
+                match(lan, 10, 40, hoang, 9, 30),     // LAN wins, 40 s
+                match(hung, 8, 20, lan, 9, 25));      // draw
         List<Player> ranking = PlayerDAO.rank(new ArrayList<>(Arrays.asList(hoang, lan, hung)), matches);
 
-        // Bằng điểm và TB điểm đối thủ, HUNG thắng nhanh hơn nên đứng trên
+        // Same points and avg opponent points, HUNG wins faster so ranks higher
         assertEquals("HUNG", ranking.get(0).getDisplayName());
         assertEquals("LAN", ranking.get(1).getDisplayName());
         assertEquals("HOANG", ranking.get(2).getDisplayName());
@@ -63,12 +63,12 @@ class RankingTest {
         Player c = player(3, "C");
         Player d = player(4, "D");
         List<Match> matches = Arrays.asList(
-                match(c, 10, 30, d, 5, 30),    // C 1 điểm
-                match(c, 10, 30, d, 5, 30),    // C 2 điểm
-                match(a, 10, 50, c, 5, 30),    // A thắng C (C mạnh)
-                match(b, 10, 20, d, 5, 30));   // B thắng D (D yếu)
+                match(c, 10, 30, d, 5, 30),    // C 1 point
+                match(c, 10, 30, d, 5, 30),    // C 2 points
+                match(a, 10, 50, c, 5, 30),    // A beats C (strong)
+                match(b, 10, 20, d, 5, 30));   // B beats D (weak)
         List<Player> ranking = PlayerDAO.rank(new ArrayList<>(Arrays.asList(a, b, c, d)), matches);
-        // A và B cùng 1 điểm nhưng A gặp C (2 điểm) nên đứng trên
+        // A and B both have 1 point but A beat C (2 points) so ranks higher
         assertEquals("C", ranking.get(0).getDisplayName());
         assertEquals("A", ranking.get(1).getDisplayName());
         assertEquals("B", ranking.get(2).getDisplayName());

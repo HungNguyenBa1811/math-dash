@@ -18,10 +18,10 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Cây dữ liệu: docs/chung/03-csdl.md mục 2
+// Data tree: docs/chung/03-csdl.md section 2
 public class FirebaseAdminDAO {
     private String dbUrl;
-    // Tùy chọn
+    // Optional
     private String secret;
     private HttpClient client = HttpClient.newHttpClient();
     private ObjectMapper mapper = new ObjectMapper();
@@ -31,7 +31,7 @@ public class FirebaseAdminDAO {
         secret = DAO.loadConfig().getProperty("firebase.secret", "");
     }
 
-    // null nếu không online
+    // null if not online
     public Player readPresence(int playerId) throws IOException, InterruptedException {
         JsonNode node = mapper.readTree(send("GET", "presence/" + playerId, null));
         if (node == null || node.isNull()) {
@@ -43,7 +43,7 @@ public class FirebaseAdminDAO {
         return player;
     }
 
-    // Người đã offline thì bỏ qua
+    // Skip players who are offline
     public void updateStatus(int playerId, String status) throws IOException, InterruptedException {
         updatePresence(playerId, "status", status);
     }
@@ -52,7 +52,7 @@ public class FirebaseAdminDAO {
         updatePresence(playerId, "totalPoints", totalPoints);
     }
 
-    // null nếu lời mời đã bị xóa
+    // null if the invitation was removed
     public String readChallengeStatus(String challengeId) throws IOException, InterruptedException {
         JsonNode node = mapper.readTree(send("GET", "challenges/" + challengeId + "/status", null));
         return node == null || node.isNull() ? null : node.asText();
@@ -107,7 +107,7 @@ public class FirebaseAdminDAO {
         send("PATCH", "presence/" + playerId, data);
     }
 
-    // Không gửi correctAnswer cho app
+    // Do not send correctAnswer to the app
     private List<Map<String, Object>> toQuestions(List<MathProblem> questions) {
         List<Map<String, Object>> list = new ArrayList<>();
         for (MathProblem p : questions) {

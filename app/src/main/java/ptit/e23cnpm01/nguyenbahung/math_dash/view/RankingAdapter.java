@@ -41,7 +41,7 @@ public class RankingAdapter extends BaseAdapter<Player, RankingViewHolder> {
         holder.txtAvgOpponent.setText(PointFormat.format(Math.round(p.getAvgOpponentPoints() * 100) / 100.0));
         holder.txtAvgWinTime.setText(p.getAvgWinTime() == 0 ? context.getString(R.string.label_no_time)
                 : context.getString(R.string.label_seconds_short, PointFormat.formatSeconds(p.getAvgWinTime())));
-        // Dòng của người xem
+        // The viewer's own row
         boolean mine = p.getId() == myId;
         holder.itemView.setBackgroundResource(mine ? R.drawable.bg_highlight : R.drawable.bg_card);
         TextView[] cells = {holder.txtRank, holder.txtName, holder.txtPoints, holder.txtAvgOpponent, holder.txtAvgWinTime};

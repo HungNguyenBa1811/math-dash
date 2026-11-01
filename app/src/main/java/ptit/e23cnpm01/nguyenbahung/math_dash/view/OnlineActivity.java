@@ -36,7 +36,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-// Vào màn này mới online
+// The player is online only while on this screen
 public class OnlineActivity extends BaseActivity implements PlayerListCallback, ChallengeCallback {
     private TextView txtMyName;
     private TextView txtMyPoints;
@@ -48,7 +48,7 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
     private AlertDialog waitingDialog;
     private Challenge sentChallenge;
     private Set<String> shownChallenges = new HashSet<>();
-    // Hộp thoại lời mời đang mở, theo id lời mời
+    // Open invitation dialogs, keyed by invitation id
     private Map<String, AlertDialog> challengeDialogs = new HashMap<>();
     private PlayerApiDAO playerApiDAO = new PlayerApiDAO();
     private PresenceFirebaseDAO presenceFirebaseDAO = new PresenceFirebaseDAO();
@@ -91,7 +91,7 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
         }
     }
 
-    // Rời màn Chơi online là offline
+    // Leaving the Play online screen goes offline
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -158,7 +158,7 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
     public void onChallengeChanged(Challenge challenge) {
         if (challenge.getOpponent().getId() == me.getId()) {
             if (!Challenge.PENDING.equals(challenge.getStatus())) {
-                // Người mời đã hủy
+                // The inviter cancelled
                 closeChallengeDialog(challenge.getId());
             } else if (shownChallenges.add(challenge.getId())) {
                 showChallengeDialog(challenge);
@@ -181,7 +181,7 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Hủy lời mời
+                        // Cancel the invitation
                         String id = sentChallenge.getId();
                         closeSentChallenge();
                         challengeFirebaseDAO.rejectChallenge(id);

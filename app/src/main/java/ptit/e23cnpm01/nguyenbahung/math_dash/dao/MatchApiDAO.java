@@ -16,7 +16,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Hàm đồng bộ, phải gọi trong Thread
+// Blocking calls, must run on a background Thread
 public class MatchApiDAO extends ApiDAO {
 
     public Match createMatch(Challenge challenge) throws IOException, JSONException {
@@ -103,7 +103,7 @@ public class MatchApiDAO extends ApiDAO {
         return mp;
     }
 
-    // Lịch sử đấu không kèm đề và bài làm
+    // Match history without problems and answers
     private List<Answer> toAnswers(JSONArray array, List<MathProblem> questions) throws JSONException {
         List<Answer> list = new ArrayList<>();
         for (int i = 0; array != null && i < array.length(); i++) {
