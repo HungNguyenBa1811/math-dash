@@ -157,7 +157,6 @@ package "Common (Java Library)" as PM {
     - player : Player
   }
   class Answer <<entity>> {
-    + NONE : int
     - id : int
     - selectedOption : int
     - answerTime : long

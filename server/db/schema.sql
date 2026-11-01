@@ -17,15 +17,15 @@ CREATE TABLE tblPlayer (
     passwordHash VARCHAR(255) NOT NULL,                   -- mật khẩu đã băm BCrypt
     displayName  VARCHAR(255) NOT NULL,
     role         VARCHAR(10)  NOT NULL DEFAULT 'player',  -- player | admin
-    createdAt    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    createdAt    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uq_player_username (username)
 );
 
 CREATE TABLE tblMatch (
     id        INT(10)     NOT NULL AUTO_INCREMENT,
-    startedAt DATETIME(3) NOT NULL,
-    endedAt   DATETIME(3) NULL,                           -- rỗng khi trận đang đấu
+    startedAt TIMESTAMP(3) NOT NULL,
+    endedAt   TIMESTAMP(3) NULL,                           -- rỗng khi trận đang đấu
     PRIMARY KEY (id)
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE tblMathProblem (
 CREATE TABLE tblMatchPlayer (
     id           INT(10)     NOT NULL AUTO_INCREMENT,
     correctCount INT(10)     NOT NULL DEFAULT 0,
-    submittedAt  DATETIME(3) NULL,                        -- rỗng khi chưa nộp bài
+    submittedAt  TIMESTAMP(3) NULL,                        -- rỗng khi chưa nộp bài
     forfeited    TINYINT(1)  NOT NULL DEFAULT 0,
     tblMatchId   INT(10)     NOT NULL,
     tblPlayerId  INT(10)     NOT NULL,

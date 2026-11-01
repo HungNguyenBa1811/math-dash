@@ -209,7 +209,6 @@ package "Server (Spring Boot)" as PS {
     - correctAnswer : int
   }
   class "Answer" as SAnswer <<entity>> {
-    + NONE : int
     - id : int
     - selectedOption : int
     - answerTime : long
