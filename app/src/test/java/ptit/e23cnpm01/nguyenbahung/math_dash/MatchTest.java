@@ -25,7 +25,7 @@ public class MatchTest {
     private static final int HOANG = 2;
     private static final long START = 1_000_000L;
 
-    // Số giây âm = chưa nộp
+    // Negative seconds means not submitted
     private Match match(int hungCorrect, double hungSeconds, int hoangCorrect, double hoangSeconds) {
         Match match = new Match();
         match.setStartedAt(new Date(START));

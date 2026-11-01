@@ -1,2 +1,2 @@
-# Sao chép thành application-local.properties rồi điền giá trị thật
+# Copy to application-local.properties and fill in real values
 db.password=matkhau_mysql

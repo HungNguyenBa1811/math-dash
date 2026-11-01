@@ -25,7 +25,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class HistoryActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
     public static final String EXTRA_MATCH_ID = "matchId";
-    // Thẻ mở sẵn khi vào màn
+    // Tab selected when the screen opens
     public static final String EXTRA_TAB = "tab";
     public static final int TAB_RANKING = 1;
 
@@ -132,7 +132,7 @@ public class HistoryActivity extends BaseActivity implements TabLayout.OnTabSele
     public void onTabReselected(TabLayout.Tab tab) {
     }
 
-    // Chỉ tải lần đầu chọn thẻ
+    // Load only the first time the tab is selected
     private void loadRanking() {
         rankingLoaded = true;
         new Thread(new Runnable() {

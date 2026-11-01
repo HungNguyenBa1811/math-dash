@@ -28,7 +28,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Hàm ghi synchronized
+// Write methods are synchronized
 @RestController
 @RequestMapping("/api/matches")
 public class MatchRestController {
@@ -36,10 +36,10 @@ public class MatchRestController {
     private PlayerDAO playerDAO = new PlayerDAO();
     private ProblemDAO problemDAO = new ProblemDAO();
     private FirebaseAdminDAO firebaseAdminDAO = new FirebaseAdminDAO();
-    // id trận → id người đã chọn chơi tiếp
+    // Match id -> id of the player who chose to continue
     private Map<Integer, Integer> waitingChoices = new HashMap<>();
 
-    // 409 nếu lời mời đã hủy hoặc một người không rỗi
+    // 409 if the invitation was cancelled or a player is busy
     @PostMapping
     public synchronized Match create(@RequestBody Challenge challenge)
             throws IOException, InterruptedException, SQLException {
@@ -82,7 +82,7 @@ public class MatchRestController {
             throws SQLException, IOException, InterruptedException {
         Match match = findMatch(id);
         if (match.getEndedAt() == null) {
-            // Lưu kết quả và tổng điểm trước, rồi mới báo máy đối thủ, để máy đó đọc được kết quả đã lưu
+            // Save results and total points before notifying the opponent so it reads the saved result
             matchDAO.updateForfeit(id, playerId);
             findPlayer(match, playerId).setForfeited(true);
             endMatch(match);
@@ -181,7 +181,7 @@ public class MatchRestController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Người chơi không ở trong trận");
     }
 
-    // Trận chưa xong
+    // Match not finished yet
     private Match hideAnswers(Match match) {
         if (match.getEndedAt() == null) {
             for (MathProblem p : match.getQuestions()) {

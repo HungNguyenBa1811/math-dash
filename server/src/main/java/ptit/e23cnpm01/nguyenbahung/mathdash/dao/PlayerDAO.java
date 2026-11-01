@@ -27,7 +27,7 @@ public class PlayerDAO extends DAO {
         return findOne("SELECT " + COLUMNS + " FROM tblPlayer WHERE id = ?", id);
     }
 
-    // Trùng tên đăng nhập thì trả false
+    // Returns false if the username is taken
     public boolean insert(Player player) {
         String sql = "INSERT INTO tblPlayer (username, passwordHash, displayName, role) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -56,7 +56,7 @@ public class PlayerDAO extends DAO {
         return rank(findAllPlayers(), new MatchDAO().findFinished());
     }
 
-    // Hàm thuần, không truy cập CSDL
+    // Pure function, no database access
     public static List<Player> rank(List<Player> players, List<Match> matches) {
         Map<Integer, Player> byId = new HashMap<>();
         for (Player p : players) {
@@ -115,7 +115,7 @@ public class PlayerDAO extends DAO {
         winTimes.get(playerId).add(time);
     }
 
-    // Chưa gặp ai thì 0
+    // 0 if no opponents yet
     private static double averagePoints(Set<Integer> ids, Map<Integer, Player> byId) {
         if (ids == null || ids.isEmpty()) {
             return 0;
@@ -128,7 +128,7 @@ public class PlayerDAO extends DAO {
         return sum / ids.size();
     }
 
-    // Tính bằng giây; chưa thắng thì 0
+    // In seconds; 0 if no wins yet
     private static double averageSeconds(List<Long> times) {
         if (times == null || times.isEmpty()) {
             return 0;
@@ -140,7 +140,7 @@ public class PlayerDAO extends DAO {
         return sum / 1000.0 / times.size();
     }
 
-    // Tổng điểm ↓, TB điểm đối thủ ↓, TB thời gian thắng ↑ (chưa thắng đứng sau)
+    // Total points desc, avg opponent points desc, avg win time asc (no wins ranks last)
     private static class RankingComparator implements Comparator<Player> {
         @Override
         public int compare(Player a, Player b) {

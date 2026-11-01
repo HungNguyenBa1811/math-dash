@@ -24,7 +24,7 @@ public class MatchDAO extends DAO {
             + " JOIN tblMatchPlayer mp ON mp.tblMatchId = m.id"
             + " JOIN tblPlayer p ON p.id = mp.tblPlayerId";
 
-    // Một transaction; gán id vừa sinh cho trận, câu hỏi, người chơi
+    // One transaction; assigns generated ids to the match, problems and players
     public boolean insert(Match match) {
         synchronized (conn) {
             try {
@@ -60,19 +60,19 @@ public class MatchDAO extends DAO {
         return match;
     }
 
-    // Không kèm đề
+    // Without problems
     public List<Match> findFinished() throws SQLException {
         return query(SELECT_PLAYERS + " WHERE m.endedAt IS NOT NULL ORDER BY m.id, mp.id", null);
     }
 
-    // Mới nhất đứng đầu
+    // Newest first
     public List<Match> findByPlayer(int playerId) throws SQLException {
         return query(SELECT_PLAYERS + " WHERE m.endedAt IS NOT NULL"
                 + " AND m.id IN (SELECT tblMatchId FROM tblMatchPlayer WHERE tblPlayerId = ?)"
                 + " ORDER BY m.endedAt DESC, m.id DESC, mp.id", playerId);
     }
 
-    // Chỉ nộp được một lần; ghi kết quả và bài làm từng câu trong một transaction
+    // Submit only once; results and per-question answers are written in one transaction
     public boolean updateSubmission(int matchId, MatchPlayer mp) {
         synchronized (conn) {
             try {
@@ -106,7 +106,7 @@ public class MatchDAO extends DAO {
         }
     }
 
-    // Trận đã kết thúc thì không ghi lại
+    // Do not overwrite a finished match
     public boolean updateEndedAt(int matchId, Date endedAt) throws SQLException {
         String sql = "UPDATE tblMatch SET endedAt = ? WHERE id = ? AND endedAt IS NULL";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -148,7 +148,7 @@ public class MatchDAO extends DAO {
         return list;
     }
 
-    // Câu thứ i của bài làm ứng với câu thứ i của đề (id câu tăng dần)
+    // Answer i maps to problem i (problem ids ascending)
     private List<Answer> findAnswers(int matchPlayerId, List<MathProblem> questions) throws SQLException {
         String sql = "SELECT * FROM tblAnswer WHERE tblMatchPlayerId = ? ORDER BY tblMathProblemId";
         List<Answer> list = new ArrayList<>();
@@ -274,7 +274,7 @@ public class MatchDAO extends DAO {
         try {
             conn.rollback();
         } catch (SQLException ignored) {
-            // kết nối đã hỏng thì không còn gì để hoàn tác
+            // Connection is broken, nothing left to roll back
         }
     }
 
@@ -282,7 +282,7 @@ public class MatchDAO extends DAO {
         try {
             conn.setAutoCommit(true);
         } catch (SQLException ignored) {
-            // kết nối đã hỏng, lần gọi sau sẽ báo lỗi
+            // Connection is broken, the next call will fail
         }
     }
 }

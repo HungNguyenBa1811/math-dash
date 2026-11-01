@@ -58,7 +58,7 @@ public class MatchFirebaseDAO extends FirebaseDAO {
         }
     }
 
-    // model mapper
+    // Model mapper
     private Match toMatch(int matchId, DataSnapshot data) {
         Match match = new Match();
         match.setId(matchId);
@@ -85,7 +85,7 @@ public class MatchFirebaseDAO extends FirebaseDAO {
                 q.child("operator").getValue(String.class), -1, options);
     }
 
-    // submitted chỉ là cờ; thời điểm nộp thật nằm ở server
+    // submitted is only a flag; the real submit time is kept on the server
     private MatchPlayer toMatchPlayer(int playerId, DataSnapshot p) {
         MatchPlayer mp = new MatchPlayer(new Player(playerId, null, p.child("displayName").getValue(String.class)));
         if (Boolean.TRUE.equals(p.child("submitted").getValue(Boolean.class))) {

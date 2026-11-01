@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
-// Chọn độ khó của máy
+// Choose the bot difficulty
 public class DifficultyActivity extends AppCompatActivity {
 
     @Override

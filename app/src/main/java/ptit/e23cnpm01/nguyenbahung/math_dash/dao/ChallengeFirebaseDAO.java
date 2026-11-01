@@ -23,7 +23,7 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
     private DatabaseReference sentRef;
     private ValueEventListener sentWatcher;
 
-    // Người mời tắt app thì lời mời tự bị xóa
+    // The invitation is removed automatically when the inviter closes the app
     public Challenge sendChallenge(Player challenger, Player opponent) {
         DatabaseReference ref = challengesRef().push();
         Challenge challenge = new Challenge();
@@ -49,7 +49,7 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         incomingWatcher = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // Gửi cả lời mời đã bị hủy để máy người được mời đóng hộp thoại
+                // Also emit cancelled invitations so the invitee's dialog closes
                 for (DataSnapshot child : snapshot.getChildren()) {
                     callback.onChallengeChanged(toChallenge(child.getKey(), child));
                 }

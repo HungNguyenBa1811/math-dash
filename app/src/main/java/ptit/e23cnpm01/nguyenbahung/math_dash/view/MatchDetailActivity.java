@@ -82,7 +82,7 @@ public class MatchDetailActivity extends BaseActivity {
     private void showMatch(Match m) {
         match = m;
         MatchPlayer opponent = match.getOpponent(me.getId());
-        // Dòng của chính mình trong trận là đối thủ của đối thủ
+        // Our own row is the opponent's opponent
         MatchPlayer mine = match.getOpponent(opponent.getPlayer().getId());
         if (match.getEndedAt() != null) {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
@@ -108,7 +108,7 @@ public class MatchDetailActivity extends BaseActivity {
         txtResult.setTextColor(getColor(color));
     }
 
-    // "10/10 câu · 38,2 giây", hoặc "Bỏ trận"
+    // "10/10 câu · 38,2 giây", or "Bỏ trận"
     private String stats(MatchPlayer mp) {
         if (mp.isForfeited()) {
             return getString(R.string.detail_forfeited);

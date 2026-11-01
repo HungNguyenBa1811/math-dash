@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-// Lưu SQLite, không tính vào tổng điểm
+// Stored in SQLite, not counted toward total points
 public class BotGame {
     public static final int EASY = 1;
     public static final int MEDIUM = 2;
@@ -22,7 +22,7 @@ public class BotGame {
     private long botFinishTime;
     private Date playedAt;
     private Player player;
-    // Chỉ nằm trong bộ nhớ
+    // In memory only
     private List<MathProblem> questions = new ArrayList<>();
 
     public BotGame() {
@@ -33,7 +33,7 @@ public class BotGame {
         this.difficulty = difficulty;
     }
 
-    // Cùng luật với trận đối kháng
+    // Same rules as an online match
     public String getResult() {
         return Match.judge(correctCount, finishTime, botCorrectCount, botFinishTime);
     }

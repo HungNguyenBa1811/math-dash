@@ -21,7 +21,7 @@ public class SessionDAO {
                 .apply();
     }
 
-    // null nếu chưa đăng nhập
+    // null if not logged in
     public Player getPlayer() {
         if (!prefs.contains("playerId")) {
             return null;
