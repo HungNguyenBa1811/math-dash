@@ -11,7 +11,7 @@
 | 1–2 | Giao diện chính | MainView | subPlayBot: nút Chơi với máy<br>subPlayOnline: nút Chơi online |
 | 3–8 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 12,5 điểm"<br>outsubListPlayer: danh sách người chơi online; mỗi dòng có tên, tổng điểm, trạng thái; bấm vào một dòng để thách đấu |
 | 10–18 | Giao diện thi đấu | MatchView | outTimer: ô thời gian đếm ngược<br>outOpponentStatus: dòng "HOANG đang làm bài" / "HOANG đã nộp bài"<br>outQuestion: số thứ tự câu đang làm "Câu 1/10" và phép tính "12 + 7 = ?"<br>subOptions: 4 ô phương án A, B, C, D; bấm một ô là chọn phương án và sang câu sau<br>subSubmit: nút Nộp bài, hiện khi đã làm xong 10 câu<br>subExit: nút Thoát |
-| 20–22 | Giao diện kết quả | MatchResultView | outResult: THẮNG! / THUA! / HÒA!<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: số câu đúng, thời gian làm bài của đối thủ<br>outPoints: điểm trận được cộng và tổng điểm mới<br>subContinue: nút Chơi tiếp<br>subStop: nút Dừng |
+| 20–22 | Giao diện kết quả | MatchResultView | outResult: WIN! / LOSE! / TIE!<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: số câu đúng, thời gian làm bài của đối thủ<br>outPoints: điểm trận được cộng và tổng điểm mới<br>subContinue: nút Chơi tiếp<br>subStop: nút Dừng |
 
 MainView gồm 2 nút chọn chế độ chơi; nút Đăng xuất ở góc phải trên thuộc module Tài khoản nên không đưa vào đây. Danh sách người chơi online nằm ở OnlineView: người chơi chỉ online khi đang ở giao diện này.
 
@@ -76,7 +76,7 @@ Ghi phương án đã chọn và thời gian làm từng câu (bước 11–13) 
 |---|---|---|---|
 | Xem lịch sử đấu 1, 4; Xem bảng xếp hạng 1, 4 | Giao diện chơi online | OnlineView | outMyInfo: thẻ "HUNG · 13,5 điểm"<br>subHistory: nút Lịch sử đấu<br>subRanking: nút Bảng xếp hạng |
 | Xem lịch sử đấu 2–3; Xem chi tiết trận 4; Xem bảng xếp hạng 2–3 | Giao diện lịch sử đấu | HistoryView | outWinRateChart: biểu đồ tròn tỉ lệ thắng / hòa / thua<br>outSummary: số trận thắng, hòa, thua và tổng số trận<br>outsubListMatch: danh sách trận; mỗi dòng có đối thủ, kết quả, điểm trận, số câu đúng, thời điểm kết thúc; bấm vào một dòng để xem chi tiết trận<br>subTabRanking: thẻ Bảng xếp hạng<br>outListRanking: danh sách người chơi đã xếp hạng; dòng của người xem được tô nổi bật |
-| Xem chi tiết trận 2–3 | Giao diện chi tiết trận | MatchDetailView | outResult: THẮNG! / THUA! / HÒA!<br>outPoints: điểm trận<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: tên, số câu đúng, thời gian làm bài của đối thủ<br>outListAnswer: 10 câu; mỗi câu có phép tính kèm đáp án đúng và, với mỗi người chơi, đúng / sai, phương án đã chọn, thời gian làm câu |
+| Xem chi tiết trận 2–3 | Giao diện chi tiết trận | MatchDetailView | outResult: WIN! / LOSE! / TIE!<br>outPoints: điểm trận<br>outMyResult: số câu đúng, thời gian làm bài của mình<br>outOpponentResult: tên, số câu đúng, thời gian làm bài của đối thủ<br>outListAnswer: 10 câu; mỗi câu có phép tính kèm đáp án đúng và, với mỗi người chơi, đúng / sai, phương án đã chọn, thời gian làm câu |
 
 Thẻ Trận của tôi và thẻ Bảng xếp hạng là 2 phần của cùng một giao diện, chuyển qua lại bằng thẻ, nên chỉ có một lớp HistoryView. OnlineView mở HistoryView theo 2 cách: subHistory mở sẵn thẻ Trận của tôi, subRanking mở thẳng thẻ Bảng xếp hạng. Danh sách xếp hạng và danh sách bài làm từng câu chỉ để xem, bấm vào không làm gì, nên mang tiền tố out. Danh sách trận mang tiền tố outsub vì bấm vào một dòng thì mở chi tiết trận.
 

@@ -91,7 +91,7 @@ Math Dash 1v1 là trò chơi giải toán nhanh trên thiết bị Android, gồ
 
 Những người được vào hệ thống và chức năng mỗi người được thực hiện:
 
--  Khách (người chưa đăng nhập): đăng ký tài khoản và đăng nhập.  
+-  Người chơi chưa đăng nhập: đăng ký tài khoản và đăng nhập.  
 - Người chơi đã đăng nhập:  
   -  Đăng xuất.  
   - Vào giao diện chơi online, xem danh sách người chơi online và thách đấu một người đang rỗi.  
@@ -158,9 +158,10 @@ Mô tả chi tiết hai chức năng được chọn làm module phân tích, th
 
 ## **2\. Thiết kế cơ sở dữ liệu** {#2.-thiết-kế-cơ-sở-dữ-liệu}
 
-Ứng dụng dùng 2 nơi lưu trữ:
+Ứng dụng dùng 3 nơi lưu trữ:
 
 - MySQL trên server: tài khoản, trận đấu, đề bài, kết quả chấm và bài làm từng câu. Đây là nguồn dữ liệu của tổng điểm, lịch sử đấu, chi tiết trận và bảng xếp hạng.  
+- SQLite trên máy client: bản sao người chơi đã đăng nhập trên máy và các ván chơi với máy, để chơi với máy chạy được khi không có mạng. Chơi online và Xem lịch sử đấu không đọc hay ghi SQLite.  
 - Firebase Realtime Database: người chơi đang online, lời mời, trận đang đấu. Dữ liệu này chỉ có ý nghĩa trong lúc chơi.
 
 ### **2.1. CSDL MySQL** {#2.1.-csdl-mysql}
@@ -176,7 +177,7 @@ Bước 1: Mỗi lớp thực thể cần lưu đề xuất một bảng.
 Bước 2: Thuộc tính kiểu cơ bản thành cột.
 
 - Bỏ thuộc tính kiểu đối tượng: Match.questions, Match.players, MatchPlayer.player, MatchPlayer.answers, Answer.problem.  
-- Kiểu dữ liệu: String → varchar(255); int → integer(10); long → bigint(20); Date → datetime(3), có mili giây để so thời gian làm bài; boolean → tinyint(1).  
+- Kiểu dữ liệu: String → varchar(255); int → integer(10); long → bigint(20); Date → timestamp(3), có mili giây để so thời gian làm bài; boolean → tinyint(1).  
 - answerOptions luôn có 4 phần tử nên tách thành 4 cột option1 … option4.  
 - Kết quả:  
   - tblPlayer: id, username, passwordHash, displayName, role, createdAt.  
@@ -198,7 +199,7 @@ Bước 4: Khóa.
 
 - Khóa chính: id (AUTO\_INCREMENT) ở mọi bảng.  
 - Khóa ngoại đặt ở bảng phía n:  
-  - tblMatchPlayer.tblMatchId → tblMatch.id và tblMathProblem.tblMatchId → tblMatch.id, có ON DELETE CASCADE đúng với quan hệ hợp thành.  
+  - tblMatchPlayer.tblMatchId → tblMatch.id và tblMathProblem.tblMatchId → tblMatch.id, có ON DELETE CASCADE vì khi trận không còn thì 2 dòng người chơi trong trận, 10 câu hỏi và bài làm không còn ý nghĩa.  
   - tblAnswer.tblMatchPlayerId → tblMatchPlayer.id và tblAnswer.tblMathProblemId → tblMathProblem.id, có ON DELETE CASCADE: xóa trận thì xóa luôn 2 người chơi trong trận và 10 câu hỏi, kéo theo xóa luôn bài làm từng câu của 2 người.  
   - tblMatchPlayer.tblPlayerId → tblPlayer.id.  
 - Ràng buộc duy nhất: tblPlayer.username; tblMatchPlayer (tblMatchId, tblPlayerId); tblAnswer (tblMatchPlayerId, tblMathProblemId), mỗi người chơi trong trận chỉ có một bài làm cho mỗi câu.  
@@ -272,10 +273,10 @@ Bước 2: Thuộc tính kiểu cơ bản thành field.
   \- người chơi trong trận: displayName, submitted, forfeited.
 
 Bước 3: Chuyển quan hệ giữa các lớp thành quan hệ giữa các node.  
-\- Hợp thành thành node con:  
+\- MathProblem, MatchPlayer nằm trong Match (kết tập) nên thành node con của matches:  
   \- Match có 10 MathProblem → matches/{matchId}/questions/{i}.  
   \- Match có 2 MatchPlayer → matches/{matchId}/players/{playerId}.  
-\- Kết tập không lồng node mà giữ khóa của node kia:  
+\- Lớp đã có node gốc riêng thì không lồng node mà giữ khóa của node kia:  
   \- Challenge chứa thông tin 2 Player → challengerId, opponentId.  
   \- Lời mời được đồng ý dẫn tới một trận → matchId.  
 \- Diễn biến sau trận ghi thêm vào node trận: players/{playerId}/choice (continue / stop), nextMatchId (trận mới khi cả 2 chơi tiếp), stoppedBy (người dừng hoặc bỏ trận).
@@ -320,16 +321,16 @@ Bước 2: Bổ sung kiểu dữ liệu.
 - Thuộc tính boolean không có tiền tố is (forfeited → getter isForfeited()), để Jackson và Firebase SDK đọc đúng tên trường.  
 - password đổi thành passwordHash vì chỉ lưu mật khẩu đã băm.
 
-Bước 3: Chuyển quan hệ liên kết thành kết tập / hợp thành.
+Bước 3: Chuyển quan hệ liên kết thành kết tập.
 
 - Quan hệ n-n Player – Match qua lớp liên kết MatchPlayer chuyển thành:  
-  - MatchPlayer là thành phần của Match (hợp thành, 1-2): người chơi trong trận không tồn tại nếu không có trận.  
+  - MatchPlayer là thành phần của Match (kết tập, 1-2): thông tin 2 người chơi trong trận nằm trong Match.  
   - Player nằm trong MatchPlayer (kết tập, n-1): người chơi tồn tại độc lập với trận.  
 - Quan hệ n-n MatchPlayer – MathProblem qua lớp liên kết Answer chuyển thành:  
-  - Answer là thành phần của MatchPlayer (hợp thành, 1-n): bài làm một câu chỉ có nghĩa khi thuộc về một người chơi trong trận; xóa trận thì bài làm cũng mất. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.  
+  - Answer là thành phần của MatchPlayer (kết tập, 1-n): thông tin bài làm từng câu của một người nằm trong MatchPlayer của người đó. Người chơi đã nộp bài có đúng 10 Answer; người bỏ trận trước khi nộp không có Answer nào.  
   - MathProblem nằm trong Answer (kết tập, n-1): câu hỏi thuộc về đề của trận, tồn tại không phụ thuộc vào bài làm; mỗi câu hỏi có tối đa 2 Answer, mỗi người chơi trong trận một. Khi chấm bài và khi hiện chi tiết trận, mỗi Answer cần biết câu hỏi của nó để tự xác định đúng hay sai.  
 - Giữ nguyên từ pha phân tích:  
-  - MathProblem là thành phần của Match (hợp thành, 1-10).  
+  - MathProblem là thành phần của Match (kết tập, 1-10): thông tin 10 câu hỏi của đề nằm trong Match.  
   - Player nằm trong Challenge ở 2 vai trò người mời, người được mời (kết tập).  
 
 Bước 4: Bổ sung thuộc tính đối tượng.
