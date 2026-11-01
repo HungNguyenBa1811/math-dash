@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-// Lớp cha của adapter danh sách: giữ các phần tử, lớp con tạo ViewHolder và gán dữ liệu
+// Lớp cha của adapter danh sách
 public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     protected List<T> items = new ArrayList<>();
 

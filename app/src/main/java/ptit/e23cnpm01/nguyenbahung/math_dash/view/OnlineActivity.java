@@ -36,7 +36,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-// Vào màn này mới online: người khác thấy mình trong danh sách và thách đấu được
+// Vào màn này mới online
 public class OnlineActivity extends BaseActivity implements PlayerListCallback, ChallengeCallback {
     private TextView txtMyName;
     private TextView txtMyPoints;
@@ -158,7 +158,7 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
     public void onChallengeChanged(Challenge challenge) {
         if (challenge.getOpponent().getId() == me.getId()) {
             if (!Challenge.PENDING.equals(challenge.getStatus())) {
-                // Người mời đã hủy: lời mời kết thúc
+                // Người mời đã hủy
                 closeChallengeDialog(challenge.getId());
             } else if (shownChallenges.add(challenge.getId())) {
                 showChallengeDialog(challenge);
@@ -181,7 +181,7 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Hủy lời mời: gỡ theo dõi trước để không báo nhầm là bị từ chối
+                        // Hủy lời mời
                         String id = sentChallenge.getId();
                         closeSentChallenge();
                         challengeFirebaseDAO.rejectChallenge(id);

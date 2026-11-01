@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
@@ -38,8 +39,8 @@ public class PlayerAdapter extends BaseAdapter<Player, PlayerViewHolder> {
         holder.txtName.setText(player.getDisplayName());
         holder.txtPoints.setText(activity.getString(R.string.label_points, PointFormat.format(player.getTotalPoints())));
         holder.txtStatus.setText(busy ? R.string.status_busy : R.string.status_free);
-        holder.txtStatus.setTextColor(activity.getColor(busy ? R.color.arcade_text_dim : R.color.arcade_green));
-        holder.txtStatus.setTypeface(Typeface.MONOSPACE, busy ? Typeface.NORMAL : Typeface.BOLD);
+        holder.txtStatus.setTextColor(activity.getColor(busy ? R.color.ink_dim : R.color.win));
+        holder.txtStatus.setTypeface(ResourcesCompat.getFont(activity, R.font.body), busy ? Typeface.NORMAL : Typeface.BOLD);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

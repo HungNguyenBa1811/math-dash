@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.List;
 
@@ -40,13 +41,14 @@ public class RankingAdapter extends BaseAdapter<Player, RankingViewHolder> {
         holder.txtAvgOpponent.setText(PointFormat.format(Math.round(p.getAvgOpponentPoints() * 100) / 100.0));
         holder.txtAvgWinTime.setText(p.getAvgWinTime() == 0 ? context.getString(R.string.label_no_time)
                 : context.getString(R.string.label_seconds_short, PointFormat.formatSeconds(p.getAvgWinTime())));
-        // Dòng của người xem: tô nền và in đậm cả dòng
+        // Dòng của người xem
         boolean mine = p.getId() == myId;
-        holder.itemView.setBackgroundResource(mine ? R.drawable.bg_retro_button_accent : R.drawable.bg_retro_card);
+        holder.itemView.setBackgroundResource(mine ? R.drawable.bg_highlight : R.drawable.bg_card);
         TextView[] cells = {holder.txtRank, holder.txtName, holder.txtPoints, holder.txtAvgOpponent, holder.txtAvgWinTime};
+        Typeface body = ResourcesCompat.getFont(context, R.font.body);
         for (TextView cell : cells) {
-            cell.setTextColor(context.getColor(mine ? R.color.arcade_bg : R.color.arcade_text_bright));
-            cell.setTypeface(Typeface.MONOSPACE, mine ? Typeface.BOLD : Typeface.NORMAL);
+            cell.setTextColor(context.getColor(mine ? R.color.on_primary : R.color.ink));
+            cell.setTypeface(body, mine ? Typeface.BOLD : Typeface.NORMAL);
         }
     }
 }

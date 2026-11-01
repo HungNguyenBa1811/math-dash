@@ -91,7 +91,7 @@ public class Match {
         return myTime < otherTime ? WIN : LOSE;
     }
 
-    // mine = false: lấy đối thủ của playerId
+    // mine = false
     private MatchPlayer find(int playerId, boolean mine) {
         for (MatchPlayer mp : players) {
             if ((mp.getPlayer().getId() == playerId) == mine) {

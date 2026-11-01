@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Math Dash</string>
 
-    <!-- Tài khoản -->
     <string name="title_login">ĐĂNG NHẬP</string>
     <string name="title_register">ĐĂNG KÝ</string>
     <string name="hint_username">Tên đăng nhập</string>
@@ -11,13 +10,11 @@
     <string name="btn_login">ĐĂNG NHẬP</string>
     <string name="btn_register">ĐĂNG KÝ</string>
 
-    <!-- Màn chính -->
     <string name="label_hello">Xin chào, %1$s</string>
     <string name="btn_play_bot">CHƠI VỚI MÁY</string>
     <string name="btn_play_online">CHƠI ONLINE</string>
     <string name="btn_logout">ĐĂNG XUẤT</string>
 
-    <!-- Chơi online: danh sách online, lời mời -->
     <string name="title_online">CHƠI ONLINE</string>
     <string name="title_online_players">NGƯỜI CHƠI ONLINE</string>
     <string name="label_points">%1$s điểm</string>
@@ -34,7 +31,6 @@
     <string name="btn_reject">TỪ CHỐI</string>
     <string name="btn_cancel">HỦY</string>
 
-    <!-- Chơi online: thi đấu, kết quả -->
     <string name="time_full">01:00</string>
     <string name="time_zero">00:00</string>
     <string name="label_question">Câu %1$d/%2$d</string>
@@ -49,9 +45,9 @@
     <string name="msg_confirm_leave">Thoát sẽ bị xử thua?</string>
     <string name="btn_stay">Ở LẠI</string>
     <string name="btn_leave">THOÁT</string>
-    <string name="result_win">THẮNG!</string>
-    <string name="result_lose">THUA!</string>
-    <string name="result_draw">HÒA!</string>
+    <string name="result_win">WIN!</string>
+    <string name="result_lose">LOSE!</string>
+    <string name="result_draw">TIE!</string>
     <string name="label_you">Bạn</string>
     <string name="label_correct_count">%1$d/10 câu đúng</string>
     <string name="label_match_points">+%1$s điểm · Tổng điểm: %2$s</string>
@@ -66,17 +62,13 @@
     <string name="msg_opponent_left">Đối thủ đã thoát, bạn thắng</string>
     <string name="msg_opponent_stopped">Đối thủ đã dừng chơi</string>
 
-    <!-- Bảng xếp hạng -->
     <string name="msg_ranking_error">Không tải được bảng xếp hạng, kiểm tra kết nối mạng</string>
 
-    <!-- Chơi với máy -->
     <string name="title_bot_game">CHƠI VỚI MÁY</string>
 
-    <!-- Quản trị -->
     <string name="title_admin">QUẢN LÝ NGƯỜI CHƠI</string>
     <string name="title_player_detail">THÔNG TIN NGƯỜI CHƠI</string>
 
-    <!-- Xem lịch sử đấu -->
     <string name="title_history">LỊCH SỬ ĐẤU</string>
     <string name="tab_my_matches">Trận của tôi</string>
     <string name="tab_ranking">Bảng xếp hạng</string>

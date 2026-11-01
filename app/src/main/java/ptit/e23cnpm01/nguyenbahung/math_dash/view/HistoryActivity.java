@@ -25,7 +25,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
 public class HistoryActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
     public static final String EXTRA_MATCH_ID = "matchId";
-    // Thẻ mở sẵn khi vào màn: 0 là Trận của tôi, TAB_RANKING là Bảng xếp hạng
+    // Thẻ mở sẵn khi vào màn
     public static final String EXTRA_TAB = "tab";
     public static final int TAB_RANKING = 1;
 

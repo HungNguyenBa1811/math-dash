@@ -1,183 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/arcade_bg"
+    android:background="@color/band"
     android:fitsSystemWindows="true"
     tools:context=".view.MatchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Hàng trên: ô thời gian, trạng thái đối thủ -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Band"
+            android:layout_height="64dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingEnd="@dimen/gutter">
 
             <TextView
                 android:id="@+id/txtTimer"
-                style="@style/RetroTitle"
+                style="@style/Text.Display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/time_full"
-                android:textColor="@color/arcade_amber" />
+                android:textColor="@color/on_band"
+                android:textSize="40sp" />
 
             <TextView
                 android:id="@+id/txtOpponentStatus"
-                style="@style/RetroText"
+                style="@style/Text.Small"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_l"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="2"
-                android:textColor="@color/arcade_text_dim"
-                android:textSize="14sp"
-                tools:text="HOANG đang làm bài" />
+                android:textColor="@color/on_band_dim"
+                tools:text="HOÀNG đang làm bài" />
         </LinearLayout>
 
-        <!-- Câu đang làm: số thứ tự và phép tính chữ lớn; làm xong thì hiện thông báo -->
+        <View style="@style/Lane" />
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_retro_card"
-            android:gravity="center"
+            style="@style/Content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingTop="@dimen/space_l"
+            android:paddingBottom="@dimen/space_l">
 
-            <TextView
-                android:id="@+id/txtProgress"
-                style="@style/RetroText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/arcade_cyan"
-                tools:text="Câu 3/10" />
-
-            <TextView
-                android:id="@+id/txtExpression"
-                style="@style/RetroText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginBottom="@dimen/space_l"
+                android:layout_weight="1"
+                android:background="@drawable/bg_card"
                 android:gravity="center"
-                android:textSize="44sp"
-                android:textStyle="bold"
-                tools:text="12 + 7 = ?" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="@dimen/space_l">
 
-        <!-- 4 ô phương án A, B, C, D xếp 2 x 2; bấm một ô là sang câu sau -->
-        <LinearLayout
-            android:id="@+id/layoutOptions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txtProgress"
+                    style="@style/Text.Dim"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    tools:text="Câu 3/10" />
+
+                <TextView
+                    android:id="@+id/txtExpression"
+                    style="@style/Text.Display"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_m"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:textSize="56sp"
+                    app:autoSizeMaxTextSize="56sp"
+                    app:autoSizeMinTextSize="24sp"
+                    app:autoSizeStepGranularity="2sp"
+                    app:autoSizeTextType="uniform"
+                    tools:text="12 + 7 = ?" />
+            </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layoutOptions"
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnOptionA"
-                style="@style/OptionTile"
-                android:background="@drawable/bg_option_a"
-                tools:text="A
-17" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tile_height"
+                    android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnOptionB"
-                style="@style/OptionTile"
-                android:background="@drawable/bg_option_b"
-                tools:text="B
-19" />
+                    <Button
+                        android:id="@+id/btnOptionA"
+                        style="@style/OptionTile"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_option_a"
+                        tools:text="A\n17" />
+
+                    <Button
+                        android:id="@+id/btnOptionB"
+                        style="@style/OptionTile"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_option_b"
+                        tools:text="B\n19" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tile_height"
+                    android:layout_marginTop="@dimen/space_m"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnOptionC"
+                        style="@style/OptionTile"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_option_c"
+                        android:textColor="@color/on_option_c"
+                        tools:text="C\n21" />
+
+                    <Button
+                        android:id="@+id/btnOptionD"
+                        style="@style/OptionTile"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_option_d"
+                        tools:text="D\n18" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
                 android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnOptionC"
-                style="@style/OptionTile"
-                android:background="@drawable/bg_option_c"
-                tools:text="C
-21" />
+                <Button
+                    android:id="@+id/btnExit"
+                    style="@style/Button.Secondary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_exit" />
 
-            <Button
-                android:id="@+id/btnOptionD"
-                style="@style/OptionTile"
-                android:background="@drawable/bg_option_d"
-                tools:text="D
-18" />
+                <Button
+                    android:id="@+id/btnSubmit"
+                    style="@style/Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_submit"
+                    android:visibility="invisible"
+                    tools:visibility="visible" />
             </LinearLayout>
-        </LinearLayout>
-
-        <!-- Hàng dưới: Thoát nửa trái; Nộp bài nửa phải, chỉ hiện khi đã làm xong 10 câu -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnExit"
-                style="@style/RetroButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/btn_exit" />
-
-            <Button
-                android:id="@+id/btnSubmit"
-                style="@style/RetroButton.Accent"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:text="@string/btn_submit"
-                android:visibility="invisible"
-                tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Overlay kết quả, hiện đè lên màn thi đấu khi trận xong -->
     <LinearLayout
         android:id="@+id/layoutResult"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/arcade_overlay_dim"
+        android:background="@color/overlay"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="32dp"
+        android:paddingStart="@dimen/gutter"
+        android:paddingEnd="@dimen/gutter"
         android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/space_xl"
+            android:layout_marginBottom="@dimen/space_xxl"
+            android:background="@drawable/bg_checker" />
 
         <TextView
             android:id="@+id/txtResult"
-            style="@style/RetroTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="40sp"
-            tools:text="THẮNG!" />
-
-        <!-- Bảng so sánh 2 bên: cột trái là mình, cột phải là đối thủ -->
-        <LinearLayout
+            style="@style/Text.Display"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_retro_card"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:gravity="center"
+            android:maxLines="1"
+            android:textSize="64sp"
+            app:autoSizeMaxTextSize="64sp"
+            app:autoSizeMinTextSize="32sp"
+            app:autoSizeStepGranularity="2sp"
+            app:autoSizeTextType="uniform"
+            tools:text="THẮNG!"
+            tools:textColor="@color/win" />
+
+        <LinearLayout
+            style="@style/Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -185,35 +211,34 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    style="@style/RetroText"
+                    style="@style/Text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/label_you"
-                    android:textColor="@color/arcade_cyan"
+                    android:textColor="@color/primary_text"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txtOpponentName"
-                    style="@style/RetroText"
+                    style="@style/Text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:textColor="@color/arcade_text_dim"
                     android:textStyle="bold"
-                    tools:text="HOANG" />
+                    tools:text="HOÀNG" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/arcade_panel_stroke" />
+                android:layout_marginTop="@dimen/space_m"
+                android:layout_marginBottom="@dimen/space_m"
+                android:background="@color/line" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -222,91 +247,87 @@
 
                 <TextView
                     android:id="@+id/txtMyCorrect"
-                    style="@style/RetroText"
+                    style="@style/Text.Small"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="14sp"
                     tools:text="10/10 câu đúng" />
 
                 <TextView
                     android:id="@+id/txtOpponentCorrect"
-                    style="@style/RetroText"
+                    style="@style/Text.Small"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="14sp"
-                    tools:text="10/10 câu đúng" />
+                    tools:text="8/10 câu đúng" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="@dimen/space_s"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/txtMyTime"
-                    style="@style/RetroText"
+                    style="@style/Text.Small.Dim"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="14sp"
                     tools:text="38,2 giây" />
 
                 <TextView
                     android:id="@+id/txtOpponentTime"
-                    style="@style/RetroText"
+                    style="@style/Text.Small.Dim"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="14sp"
                     tools:text="45,6 giây" />
             </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/txtPoints"
-            style="@style/RetroText"
-            android:layout_width="wrap_content"
+            style="@style/Text.Number"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/arcade_amber"
-            android:textStyle="bold"
+            android:layout_marginTop="@dimen/space_l"
+            android:gravity="center"
             tools:text="+1 điểm · Tổng điểm: 13,5" />
 
         <TextView
             android:id="@+id/txtContinue"
-            style="@style/RetroText"
-            android:layout_width="wrap_content"
+            style="@style/Text"
+            android:layout_width="match_parent"
+            android:gravity="center"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/space_xxl"
             android:text="@string/label_continue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/space_m"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnStop"
-                style="@style/RetroButton"
+                style="@style/Button.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
                 android:layout_weight="1"
                 android:text="@string/btn_stop" />
 
             <Button
                 android:id="@+id/btnContinue"
-                style="@style/RetroButton.Accent"
+                style="@style/Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_m"
                 android:layout_weight="1"
                 android:text="@string/btn_continue" />
         </LinearLayout>

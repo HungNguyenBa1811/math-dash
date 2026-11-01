@@ -3,8 +3,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- usesCleartextTraffic: server chạy local qua HTTP (10.0.2.2) -->
-    <!-- enableOnBackInvokedCallback = false: để onBackPressed của Activity được gọi khi nhấn Back -->
     <application
         android:allowBackup="true"
         android:enableOnBackInvokedCallback="false"
@@ -15,7 +13,6 @@
         android:theme="@style/Theme.Mathdash"
         android:usesCleartextTraffic="true">
 
-        <!-- Màn mở đầu: Đăng nhập -->
         <activity
             android:name=".view.LoginActivity"
             android:exported="true"
@@ -35,7 +32,6 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Chơi online -->
         <activity
             android:name=".view.OnlineActivity"
             android:exported="false"
@@ -45,7 +41,6 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Xem lịch sử đấu, gồm bảng xếp hạng -->
         <activity
             android:name=".view.HistoryActivity"
             android:exported="false"
@@ -55,7 +50,6 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Chơi với máy -->
         <activity
             android:name=".view.DifficultyActivity"
             android:exported="false"
@@ -65,7 +59,6 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- Quản lý thông tin người chơi -->
         <activity
             android:name=".view.AdminActivity"
             android:exported="false"

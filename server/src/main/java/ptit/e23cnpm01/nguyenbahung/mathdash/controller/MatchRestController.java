@@ -28,7 +28,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Hàm ghi synchronized: 2 yêu cầu đến cùng lúc không lẫn nhau
+// Hàm ghi synchronized
 @RestController
 @RequestMapping("/api/matches")
 public class MatchRestController {
@@ -181,7 +181,7 @@ public class MatchRestController {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Người chơi không ở trong trận");
     }
 
-    // Trận chưa xong: ẩn đáp án và bài làm để không ai xem được của đối thủ
+    // Trận chưa xong
     private Match hideAnswers(Match match) {
         if (match.getEndedAt() == null) {
             for (MathProblem p : match.getQuestions()) {

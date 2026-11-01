@@ -103,7 +103,7 @@ public class MatchApiDAO extends ApiDAO {
         return mp;
     }
 
-    // Lịch sử đấu không kèm đề và bài làm: trả danh sách rỗng
+    // Lịch sử đấu không kèm đề và bài làm
     private List<Answer> toAnswers(JSONArray array, List<MathProblem> questions) throws JSONException {
         List<Answer> list = new ArrayList<>();
         for (int i = 0; array != null && i < array.length(); i++) {

@@ -1,5 +1,5 @@
 # Build context là thư mục gốc repo vì server cần thêm project common
-# Bước 1: build file jar bằng Maven
+# Bước 1
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 # Cài jar lớp thực thể dùng chung vào kho Maven của image
@@ -13,7 +13,7 @@ COPY server/src server/src
 COPY application-local.properties server/src/main/resources/
 RUN mvn -q -f server/pom.xml -DskipTests package
 
-# Bước 2: chỉ giữ JRE + file jar để chạy
+# Bước 2
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/server/target/*.jar app.jar
