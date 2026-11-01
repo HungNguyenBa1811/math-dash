@@ -100,8 +100,8 @@ public class MatchDetailActivity extends BaseActivity {
     }
 
     private void showResult(String result) {
-        int color = Match.WIN.equals(result) ? R.color.arcade_green
-                : Match.DRAW.equals(result) ? R.color.arcade_amber : R.color.arcade_red;
+        int color = Match.WIN.equals(result) ? R.color.win
+                : Match.DRAW.equals(result) ? R.color.draw : R.color.lose;
         int text = Match.WIN.equals(result) ? R.string.result_win
                 : Match.DRAW.equals(result) ? R.string.result_draw : R.string.result_lose;
         txtResult.setText(text);

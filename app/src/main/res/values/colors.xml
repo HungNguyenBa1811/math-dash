@@ -3,31 +3,37 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Retro Arcade High-Contrast Palette -->
-    <color name="arcade_bg">#101419</color>
-    <color name="arcade_panel_bg">#18202A</color>
-    <color name="arcade_panel_stroke">#2C3E50</color>
-    <color name="arcade_btn_bg">#1E293B</color>
-    <color name="arcade_btn_pressed">#334155</color>
-    <color name="arcade_btn_stroke">#475569</color>
+    <color name="bg">#ECEDF0</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_pressed">#E2E4E9</color>
+    <color name="line">#CDD0D6</color>
+    <color name="ink">#111214</color>
+    <color name="ink_dim">#50545C</color>
+    <color name="ink_disabled">#8A8E96</color>
+    <color name="overlay">#F2ECEDF0</color>
 
-    <!-- High-readability phosphor accents -->
-    <color name="arcade_green">#00FF66</color>
-    <color name="arcade_amber">#FFB800</color>
-    <color name="arcade_cyan">#00E5FF</color>
-    <color name="arcade_red">#FF3344</color>
+    <color name="band">#111214</color>
+    <color name="band_pressed">#2A2C31</color>
+    <color name="on_band">#FFFFFF</color>
+    <color name="on_band_dim">#C9CCD2</color>
 
-    <color name="arcade_text_bright">#F8FAFC</color>
-    <color name="arcade_text_dim">#94A3B8</color>
-    <color name="arcade_overlay_dim">#D90A0D12</color>
+    <color name="primary">#FF5F00</color>
+    <color name="primary_pressed">#D94F00</color>
+    <color name="on_primary">#111214</color>
+    <color name="primary_text">#B84300</color>
 
-    <!-- 4 ô phương án A, B, C, D của màn thi đấu -->
-    <color name="option_a">#E21B3C</color>
-    <color name="option_a_pressed">#B0152F</color>
-    <color name="option_b">#1368CE</color>
-    <color name="option_b_pressed">#0E50A0</color>
-    <color name="option_c">#D89E00</color>
-    <color name="option_c_pressed">#A87B00</color>
-    <color name="option_d">#26890C</color>
-    <color name="option_d_pressed">#1C6609</color>
+    <color name="win">#14853B</color>
+    <color name="draw">#946C00</color>
+    <color name="draw_fill">#F0B400</color>
+    <color name="lose">#C81E35</color>
+
+    <color name="option_a">#D7263D</color>
+    <color name="option_a_pressed">#AD1D30</color>
+    <color name="option_b">#1D5FD1</color>
+    <color name="option_b_pressed">#164AA3</color>
+    <color name="option_c">#F0B400</color>
+    <color name="option_c_pressed">#C79500</color>
+    <color name="on_option_c">#1F1700</color>
+    <color name="option_d">#23861A</color>
+    <color name="option_d_pressed">#1A6613</color>
 </resources>

@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/arcade_bg"
-    android:fitsSystemWindows="true"
-    android:gravity="center"
+    style="@style/Screen"
     android:orientation="vertical"
-    android:layout_margin="24dp"
     tools:context=".view.DifficultyActivity">
 
-    <TextView
-        style="@style/RetroText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DifficultyActivity" />
+    <LinearLayout style="@style/Band">
 
+        <LinearLayout style="@style/TopBar">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View style="@style/Lane" />
+
+    <LinearLayout
+        style="@style/Content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingBottom="@dimen/space_xl">
+
+        <TextView
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DifficultyActivity" />
+    </LinearLayout>
 </LinearLayout>

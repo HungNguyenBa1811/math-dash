@@ -1,6 +1,7 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,18 +45,22 @@ public class MatchHistoryAdapter extends BaseAdapter<Match, MatchHistoryViewHold
         String result = match.getResult(myId);
 
         int color;
+        int barColor;
         int resultText;
         if (Match.WIN.equals(result)) {
-            color = R.color.arcade_green;
+            color = R.color.win;
+            barColor = R.color.win;
             resultText = R.string.history_win;
         } else if (Match.DRAW.equals(result)) {
-            color = R.color.arcade_amber;
+            color = R.color.draw;
+            barColor = R.color.draw_fill;
             resultText = R.string.history_draw;
         } else {
-            color = R.color.arcade_red;
+            color = R.color.lose;
+            barColor = R.color.lose;
             resultText = R.string.history_lose;
         }
-        holder.viewResultBar.setBackgroundColor(context.getColor(color));
+        holder.viewResultBar.setBackgroundTintList(ColorStateList.valueOf(context.getColor(barColor)));
         holder.txtResult.setTextColor(context.getColor(color));
         holder.txtResult.setText(resultText);
         holder.txtOpponent.setText(context.getString(R.string.history_opponent,

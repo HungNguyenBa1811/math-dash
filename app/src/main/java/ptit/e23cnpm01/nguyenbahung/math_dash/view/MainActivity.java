@@ -10,7 +10,7 @@ import android.widget.TextView;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 
-// Màn chính: chỉ chọn chế độ chơi
+// Màn chính
 public class MainActivity extends BaseActivity {
     private TextView txtMyName;
     private Button btnPlayBot;

@@ -1,4 +1,4 @@
--- Bản 7: thêm bảng bài làm từng câu vào CSDL đang chạy, không xóa dữ liệu cũ
+-- Bản 7
 -- Chạy: mysql -u <user> -p mathdash < server/db/migrate-7-answer.sql
 
 CREATE TABLE IF NOT EXISTS tblAnswer (

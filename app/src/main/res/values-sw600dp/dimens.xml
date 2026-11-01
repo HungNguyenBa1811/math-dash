@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="gutter">32dp</dimen>
+    <dimen name="tile_height">128dp</dimen>
+    <dimen name="text_display">52sp</dimen>
+    <dimen name="text_tile">40sp</dimen>
+</resources>

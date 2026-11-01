@@ -10,9 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 
-/**
- * Màn quản lý người chơi của quản trị viên: tìm theo tên, danh sách người chơi (Hoàng, M2-07).
- */
+// Màn quản lý người chơi của quản trị viên
 public class AdminActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnLogout;
 
@@ -22,7 +20,7 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_admin);
         btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(this);
-        // TODO M2-07: ô tìm theo tên, danh sách người chơi
+        // TODO M2-07
     }
 
     @Override
@@ -32,7 +30,7 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // Đăng xuất: xóa phiên, quay về màn Đăng nhập
+    // Đăng xuất
     private void logout() {
         new SessionDAO(this).clear();
         startActivity(new Intent(this, LoginActivity.class));

@@ -2,7 +2,6 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
@@ -37,7 +36,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
-// Không chấm bài ở app: mọi kết quả lấy từ server
+// Không chấm bài ở app
 public class MatchActivity extends BaseActivity implements MatchCallback, PlayerListCallback {
     public static final String EXTRA_MATCH_ID = "matchId";
     private static final long MATCH_MILLIS = 60_000;
@@ -185,7 +184,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         }
     }
 
-    // stoppedBy là đối thủ: hoặc bỏ trận giữa trận, hoặc chọn Dừng sau khi có kết quả.
+    // stoppedBy là đối thủ
     // Server ghi stoppedBy và status là 2 lần ghi, nên hàm này có thể được gọi 2 lần
     @Override
     public void onStopped(int playerId) {
@@ -193,7 +192,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
             return;
         }
         if (!resultShown) {
-            // Chưa có kết quả thì chưa biết là bỏ trận hay Dừng: tải kết quả rồi showResult() phân biệt
+            // Chưa có kết quả thì chưa biết là bỏ trận hay Dừng
             opponentStopped = true;
             loadResult();
         } else if (!opponentForfeited) {
@@ -212,7 +211,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         showToast(message);
     }
 
-    // Đối thủ rời danh sách online giữa trận: coi như bỏ trận
+    // Đối thủ rời danh sách online giữa trận
     @Override
     public void onPlayersChanged(List<Player> players) {
         if (!started || resultShown || opponentStopped || leaving) {
@@ -292,7 +291,6 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
     private void showMessage(String message) {
         layoutOptions.setVisibility(View.INVISIBLE);
         txtExpression.setVisibility(View.GONE);
-        txtProgress.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
         txtProgress.setText(message);
     }
 
@@ -442,7 +440,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         opponentForfeited = opponent.isForfeited();
         boolean forfeited = opponentForfeited || mineOf(match).isForfeited();
         if (opponentStopped && !forfeited) {
-            // Đối thủ đã chọn Dừng: cả 2 về màn Chơi online
+            // Đối thủ đã chọn Dừng
             leaveAfterStop();
             return;
         }
@@ -460,8 +458,8 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
     private void showResultTitle(String result) {
         int text = Match.WIN.equals(result) ? R.string.result_win
                 : Match.LOSE.equals(result) ? R.string.result_lose : R.string.result_draw;
-        int color = Match.WIN.equals(result) ? R.color.arcade_green
-                : Match.LOSE.equals(result) ? R.color.arcade_red : R.color.arcade_amber;
+        int color = Match.WIN.equals(result) ? R.color.win
+                : Match.LOSE.equals(result) ? R.color.lose : R.color.draw;
         txtResult.setText(text);
         txtResult.setTextColor(getColor(color));
     }

@@ -21,7 +21,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 // Cây dữ liệu: docs/chung/03-csdl.md mục 2
 public class FirebaseAdminDAO {
     private String dbUrl;
-    // Tùy chọn: có thì ghi được cả khi Rules chặn app
+    // Tùy chọn
     private String secret;
     private HttpClient client = HttpClient.newHttpClient();
     private ObjectMapper mapper = new ObjectMapper();

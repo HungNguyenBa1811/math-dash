@@ -11,7 +11,7 @@ public class Answer {
     private int selectedOption = NONE;
     // Mili giây từ lúc câu hiện ra tới lúc chọn
     private long answerTime;
-    // Không gửi qua JSON: câu thứ i của bài làm ứng với câu thứ i của đề
+    // Không gửi qua JSON
     private MathProblem problem;
 
     public Answer() {

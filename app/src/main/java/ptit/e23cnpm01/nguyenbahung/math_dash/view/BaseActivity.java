@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.SessionDAO;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Lớp cha của các màn sau đăng nhập: giữ người chơi đang đăng nhập, nhận sự kiện bấm nút
+// Lớp cha của các màn sau đăng nhập
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
     protected Player me;
 

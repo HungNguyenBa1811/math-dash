@@ -7,6 +7,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 
 // Biểu đồ vành khuyên thắng / hòa / thua, tự vẽ bằng Canvas
@@ -23,11 +25,11 @@ public class PieChartView extends View {
         super(context, attrs);
         arcPaint.setStyle(Paint.Style.STROKE);
         percentPaint.setTextAlign(Paint.Align.CENTER);
-        percentPaint.setFakeBoldText(true);
-        percentPaint.setColor(context.getColor(R.color.arcade_text_bright));
+        percentPaint.setTypeface(ResourcesCompat.getFont(context, R.font.baloo2_extrabold));
+        percentPaint.setColor(context.getColor(R.color.ink));
         labelPaint.setTextAlign(Paint.Align.CENTER);
-        labelPaint.setFakeBoldText(true);
-        labelPaint.setColor(context.getColor(R.color.arcade_text_dim));
+        labelPaint.setTypeface(ResourcesCompat.getFont(context, R.font.be_vietnam_pro_semibold));
+        labelPaint.setColor(context.getColor(R.color.ink_dim));
     }
 
     public void setData(int wins, int draws, int losses) {
@@ -49,14 +51,14 @@ public class PieChartView extends View {
 
         int total = wins + draws + losses;
         if (total == 0) {
-            arcPaint.setColor(getContext().getColor(R.color.arcade_btn_stroke));
+            arcPaint.setColor(getContext().getColor(R.color.line));
             canvas.drawArc(oval, 0, 360, false, arcPaint);
         } else {
             // Từ đỉnh, theo chiều kim đồng hồ
             float start = -90;
-            start = drawPart(canvas, start, wins, total, R.color.arcade_green);
-            start = drawPart(canvas, start, draws, total, R.color.arcade_amber);
-            drawPart(canvas, start, losses, total, R.color.arcade_red);
+            start = drawPart(canvas, start, wins, total, R.color.win);
+            start = drawPart(canvas, start, draws, total, R.color.draw_fill);
+            drawPart(canvas, start, losses, total, R.color.lose);
         }
 
         float cx = getWidth() / 2f;

@@ -16,7 +16,7 @@ import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Node matches/{matchId}: app chỉ đọc, server ghi
+// Node matches/{matchId}
 public class MatchFirebaseDAO extends FirebaseDAO {
     private static final String NETWORK_ERROR = "Mất kết nối, kiểm tra kết nối mạng";
 

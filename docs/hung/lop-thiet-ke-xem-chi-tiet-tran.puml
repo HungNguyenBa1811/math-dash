@@ -3,30 +3,27 @@
 title Biểu đồ lớp chi tiết – Xem chi tiết trận
 
 package "Client (Android)" as PC {
-  abstract class BaseActivity <<boundary>> {
-    # me : Player
-    # onCreate(savedInstanceState : Bundle) : void
-    + onClick(v : View) : void
-  }
-  abstract class BaseAdapter <<boundary>> {
-    # items : List<T>
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
-    + getItemCount() : int
-  }
   class HistoryActivity <<boundary>> {
     + onMatchClick(match : Match) : void
   }
   class MatchDetailActivity <<boundary>> {
+    - me : Player
     - match : Match
+    - matchId : int
+    + onCreate(savedInstanceState : Bundle) : void
     - loadMatch() : void
     - showMatch(m : Match) : void
     - showResult(result : String) : void
     - stats(mp : MatchPlayer) : String
   }
   class ProblemAdapter <<boundary>> {
+    - listProblem : List<MathProblem>
     - myAnswers : List<Answer>
     - opponentAnswers : List<Answer>
+    + ProblemAdapter(problems : List<MathProblem>, myAnswers : List<Answer>, opponentAnswers : List<Answer>)
+    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ProblemViewHolder
     + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
+    + getItemCount() : int
     - answerAt(answers : List<Answer>, position : int) : Answer
     - showAnswer(view : TextView, answer : Answer) : void
   }
@@ -35,20 +32,15 @@ package "Client (Android)" as PC {
   class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
-    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
     # get(path : String) : JSONObject
   }
   class MatchApiDAO <<control>> {
-    + MatchApiDAO()
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
   }
-}
-
-package "Common (Java Library)" as PM {
   class Player <<entity>> {
     - id : int
     - displayName : String
@@ -72,15 +64,6 @@ package "Common (Java Library)" as PM {
     - forfeited : boolean
     - player : Player
   }
-  class Answer <<entity>> {
-    + {static} NONE : int
-    - id : int
-    - selectedOption : int
-    - answerTime : long
-    - problem : MathProblem
-    + isAnswered() : boolean
-    + isCorrect() : boolean
-  }
   class MathProblem <<entity>> {
     - id : int
     - operand1 : int
@@ -90,42 +73,83 @@ package "Common (Java Library)" as PM {
     + isCorrect(answer : int) : boolean
     + getExpression() : String
   }
+  class Answer <<entity>> {
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
+    + isAnswered() : boolean
+    + isCorrect() : boolean
+  }
+}
+
+package "Bên thứ ba" as PT {
 }
 
 package "Server (Spring Boot)" as PS {
   class MatchRestController <<boundary>> {
     + getById(id : int) : Match
-    - findMatch(id : int) : Match
-  }
-  abstract class "DAO" as SDAO <<control>> {
-    # {static} con : Connection
-    + DAO()
   }
   class MatchDAO <<control>> {
-    + MatchDAO()
     + findById(id : int) : Match
     - findAnswers(matchPlayerId : int, questions : List<MathProblem>) : List<Answer>
   }
   class PlayerDAO <<control>> {
-    + PlayerDAO()
     + getTotalPoints(playerId : int) : double
+  }
+  abstract class "DAO" as SDAO <<control>> {
+    # conn : Connection
+    + DAO()
+  }
+  class "Player" as SPlayer <<entity>> {
+    - id : int
+    - displayName : String
+    - totalPoints : double
+  }
+  class "Match" as SMatch <<entity>> {
+    - id : int
+    - endedAt : Date
+    - questions : List<MathProblem>
+    - players : List<MatchPlayer>
+    + getFinishTime(playerId : int) : long
+    + getResult(playerId : int) : String
+    + getPoints(playerId : int) : double
+  }
+  class "MatchPlayer" as SMatchPlayer <<entity>> {
+    - id : int
+    - answers : List<Answer>
+    - correctCount : int
+    - submittedAt : Date
+    - forfeited : boolean
+    - player : Player
+  }
+  class "MathProblem" as SMathProblem <<entity>> {
+    - id : int
+    - operand1 : int
+    - operand2 : int
+    - operator : String
+    - correctAnswer : int
+  }
+  class "Answer" as SAnswer <<entity>> {
+    + NONE : int
+    - id : int
+    - selectedOption : int
+    - answerTime : long
+    - problem : MathProblem
   }
 }
 
-HistoryActivity --|> BaseActivity
-MatchDetailActivity --|> BaseActivity
-ProblemAdapter --|> BaseAdapter
-BaseActivity o-- "1" Player
-BaseActivity -- SessionDAO
 HistoryActivity -- MatchDetailActivity
-MatchDetailActivity -- ProblemAdapter
-ProblemAdapter -- ProblemViewHolder
 MatchDetailActivity -- xmlDetail
-ProblemViewHolder -- xmlItemProblem
+MatchDetailActivity -- ProblemAdapter
+MatchDetailActivity -- SessionDAO
+MatchDetailActivity -- MatchApiDAO
+MatchDetailActivity o-- "1" Player
 MatchDetailActivity o-- "1" Match
+ProblemAdapter -- ProblemViewHolder
+ProblemViewHolder -- xmlItemProblem
 ProblemAdapter o-- "10" MathProblem
 ProblemAdapter o-- "n" Answer
-MatchDetailActivity -- MatchApiDAO
 MatchApiDAO --|> ApiDAO
 SessionDAO -- Player
 MatchApiDAO -- Match
@@ -134,17 +158,24 @@ Match "1" o-- "10" MathProblem
 MatchPlayer "n" o-- "1" Player
 MatchPlayer "1" o-- "n" Answer
 MathProblem "1" --o "n" Answer
+
 MatchRestController -- MatchDAO
 MatchRestController -- PlayerDAO
 PlayerDAO -- MatchDAO
 MatchDAO --|> SDAO
 PlayerDAO --|> SDAO
-MatchDAO -- Match
-PlayerDAO -- Player
-PlayerDAO -- Match
+MatchDAO -- SMatch
+PlayerDAO -- SPlayer
+PlayerDAO -- SMatch
+SMatch "1" o-- "2" SMatchPlayer
+SMatch "1" o-- "10" SMathProblem
+SMatchPlayer "n" o-- "1" SPlayer
+SMatchPlayer "1" o-- "n" SAnswer
+SMathProblem "1" --o "n" SAnswer
+
 MatchApiDAO -- MatchRestController : HTTP/JSON
 
-' Client trên, Common giữa, Server dưới
-PC -[hidden]down- PM
-PM -[hidden]down- PS
+' Client trên, Bên thứ ba giữa, Server dưới
+PC -[hidden]down- PT
+PT -[hidden]down- PS
 @enduml

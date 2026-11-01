@@ -50,7 +50,7 @@ package "Client (Android)" as PC {
     + getPlayer() : Player
   }
   abstract class FirebaseDAO <<control>> {
-    # {static} con : DatabaseReference
+    # con : DatabaseReference
     + FirebaseDAO()
   }
   class PresenceFirebaseDAO <<control>> {
@@ -131,7 +131,7 @@ package "Server (Spring Boot)" as PS {
     - hideAnswers(match : Match) : Match
   }
   abstract class "DAO" as SDAO <<control>> {
-    # {static} con : Connection
+    # con : Connection
     + DAO()
   }
   class PlayerDAO <<control>> {
