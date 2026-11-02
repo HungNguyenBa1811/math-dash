@@ -27,7 +27,7 @@ end box
 GA -> SD : onCreate(): getPlayer()
 SD --> GA : Player
 GA -> MFD : watchMatch()
-MFD -> MFD : onDataChange(): toMatch()
+MFD -> MFD : onDataChange()
 MFD -> M : đóng gói Match
 M --> MFD : Match
 MFD -> GA : onSuccess() {MatchCallback}
@@ -100,7 +100,7 @@ MRC -> PD : getTotalPoints()
 PD --> MRC : tổng điểm
 MRC -> FAD : updatePoints()
 MRC -> FAD : writeFinished()
-MFD -> MFD : onDataChange(): toMatch()
+MFD -> MFD : onDataChange()
 MFD -> M : đóng gói Match
 M --> MFD : Match
 MFD -> GA : onSuccess() {MatchCallback}

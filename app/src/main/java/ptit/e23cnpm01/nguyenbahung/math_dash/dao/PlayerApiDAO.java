@@ -18,22 +18,23 @@ public class PlayerApiDAO extends ApiDAO {
         body.put("username", username);
         body.put("password", password);
         body.put("displayName", displayName);
-        post("/auth/register", body);
+        request("POST", "/auth/register", body);
     }
 
     public Player login(String username, String password) throws IOException, JSONException {
         JSONObject body = new JSONObject();
         body.put("username", username);
         body.put("password", password);
-        return toPlayer(post("/auth/login", body));
+        return toPlayer(new JSONObject(request("POST", "/auth/login", body)));
     }
 
     public Player getById(int id) throws IOException, JSONException {
-        return toPlayer(get("/players/" + id));
+        return toPlayer(new JSONObject(request("GET", "/players/" + id, null)));
     }
 
+    // Already sorted by the server: total points, then average opponent points, then average win time
     public List<Player> getRanking() throws IOException, JSONException {
-        JSONArray array = getArray("/players/ranking");
+        JSONArray array = new JSONArray(request("GET", "/players/ranking", null));
         List<Player> list = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             list.add(toPlayer(array.getJSONObject(i)));
@@ -41,7 +42,7 @@ public class PlayerApiDAO extends ApiDAO {
         return list;
     }
 
-    // Derived fields may be missing
+    // mapper
     private Player toPlayer(JSONObject json) throws JSONException {
         Player player = new Player(json.getInt("id"), json.optString("username"), json.getString("displayName"));
         player.setRole(json.optString("role", Player.ROLE_PLAYER));

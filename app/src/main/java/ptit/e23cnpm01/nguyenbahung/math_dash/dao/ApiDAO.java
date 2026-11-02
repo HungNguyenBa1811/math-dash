@@ -1,6 +1,5 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.dao;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,63 +16,25 @@ public abstract class ApiDAO {
     protected static final String BASE_URL = "http://localhost:8080/api"; // deploy: https://math-dash-server.onrender.com/api
     protected static final String NETWORK_ERROR = "Không kết nối được máy chủ, kiểm tra kết nối mạng";
 
-    protected JSONObject post(String path, JSONObject body) throws IOException, JSONException {
-        HttpURLConnection conn = open(path, "POST");
-        int code;
-        try {
-            conn.setDoOutput(true);
-            OutputStream out = conn.getOutputStream();
-            out.write(body.toString().getBytes(StandardCharsets.UTF_8));
-            out.close();
-            code = conn.getResponseCode();
-        } catch (IOException e) {
-            throw new IOException(NETWORK_ERROR, e);
-        }
-        String text = read(conn, code);
-        return text.isEmpty() ? new JSONObject() : new JSONObject(text);
-    }
-
-    protected void delete(String path) throws IOException, JSONException {
-        HttpURLConnection conn = open(path, "DELETE");
-        int code;
-        try {
-            code = conn.getResponseCode();
-        } catch (IOException e) {
-            throw new IOException(NETWORK_ERROR, e);
-        }
-        read(conn, code);
-    }
-
-    protected JSONObject get(String path) throws IOException, JSONException {
-        return new JSONObject(readGet(path));
-    }
-
-    protected JSONArray getArray(String path) throws IOException, JSONException {
-        return new JSONArray(readGet(path));
-    }
-
-    private String readGet(String path) throws IOException, JSONException {
-        HttpURLConnection conn = open(path, "GET");
-        int code;
-        try {
-            code = conn.getResponseCode();
-        } catch (IOException e) {
-            throw new IOException(NETWORK_ERROR, e);
-        }
-        return read(conn, code);
-    }
-
-    private HttpURLConnection open(String path, String method) throws IOException {
+    // Sends one request and returns the response body; an HTTP error becomes an IOException with the server message
+    protected String request(String method, String path, JSONObject body) throws IOException, JSONException {
         HttpURLConnection conn = (HttpURLConnection) new URL(BASE_URL + path).openConnection();
         conn.setRequestMethod(method);
         conn.setConnectTimeout(5000);
         conn.setReadTimeout(10000);
         conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-        return conn;
-    }
-
-    // HTTP error
-    private String read(HttpURLConnection conn, int code) throws IOException, JSONException {
+        int code;
+        try {
+            if (body != null) {
+                conn.setDoOutput(true);
+                OutputStream out = conn.getOutputStream();
+                out.write(body.toString().getBytes(StandardCharsets.UTF_8));
+                out.close();
+            }
+            code = conn.getResponseCode();
+        } catch (IOException e) {
+            throw new IOException(NETWORK_ERROR, e);
+        }
         InputStream in = code < 400 ? conn.getInputStream() : conn.getErrorStream();
         StringBuilder text = new StringBuilder();
         if (in != null) {

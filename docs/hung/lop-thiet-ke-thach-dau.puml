@@ -13,16 +13,12 @@ package "Client (Android)" as PC {
     + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
     + getItemCount() : int
   }
-  class MainActivity <<boundary>> {
-  }
   class OnlineActivity <<boundary>> {
     - sentChallenge : Challenge
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
     - goOnline() : void
-    - showWaitingDialog(opponent : Player) : void
-    - showChallengeDialog(challenge : Challenge) : void
     - acceptChallenge(challenge : Challenge) : void
     - closeSentChallenge() : void
     - openMatch(matchId : int) : void
@@ -31,12 +27,8 @@ package "Client (Android)" as PC {
     + setPlayers(players : List<Player>) : void
   }
   class PlayerViewHolder <<boundary>>
-  class MatchActivity <<boundary>> {
-  }
-  class "activity_main.xml" as xmlMain
   class "activity_online.xml" as xmlOnline
   class "item_player.xml" as xmlItemPlayer
-  class "activity_match.xml" as xmlMatch
 
   interface PlayerListCallback {
     + onPlayersChanged(players : List<Player>) : void
@@ -56,20 +48,22 @@ package "Client (Android)" as PC {
   class PresenceFirebaseDAO <<control>> {
     + PresenceFirebaseDAO()
     + goOnline(player : Player) : void
+    + goOffline(playerId : int) : void
     + watchOnlinePlayers(callback : PlayerListCallback) : void
-    - toPlayer(id : String, data : DataSnapshot) : Player
+    + stopWatching() : void
   }
   class ChallengeFirebaseDAO <<control>> {
     + ChallengeFirebaseDAO()
     + sendChallenge(challenger : Player, opponent : Player) : Challenge
     + watchIncoming(playerId : int, callback : ChallengeCallback) : void
     + watchChallenge(challengeId : String, callback : ChallengeCallback) : void
+    + rejectChallenge(challengeId : String) : void
+    + stopWatching() : void
     + stopWatchingSent() : void
-    - toChallenge(id : String, data : DataSnapshot) : Challenge
+    - toChallenge(data : DataSnapshot) : Challenge
   }
   abstract class ApiDAO <<control>> {
-    # get(path : String) : JSONObject
-    # post(path : String, body : JSONObject) : JSONObject
+    # request(method : String, path : String, body : JSONObject) : String
   }
   class PlayerApiDAO <<control>> {
     + PlayerApiDAO()
@@ -157,20 +151,14 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
-MainActivity --|> BaseActivity
 OnlineActivity --|> BaseActivity
-MatchActivity --|> BaseActivity
 PlayerAdapter --|> BaseAdapter
 BaseActivity o-- "1" Player
 BaseActivity -- SessionDAO
-MainActivity -r- OnlineActivity
-OnlineActivity -r- MatchActivity
 OnlineActivity -- PlayerAdapter
 PlayerAdapter -- PlayerViewHolder
-MainActivity -- xmlMain
 OnlineActivity -- xmlOnline
 PlayerViewHolder -- xmlItemPlayer
-MatchActivity -- xmlMatch
 PlayerAdapter o-- "n" Player
 OnlineActivity ..|> PlayerListCallback
 OnlineActivity ..|> ChallengeCallback

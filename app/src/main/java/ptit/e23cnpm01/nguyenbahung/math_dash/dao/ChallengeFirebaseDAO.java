@@ -25,7 +25,7 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
 
     // The invitation is removed automatically when the inviter closes the app
     public Challenge sendChallenge(Player challenger, Player opponent) {
-        DatabaseReference ref = challengesRef().push();
+        DatabaseReference ref = con.child("challenges").push();
         Challenge challenge = new Challenge();
         challenge.setId(ref.getKey());
         challenge.setStatus(Challenge.PENDING);
@@ -44,14 +44,15 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         return challenge;
     }
 
+    // Invitations sent to the player
     public void watchIncoming(int playerId, final ChallengeCallback callback) {
-        incomingQuery = challengesRef().orderByChild("opponentId").equalTo(playerId);
+        incomingQuery = con.child("challenges").orderByChild("opponentId").equalTo(playerId);
         incomingWatcher = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Also emit cancelled invitations so the invitee's dialog closes
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    callback.onChallengeChanged(toChallenge(child.getKey(), child));
+                    callback.onChallengeChanged(toChallenge(child));
                 }
             }
 
@@ -62,14 +63,15 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         incomingQuery.addValueEventListener(incomingWatcher);
     }
 
+    // The invitation the player sent: rejected, or accepted with a matchId
     public void watchChallenge(String challengeId, final ChallengeCallback callback) {
         stopWatchingSent();
-        sentRef = challengesRef().child(challengeId);
+        sentRef = con.child("challenges").child(challengeId);
         sentWatcher = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    callback.onChallengeChanged(toChallenge(snapshot.getKey(), snapshot));
+                    callback.onChallengeChanged(toChallenge(snapshot));
                 }
             }
 
@@ -81,7 +83,7 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
     }
 
     public void rejectChallenge(String challengeId) {
-        challengesRef().child(challengeId).child("status").setValue(Challenge.REJECTED);
+        con.child("challenges").child(challengeId).child("status").setValue(Challenge.REJECTED);
     }
 
     public void stopWatching() {
@@ -99,27 +101,25 @@ public class ChallengeFirebaseDAO extends FirebaseDAO {
         }
     }
 
-    private Challenge toChallenge(String id, DataSnapshot data) {
-        Challenge challenge = new Challenge();
-        challenge.setId(id);
-        challenge.setStatus(data.child("status").getValue(String.class));
-        challenge.setChallenger(toPlayer(data, "challengerId", "challengerName"));
-        challenge.setOpponent(toPlayer(data, "opponentId", "opponentName"));
+    private Challenge toChallenge(DataSnapshot data) {
+        Integer challengerId = data.child("challengerId").getValue(Integer.class);
+        Player challenger = new Player(challengerId == null ? 0 : challengerId, null,
+                data.child("challengerName").getValue(String.class));
         Double points = data.child("challengerPoints").getValue(Double.class);
-        challenge.getChallenger().setTotalPoints(points == null ? 0 : points);
+        challenger.setTotalPoints(points == null ? 0 : points);
+        Integer opponentId = data.child("opponentId").getValue(Integer.class);
+        Player opponent = new Player(opponentId == null ? 0 : opponentId, null,
+                data.child("opponentName").getValue(String.class));
+
+        Challenge challenge = new Challenge();
+        challenge.setId(data.getKey());
+        challenge.setStatus(data.child("status").getValue(String.class));
+        challenge.setChallenger(challenger);
+        challenge.setOpponent(opponent);
         Integer matchId = data.child("matchId").getValue(Integer.class);
         challenge.setMatchId(matchId == null ? 0 : matchId);
         Long createdAt = data.child("createdAt").getValue(Long.class);
         challenge.setCreatedAt(createdAt == null ? null : new Date(createdAt));
         return challenge;
-    }
-
-    private Player toPlayer(DataSnapshot data, String idKey, String nameKey) {
-        Integer id = data.child(idKey).getValue(Integer.class);
-        return new Player(id == null ? 0 : id, null, data.child(nameKey).getValue(String.class));
-    }
-
-    private DatabaseReference challengesRef() {
-        return con.child("challenges");
     }
 }

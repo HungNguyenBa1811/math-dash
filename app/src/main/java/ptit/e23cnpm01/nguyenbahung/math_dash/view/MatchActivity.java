@@ -161,7 +161,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         if (timer != null) {
             timer.cancel();
         }
-        matchFirebaseDAO.stopWatching(matchId);
+        matchFirebaseDAO.stopWatching();
         presenceFirebaseDAO.stopWatching();
     }
 
@@ -500,7 +500,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
     }
 
     private void openNextMatch(int nextMatchId) {
-        matchFirebaseDAO.stopWatching(matchId);
+        matchFirebaseDAO.stopWatching();
         Intent intent = new Intent(this, MatchActivity.class);
         intent.putExtra(EXTRA_MATCH_ID, nextMatchId);
         startActivity(intent);

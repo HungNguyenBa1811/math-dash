@@ -20,7 +20,7 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
 
     // The node is removed automatically on disconnect
     public void goOnline(Player player) {
-        DatabaseReference ref = presenceRef().child(String.valueOf(player.getId()));
+        DatabaseReference ref = con.child("presence").child(String.valueOf(player.getId()));
         ref.onDisconnect().removeValue();
         Map<String, Object> data = new HashMap<>();
         data.put("displayName", player.getDisplayName());
@@ -30,9 +30,10 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
     }
 
     public void goOffline(int playerId) {
-        presenceRef().child(String.valueOf(playerId)).removeValue();
+        con.child("presence").child(String.valueOf(playerId)).removeValue();
     }
 
+    // Every online player with total points and status free or playing
     public void watchOnlinePlayers(final PlayerListCallback callback) {
         stopWatching();
         watcher = new ValueEventListener() {
@@ -40,7 +41,13 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Player> players = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    players.add(toPlayer(child.getKey(), child));
+                    Player player = new Player(Integer.parseInt(child.getKey()), null,
+                            child.child("displayName").getValue(String.class));
+                    Double points = child.child("totalPoints").getValue(Double.class);
+                    player.setTotalPoints(points == null ? 0 : points);
+                    String status = child.child("status").getValue(String.class);
+                    player.setStatus(status == null ? Player.FREE : status);
+                    players.add(player);
                 }
                 callback.onPlayersChanged(players);
             }
@@ -50,26 +57,13 @@ public class PresenceFirebaseDAO extends FirebaseDAO {
                 // Keep the previous list
             }
         };
-        presenceRef().addValueEventListener(watcher);
+        con.child("presence").addValueEventListener(watcher);
     }
 
     public void stopWatching() {
         if (watcher != null) {
-            presenceRef().removeEventListener(watcher);
+            con.child("presence").removeEventListener(watcher);
             watcher = null;
         }
-    }
-
-    private Player toPlayer(String id, DataSnapshot data) {
-        Player player = new Player(Integer.parseInt(id), null, data.child("displayName").getValue(String.class));
-        Number points = data.child("totalPoints").getValue(Double.class);
-        player.setTotalPoints(points == null ? 0 : points.doubleValue());
-        String status = data.child("status").getValue(String.class);
-        player.setStatus(status == null ? Player.FREE : status);
-        return player;
-    }
-
-    private DatabaseReference presenceRef() {
-        return con.child("presence");
     }
 }

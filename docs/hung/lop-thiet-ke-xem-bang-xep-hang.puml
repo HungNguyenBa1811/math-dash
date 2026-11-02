@@ -3,10 +3,6 @@
 title Biểu đồ lớp chi tiết – Xem bảng xếp hạng
 
 package "Client (Android)" as PC {
-  class OnlineActivity <<boundary>> {
-    + onCreate(savedInstanceState : Bundle) : void
-    + onClick(v : View) : void
-  }
   class HistoryActivity <<boundary>> {
     - me : Player
     + onCreate(savedInstanceState : Bundle) : void
@@ -21,20 +17,24 @@ package "Client (Android)" as PC {
     + getItemCount() : int
   }
   class RankingViewHolder <<boundary>>
-  class "activity_online.xml" as xmlOnline
   class "activity_history.xml" as xmlHistory
   class "item_ranking.xml" as xmlItemRanking
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
-    # getArray(path : String) : JSONArray
+    # request(method : String, path : String, body : JSONObject) : String
   }
   class PlayerApiDAO <<control>> {
+    + PlayerApiDAO()
     + getRanking() : List<Player>
     - toPlayer(json : JSONObject) : Player
   }
+}
+
+package "Common (Java Library)" as PM {
   class Player <<entity>> {
     - id : int
     - displayName : String
@@ -42,9 +42,6 @@ package "Client (Android)" as PC {
     - avgOpponentPoints : double
     - avgWinTime : double
   }
-}
-
-package "Bên thứ ba" as PT {
 }
 
 package "Server (Spring Boot)" as PS {
@@ -64,31 +61,8 @@ package "Server (Spring Boot)" as PS {
     # conn : Connection
     + DAO()
   }
-  class "Player" as SPlayer <<entity>> {
-    - id : int
-    - displayName : String
-    - totalPoints : double
-    - avgOpponentPoints : double
-    - avgWinTime : double
-  }
-  class "Match" as SMatch <<entity>> {
-    - id : int
-    - endedAt : Date
-    - players : List<MatchPlayer>
-    + getFinishTime(playerId : int) : long
-    + getResult(playerId : int) : String
-    + getPoints(playerId : int) : double
-  }
-  class "MatchPlayer" as SMatchPlayer <<entity>> {
-    - id : int
-    - submittedAt : Date
-    - forfeited : boolean
-    - player : Player
-  }
 }
 
-OnlineActivity -- xmlOnline
-OnlineActivity -- HistoryActivity
 HistoryActivity -- xmlHistory
 HistoryActivity -- RankingAdapter
 HistoryActivity -- SessionDAO
@@ -105,15 +79,15 @@ PlayerRestController -- PlayerDAO
 PlayerDAO -- MatchDAO
 MatchDAO --|> SDAO
 PlayerDAO --|> SDAO
-MatchDAO -- SMatch
-PlayerDAO -- SPlayer
-PlayerDAO -- SMatch
-SMatch "1" o-- "2" SMatchPlayer
-SMatchPlayer "n" o-- "1" SPlayer
+MatchDAO -- Match
+PlayerDAO -- Player
+PlayerDAO -- Match
+Match "1" o-- "2" MatchPlayer
+MatchPlayer "n" o-- "1" Player
 
 PlayerApiDAO -- PlayerRestController : HTTP/JSON
 
-' Client trên, Bên thứ ba giữa, Server dưới
-PC -[hidden]down- PT
-PT -[hidden]down- PS
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
 @enduml

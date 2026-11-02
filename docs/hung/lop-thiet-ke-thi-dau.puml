@@ -15,18 +15,10 @@ package "Client (Android)" as PC {
     + onPlayersChanged(players : List<Player>) : void
     + onSuccess(match : Match) : void
     + onNextMatch(nextMatchId : int) : void
-    + onTick(millisLeft : long) : void
     - startMatch(match : Match) : void
-    - createTimer() : CountDownTimer
-    - showQuestion() : void
-    - optionText(index : int, value : int) : CharSequence
     - chooseOption(index : int) : void
-    - showMessage(message : String) : void
     - submitAnswers() : void
-    - onSubmitted() : void
     - loadResult() : void
-    - showResult(match : Match) : void
-    - showScores(match : Match) : void
     - sendChoice(choice : boolean) : void
     - openNextMatch(nextMatchId : int) : void
   }
@@ -53,20 +45,20 @@ package "Client (Android)" as PC {
   class PresenceFirebaseDAO <<control>> {
     + PresenceFirebaseDAO()
     + watchOnlinePlayers(callback : PlayerListCallback) : void
+    + stopWatching() : void
   }
   class MatchFirebaseDAO <<control>> {
     + MatchFirebaseDAO()
     + watchMatch(matchId : int, callback : MatchCallback) : void
-    + stopWatching(matchId : int) : void
-    - toMatch(matchId : int, data : DataSnapshot) : Match
+    + stopWatching() : void
   }
   abstract class ApiDAO <<control>> {
-    # get(path : String) : JSONObject
-    # post(path : String, body : JSONObject) : JSONObject
+    # request(method : String, path : String, body : JSONObject) : String
   }
   class MatchApiDAO <<control>> {
     + MatchApiDAO()
     + submit(matchId : int, playerId : int, answers : List<Answer>) : Match
+    + forfeit(matchId : int, playerId : int) : Match
     + continueMatch(matchId : int, playerId : int, choice : boolean) : Match
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
