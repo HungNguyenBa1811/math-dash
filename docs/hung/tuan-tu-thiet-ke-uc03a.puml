@@ -43,7 +43,7 @@ PAD -> P : toPlayer(): đóng gói Player
 P --> PAD : Player
 PAD --> OA : Player
 OA -> PFD : runOnUiThread(): goOnline()
-PFD -> PFD : onDataChange(): toPlayer()
+PFD -> PFD : onDataChange()
 PFD -> P : đóng gói Player
 P --> PFD : Player
 PFD -> OA : onPlayersChanged() {PlayerListCallback}

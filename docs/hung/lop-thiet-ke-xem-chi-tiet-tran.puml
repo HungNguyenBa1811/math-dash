@@ -3,18 +3,12 @@
 title Biểu đồ lớp chi tiết – Xem chi tiết trận
 
 package "Client (Android)" as PC {
-  class HistoryActivity <<boundary>> {
-    + onMatchClick(match : Match) : void
-  }
   class MatchDetailActivity <<boundary>> {
     - me : Player
     - match : Match
     - matchId : int
     + onCreate(savedInstanceState : Bundle) : void
     - loadMatch() : void
-    - showMatch(m : Match) : void
-    - showResult(result : String) : void
-    - stats(mp : MatchPlayer) : String
   }
   class ProblemAdapter <<boundary>> {
     - listProblem : List<MathProblem>
@@ -24,23 +18,26 @@ package "Client (Android)" as PC {
     + onCreateViewHolder(parent : ViewGroup, viewType : int) : ProblemViewHolder
     + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
     + getItemCount() : int
-    - answerAt(answers : List<Answer>, position : int) : Answer
-    - showAnswer(view : TextView, answer : Answer) : void
   }
   class ProblemViewHolder <<boundary>>
   class "activity_match_detail.xml" as xmlDetail
   class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
-    # get(path : String) : JSONObject
+    # request(method : String, path : String, body : JSONObject) : String
   }
   class MatchApiDAO <<control>> {
+    + MatchApiDAO()
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
   }
+}
+
+package "Common (Java Library)" as PM {
   class Player <<entity>> {
     - id : int
     - displayName : String
@@ -83,9 +80,6 @@ package "Client (Android)" as PC {
   }
 }
 
-package "Bên thứ ba" as PT {
-}
-
 package "Server (Spring Boot)" as PS {
   class MatchRestController <<boundary>> {
     + getById(id : int) : Match
@@ -101,44 +95,8 @@ package "Server (Spring Boot)" as PS {
     # conn : Connection
     + DAO()
   }
-  class "Player" as SPlayer <<entity>> {
-    - id : int
-    - displayName : String
-    - totalPoints : double
-  }
-  class "Match" as SMatch <<entity>> {
-    - id : int
-    - endedAt : Date
-    - questions : List<MathProblem>
-    - players : List<MatchPlayer>
-    + getFinishTime(playerId : int) : long
-    + getResult(playerId : int) : String
-    + getPoints(playerId : int) : double
-  }
-  class "MatchPlayer" as SMatchPlayer <<entity>> {
-    - id : int
-    - answers : List<Answer>
-    - correctCount : int
-    - submittedAt : Date
-    - forfeited : boolean
-    - player : Player
-  }
-  class "MathProblem" as SMathProblem <<entity>> {
-    - id : int
-    - operand1 : int
-    - operand2 : int
-    - operator : String
-    - correctAnswer : int
-  }
-  class "Answer" as SAnswer <<entity>> {
-    - id : int
-    - selectedOption : int
-    - answerTime : long
-    - problem : MathProblem
-  }
 }
 
-HistoryActivity -- MatchDetailActivity
 MatchDetailActivity -- xmlDetail
 MatchDetailActivity -- ProblemAdapter
 MatchDetailActivity -- SessionDAO
@@ -163,18 +121,13 @@ MatchRestController -- PlayerDAO
 PlayerDAO -- MatchDAO
 MatchDAO --|> SDAO
 PlayerDAO --|> SDAO
-MatchDAO -- SMatch
-PlayerDAO -- SPlayer
-PlayerDAO -- SMatch
-SMatch "1" o-- "2" SMatchPlayer
-SMatch "1" o-- "10" SMathProblem
-SMatchPlayer "n" o-- "1" SPlayer
-SMatchPlayer "1" o-- "n" SAnswer
-SMathProblem "1" --o "n" SAnswer
+MatchDAO -- Match
+PlayerDAO -- Player
+PlayerDAO -- Match
 
 MatchApiDAO -- MatchRestController : HTTP/JSON
 
-' Client trên, Bên thứ ba giữa, Server dưới
-PC -[hidden]down- PT
-PT -[hidden]down- PS
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
 @enduml

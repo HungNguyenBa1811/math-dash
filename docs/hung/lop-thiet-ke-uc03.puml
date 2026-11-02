@@ -13,17 +13,12 @@ package "Client (Android)" as PC {
     + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
     + getItemCount() : int
   }
-  class MainActivity <<boundary>> {
-
-  }
   class OnlineActivity <<boundary>> {
     - sentChallenge : Challenge
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
     - goOnline() : void
-    - showWaitingDialog(opponent : Player) : void
-    - showChallengeDialog(challenge : Challenge) : void
     - acceptChallenge(challenge : Challenge) : void
     - closeSentChallenge() : void
     - openMatch(matchId : int) : void
@@ -39,22 +34,13 @@ package "Client (Android)" as PC {
     + onPlayersChanged(players : List<Player>) : void
     + onSuccess(match : Match) : void
     + onNextMatch(nextMatchId : int) : void
-    + onTick(millisLeft : long) : void
     - startMatch(match : Match) : void
-    - createTimer() : CountDownTimer
-    - showQuestion() : void
-    - optionText(index : int, value : int) : CharSequence
     - chooseOption(index : int) : void
-    - showMessage(message : String) : void
     - submitAnswers() : void
-    - onSubmitted() : void
     - loadResult() : void
-    - showResult(match : Match) : void
-    - showScores(match : Match) : void
     - sendChoice(choice : boolean) : void
     - openNextMatch(nextMatchId : int) : void
   }
-  class "activity_main.xml" as xmlMain
   class "activity_online.xml" as xmlOnline
   class "item_player.xml" as xmlItemPlayer
   class "activity_match.xml" as xmlMatch
@@ -83,26 +69,27 @@ package "Client (Android)" as PC {
   class PresenceFirebaseDAO <<control>> {
     + PresenceFirebaseDAO()
     + goOnline(player : Player) : void
+    + goOffline(playerId : int) : void
     + watchOnlinePlayers(callback : PlayerListCallback) : void
-    - toPlayer(id : String, data : DataSnapshot) : Player
+    + stopWatching() : void
   }
   class ChallengeFirebaseDAO <<control>> {
     + ChallengeFirebaseDAO()
     + sendChallenge(challenger : Player, opponent : Player) : Challenge
     + watchIncoming(playerId : int, callback : ChallengeCallback) : void
     + watchChallenge(challengeId : String, callback : ChallengeCallback) : void
+    + rejectChallenge(challengeId : String) : void
+    + stopWatching() : void
     + stopWatchingSent() : void
-    - toChallenge(id : String, data : DataSnapshot) : Challenge
+    - toChallenge(data : DataSnapshot) : Challenge
   }
   class MatchFirebaseDAO <<control>> {
     + MatchFirebaseDAO()
     + watchMatch(matchId : int, callback : MatchCallback) : void
-    + stopWatching(matchId : int) : void
-    - toMatch(matchId : int, data : DataSnapshot) : Match
+    + stopWatching() : void
   }
   abstract class ApiDAO <<control>> {
-    # get(path : String) : JSONObject
-    # post(path : String, body : JSONObject) : JSONObject
+    # request(method : String, path : String, body : JSONObject) : String
   }
   class PlayerApiDAO <<control>> {
     + PlayerApiDAO()
@@ -113,6 +100,7 @@ package "Client (Android)" as PC {
     + MatchApiDAO()
     + createMatch(challenge : Challenge) : Match
     + submit(matchId : int, playerId : int, answers : List<Answer>) : Match
+    + forfeit(matchId : int, playerId : int) : Match
     + continueMatch(matchId : int, playerId : int, choice : boolean) : Match
     + getById(matchId : int) : Match
     - toMatch(json : JSONObject) : Match
@@ -228,17 +216,14 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
-MainActivity --|> BaseActivity
 OnlineActivity --|> BaseActivity
 MatchActivity --|> BaseActivity
 PlayerAdapter --|> BaseAdapter
 BaseActivity o-- "1" Player
 BaseActivity -- SessionDAO
-MainActivity -r- OnlineActivity
 OnlineActivity -r- MatchActivity
 OnlineActivity -- PlayerAdapter
 PlayerAdapter -- PlayerViewHolder
-MainActivity -- xmlMain
 OnlineActivity -- xmlOnline
 PlayerViewHolder -- xmlItemPlayer
 MatchActivity -- xmlMatch
@@ -292,11 +277,9 @@ PlayerApiDAO -- PlayerRestController : HTTP/JSON
 MatchApiDAO -- MatchRestController : HTTP/JSON
 
 ' Bố cục dọc: Client trên, Common giữa, Server dưới
-MainActivity -[hidden]down- xmlMain
 OnlineActivity -[hidden]down- xmlOnline
 MatchActivity -[hidden]down- PlayerAdapter
 MatchActivity -[hidden]down- xmlMatch
-xmlMain -[hidden]down- PlayerViewHolder
 xmlOnline -[hidden]down- PlayerListCallback
 PlayerAdapter -[hidden]down- ChallengeCallback
 xmlMatch -[hidden]down- MatchCallback

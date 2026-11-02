@@ -261,7 +261,7 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 App **không có lớp Controller riêng**: Activity xử lý sự kiện, điều phối và gọi thẳng DAO (`ISSUES_PLAN.md` D16).
 
-**Biểu đồ theo use case:** ngoài biểu đồ cấp module, mỗi use case con có một biểu đồ lớp chi tiết riêng, chỉ gồm các lớp và phương thức use case đó dùng. Lớp chỉ làm đích chuyển màn (ví dụ MatchActivity ở Thách đấu) hiện tên, không có thành viên và chỉ nối với boundary.
+**Biểu đồ theo use case:** ngoài biểu đồ cấp module, mỗi use case con có một biểu đồ lớp chi tiết riêng, chỉ gồm các lớp và phương thức use case đó dùng. Lớp chỉ làm điểm vào hoặc đích chuyển màn (ví dụ MatchActivity ở Thách đấu) không vẽ.
 
 **Lớp cha dùng chung:** các Activity kế thừa `BaseActivity` (giữ `me : Player`, `onCreate`, `onClick`, nối `SessionDAO`); các Adapter kế thừa `BaseAdapter` (giữ `items : List<T>`, `onCreateViewHolder`, `getItemCount`). Kết tập `Player --<> BaseActivity` và liên kết `BaseActivity -- SessionDAO` chỉ vẽ một lần ở lớp cha.
 
@@ -269,8 +269,10 @@ App **không có lớp Controller riêng**: Activity xử lý sự kiện, đi�
 
 **Chỉ vẽ phần cốt lõi:**
 - Thuộc tính: boundary giữ thuộc tính kiểu thực thể và các id (`me : Player`, `matchId : int`); DAO cha giữ đối tượng kết nối (`con : Connection` ở server, `con : DatabaseReference` ở app; `SessionDAO` giữ `prefs : SharedPreferences`), mỗi DAO ghi hàm khởi tạo (`MatchDAO()`, `SessionDAO(context : Context)`) và phương thức, không ghi thuộc tính kiểu chuỗi (`BASE_URL`, `dbUrl`); `ApiDAO` không có đối tượng kết nối vì mỗi lời gọi tự mở `HttpURLConnection`; RestController chỉ giữ trạng thái nghiệp vụ (`waitingChoices`); entity giữ đủ thuộc tính của D1 mà chức năng dùng.
-- Phương thức: chỉ ghi các phương thức có trong kịch bản v3 và tuần tự thiết kế, cùng phương thức nghiệp vụ của thực thể.
-- Không vẽ: View con (`TextView`, `Button`), biến tạm (`current`, `shownAt`, `timer`), cờ trạng thái (`started`, `submitted`), hằng số, listener, hàm override của Android không có trong kịch bản (`onDestroy`, `onBackPressed`, `onCreateViewHolder`, `getItemCount`), getter / setter, hàm riêng đóng gói phụ (`toProblem`, `toAnswers`). Các phần này để mã nguồn thể hiện; bảng mô tả lớp vẫn có thể nhắc tới.
+- Lớp: chỉ vẽ entity, DAO, view tham gia vào logic của chức năng. Màn chỉ dùng để mở sang màn khác (MainActivity ở Chơi online, OnlineActivity ở Xem lịch sử đấu, màn đích của một use case) không vẽ.
+- Phương thức: boundary chỉ ghi phương thức xử lý nghiệp vụ, bỏ hàm chỉ để vẽ giao diện (showQuestion, optionText, showMessage, showScores, onDraw, showAnswer...); thực thể ghi phương thức nghiệp vụ; DAO ghi **đủ mọi phương thức mà chức năng hoặc use case đó gọi**, bỏ hàm của module khác (register, login, save, clear...).
+- Mã nguồn DAO viết ít hàm nhất: mỗi hàm public là một thao tác nghiệp vụ; hàm phụ chỉ dùng một chỗ (đóng gói, lấy node, mở kết nối) gộp vào hàm gọi nó; chỉ giữ hàm đóng gói dùng ở nhiều chỗ (toMatch, toPlayer, toChallenge).
+- Không vẽ: View con (`TextView`, `Button`), biến tạm (`current`, `shownAt`, `timer`), cờ trạng thái (`started`, `submitted`), hằng số, listener, hàm override của Android không có trong kịch bản (`onDestroy`, `onBackPressed`, `onCreateViewHolder`, `getItemCount`), getter / setter, biến môi trường và hằng cấu hình (`BASE_URL`, `NETWORK_ERROR`). Các phần này để mã nguồn thể hiện; bảng mô tả lớp vẫn có thể nhắc tới.
 
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `MatchActivity`), layout tương ứng `activity_main.xml`, `activity_match.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 

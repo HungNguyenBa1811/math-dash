@@ -3,10 +3,6 @@
 title Biểu đồ lớp chi tiết – Xem lịch sử đấu
 
 package "Client (Android)" as PC {
-  class OnlineActivity <<boundary>> {
-    + onCreate(savedInstanceState : Bundle) : void
-    + onClick(v : View) : void
-  }
   class HistoryActivity <<boundary>> {
     - me : Player
     - matches : List<Match>
@@ -17,7 +13,6 @@ package "Client (Android)" as PC {
   }
   class PieChartView <<boundary>> {
     + setData(wins : int, draws : int, losses : int) : void
-    # onDraw(canvas : Canvas) : void
   }
   class MatchHistoryAdapter <<boundary>> {
     - listMatch : List<Match>
@@ -27,22 +22,24 @@ package "Client (Android)" as PC {
     + getItemCount() : int
   }
   class MatchHistoryViewHolder <<boundary>>
-  class MatchDetailActivity <<boundary>> {
-  }
-  class "activity_online.xml" as xmlOnline
   class "activity_history.xml" as xmlHistory
   class "item_match_history.xml" as xmlItemMatch
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
+    + SessionDAO(context : Context)
     + getPlayer() : Player
   }
   abstract class ApiDAO <<control>> {
-    # getArray(path : String) : JSONArray
+    # request(method : String, path : String, body : JSONObject) : String
   }
   class MatchApiDAO <<control>> {
+    + MatchApiDAO()
     + getHistory(playerId : int) : List<Match>
     - toMatch(json : JSONObject) : Match
   }
+}
+
+package "Common (Java Library)" as PM {
   class Player <<entity>> {
     - id : int
     - displayName : String
@@ -63,9 +60,6 @@ package "Client (Android)" as PC {
   }
 }
 
-package "Bên thứ ba" as PT {
-}
-
 package "Server (Spring Boot)" as PS {
   class MatchRestController <<boundary>> {
     + getHistory(playerId : int) : List<Match>
@@ -77,31 +71,11 @@ package "Server (Spring Boot)" as PS {
     # conn : Connection
     + DAO()
   }
-  class "Player" as SPlayer <<entity>> {
-    - id : int
-    - displayName : String
-  }
-  class "Match" as SMatch <<entity>> {
-    - id : int
-    - endedAt : Date
-    - players : List<MatchPlayer>
-    + getResult(playerId : int) : String
-    + getPoints(playerId : int) : double
-  }
-  class "MatchPlayer" as SMatchPlayer <<entity>> {
-    - id : int
-    - correctCount : int
-    - forfeited : boolean
-    - player : Player
-  }
 }
 
-OnlineActivity -- xmlOnline
-OnlineActivity -- HistoryActivity
 HistoryActivity -- xmlHistory
 HistoryActivity -- PieChartView
 HistoryActivity -- MatchHistoryAdapter
-HistoryActivity -- MatchDetailActivity
 HistoryActivity -- SessionDAO
 HistoryActivity -- MatchApiDAO
 HistoryActivity o-- "1" Player
@@ -117,13 +91,11 @@ MatchPlayer "n" o-- "1" Player
 
 MatchRestController -- MatchDAO
 MatchDAO --|> SDAO
-MatchDAO -- SMatch
-SMatch "1" o-- "2" SMatchPlayer
-SMatchPlayer "n" o-- "1" SPlayer
+MatchDAO -- Match
 
 MatchApiDAO -- MatchRestController : HTTP/JSON
 
-' Client trên, Bên thứ ba giữa, Server dưới
-PC -[hidden]down- PT
-PT -[hidden]down- PS
+' Client trên, Common giữa, Server dưới
+PC -[hidden]down- PM
+PM -[hidden]down- PS
 @enduml

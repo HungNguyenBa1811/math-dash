@@ -28,9 +28,9 @@
 20. Lớp Player trả đối tượng Player cho PlayerApiDAO.
 21. PlayerApiDAO trả đối tượng Player cho hàm goOnline().
 22. Trong hàm runOnUiThread(), hàm goOnline() của OnlineActivity gọi hàm goOnline() của PresenceFirebaseDAO để ghi người chơi vào danh sách online với trạng thái rỗi.
-23. Khi danh sách online thay đổi, hàm onDataChange() của PresenceFirebaseDAO gọi hàm toPlayer() cho từng người chơi.
-24. Hàm toPlayer() gọi lớp Player để đóng gói người chơi kèm tổng điểm và trạng thái.
-25. Lớp Player trả đối tượng Player cho hàm toPlayer().
+23. Khi danh sách online thay đổi, Firebase gọi hàm onDataChange() của PresenceFirebaseDAO.
+24. Hàm onDataChange() gọi lớp Player để đóng gói từng người chơi kèm tổng điểm và trạng thái.
+25. Lớp Player trả đối tượng Player cho hàm onDataChange().
 26. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 7, chính là OnlineActivity, truyền danh sách người chơi online.
 27. Hàm onPlayersChanged() hiển thị tổng điểm của chính người chơi, rồi gọi hàm setPlayers() của PlayerAdapter với danh sách những người còn lại, xếp theo tổng điểm giảm dần.
 28. PlayerAdapter hiển thị danh sách người chơi online gồm tên, tổng điểm, trạng thái.
@@ -119,9 +119,9 @@
 1. Hàm onCreate() của MatchActivity gọi hàm getPlayer() của SessionDAO.
 2. Hàm getPlayer() đóng gói và trả đối tượng Player cho hàm onCreate().
 3. Hàm onCreate() gọi hàm watchMatch() của MatchFirebaseDAO với mã trận, truyền chính MatchActivity làm MatchCallback.
-4. Hàm onDataChange() của MatchFirebaseDAO gọi hàm toMatch() của chính nó.
-5. Hàm toMatch() gọi lớp Match để đóng gói trận, kèm 10 câu hỏi và 2 người chơi trong trận.
-6. Lớp Match trả đối tượng Match cho hàm toMatch().
+4. Khi node trận thay đổi, Firebase gọi hàm onDataChange() của MatchFirebaseDAO.
+5. Hàm onDataChange() gọi lớp Match để đóng gói trận, kèm 10 câu hỏi và 2 người chơi trong trận.
+6. Lớp Match trả đối tượng Match cho hàm onDataChange().
 7. MatchFirebaseDAO gọi hàm onSuccess() của MatchCallback đã đăng ký ở bước 3, chính là MatchActivity.
 8. Lần đầu nhận trận có đề, hàm onSuccess() gọi hàm startMatch() của chính nó; hàm startMatch() lưu id đối thủ vào opponentId và lưu 10 câu hỏi của trận vào questions.
 9. Hàm startMatch() gọi lớp Answer để tạo bài làm rỗng, chưa chọn phương án, cho từng câu.
@@ -194,9 +194,9 @@ Các bước 42–46 lặp lại cho đến câu thứ 10.
 70. Hàm getTotalPoints() trả tổng điểm mới cho hàm endMatch().
 71. Hàm endMatch() gọi hàm updatePoints() của FirebaseAdminDAO để cập nhật tổng điểm trong danh sách online.
 72. Hàm submit() gọi hàm writeFinished() của FirebaseAdminDAO để báo trận đã kết thúc cho cả 2 máy.
-73. Hàm onDataChange() của MatchFirebaseDAO gọi hàm toMatch().
-74. Hàm toMatch() gọi lớp Match để đóng gói trận mới nhất.
-75. Lớp Match trả đối tượng Match cho hàm toMatch().
+73. Khi node trận thay đổi, Firebase gọi hàm onDataChange() của MatchFirebaseDAO.
+74. Hàm onDataChange() gọi lớp Match để đóng gói trận mới nhất.
+75. Lớp Match trả đối tượng Match cho hàm onDataChange().
 76. MatchFirebaseDAO gọi hàm onSuccess() của MatchCallback, chính là MatchActivity.
 77. Hàm onSuccess() thấy trận đã kết thúc, gọi hàm loadResult() của chính nó.
 78. Hàm loadResult() mở một Thread và gọi hàm getById() của MatchApiDAO để lấy trận đầy đủ, có đáp án và kết quả chấm.
