@@ -4,12 +4,11 @@ title Tuần tự thiết kế – Xem lịch sử đấu, đoạn B: Xem bảng
 
 actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
-boundary OnlineActivity as OA
-boundary HistoryActivity as HA
-boundary TabLayout as TL
-control SessionDAO as SD
-control PlayerApiDAO as PAD
-entity Player as P
+boundary "OnlineActivity" as OA
+boundary "HistoryActivity" as HA
+control "SessionDAO" as SD
+control "PlayerApiDAO" as PAD
+entity "Player" as P
 end box
 box "Server (Spring Boot)" #FFFFFF
 boundary "PlayerRestController" as PRC
@@ -20,40 +19,35 @@ entity "Match" as SM
 end box
 
 U -> OA : nhấn biểu tượng Bảng xếp hạng
-OA -> HA : onClick(): startActivity() kèm EXTRA_TAB
-HA -> SD : onCreate(): getPlayer()
-SD --> HA : Player
-HA -> HA : loadHistory()
-HA -> TL : selectTab()
-TL -> HA : onTabSelected()
+OA -> HA : onClick()
+HA -> SD : getPlayer()
+SD -> P : call
+P -> P : Player()
+P --> SD : return
+SD --> HA : return
+HA -> HA : onTabSelected()
 HA -> HA : loadRanking()
 HA -> PAD : getRanking() {Thread}
 PAD -> PRC : GET /api/players/ranking → getRanking()
 PRC -> PD : getRanking()
 PD -> PD : findAllPlayers()
-PD -> SP : đóng gói Player
-SP --> PD : Player
+PD -> SP : call
+SP -> SP : Player()
+SP --> PD : return
 PD -> MD : findFinished()
-MD -> SM : đóng gói Match
-SM --> MD : Match
-MD --> PD : List<Match>
+MD -> SM : call
+SM -> SM : Match()
+SM --> MD : return
+MD --> PD : return
 PD -> PD : rank()
-PD -> PD : addMatch()
-PD -> SM : getPoints()
-SM --> PD : điểm trận
-PD -> SM : getFinishTime()
-SM --> PD : thời gian làm bài
-PD -> SM : getResult()
-SM --> PD : kết quả trận
-PD -> PD : averagePoints(), averageSeconds(), sắp xếp
-PD --> PRC : List<Player>
-PRC --> PAD : List<Player> (JSON)
-PAD -> P : toPlayer(): đóng gói Player
-P --> PAD : Player
-PAD --> HA : List<Player>
-HA -> HA : runOnUiThread(): gắn bảng xếp hạng vào rvRanking
-HA --> U : hiển thị bảng xếp hạng
+PD --> PRC : return
+PRC --> PAD : return
+PAD -> P : call
+P -> P : Player()
+P --> PAD : return
+PAD --> HA : return
+HA --> U : display
 U -> HA : nhấn Back
 HA -> OA : finish()
-OA --> U : hiển thị lại màn Chơi online
+OA --> U : display
 @enduml

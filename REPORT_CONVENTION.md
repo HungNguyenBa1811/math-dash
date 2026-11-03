@@ -414,3 +414,9 @@ Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28
 2. Đối chiếu tên lớp, hàm, API trong tài liệu với code trên `main`.
 3. Hoàng đọc lại.
 4. Báo cáo cuối viết trên file online riêng, xuất một lần ra `docs/BaoCao_Hung.docx`. Hình trong báo cáo đánh số lại từ 1, khác số hình trong `docs/`.
+
+**Biểu đồ tuần tự thiết kế (cách vẽ gọn):**
+- View chỉ gọi Activity, DAO và lớp control; không gọi hàm nghiệp vụ của entity. Entity chỉ xuất hiện khi DAO đóng gói: DAO → entity `call`, entity tự gọi hàm khởi tạo (`Player()`) hoặc setter khi đóng gói yêu cầu, entity → DAO `return`.
+- Mọi mũi tên trả về giữa các lớp ghi `return`; Activity → người chơi ghi `display`. Trước mỗi thao tác của người chơi và ở cuối biểu đồ phải có bước `display`.
+- Nhãn của Activity chỉ ghi hàm đầu (`onClick()`), lời gọi sang DAO ghi hàm của DAO; không ghi tên biến giao diện. Lời đăng ký theo dõi (`watch...`) vẽ bất đồng bộ.
+- Chức năng đối kháng 1v1 vẽ 2 actor ở 2 bên, các lớp của mỗi máy ghi `(A)`, `(B)`.

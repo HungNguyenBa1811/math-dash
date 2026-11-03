@@ -1,5 +1,17 @@
 # Changelog
 
+## Bản 14 (03/11/2026)
+
+### Tài liệu
+- Dựng lại 6 biểu đồ tuần tự thiết kế (VP và puml) và kịch bản v3 theo cách vẽ gọn:
+  - View chỉ gọi Activity, DAO; không gọi hàm nghiệp vụ của entity. DAO trả đối tượng về, Activity xử lý trong mã nguồn.
+  - DAO gọi entity bằng `call`, entity tự gọi hàm khởi tạo (`Player()`, `Match()`...) hoặc setter khi đóng gói yêu cầu, rồi `return`.
+  - Mọi mũi tên trả về giữa các lớp ghi `return`; Activity trả giao diện cho người chơi ghi `display`, và có bước display trước mỗi thao tác của người chơi và ở cuối biểu đồ.
+  - Nhãn Activity bỏ chi tiết phía sau (`onClick()`), bỏ tên biến giao diện; TabLayout gộp vào HistoryActivity.
+  - Lời đăng ký theo dõi Firebase (`watch...`) vẽ bất đồng bộ; v3 giải thích vì sao không có thông điệp trả về và cách xử lý nhiều người thao tác cùng lúc.
+- Đoạn C (Thi đấu) vẽ 2 người chơi: A bên trái, B bên phải, các lớp ghi (A), (B); A nộp trước, B nộp sau, server kết thúc trận và cả 2 máy nhận kết quả.
+- Số thông điệp: Chơi online A 49, B 39, C 102, D 35; Xem lịch sử đấu A 49, B 32.
+
 ## Bản 13 (03/11/2026)
 
 ### Code
