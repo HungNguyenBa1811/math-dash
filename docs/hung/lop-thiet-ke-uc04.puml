@@ -3,10 +3,13 @@
 title Biểu đồ lớp chi tiết – Module Xem lịch sử đấu
 
 package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
   class HistoryActivity <<boundary>> {
-    - me : Player
     - matches : List<Match>
-    + onCreate(savedInstanceState : Bundle) : void
     - loadHistory() : void
     - showSummary(matches : List<Match>) : void
     + onTabSelected(tab : Tab) : void
@@ -14,47 +17,13 @@ package "Client (Android)" as PC {
     + onMatchClick(match : Match) : void
     - showError(messageRes : int) : void
   }
-  class PieChartView <<boundary>> {
-    + setData(wins : int, draws : int, losses : int) : void
-  }
-  class MatchHistoryAdapter <<boundary>> {
-    - listMatch : List<Match>
-    - myId : int
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : MatchHistoryViewHolder
-    + onBindViewHolder(holder : MatchHistoryViewHolder, position : int) : void
-    + getItemCount() : int
-  }
-  class MatchHistoryViewHolder <<boundary>>
-  class RankingAdapter <<boundary>> {
-    - listPlayer : List<Player>
-    - myId : int
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : RankingViewHolder
-    + onBindViewHolder(holder : RankingViewHolder, position : int) : void
-    + getItemCount() : int
-  }
-  class RankingViewHolder <<boundary>>
   class MatchDetailActivity <<boundary>> {
-    - me : Player
     - match : Match
     - matchId : int
-    + onCreate(savedInstanceState : Bundle) : void
     - loadMatch() : void
   }
-  class ProblemAdapter <<boundary>> {
-    - listProblem : List<MathProblem>
-    - myAnswers : List<Answer>
-    - opponentAnswers : List<Answer>
-    + ProblemAdapter(problems : List<MathProblem>, myAnswers : List<Answer>, opponentAnswers : List<Answer>)
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ProblemViewHolder
-    + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
-    + getItemCount() : int
-  }
-  class ProblemViewHolder <<boundary>>
   class "activity_history.xml" as xmlHistory
-  class "item_match_history.xml" as xmlItemMatch
-  class "item_ranking.xml" as xmlItemRanking
   class "activity_match_detail.xml" as xmlDetail
-  class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
     + SessionDAO(context : Context)
@@ -94,6 +63,7 @@ package "Common (Java Library)" as PM {
     + getFinishTime(playerId : int) : long
     + getResult(playerId : int) : String
     + getPoints(playerId : int) : double
+    + {static} judge(myCorrect : int, myTime : long, otherCorrect : int, otherTime : long) : String
   }
   class MatchPlayer <<entity>> {
     - id : int
@@ -156,32 +126,19 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
+HistoryActivity o-- "n" Player
+HistoryActivity --|> BaseActivity
+MatchDetailActivity --|> BaseActivity
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
 HistoryActivity -- xmlHistory
-HistoryActivity -- PieChartView
-HistoryActivity -- MatchHistoryAdapter
-HistoryActivity -- RankingAdapter
 HistoryActivity -- MatchDetailActivity
-HistoryActivity -- SessionDAO
 HistoryActivity -- MatchApiDAO
 HistoryActivity -- PlayerApiDAO
-HistoryActivity o-- "1" Player
 HistoryActivity o-- "n" Match
-MatchHistoryAdapter -- MatchHistoryViewHolder
-MatchHistoryViewHolder -- xmlItemMatch
-MatchHistoryAdapter o-- "n" Match
-RankingAdapter -- RankingViewHolder
-RankingViewHolder -- xmlItemRanking
-RankingAdapter o-- "n" Player
 MatchDetailActivity -- xmlDetail
-MatchDetailActivity -- ProblemAdapter
-MatchDetailActivity -- SessionDAO
 MatchDetailActivity -- MatchApiDAO
-MatchDetailActivity o-- "1" Player
 MatchDetailActivity o-- "1" Match
-ProblemAdapter -- ProblemViewHolder
-ProblemViewHolder -- xmlItemProblem
-ProblemAdapter o-- "10" MathProblem
-ProblemAdapter o-- "n" Answer
 MatchApiDAO --|> ApiDAO
 PlayerApiDAO --|> ApiDAO
 SessionDAO -- Player

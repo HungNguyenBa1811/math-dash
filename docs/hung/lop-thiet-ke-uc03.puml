@@ -8,25 +8,18 @@ package "Client (Android)" as PC {
     # onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
-  abstract class BaseAdapter <<boundary>> {
-    # items : List<T>
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
-    + getItemCount() : int
-  }
   class OnlineActivity <<boundary>> {
     - sentChallenge : Challenge
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
+    # onDestroy() : void
     - goOnline() : void
+    - showChallengeDialog(challenge : Challenge) : void
     - acceptChallenge(challenge : Challenge) : void
     - closeSentChallenge() : void
     - openMatch(matchId : int) : void
   }
-  class PlayerAdapter <<boundary>> {
-    + setPlayers(players : List<Player>) : void
-  }
-  class PlayerViewHolder <<boundary>>
   class MatchActivity <<boundary>> {
     - matchId : int
     - questions : List<MathProblem>
@@ -37,12 +30,14 @@ package "Client (Android)" as PC {
     - startMatch(match : Match) : void
     - chooseOption(index : int) : void
     - submitAnswers() : void
+    + onFinish() : void
     - loadResult() : void
     - sendChoice(choice : boolean) : void
     - openNextMatch(nextMatchId : int) : void
+    - leaveMatch() : void
+    - forfeit(playerId : int) : void
   }
   class "activity_online.xml" as xmlOnline
-  class "item_player.xml" as xmlItemPlayer
   class "activity_match.xml" as xmlMatch
 
   interface PlayerListCallback {
@@ -135,6 +130,7 @@ package "Common (Java Library)" as PM {
     + getFinishTime(playerId : int) : long
     + getResult(playerId : int) : String
     + getPoints(playerId : int) : double
+    + {static} judge(myCorrect : int, myTime : long, otherCorrect : int, otherTime : long) : String
   }
   class MatchPlayer <<entity>> {
     - id : int
@@ -171,6 +167,7 @@ package "Server (Spring Boot)" as PS {
     - waitingChoices : Map<Integer, Integer>
     + create(challenge : Challenge) : Match
     + submit(id : int, matchPlayer : MatchPlayer) : Match
+    + forfeit(id : int, playerId : int) : Match
     + continueMatch(id : int, playerId : int, choice : boolean) : Match
     + getById(id : int) : Match
     - startMatch(p1 : Player, p2 : Player) : Match
@@ -193,6 +190,7 @@ package "Server (Spring Boot)" as PS {
     + insert(match : Match) : boolean
     + findById(id : int) : Match
     + updateSubmission(matchId : int, mp : MatchPlayer) : boolean
+    + updateForfeit(matchId : int, playerId : int) : boolean
     + updateEndedAt(matchId : int, endedAt : Date) : boolean
     - updateMatchPlayer(matchId : int, mp : MatchPlayer) : boolean
     - insertAnswer(answer : Answer, matchPlayerId : int) : void
@@ -200,6 +198,7 @@ package "Server (Spring Boot)" as PS {
   class ProblemDAO <<control>> {
     + ProblemDAO()
     + generateProblems(count : int) : List<MathProblem>
+    + generateProblem() : MathProblem
   }
   class FirebaseAdminDAO <<control>> {
     + FirebaseAdminDAO()
@@ -210,24 +209,22 @@ package "Server (Spring Boot)" as PS {
     + updateChallenge(challengeId : String, status : String, matchId : int) : void
     + writeMatch(match : Match) : void
     + writeSubmitted(matchId : int, playerId : int) : void
+    + writeForfeited(matchId : int, playerId : int) : void
     + writeFinished(matchId : int) : void
     + writeChoice(matchId : int, playerId : int, choice : boolean) : void
     + writeNextMatch(matchId : int, nextMatchId : int) : void
+    + writeStopped(matchId : int, playerId : int) : void
   }
 }
 
+OnlineActivity o-- "n" Player
 OnlineActivity --|> BaseActivity
 MatchActivity --|> BaseActivity
-PlayerAdapter --|> BaseAdapter
 BaseActivity o-- "1" Player
 BaseActivity -- SessionDAO
 OnlineActivity -r- MatchActivity
-OnlineActivity -- PlayerAdapter
-PlayerAdapter -- PlayerViewHolder
 OnlineActivity -- xmlOnline
-PlayerViewHolder -- xmlItemPlayer
 MatchActivity -- xmlMatch
-PlayerAdapter o-- "n" Player
 MatchActivity o-- "10" MathProblem
 MatchActivity o-- "10" Answer
 OnlineActivity ..|> PlayerListCallback
@@ -278,18 +275,12 @@ MatchApiDAO -- MatchRestController : HTTP/JSON
 
 ' Bố cục dọc: Client trên, Common giữa, Server dưới
 OnlineActivity -[hidden]down- xmlOnline
-MatchActivity -[hidden]down- PlayerAdapter
 MatchActivity -[hidden]down- xmlMatch
 xmlOnline -[hidden]down- PlayerListCallback
-PlayerAdapter -[hidden]down- ChallengeCallback
 xmlMatch -[hidden]down- MatchCallback
-xmlMatch -[hidden]down- xmlItemPlayer
-PlayerViewHolder -[hidden]down- SessionDAO
 PlayerListCallback -[hidden]down- PresenceFirebaseDAO
 ChallengeCallback -[hidden]down- ChallengeFirebaseDAO
 MatchCallback -[hidden]down- MatchFirebaseDAO
-xmlItemPlayer -[hidden]down- PlayerApiDAO
-xmlItemPlayer -[hidden]down- MatchApiDAO
 SessionDAO -[hidden]down- FirebaseDAO
 PresenceFirebaseDAO -[hidden]down- ApiDAO
 Challenge -[hidden]down- MatchPlayer

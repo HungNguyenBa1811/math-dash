@@ -3,22 +3,16 @@
 title Biểu đồ lớp chi tiết – Xem bảng xếp hạng
 
 package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
   class HistoryActivity <<boundary>> {
-    - me : Player
-    + onCreate(savedInstanceState : Bundle) : void
     + onTabSelected(tab : Tab) : void
     - loadRanking() : void
   }
-  class RankingAdapter <<boundary>> {
-    - listPlayer : List<Player>
-    - myId : int
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : RankingViewHolder
-    + onBindViewHolder(holder : RankingViewHolder, position : int) : void
-    + getItemCount() : int
-  }
-  class RankingViewHolder <<boundary>>
   class "activity_history.xml" as xmlHistory
-  class "item_ranking.xml" as xmlItemRanking
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
     + SessionDAO(context : Context)
@@ -63,14 +57,12 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
+HistoryActivity o-- "n" Player
+HistoryActivity --|> BaseActivity
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
 HistoryActivity -- xmlHistory
-HistoryActivity -- RankingAdapter
-HistoryActivity -- SessionDAO
 HistoryActivity -- PlayerApiDAO
-HistoryActivity o-- "1" Player
-RankingAdapter -- RankingViewHolder
-RankingViewHolder -- xmlItemRanking
-RankingAdapter o-- "n" Player
 PlayerApiDAO --|> ApiDAO
 SessionDAO -- Player
 PlayerApiDAO -- Player

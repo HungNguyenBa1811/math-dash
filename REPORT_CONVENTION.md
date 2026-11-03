@@ -255,7 +255,7 @@ Vẽ thành cây như `ISSUES_PLAN.md` mục 2.4.
 
 | Loại | Lớp trong Math Dash |
 |---|---|
-| Boundary | App: `XxxActivity`, Adapter. Server: `XxxRestController` |
+| Boundary | App: `XxxActivity`. Server: `XxxRestController` |
 | Control | App: DAO (`XxxDAO`, `XxxApiDAO`, `XxxFirebaseDAO`, `ProblemDAO`, `SessionDAO`). Server: DAO |
 | Entity | Lớp ở D1, nằm trong thư viện dùng chung `common` (`mathdash-common.jar`) mà app và server cùng nhập |
 
@@ -263,7 +263,7 @@ App **không có lớp Controller riêng**: Activity xử lý sự kiện, đi�
 
 **Biểu đồ theo use case:** ngoài biểu đồ cấp module, mỗi use case con có một biểu đồ lớp chi tiết riêng, chỉ gồm các lớp và phương thức use case đó dùng. Lớp chỉ làm điểm vào hoặc đích chuyển màn (ví dụ MatchActivity ở Thách đấu) không vẽ.
 
-**Lớp cha dùng chung:** các Activity kế thừa `BaseActivity` (giữ `me : Player`, `onCreate`, `onClick`, nối `SessionDAO`); các Adapter kế thừa `BaseAdapter` (giữ `items : List<T>`, `onCreateViewHolder`, `getItemCount`). Kết tập `Player --<> BaseActivity` và liên kết `BaseActivity -- SessionDAO` chỉ vẽ một lần ở lớp cha.
+**Lớp cha dùng chung:** các Activity kế thừa `BaseActivity` (giữ `me : Player`, `onCreate`, `onClick`, nối `SessionDAO`). Kết tập `Player --<> BaseActivity` và liên kết `BaseActivity -- SessionDAO` chỉ vẽ một lần ở lớp cha.
 
 **3 package trên biểu đồ:** "Client (Android)", "Common (Java Library)", "Server (Spring Boot)". Thực thể chỉ vẽ một lần trong Common; DAO của app và DAO của server cùng nối vào đó. Đường `HTTP/JSON` nối `XxxApiDAO` với `XxxRestController`. Bản Visual Paradigm xếp ngang: Client trái, Common giữa, Server phải, nét đứt phân cách và nhãn từng vùng. Không vẽ Firebase hay MySQL thành lớp: chúng chỉ là kiểu thuộc tính (`DatabaseReference`, `Connection`) trong DAO cha.
 
@@ -277,7 +277,8 @@ App **không có lớp Controller riêng**: Activity xử lý sự kiện, đi�
 **Tên lớp giao diện:** theo chuẩn Android, tên kết thúc bằng `Activity` (`MainActivity`, `MatchActivity`), layout tương ứng `activity_main.xml`, `activity_match.xml`; đặt trong package `view`. **Không dùng tiền tố `Frm`**: đó là quy ước của Java Swing (`JFrame`), Android không có form. Hậu tố `Activity` đã đủ cho biết lớp là boundary.
 
 **Quan hệ của lớp giao diện (phần app):**
-- Boundary nối boundary bằng **liên kết (association)**: Activity – Activity, Activity – Adapter, Adapter – ViewHolder.
+- Boundary nối boundary bằng **liên kết (association)**: Activity – Activity.
+- Không vẽ Adapter, ViewHolder và layout item_*.xml: danh sách là phần của Activity, Adapter là lớp nội bộ trong file Activity.
 - Boundary – control (Activity – DAO), control – control và control – entity cũng nối bằng **liên kết**, không vẽ mũi tên phụ thuộc. Chỉ giữ ký hiệu riêng cho kế thừa, thực thi interface, kết tập và hợp thành.
 - **Mỗi Activity nối với một lớp layout** đặt tên đúng tên file, ví dụ `activity_main.xml`. Lớp này để **rỗng**.
 - Activity **giữ thực thể làm thuộc tính** (ví dụ `me : Player`) thì nối bằng **kết tập (aggregation)**, hình thoi ở phía Activity: `Player --<> MatchActivity`. Cách đọc giống `KhachHang --<> HoaDon`: hóa đơn chứa thông tin khách hàng nên hình thoi ở phía hóa đơn.

@@ -10,7 +10,6 @@ import java.util.List;
 
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
 
-// Blocking calls, must run on a background Thread
 public class PlayerApiDAO extends ApiDAO {
 
     public void register(String username, String password, String displayName) throws IOException, JSONException {
@@ -32,7 +31,6 @@ public class PlayerApiDAO extends ApiDAO {
         return toPlayer(new JSONObject(request("GET", "/players/" + id, null)));
     }
 
-    // Already sorted by the server: total points, then average opponent points, then average win time
     public List<Player> getRanking() throws IOException, JSONException {
         JSONArray array = new JSONArray(request("GET", "/players/ranking", null));
         List<Player> list = new ArrayList<>();

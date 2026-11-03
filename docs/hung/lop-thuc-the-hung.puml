@@ -62,6 +62,7 @@ class Match {
   + getFinishTime(playerId : int) : long
   + getResult(playerId : int) : String
   + getPoints(playerId : int) : double
+  + {static} judge(myCorrect : int, myTime : long, otherCorrect : int, otherTime : long) : String
   + getOpponent(playerId : int) : MatchPlayer
 }
 class MatchPlayer {

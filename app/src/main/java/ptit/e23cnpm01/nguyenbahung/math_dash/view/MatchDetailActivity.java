@@ -1,9 +1,14 @@
 package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,14 +16,17 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import ptit.e23cnpm01.nguyenbahung.math_dash.R;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchApiDAO;
+import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Answer;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MatchPlayer;
-import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
-import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
+import ptit.e23cnpm01.nguyenbahung.mathdash.entity.MathProblem;
 
 public class MatchDetailActivity extends BaseActivity {
     private Match match;
@@ -117,5 +125,77 @@ public class MatchDetailActivity extends BaseActivity {
         String seconds = time == Long.MAX_VALUE ? getString(R.string.label_no_time)
                 : getString(R.string.label_seconds, PointFormat.formatSeconds(time / 1000.0));
         return getString(R.string.detail_stats, mp.getCorrectCount(), seconds);
+    }
+
+    // One row per question
+    private static class ProblemAdapter extends RecyclerView.Adapter<ProblemViewHolder> {
+        private List<MathProblem> items = new ArrayList<>();
+        private List<Answer> myAnswers;
+        private List<Answer> opponentAnswers;
+
+        public ProblemAdapter(List<MathProblem> problems, List<Answer> myAnswers, List<Answer> opponentAnswers) {
+            this.items = problems;
+            this.myAnswers = myAnswers;
+            this.opponentAnswers = opponentAnswers;
+        }
+
+        @NonNull
+        @Override
+        public ProblemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_problem, parent, false);
+            return new ProblemViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ProblemViewHolder holder, int position) {
+            MathProblem p = items.get(position);
+            holder.txtIndex.setText(String.valueOf(position + 1));
+            holder.txtExpression.setText(p.getExpression().replace("?", String.valueOf(p.getCorrectAnswer())));
+            Answer mine = answerAt(myAnswers, position);
+            Answer opponent = answerAt(opponentAnswers, position);
+            showAnswer(holder.txtMyAnswer, mine);
+            showAnswer(holder.txtOpponentAnswer, opponent);
+        }
+
+        // A forfeit before submitting has no answers
+        private Answer answerAt(List<Answer> answers, int position) {
+            return position < answers.size() ? answers.get(position) : null;
+        }
+
+        // Green "✓ 19" or red "✗ 18", with the time taken below
+        private void showAnswer(TextView view, Answer answer) {
+            Context context = view.getContext();
+            if (answer == null || !answer.isAnswered()) {
+                view.setText(answer == null ? R.string.label_no_time : R.string.answer_blank);
+                view.setTextColor(context.getColor(R.color.ink_dim));
+                return;
+            }
+            int text = answer.isCorrect() ? R.string.answer_correct : R.string.answer_wrong;
+            int color = answer.isCorrect() ? R.color.win : R.color.lose;
+            String seconds = context.getString(R.string.label_seconds_short,
+                    PointFormat.formatSeconds(answer.getAnswerTime() / 1000.0));
+            view.setText(context.getString(text, answer.getSelectedOption()) + "\n" + seconds);
+            view.setTextColor(context.getColor(color));
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+    }
+
+    private static class ProblemViewHolder extends RecyclerView.ViewHolder {
+        TextView txtIndex;
+        TextView txtExpression;
+        TextView txtMyAnswer;
+        TextView txtOpponentAnswer;
+
+        public ProblemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtIndex = itemView.findViewById(R.id.txtIndex);
+            txtExpression = itemView.findViewById(R.id.txtExpression);
+            txtMyAnswer = itemView.findViewById(R.id.txtMyAnswer);
+            txtOpponentAnswer = itemView.findViewById(R.id.txtOpponentAnswer);
+        }
     }
 }

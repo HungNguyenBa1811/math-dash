@@ -3,25 +3,17 @@
 title Biểu đồ lớp chi tiết – Xem chi tiết trận
 
 package "Client (Android)" as PC {
+  abstract class BaseActivity <<boundary>> {
+    # me : Player
+    # onCreate(savedInstanceState : Bundle) : void
+    + onClick(v : View) : void
+  }
   class MatchDetailActivity <<boundary>> {
-    - me : Player
     - match : Match
     - matchId : int
-    + onCreate(savedInstanceState : Bundle) : void
     - loadMatch() : void
   }
-  class ProblemAdapter <<boundary>> {
-    - listProblem : List<MathProblem>
-    - myAnswers : List<Answer>
-    - opponentAnswers : List<Answer>
-    + ProblemAdapter(problems : List<MathProblem>, myAnswers : List<Answer>, opponentAnswers : List<Answer>)
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ProblemViewHolder
-    + onBindViewHolder(holder : ProblemViewHolder, position : int) : void
-    + getItemCount() : int
-  }
-  class ProblemViewHolder <<boundary>>
   class "activity_match_detail.xml" as xmlDetail
-  class "item_problem.xml" as xmlItemProblem
   class SessionDAO <<control>> {
     - prefs : SharedPreferences
     + SessionDAO(context : Context)
@@ -52,6 +44,7 @@ package "Common (Java Library)" as PM {
     + getFinishTime(playerId : int) : long
     + getResult(playerId : int) : String
     + getPoints(playerId : int) : double
+    + {static} judge(myCorrect : int, myTime : long, otherCorrect : int, otherTime : long) : String
   }
   class MatchPlayer <<entity>> {
     - id : int
@@ -97,16 +90,12 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
+MatchDetailActivity --|> BaseActivity
+BaseActivity o-- "1" Player
+BaseActivity -- SessionDAO
 MatchDetailActivity -- xmlDetail
-MatchDetailActivity -- ProblemAdapter
-MatchDetailActivity -- SessionDAO
 MatchDetailActivity -- MatchApiDAO
-MatchDetailActivity o-- "1" Player
 MatchDetailActivity o-- "1" Match
-ProblemAdapter -- ProblemViewHolder
-ProblemViewHolder -- xmlItemProblem
-ProblemAdapter o-- "10" MathProblem
-ProblemAdapter o-- "n" Answer
 MatchApiDAO --|> ApiDAO
 SessionDAO -- Player
 MatchApiDAO -- Match

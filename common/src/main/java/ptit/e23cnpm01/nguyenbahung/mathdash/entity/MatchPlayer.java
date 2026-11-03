@@ -6,7 +6,7 @@ import java.util.List;
 
 public class MatchPlayer {
     private int id;
-    // Câu thứ i của bài làm ứng với câu thứ i của đề
+    // Answer i belongs to problem i
     private List<Answer> answers = new ArrayList<>();
     private int correctCount;
     private Date submittedAt;

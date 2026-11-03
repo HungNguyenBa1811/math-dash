@@ -2,16 +2,16 @@ package ptit.e23cnpm01.nguyenbahung.mathdash.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-// Bài làm một câu của một người chơi trong trận
+// One player's answer to one question of a match
 public class Answer {
     public static final int NONE = -1;
 
     private int id;
-    // NONE là bỏ trống
+    // NONE means left blank
     private int selectedOption = NONE;
-    // Mili giây từ lúc câu hiện ra tới lúc chọn
+    // Milliseconds from showing the question to the pick
     private long answerTime;
-    // Không gửi qua JSON
+    // Not sent in JSON
     private MathProblem problem;
 
     public Answer() {

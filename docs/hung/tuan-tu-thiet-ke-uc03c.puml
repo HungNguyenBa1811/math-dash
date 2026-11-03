@@ -26,7 +26,7 @@ end box
 
 GA -> SD : onCreate(): getPlayer()
 SD --> GA : Player
-GA -> MFD : watchMatch()
+GA ->> MFD : watchMatch()
 MFD -> MFD : onDataChange()
 MFD -> M : đóng gói Match
 M --> MFD : Match
@@ -42,7 +42,7 @@ Q --> GA : 4 phương án
 GA -> GA : optionText()
 GA -> T : createTimer()
 GA -> T : start()
-GA -> PFD : watchOnlinePlayers()
+GA ->> PFD : watchOnlinePlayers()
 GA --> U : hiển thị ô thời gian, trạng thái đối thủ, nút Thoát
 PFD -> GA : onDataChange(): onPlayersChanged() {PlayerListCallback}
 T -> GA : onTick()
