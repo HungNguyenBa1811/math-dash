@@ -81,7 +81,7 @@ Hệ thống lưu dữ liệu ở 3 nơi:
   - correctCount suy ra được bằng cách đếm các dòng tblAnswer đúng của người chơi trong trận. Tuy vậy, kết quả trận, lịch sử đấu, tổng điểm và bảng xếp hạng đều đọc correctCount của mọi trận đã xong mà không cần đề và bài làm; giữ cột này thì không phải đọc và chấm lại 20 dòng tblAnswer cho mỗi trận.
 - Chỉ endedAt và submittedAt được rỗng (trận đang đấu, người chưa nộp). tblAnswer.selectedOption có mặc định −1 (bỏ trống), tblAnswer.answerTime có mặc định 0. Mật khẩu chỉ lưu dạng băm BCrypt.
 
-![Hình 1](csdl-mysql-vp.png)
+![Hình 1](img/design/csdl-mysql-vp.png)
 
 *Hình 1: Biểu đồ thiết kế CSDL MySQL cho chức năng Chơi online, Xem lịch sử đấu.*
 
@@ -119,7 +119,7 @@ Hệ thống lưu dữ liệu ở 3 nơi:
 - **Giữ lại có chủ đích:** username, displayName trong tblPlayer của SQLite trùng với tblPlayer của MySQL. Đây là bản sao để chơi với máy khi mất mạng; bản sao được ghi đè mỗi lần đăng nhập nên luôn khớp bản chính.
 - Mọi cột đều không rỗng. finishTime và botFinishTime tính bằng mili giây.
 
-![Hình 2](csdl-sqlite-vp.png)
+![Hình 2](img/design/csdl-sqlite-vp.png)
 
 *Hình 2: Biểu đồ thiết kế CSDL SQLite trên client.*
 
@@ -238,7 +238,7 @@ Thuộc tính dẫn xuất được viết thành **phương thức nghiệp v�
 
 Player giữ thêm các giá trị dẫn xuất mà giao diện cần hiển thị cùng tên: totalPoints, avgOpponentPoints, avgWinTime do server tính; status lấy từ Firebase. Các giá trị này không có cột trong CSDL.
 
-![Hình 3](lop-thuc-the-hung-vp.png)
+![Hình 3](img/design/lop-thuc-the-hung-vp.png)
 
 *Hình 3: Biểu đồ lớp thực thể pha thiết kế cho Chơi online, Xem lịch sử đấu.*
 
@@ -328,7 +328,7 @@ Các lớp không có lớp cha:
 
 #### 4.1.1. Thiết kế giao diện
 
-![Hình 4](giao-dien-uc03.png)
+![Hình 4](img/design/giao-dien-uc03.png)
 
 *Hình 4: Thiết kế giao diện chức năng Chơi online.*
 
@@ -380,7 +380,7 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
 
 #### 4.1.2. Biểu đồ lớp chi tiết
 
-![Hình 5](lop-thiet-ke-uc03-vp.png)
+![Hình 5](img/design/lop-thiet-ke-uc03-vp.png)
 
 *Hình 5: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
@@ -439,7 +439,7 @@ Biểu đồ của module gồm mọi lớp của cả 2 use case con nên khá 
 
 ##### 4.1.2.1. Use case Thách đấu
 
-![Hình 6: Biểu đồ lớp chi tiết use case Thách đấu](lop-thiet-ke-thach-dau-vp.png)
+![Hình 6: Biểu đồ lớp chi tiết use case Thách đấu](img/design/lop-thiet-ke-thach-dau-vp.png)
 
 *Hình 6: Biểu đồ lớp chi tiết use case Thách đấu.*
 
@@ -447,7 +447,7 @@ Biểu đồ xoay quanh OnlineActivity: danh sách người chơi online và l�
 
 ##### 4.1.2.2. Use case Thi đấu
 
-![Hình 7: Biểu đồ lớp chi tiết use case Thi đấu](lop-thiet-ke-thi-dau-vp.png)
+![Hình 7: Biểu đồ lớp chi tiết use case Thi đấu](img/design/lop-thiet-ke-thi-dau-vp.png)
 
 *Hình 7: Biểu đồ lớp chi tiết use case Thi đấu.*
 
@@ -507,7 +507,7 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 48. Hàm onChallengeChanged() gọi hàm openMatch() mở MatchActivity với mã trận trong lời mời.
 49. MatchActivity hiển thị màn thi đấu cho người chơi; trận diễn ra ở đoạn C.
 
-![Hình 8](tuan-tu-thiet-ke-uc03a-vp.png)
+![Hình 8](img/design/tuan-tu-thiet-ke-uc03a-vp.png)
 
 *Hình 8: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
@@ -564,7 +564,7 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 38. Trong hàm runOnUiThread(), hàm acceptChallenge() gọi hàm openMatch() mở MatchActivity với mã trận.
 39. MatchActivity hiển thị màn thi đấu cho người chơi; trận diễn ra ở đoạn C.
 
-![Hình 9](tuan-tu-thiet-ke-uc03b-vp.png)
+![Hình 9](img/design/tuan-tu-thiet-ke-uc03b-vp.png)
 
 *Hình 9: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
@@ -679,7 +679,7 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 101. MatchApiDAO (B) trả đối tượng Match cho MatchActivity (B).
 102. MatchActivity (B) hiển thị kết quả trận và 2 nút Chơi tiếp, Dừng cho người chơi B.
 
-![Hình 10](tuan-tu-thiet-ke-uc03c-vp.png)
+![Hình 10](img/design/tuan-tu-thiet-ke-uc03c-vp.png)
 
 *Hình 10: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
 
@@ -728,7 +728,7 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 34. Hàm openNextMatch() gọi hàm startActivity() mở MatchActivity cho trận mới rồi đóng màn cũ.
 35. MatchActivity hiển thị màn thi đấu của trận mới; trận diễn ra như đoạn C.
 
-![Hình 11](tuan-tu-thiet-ke-uc03d-vp.png)
+![Hình 11](img/design/tuan-tu-thiet-ke-uc03d-vp.png)
 
 *Hình 11: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.*
 
@@ -741,7 +741,7 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 
 #### 4.2.1. Thiết kế giao diện
 
-![Hình 12](giao-dien-uc04.png)
+![Hình 12](img/design/giao-dien-uc04.png)
 
 *Hình 12: Thiết kế giao diện chức năng Xem lịch sử đấu.*
 
@@ -791,7 +791,7 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 
 #### 4.2.2. Biểu đồ lớp chi tiết
 
-![Hình 13](lop-thiet-ke-uc04-vp.png)
+![Hình 13](img/design/lop-thiet-ke-uc04-vp.png)
 
 *Hình 13: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
@@ -836,7 +836,7 @@ Mỗi biểu đồ dưới đây chỉ có các lớp và phương thức mà m�
 
 ##### 4.2.2.1. Use case Xem lịch sử đấu
 
-![Hình 14: Biểu đồ lớp chi tiết use case Xem lịch sử đấu](lop-thiet-ke-xem-lich-su-vp.png)
+![Hình 14: Biểu đồ lớp chi tiết use case Xem lịch sử đấu](img/design/lop-thiet-ke-xem-lich-su-vp.png)
 
 *Hình 14: Biểu đồ lớp chi tiết use case Xem lịch sử đấu.*
 
@@ -844,7 +844,7 @@ HistoryActivity lấy danh sách trận, đếm thắng, hòa, thua bằng showS
 
 ##### 4.2.2.2. Use case Xem chi tiết trận
 
-![Hình 15: Biểu đồ lớp chi tiết use case Xem chi tiết trận](lop-thiet-ke-xem-chi-tiet-tran-vp.png)
+![Hình 15: Biểu đồ lớp chi tiết use case Xem chi tiết trận](img/design/lop-thiet-ke-xem-chi-tiet-tran-vp.png)
 
 *Hình 15: Biểu đồ lớp chi tiết use case Xem chi tiết trận.*
 
@@ -852,7 +852,7 @@ MatchDetailActivity lấy trận bằng MatchApiDAO.getById rồi hiện 10 câu
 
 ##### 4.2.2.3. Use case Xem bảng xếp hạng
 
-![Hình 16: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng](lop-thiet-ke-xem-bang-xep-hang-vp.png)
+![Hình 16: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng](img/design/lop-thiet-ke-xem-bang-xep-hang-vp.png)
 
 *Hình 16: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng.*
 
@@ -912,7 +912,7 @@ HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking v
 48. MatchDetailActivity gọi hàm finish(), quay về HistoryActivity.
 49. HistoryActivity hiển thị lại danh sách trận.
 
-![Hình 17](tuan-tu-thiet-ke-uc04a-vp.png)
+![Hình 17](img/design/tuan-tu-thiet-ke-uc04a-vp.png)
 
 *Hình 17: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
@@ -957,7 +957,7 @@ HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking v
 31. HistoryActivity gọi hàm finish(), quay về OnlineActivity.
 32. OnlineActivity hiển thị lại màn Chơi online.
 
-![Hình 18](tuan-tu-thiet-ke-uc04b-vp.png)
+![Hình 18](img/design/tuan-tu-thiet-ke-uc04b-vp.png)
 
 *Hình 18: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 
@@ -974,7 +974,7 @@ HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking v
 
 #### A.1. Biểu đồ use case chi tiết module Đấu đối kháng
 
-![Hình 19](uc-chi-tiet-doi-khang.png)
+![Hình 19](img/analysis/uc-chi-tiet-doi-khang.png)
 
 *Hình 19: Biểu đồ use case chi tiết module Đấu đối kháng.*
 
@@ -1042,7 +1042,7 @@ HUNG nhấn Nộp bài ở giây 38,2, HOANG ở giây 45,6, tính từ lúc tr�
 
 #### A.3. Biểu đồ use case chi tiết module Xem lịch sử đấu
 
-![Hình 20](uc-chi-tiet-lich-su-dau.png)
+![Hình 20](img/analysis/uc-chi-tiet-lich-su-dau.png)
 
 *Hình 20: Biểu đồ use case chi tiết module Xem lịch sử đấu.*
 
@@ -1135,7 +1135,7 @@ Bảng dữ liệu mẫu bảng xếp hạng. Giao diện chỉ hiện 3 cột �
 
 ### C. Biểu đồ lớp pha phân tích
 
-![Hình 22](lop-phan-tich-uc03.png)
+![Hình 22](img/analysis/lop-phan-tich-uc03.png)
 
 *Hình 22: Biểu đồ lớp pha phân tích chức năng Chơi online.*
 
@@ -1153,7 +1153,7 @@ Bảng dữ liệu mẫu bảng xếp hạng. Giao diện chỉ hiện 3 cột �
 - **Match nhận nhiều phương thức nhất**, vì hầu hết xử lý của chức năng trả về một trận đấu. Các luật của trận đều nằm ở thực thể, không nằm ở giao diện; chấm từng câu là isCorrect() của Answer.
 - Ghi phương án đã chọn và thời gian làm từng câu là xử lý của MatchView, không phải phương thức của thực thể: giao diện đo thời gian từ lúc câu hiện ra tới lúc người chơi bấm một ô và giữ bài làm từng câu cho tới khi nộp. Giao diện không biết đáp án đúng nên không chấm; việc chấm nằm ở isCorrect() của Answer, dùng luật isCorrect() của MathProblem.
 
-![Hình 23](lop-phan-tich-uc04.png)
+![Hình 23](img/analysis/lop-phan-tich-uc04.png)
 
 *Hình 23: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu.*
 
@@ -1206,7 +1206,7 @@ Bảng dữ liệu mẫu bảng xếp hạng. Giao diện chỉ hiện 3 cột �
 - 12a.1. Lớp Challenge trả về lời mời đã bị từ chối cho OnlineView.
 - 12a.2. OnlineView hiển thị thông báo đối thủ đã từ chối và giữ nguyên giao diện chơi online.
 
-![Hình 24](tuan-tu-phan-tich-uc03a.png)
+![Hình 24](img/analysis/tuan-tu-phan-tich-uc03a.png)
 
 *Hình 24: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
@@ -1241,7 +1241,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 8a.1. Lớp Match trả về cho OnlineView: người mời không còn online hoặc đã bận.
 - 8a.2. OnlineView hiển thị thông báo không bắt đầu được trận đấu.
 
-![Hình 25](tuan-tu-phan-tich-uc03b.png)
+![Hình 25](img/analysis/tuan-tu-phan-tich-uc03b.png)
 
 *Hình 25: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
@@ -1301,7 +1301,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 16a.1. Lớp Match trả về trận đã kết thúc do đối thủ bỏ trận cho MatchView.
 - 16a.2. MatchView hiển thị thông báo đối thủ đã thoát. Kịch bản tiếp tục từ bước 17; MatchResultView không hiển thị lựa chọn chơi tiếp.
 
-![Hình 26](tuan-tu-phan-tich-uc03c.png)
+![Hình 26](img/analysis/tuan-tu-phan-tich-uc03c.png)
 
 *Hình 26: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn C: Thi đấu.*
 
@@ -1343,7 +1343,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 8a.3. MatchResultView gọi OnlineView.
 - 8a.4. OnlineView hiển thị giao diện chơi online cho người chơi.
 
-![Hình 27](tuan-tu-phan-tich-uc03d.png)
+![Hình 27](img/analysis/tuan-tu-phan-tich-uc03d.png)
 
 *Hình 27: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn D: Chơi tiếp.*
 
@@ -1399,7 +1399,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 15a.1. Lớp Match trả về lỗi cho MatchDetailView.
 - 15a.2. MatchDetailView hiển thị thông báo không tải được chi tiết trận, các mục kết quả và từng câu để trống.
 
-![Hình 28](tuan-tu-phan-tich-uc04a.png)
+![Hình 28](img/analysis/tuan-tu-phan-tich-uc04a.png)
 
 *Hình 28: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
@@ -1437,7 +1437,7 @@ Người chơi đang ở OnlineView.
 - 12a.1. Người chơi chọn thẻ Trận của tôi trên HistoryView.
 - 12a.2. HistoryView hiển thị biểu đồ tỉ lệ thắng, hòa, thua và danh sách trận như bước 3–11 của đoạn A. Người chơi chọn lại thẻ Bảng xếp hạng thì HistoryView hiển thị lại bảng xếp hạng.
 
-![Hình 29](tuan-tu-phan-tich-uc04b.png)
+![Hình 29](img/analysis/tuan-tu-phan-tich-uc04b.png)
 
 *Hình 29: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 

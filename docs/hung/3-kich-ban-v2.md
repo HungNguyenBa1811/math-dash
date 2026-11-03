@@ -41,7 +41,7 @@
 - 12a.1. Lớp Challenge trả về lời mời đã bị từ chối cho OnlineView.
 - 12a.2. OnlineView hiển thị thông báo đối thủ đã từ chối và giữ nguyên giao diện chơi online.
 
-![Hình 9: Tuần tự pha phân tích Chơi online – Gửi lời thách đấu](tuan-tu-phan-tich-uc03a.png)
+![Hình 9: Tuần tự pha phân tích Chơi online – Gửi lời thách đấu](img/analysis/tuan-tu-phan-tich-uc03a.png)
 
 *Hình 9: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
@@ -76,7 +76,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 8a.1. Lớp Match trả về cho OnlineView: người mời không còn online hoặc đã bận.
 - 8a.2. OnlineView hiển thị thông báo không bắt đầu được trận đấu.
 
-![Hình 10: Tuần tự pha phân tích Chơi online – Nhận lời thách đấu](tuan-tu-phan-tich-uc03b.png)
+![Hình 10: Tuần tự pha phân tích Chơi online – Nhận lời thách đấu](img/analysis/tuan-tu-phan-tich-uc03b.png)
 
 *Hình 10: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
@@ -136,7 +136,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 16a.1. Lớp Match trả về trận đã kết thúc do đối thủ bỏ trận cho MatchView.
 - 16a.2. MatchView hiển thị thông báo đối thủ đã thoát. Kịch bản tiếp tục từ bước 17; MatchResultView không hiển thị lựa chọn chơi tiếp.
 
-![Hình 11: Tuần tự pha phân tích Chơi online – Thi đấu](tuan-tu-phan-tich-uc03c.png)
+![Hình 11: Tuần tự pha phân tích Chơi online – Thi đấu](img/analysis/tuan-tu-phan-tich-uc03c.png)
 
 *Hình 11: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn C: Thi đấu.*
 
@@ -178,7 +178,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 8a.3. MatchResultView gọi OnlineView.
 - 8a.4. OnlineView hiển thị giao diện chơi online cho người chơi.
 
-![Hình 12: Tuần tự pha phân tích Chơi online – Chơi tiếp](tuan-tu-phan-tich-uc03d.png)
+![Hình 12: Tuần tự pha phân tích Chơi online – Chơi tiếp](img/analysis/tuan-tu-phan-tich-uc03d.png)
 
 *Hình 12: Biểu đồ tuần tự pha phân tích chức năng Chơi online, đoạn D: Chơi tiếp.*
 
@@ -238,7 +238,7 @@ Người chơi là người được mời, đang ở OnlineView; OnlineView đ�
 - 15a.1. Lớp Match trả về lỗi cho MatchDetailView.
 - 15a.2. MatchDetailView hiển thị thông báo không tải được chi tiết trận, các mục kết quả và từng câu để trống.
 
-![Hình 13: Tuần tự pha phân tích Xem lịch sử đấu – Xem trận của tôi](tuan-tu-phan-tich-uc04a.png)
+![Hình 13: Tuần tự pha phân tích Xem lịch sử đấu – Xem trận của tôi](img/analysis/tuan-tu-phan-tich-uc04a.png)
 
 *Hình 13: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
@@ -276,7 +276,7 @@ Người chơi đang ở OnlineView.
 - 12a.1. Người chơi chọn thẻ Trận của tôi trên HistoryView.
 - 12a.2. HistoryView hiển thị biểu đồ tỉ lệ thắng, hòa, thua và danh sách trận như bước 3–11 của đoạn A. Người chơi chọn lại thẻ Bảng xếp hạng thì HistoryView hiển thị lại bảng xếp hạng.
 
-![Hình 14: Tuần tự pha phân tích Xem lịch sử đấu – Xem bảng xếp hạng](tuan-tu-phan-tich-uc04b.png)
+![Hình 14: Tuần tự pha phân tích Xem lịch sử đấu – Xem bảng xếp hạng](img/analysis/tuan-tu-phan-tich-uc04b.png)
 
 *Hình 14: Biểu đồ tuần tự pha phân tích chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 

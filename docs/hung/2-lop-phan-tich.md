@@ -49,7 +49,7 @@ Ghi phương án đã chọn và thời gian làm từng câu (bước 11–13) 
 
 ### Bước 4: Biểu đồ lớp pha phân tích
 
-![Hình 7: Biểu đồ lớp pha phân tích chức năng Chơi online](lop-phan-tich-uc03.png)
+![Hình 7: Biểu đồ lớp pha phân tích chức năng Chơi online](img/analysis/lop-phan-tich-uc03.png)
 
 *Hình 7: Biểu đồ lớp pha phân tích chức năng Chơi online.*
 
@@ -100,7 +100,7 @@ Số trận thắng, hòa, thua và tỉ lệ thắng trên biểu đồ tròn k
 
 ### Bước 4: Biểu đồ lớp pha phân tích
 
-![Hình 8: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu](lop-phan-tich-uc04.png)
+![Hình 8: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu](img/analysis/lop-phan-tich-uc04.png)
 
 *Hình 8: Biểu đồ lớp pha phân tích chức năng Xem lịch sử đấu.*
 

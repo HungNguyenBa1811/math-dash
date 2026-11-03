@@ -48,7 +48,7 @@ HUNG nhấn Nộp bài ở giây 38,2, HOANG ở giây 45,6, tính từ lúc tr�
 
 ### 1.1. Biểu đồ use case chi tiết module Đấu đối kháng
 
-![Hình 5: Biểu đồ use case chi tiết module Đấu đối kháng](uc-chi-tiet-doi-khang.png)
+![Hình 5: Biểu đồ use case chi tiết module Đấu đối kháng](img/analysis/uc-chi-tiet-doi-khang.png)
 
 *Hình 5: Biểu đồ use case chi tiết module Đấu đối kháng.*
 
@@ -82,7 +82,7 @@ Sau khi đăng nhập, người chơi vào giao diện chính. Giao diện này 
 
 ### 2.1. Biểu đồ use case chi tiết module Xem lịch sử đấu
 
-![Hình 6: Biểu đồ use case chi tiết module Xem lịch sử đấu](uc-chi-tiet-lich-su-dau.png)
+![Hình 6: Biểu đồ use case chi tiết module Xem lịch sử đấu](img/analysis/uc-chi-tiet-lich-su-dau.png)
 
 *Hình 6: Biểu đồ use case chi tiết module Xem lịch sử đấu.*
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## Bản 16 (03/11/2026)
+
+### Tài liệu
+- Ảnh của docs/hung chuyển vào `img/analysis/` (use case chi tiết, lớp phân tích, tuần tự phân tích) và `img/design/` (CSDL, lớp thực thể, giao diện, lớp chi tiết, tuần tự thiết kế); đường dẫn ảnh trong các file Markdown cập nhật theo.
+- Sinh lại ảnh PlantUML pha phân tích và xuất lại toàn bộ ảnh VP pha thiết kế.
+
 ## Bản 15 (03/11/2026)
 
 ### Tài liệu
