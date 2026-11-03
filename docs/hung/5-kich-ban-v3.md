@@ -56,7 +56,7 @@
 48. Hàm onChallengeChanged() gọi hàm openMatch() mở MatchActivity với mã trận trong lời mời.
 49. MatchActivity hiển thị màn thi đấu cho người chơi; trận diễn ra ở đoạn C.
 
-![Hình 25: Tuần tự thiết kế Chơi online – Gửi lời thách đấu](tuan-tu-thiet-ke-uc03a-vp.png)
+![Hình 25: Tuần tự thiết kế Chơi online – Gửi lời thách đấu](img/design/tuan-tu-thiet-ke-uc03a-vp.png)
 
 *Hình 25: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn A: Gửi lời thách đấu.*
 
@@ -113,7 +113,7 @@
 38. Trong hàm runOnUiThread(), hàm acceptChallenge() gọi hàm openMatch() mở MatchActivity với mã trận.
 39. MatchActivity hiển thị màn thi đấu cho người chơi; trận diễn ra ở đoạn C.
 
-![Hình 26: Tuần tự thiết kế Chơi online – Nhận lời thách đấu](tuan-tu-thiet-ke-uc03b-vp.png)
+![Hình 26: Tuần tự thiết kế Chơi online – Nhận lời thách đấu](img/design/tuan-tu-thiet-ke-uc03b-vp.png)
 
 *Hình 26: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn B: Nhận lời thách đấu.*
 
@@ -228,7 +228,7 @@
 101. MatchApiDAO (B) trả đối tượng Match cho MatchActivity (B).
 102. MatchActivity (B) hiển thị kết quả trận và 2 nút Chơi tiếp, Dừng cho người chơi B.
 
-![Hình 27: Tuần tự thiết kế Chơi online – Thi đấu](tuan-tu-thiet-ke-uc03c-vp.png)
+![Hình 27: Tuần tự thiết kế Chơi online – Thi đấu](img/design/tuan-tu-thiet-ke-uc03c-vp.png)
 
 *Hình 27: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn C: Thi đấu.*
 
@@ -277,7 +277,7 @@
 34. Hàm openNextMatch() gọi hàm startActivity() mở MatchActivity cho trận mới rồi đóng màn cũ.
 35. MatchActivity hiển thị màn thi đấu của trận mới; trận diễn ra như đoạn C.
 
-![Hình 28: Tuần tự thiết kế Chơi online – Chơi tiếp](tuan-tu-thiet-ke-uc03d-vp.png)
+![Hình 28: Tuần tự thiết kế Chơi online – Chơi tiếp](img/design/tuan-tu-thiet-ke-uc03d-vp.png)
 
 *Hình 28: Biểu đồ tuần tự chi tiết chức năng Chơi online, đoạn D: Chơi tiếp.*
 
@@ -342,7 +342,7 @@
 48. MatchDetailActivity gọi hàm finish(), quay về HistoryActivity.
 49. HistoryActivity hiển thị lại danh sách trận.
 
-![Hình 29: Tuần tự thiết kế Xem lịch sử đấu – Xem trận của tôi](tuan-tu-thiet-ke-uc04a-vp.png)
+![Hình 29: Tuần tự thiết kế Xem lịch sử đấu – Xem trận của tôi](img/design/tuan-tu-thiet-ke-uc04a-vp.png)
 
 *Hình 29: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn A: Xem trận của tôi và chi tiết trận.*
 
@@ -387,7 +387,7 @@
 31. HistoryActivity gọi hàm finish(), quay về OnlineActivity.
 32. OnlineActivity hiển thị lại màn Chơi online.
 
-![Hình 30: Tuần tự thiết kế Xem lịch sử đấu – Xem bảng xếp hạng](tuan-tu-thiet-ke-uc04b-vp.png)
+![Hình 30: Tuần tự thiết kế Xem lịch sử đấu – Xem bảng xếp hạng](img/design/tuan-tu-thiet-ke-uc04b-vp.png)
 
 *Hình 30: Biểu đồ tuần tự chi tiết chức năng Xem lịch sử đấu, đoạn B: Xem bảng xếp hạng.*
 

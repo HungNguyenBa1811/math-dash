@@ -338,7 +338,7 @@ Chức năng chỉ chạy trên app (Chơi với máy) vẽ một package như b
   - Kết tập: hình thoi rỗng. Hợp thành: hình thoi đặc. Kế thừa: tam giác rỗng.
 - **Lưu trữ:**
   - Kịch bản viết bằng Markdown trong `docs/`.
-  - Hình xuất PNG đặt cạnh file Markdown.
+  - Hình xuất PNG đặt trong `img/` cạnh file Markdown, chia theo pha: `img/analysis/` (use case chi tiết, lớp phân tích, tuần tự phân tích), `img/design/` (CSDL, lớp thực thể, giao diện, lớp chi tiết, tuần tự thiết kế). File nguồn `.puml`, `.vpp`, `.drawio` giữ ở thư mục gốc của người làm.
   - Mỗi người giữ file dự án vẽ riêng (`docs/hung/*.vpp`, `docs/hoang/*.vpp`), không sửa file của người kia.
 - **Mỗi hình:**
   - Có chú thích **"Hình x: …"**, đánh số liên tục trong báo cáo.

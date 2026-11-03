@@ -80,7 +80,7 @@ Các lớp không có lớp cha:
 
 ### 1.1. Thiết kế giao diện
 
-![Hình 15: Thiết kế giao diện chức năng Chơi online](giao-dien-uc03.png)
+![Hình 15: Thiết kế giao diện chức năng Chơi online](img/design/giao-dien-uc03.png)
 
 *Hình 15: Thiết kế giao diện chức năng Chơi online.*
 
@@ -132,7 +132,7 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
 
 ### 1.2. Biểu đồ lớp chi tiết
 
-![Hình 16: Biểu đồ lớp chi tiết chức năng Chơi online](lop-thiet-ke-uc03-vp.png)
+![Hình 16: Biểu đồ lớp chi tiết chức năng Chơi online](img/design/lop-thiet-ke-uc03-vp.png)
 
 *Hình 16: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
@@ -191,7 +191,7 @@ Biểu đồ của module gồm mọi lớp của cả 2 use case con nên khá 
 
 #### 1.2.1. Use case Thách đấu
 
-![Hình 17: Biểu đồ lớp chi tiết use case Thách đấu](lop-thiet-ke-thach-dau-vp.png)
+![Hình 17: Biểu đồ lớp chi tiết use case Thách đấu](img/design/lop-thiet-ke-thach-dau-vp.png)
 
 *Hình 17: Biểu đồ lớp chi tiết use case Thách đấu.*
 
@@ -199,7 +199,7 @@ Biểu đồ xoay quanh OnlineActivity: danh sách người chơi online và l�
 
 #### 1.2.2. Use case Thi đấu
 
-![Hình 18: Biểu đồ lớp chi tiết use case Thi đấu](lop-thiet-ke-thi-dau-vp.png)
+![Hình 18: Biểu đồ lớp chi tiết use case Thi đấu](img/design/lop-thiet-ke-thi-dau-vp.png)
 
 *Hình 18: Biểu đồ lớp chi tiết use case Thi đấu.*
 
@@ -211,7 +211,7 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 
 ### 2.1. Thiết kế giao diện
 
-![Hình 19: Thiết kế giao diện chức năng Xem lịch sử đấu](giao-dien-uc04.png)
+![Hình 19: Thiết kế giao diện chức năng Xem lịch sử đấu](img/design/giao-dien-uc04.png)
 
 *Hình 19: Thiết kế giao diện chức năng Xem lịch sử đấu.*
 
@@ -261,7 +261,7 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 
 ### 2.2. Biểu đồ lớp chi tiết
 
-![Hình 20: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu](lop-thiet-ke-uc04-vp.png)
+![Hình 20: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu](img/design/lop-thiet-ke-uc04-vp.png)
 
 *Hình 20: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
@@ -306,7 +306,7 @@ Mỗi biểu đồ dưới đây chỉ có các lớp và phương thức mà m�
 
 #### 2.2.1. Use case Xem lịch sử đấu
 
-![Hình 21: Biểu đồ lớp chi tiết use case Xem lịch sử đấu](lop-thiet-ke-xem-lich-su-vp.png)
+![Hình 21: Biểu đồ lớp chi tiết use case Xem lịch sử đấu](img/design/lop-thiet-ke-xem-lich-su-vp.png)
 
 *Hình 21: Biểu đồ lớp chi tiết use case Xem lịch sử đấu.*
 
@@ -314,7 +314,7 @@ HistoryActivity lấy danh sách trận, đếm thắng, hòa, thua bằng showS
 
 #### 2.2.2. Use case Xem chi tiết trận
 
-![Hình 22: Biểu đồ lớp chi tiết use case Xem chi tiết trận](lop-thiet-ke-xem-chi-tiet-tran-vp.png)
+![Hình 22: Biểu đồ lớp chi tiết use case Xem chi tiết trận](img/design/lop-thiet-ke-xem-chi-tiet-tran-vp.png)
 
 *Hình 22: Biểu đồ lớp chi tiết use case Xem chi tiết trận.*
 
@@ -322,7 +322,7 @@ MatchDetailActivity lấy trận bằng MatchApiDAO.getById rồi hiện 10 câu
 
 #### 2.2.3. Use case Xem bảng xếp hạng
 
-![Hình 23: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng](lop-thiet-ke-xem-bang-xep-hang-vp.png)
+![Hình 23: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng](img/design/lop-thiet-ke-xem-bang-xep-hang-vp.png)
 
 *Hình 23: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng.*
 
