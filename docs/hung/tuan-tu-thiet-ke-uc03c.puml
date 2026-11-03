@@ -2,129 +2,132 @@
 !include _seq.iuml
 title Tuần tự thiết kế – Chơi online, đoạn C: Thi đấu
 
-actor "Người chơi" as U
-box "Client (Android)" #FFFFFF
-boundary MatchActivity as GA
-control CountDownTimer as T
-control SessionDAO as SD
-control MatchFirebaseDAO as MFD
-control PresenceFirebaseDAO as PFD
-control MatchApiDAO as MAD
-entity Match as M
-entity MathProblem as Q
-entity Answer as A
+actor "Người chơi A" as UA
+box "Máy người chơi A (Android)" #FFFFFF
+boundary "MatchActivity (A)" as GAa
+control "MatchFirebaseDAO (A)" as MFDa
+control "MatchApiDAO (A)" as MADa
+entity "Match (A)" as Ma
 end box
 box "Server (Spring Boot)" #FFFFFF
 boundary "MatchRestController" as MRC
-control "PlayerDAO" as PD
 control "MatchDAO" as MD
+control "PlayerDAO" as PD
 control "FirebaseAdminDAO" as FAD
 entity "Match" as SM
-entity "Answer" as SA
-entity "MathProblem" as SQ
 end box
+box "Máy người chơi B (Android)" #FFFFFF
+control "MatchApiDAO (B)" as MADb
+control "MatchFirebaseDAO (B)" as MFDb
+entity "Match (B)" as Mb
+boundary "MatchActivity (B)" as GAb
+end box
+actor "Người chơi B" as UB
 
-GA -> SD : onCreate(): getPlayer()
-SD --> GA : Player
-GA ->> MFD : watchMatch()
-MFD -> MFD : onDataChange()
-MFD -> M : đóng gói Match
-M --> MFD : Match
-MFD -> GA : onSuccess() {MatchCallback}
-GA -> GA : startMatch()
-GA -> A : tạo bài làm rỗng
-A --> GA : Answer
-GA -> GA : showQuestion()
-GA -> Q : getExpression()
-Q --> GA : chuỗi phép tính
-GA -> Q : getAnswerOptions()
-Q --> GA : 4 phương án
-GA -> GA : optionText()
-GA -> T : createTimer()
-GA -> T : start()
-GA ->> PFD : watchOnlinePlayers()
-GA --> U : hiển thị ô thời gian, trạng thái đối thủ, nút Thoát
-PFD -> GA : onDataChange(): onPlayersChanged() {PlayerListCallback}
-T -> GA : onTick()
+GAa ->> MFDa : watchMatch()
+MFDa -> MFDa : onDataChange()
+MFDa -> Ma : call
+Ma -> Ma : Match()
+Ma --> MFDa : return
+MFDa -> GAa : onSuccess() {MatchCallback}
+GAa -> GAa : startMatch()
+GAa --> UA : display
+GAb ->> MFDb : watchMatch()
+MFDb -> MFDb : onDataChange()
+MFDb -> Mb : call
+Mb -> Mb : Match()
+Mb --> MFDb : return
+MFDb -> GAb : onSuccess() {MatchCallback}
+GAb -> GAb : startMatch()
+GAb --> UB : display
 loop 10 câu
-  GA --> U : hiển thị câu đang làm và 4 ô A, B, C, D
-  U -> GA : bấm một ô phương án
-  GA -> GA : onClick(): chooseOption()
-  GA -> A : setSelectedOption()
-  GA -> A : setAnswerTime()
-  GA -> GA : showQuestion() sau NEXT_DELAY
+  UA -> GAa : bấm một ô phương án
+  GAa -> GAa : onClick()
+  GAa --> UA : display
 end
-GA -> GA : showQuestion(): showMessage()
-GA --> U : hiển thị đã làm xong 10 câu, nút Nộp bài
-U -> GA : nhấn Nộp bài
-GA -> GA : onClick(): submitAnswers()
-GA -> GA : showMessage()
-GA -> MAD : submit() {Thread}
-MAD -> MRC : POST /api/matches/{id}/submit → submit()
-MRC -> MRC : findMatch()
+UA -> GAa : nhấn Nộp bài
+GAa -> GAa : onClick()
+GAa -> MADa : submit() {Thread}
+MADa -> MRC : POST /api/matches/{id}/submit → submit()
 MRC -> MD : findById()
-MD -> SM : đóng gói Match
-SM --> MD : Match
-MD --> MRC : Match
-MRC -> SM : countCorrect()
-loop 10 câu
-  SM -> SA : setProblem()
-  SM -> SA : isCorrect()
-  SA -> SQ : isCorrect()
-  SQ --> SA : kết quả so sánh
-  SA --> SM : đúng / sai
-end
-SM --> MRC : số câu đúng
+MD -> SM : call
+SM -> SM : Match()
+SM --> MD : return
+MD --> MRC : return
 MRC -> MD : updateSubmission()
-MD -> MD : updateMatchPlayer()
-MD -> MD : insertAnswer()
-MD --> MRC : true
+MD --> MRC : return
 MRC -> FAD : writeSubmitted()
-MRC -> SM : isOver()
-SM --> MRC : false
-MRC -> MRC : hideAnswers()
-MRC --> MAD : Match (JSON)
-MAD -> M : toMatch(): đóng gói Match
-M --> MAD : Match
-MAD --> GA : Match
-GA -> GA : runOnUiThread(): onSubmitted()
-GA -> T : cancel()
-GA -> GA : showMessage()
-GA --> U : hiển thị đã nộp bài, đang chờ đối thủ
-MRC -> SM : isOver()
-SM --> MRC : true
+MRC --> MADa : return
+MADa -> Ma : call
+Ma -> Ma : Match()
+Ma --> MADa : return
+MADa --> GAa : return
+GAa --> UA : display
+loop 10 câu
+  UB -> GAb : bấm một ô phương án
+  GAb -> GAb : onClick()
+  GAb --> UB : display
+end
+UB -> GAb : nhấn Nộp bài
+GAb -> GAb : onClick()
+GAb -> MADb : submit() {Thread}
+MADb -> MRC : POST /api/matches/{id}/submit → submit()
+MRC -> MD : findById()
+MD -> SM : call
+SM -> SM : Match()
+SM --> MD : return
+MD --> MRC : return
+MRC -> MD : updateSubmission()
+MD --> MRC : return
+MRC -> FAD : writeSubmitted()
 MRC -> MRC : endMatch()
 MRC -> MD : updateEndedAt()
-MD --> MRC : true
+MD --> MRC : return
 MRC -> PD : getTotalPoints()
-PD --> MRC : tổng điểm
+PD --> MRC : return
 MRC -> FAD : updatePoints()
 MRC -> FAD : writeFinished()
-MFD -> MFD : onDataChange()
-MFD -> M : đóng gói Match
-M --> MFD : Match
-MFD -> GA : onSuccess() {MatchCallback}
-GA -> GA : loadResult()
-GA -> MAD : getById() {Thread}
-MAD -> MRC : GET /api/matches/{id} → getById()
-MRC -> MRC : findMatch()
+MRC --> MADb : return
+MADb -> Mb : call
+Mb -> Mb : Match()
+Mb --> MADb : return
+MADb --> GAb : return
+MFDa -> MFDa : onDataChange()
+MFDa -> Ma : call
+Ma -> Ma : Match()
+Ma --> MFDa : return
+MFDa -> GAa : onSuccess() {MatchCallback}
+GAa -> GAa : loadResult()
+GAa -> MADa : getById() {Thread}
+MADa -> MRC : GET /api/matches/{id} → getById()
 MRC -> MD : findById()
-MD -> SM : đóng gói Match
-SM --> MD : Match
-MD --> MRC : Match
-MRC -> PD : getTotalPoints()
-PD --> MRC : tổng điểm
-MRC --> MAD : Match (JSON)
-MAD -> M : toMatch(): đóng gói Match
-M --> MAD : Match
-MAD --> GA : Match
-GA -> GA : runOnUiThread(): showResult()
-GA -> M : getResult()
-M --> GA : kết quả trận
-GA -> GA : showScores()
-GA -> M : getFinishTime()
-M --> GA : thời gian làm bài
-GA -> M : getPoints()
-M --> GA : điểm trận
-GA --> U : hiển thị kết quả, điểm, câu hỏi Chơi tiếp?
+MD -> SM : call
+SM -> SM : Match()
+SM --> MD : return
+MD --> MRC : return
+MRC --> MADa : return
+MADa -> Ma : call
+Ma -> Ma : Match()
+Ma --> MADa : return
+MADa --> GAa : return
+GAa --> UA : display
+MFDb -> MFDb : onDataChange()
+MFDb -> Mb : call
+Mb -> Mb : Match()
+Mb --> MFDb : return
+MFDb -> GAb : onSuccess() {MatchCallback}
+GAb -> GAb : loadResult()
+GAb -> MADb : getById() {Thread}
+MADb -> MRC : GET /api/matches/{id} → getById()
+MRC -> MD : findById()
+MD -> SM : call
+SM -> SM : Match()
+SM --> MD : return
+MD --> MRC : return
+MRC --> MADb : return
+MADb -> Mb : call
+Mb -> Mb : Match()
+Mb --> MADb : return
+MADb --> GAb : return
+GAb --> UB : display
 @enduml
