@@ -1,5 +1,10 @@
 # Changelog
 
+## Bản 15 (03/11/2026)
+
+### Tài liệu
+- 6 biểu đồ tuần tự thiết kế trong VP vẽ người chơi bằng actor hình người thay cho lifeline hình chữ nhật (đoạn Thi đấu có cả người chơi A và B); xuất lại ảnh.
+
 ## Bản 14 (03/11/2026)
 
 ### Tài liệu
