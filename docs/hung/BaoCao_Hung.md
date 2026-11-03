@@ -259,26 +259,26 @@ Player giữ thêm các giá trị dẫn xuất mà giao diện cần hiển th�
 | Lớp phân tích | Lớp thiết kế | Layout |
 |---|---|---|
 | MainView | MainActivity | activity_main.xml |
-| OnlineView | OnlineActivity + PlayerAdapter | activity_online.xml, item_player.xml |
+| OnlineView | OnlineActivity | activity_online.xml, item_player.xml |
 | MatchView | MatchActivity | activity_match.xml |
 | MatchResultView | Overlay layoutResult nằm trong MatchActivity | activity_match.xml |
-| HistoryView | HistoryActivity + PieChartView + MatchHistoryAdapter + RankingAdapter | activity_history.xml, item_match_history.xml, item_ranking.xml |
-| MatchDetailView | MatchDetailActivity + ProblemAdapter | activity_match_detail.xml, item_problem.xml |
+| HistoryView | HistoryActivity | activity_history.xml, item_match_history.xml, item_ranking.xml |
+| MatchDetailView | MatchDetailActivity | activity_match_detail.xml, item_problem.xml |
 
 OnlineView là Activity riêng, tách khỏi giao diện chính:
 - Người chơi chỉ online khi đang ở OnlineActivity hoặc một màn mở từ đó: onCreate gọi goOnline ghi node presence, onDestroy gọi goOffline xóa node. Nhấn Back về MainActivity là offline, nên người đang ở giao diện chính hay đang chơi với máy không hiện trong danh sách online và không bị thách đấu.
 - Lời mời thách đấu cũng chỉ được theo dõi trong OnlineActivity.
 
-MatchView hiện mỗi lần một câu nên không cần Adapter: 4 ô phương án là 4 Button cố định trong layoutOptions, gom thành mảng btnOptions; sang câu sau chỉ đổi chữ trên 4 ô.
+MatchView hiện mỗi lần một câu nên không cần danh sách: 4 ô phương án là 4 Button cố định trong layoutOptions, gom thành mảng btnOptions; sang câu sau chỉ đổi chữ trên 4 ô.
 
 MatchResultView là overlay chứ không phải Activity riêng:
 - Kết quả hiện đè lên màn thi đấu ngay khi trận xong.
 - Câu hỏi "Chơi tiếp?" cần tiếp tục theo dõi trận đang mở.
 
 HistoryView là một Activity có 2 thẻ (TabLayout):
-- Thẻ Trận của tôi gồm PieChartView và danh sách rvMatches; thẻ Bảng xếp hạng là danh sách rvRanking. Chọn thẻ chỉ ẩn / hiện 2 khối này, không mở Activity mới.
+- Thẻ Trận của tôi gồm biểu đồ tròn pieChart và danh sách rvMatches; thẻ Bảng xếp hạng là danh sách rvRanking. Chọn thẻ chỉ ẩn / hiện 2 khối này, không mở Activity mới.
 - Nút Lịch sử đấu và nút Bảng xếp hạng của OnlineView cùng mở HistoryActivity. Nút Bảng xếp hạng gửi kèm EXTRA_TAB = TAB_RANKING trong Intent để chọn sẵn thẻ Bảng xếp hạng.
-- PieChartView là View tự vẽ biểu đồ tròn bằng Canvas, không dùng thư viện ngoài.
+- Biểu đồ tròn là View tự vẽ bằng Canvas, nằm trong HistoryActivity, không dùng thư viện ngoài.
 
 **Phương thức của thực thể sang Activity hoặc DAO**
 
@@ -300,10 +300,10 @@ HistoryView là một Activity có 2 thẻ (TabLayout):
 | getHistory() | Match | getHistory(playerId : int) : List\<Match> → getHistory(playerId : int) : List\<Match><br>findByPlayer(playerId : int) : List\<Match> | MatchApiDAO → MatchRestController<br>MatchDAO |
 | getMatch() | Match | getById(matchId : int) : Match → getById(id : int) : Match<br>findById(id : int) : Match, findAnswers(matchPlayerId : int, questions : List\<MathProblem>) : List\<Answer>, getTotalPoints(playerId : int) : double | MatchApiDAO → MatchRestController<br>MatchDAO, PlayerDAO |
 | getOpponent() | Match | getOpponent(playerId : int) : MatchPlayer | Match |
-| isCorrect() | Answer | isCorrect() : boolean, isAnswered() : boolean<br>showAnswer(view : TextView, answer : Answer) : void | Answer<br>ProblemAdapter |
+| isCorrect() | Answer | isCorrect() : boolean, isAnswered() : boolean<br>showAnswer(view : TextView, answer : Answer) : void | Answer<br>MatchDetailActivity |
 | getResult(), getPoints(), getFinishTime() | Match | Giữ nguyên như ở Chơi online | Match |
 | getRanking() | Player | getRanking() : List\<Player> → getRanking() : List\<Player><br>getRanking() : List\<Player>, rank(players : List\<Player>, matches : List\<Match>) : List\<Player>, findFinished() : List\<Match> | PlayerApiDAO → PlayerRestController<br>PlayerDAO, MatchDAO |
-| Đếm thắng / hòa / thua của HistoryView | HistoryView | showSummary(matches : List\<Match>) : void<br>setData(wins : int, draws : int, losses : int) : void | HistoryActivity<br>PieChartView |
+| Đếm thắng / hòa / thua của HistoryView | HistoryView | showSummary(matches : List\<Match>) : void | HistoryActivity |
 
 Ghi phương án đã chọn và thời gian làm từng câu là xử lý của giao diện: chooseOption của MatchActivity ghi vào một Answer, không phải phương thức của thực thể. Answer chỉ giữ bài làm một câu và luật isCorrect; luật so phương án với đáp án vẫn nằm ở MathProblem.isCorrect.
 
@@ -384,16 +384,15 @@ Các thông báo ngắn ("MINH đang bận", "HOANG đã từ chối lời mời
 
 *Hình 5: Biểu đồ lớp chi tiết chức năng Chơi online.*
 
-Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) ở giữa, Server (Spring Boot) bên phải. Package Common là thư viện mathdash-common.jar chứa các lớp thực thể; DAO của app và DAO của server cùng dùng một bộ thực thể này. Biểu đồ chỉ có các lớp tham gia vào logic của chức năng; màn chỉ dùng để mở sang màn khác không được vẽ. Lớp giao diện chỉ ghi các phương thức xử lý nghiệp vụ, các hàm chỉ để vẽ giao diện nằm trong mã nguồn. DAO cha ghi đối tượng kết nối dùng chung (con); mỗi DAO ghi hàm khởi tạo và mọi phương thức mà chức năng này gọi; DAO không ghi biến môi trường như địa chỉ server. Phần chung của các Activity và các Adapter nằm ở 2 lớp cha BaseActivity, BaseAdapter. Các View con, biến tạm, cờ trạng thái và hàm override của Android như onDestroy, onBackPressed nằm trong mã nguồn.
+Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) ở giữa, Server (Spring Boot) bên phải. Package Common là thư viện mathdash-common.jar chứa các lớp thực thể; DAO của app và DAO của server cùng dùng một bộ thực thể này. Biểu đồ chỉ có các lớp tham gia vào logic của chức năng; màn chỉ dùng để mở sang màn khác không được vẽ. Lớp giao diện chỉ ghi các phương thức xử lý nghiệp vụ, các hàm chỉ để vẽ giao diện nằm trong mã nguồn. DAO cha ghi đối tượng kết nối dùng chung (con); mỗi DAO ghi hàm khởi tạo và mọi phương thức mà chức năng này gọi; DAO không ghi biến môi trường như địa chỉ server. Phần chung của các Activity nằm ở lớp cha BaseActivity; danh sách trên mỗi màn do chính Activity đổ dữ liệu. Các View con, biến tạm, cờ trạng thái và hàm override của Android như onDestroy, onBackPressed nằm trong mã nguồn.
 
 **Package "Client (Android)".**
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | BaseActivity, BaseAdapter | BaseActivity là lớp cha trừu tượng của mọi Activity trong chức năng. Lớp này giữ người chơi đang đăng nhập (me), lấy bằng SessionDAO.getPlayer trong onCreate, và cài đặt View.OnClickListener với onClick; Activity con chỉ viết phần riêng của màn mình. BaseAdapter là lớp cha trừu tượng của mọi Adapter, kế thừa RecyclerView.Adapter, giữ danh sách phần tử (items : List\<T>) và cài đặt sẵn onCreateViewHolder, getItemCount; Adapter con chỉ còn onBindViewHolder và phần riêng của mình |
-| Boundary | OnlineActivity | Màn Chơi online, cài đặt View.OnClickListener, PlayerListCallback và ChallengeCallback. Giữ người chơi đang đăng nhập (me), lời mời mình đã gửi và đang chờ trả lời (sentChallenge), id các lời mời tới mình đã hiện hộp thoại (shownChallenges), hộp thoại chờ (waitingDialog).<br>- onCreate gọi bindViews, lấy me bằng SessionDAO.getPlayer, gọi watchOnlinePlayers và watchIncoming truyền chính nó (this) làm callback, rồi gọi goOnline.<br>- goOnline gọi PlayerApiDAO.getById trong Thread để có tổng điểm mới, xong thì gọi PresenceFirebaseDAO.goOnline.<br>- onPlayersChanged hiện thông tin của mình, đưa những người còn lại vào PlayerAdapter, danh sách rỗng thì hiện txtEmpty.<br>- onPlayerClick: đối thủ bận thì hiện Toast; đã có sentChallenge thì bỏ qua; ngược lại sendChallenge, watchChallenge rồi showWaitingDialog hiện hộp thoại chờ có nút Hủy.<br>- onChallengeChanged: lời mời tới mình chưa có trong shownChallenges thì showChallengeDialog; lời mình gửi được đồng ý thì closeSentChallenge rồi openMatch(challenge.getMatchId()); bị từ chối thì closeSentChallenge và hiện Toast.<br>- closeSentChallenge gọi ChallengeFirebaseDAO.stopWatchingSent, xóa sentChallenge và đóng hộp thoại chờ.<br>- acceptChallenge gọi MatchApiDAO.createMatch trong Thread, xong thì openMatch. Nút Từ chối gọi ChallengeFirebaseDAO.rejectChallenge.<br>- onClick của btnHistory, btnRanking mở HistoryActivity, mô tả ở chức năng Xem lịch sử đấu.<br>- onDestroy gọi stopWatching của PresenceFirebaseDAO và ChallengeFirebaseDAO rồi PresenceFirebaseDAO.goOffline: rời màn này là offline |
-| Boundary | PlayerAdapter, PlayerViewHolder | PlayerAdapter kế thừa RecyclerView.Adapter, giữ danh sách Player và OnlineActivity chứa nó. setPlayers thay danh sách và vẽ lại. onClick của một dòng gọi OnlineActivity.onPlayerClick. PlayerViewHolder giữ 3 TextView của một dòng |
-| Boundary | MatchActivity | Màn thi đấu, cài đặt View.OnClickListener, MatchCallback và PlayerListCallback. Giữ me, mã trận (matchId, nhận qua Intent với khóa EXTRA_MATCH_ID), id đối thủ (opponentId), đồng hồ (timer, MATCH_MILLIS = 60 giây), đề (questions : List\<MathProblem>), bài làm (answers : List\<Answer>), chỉ số câu đang hiện (current) và thời điểm câu đó hiện ra (shownAt). 4 ô phương án gom thành mảng btnOptions : Button[4]; LETTERS giữ 4 chữ A, B, C, D. 6 cờ started, submitted, resultLoading, resultShown, opponentLeft, leaving chặn gọi lặp, vì onSuccess được gọi lại mỗi lần node trận thay đổi.<br>- onCreate gọi MatchFirebaseDAO.watchMatch, truyền chính nó làm MatchCallback.<br>- Lần đầu nhận trận có đề, onSuccess gọi startMatch: lưu opponentId bằng opponentOf, lấy đề vào questions, tạo 10 Answer rỗng, gọi showQuestion, createTimer rồi start, gọi PresenceFirebaseDAO.watchOnlinePlayers với chính nó làm PlayerListCallback.<br>- showQuestion hiện câu thứ current: số thứ tự "Câu 3/10", phép tính và chữ của 4 ô (optionText ghép chữ cái nhỏ với giá trị lớn), bật lại 4 ô và ghi shownAt = SystemClock.elapsedRealtime(). Khi current đã qua câu cuối thì showMessage "Đã làm xong 10 câu" và hiện btnSubmit.<br>- onClick của một ô gọi chooseOption(index): ghi giá trị phương án vào selectedOption và thời gian từ shownAt vào answerTime của answers[current], khóa 4 ô, làm mờ 3 ô không chọn, tăng current rồi sau NEXT_DELAY = 200 ms gọi lại showQuestion. Khóa 4 ô trong lúc chờ để bấm đúp không trả lời nhầm câu sau.<br>- showMessage ẩn 4 ô và phép tính, ghi thông báo vào txtProgress.<br>- onTick vẽ thời gian; onFinish showMessage "Hết giờ" rồi gọi submitAnswers; câu chưa làm giữ selectedOption = −1.<br>- submitAnswers (nút Nộp bài hoặc hết giờ) showMessage "Đang nộp bài...", gọi MatchApiDAO.submit(matchId, me.getId(), answers) trong Thread. Thành công thì onSubmitted hủy đồng hồ, ẩn btnSubmit, showMessage "Đã nộp bài, đang chờ đối thủ..."; lỗi thì onSubmitFailed hiện lại btnSubmit để nộp lại.<br>- Mỗi lần onSuccess gọi showOpponentStatus; trận đã xong thì loadResult gọi MatchApiDAO.getById rồi showResult.<br>- showResult dùng Match.getResult cho showResultTitle; showScores dùng getFinishTime, getPoints trên bản trận server trả về. mineOf, opponentOf tìm MatchPlayer của mình và của đối thủ.<br>- Nút Chơi tiếp / Dừng gọi sendChoice (MatchApiDAO.continueMatch). onNextMatch gọi openNextMatch: stopWatching trận cũ rồi mở trận mới. onStopped hiện Toast và đóng màn thi đấu, quay về màn Chơi online.<br>- Nút Thoát và onBackPressed gọi confirmLeave hỏi xác nhận rồi gọi leaveMatch (MatchApiDAO.forfeit).<br>- onPlayersChanged: khi trận đang đấu mà đối thủ biến khỏi danh sách online (mất kết nối), gọi forfeit(opponentId) thay cho đối thủ.<br>- onDestroy hủy đồng hồ, gọi stopWatching của MatchFirebaseDAO và PresenceFirebaseDAO.<br>Activity không tự chấm bài, không tự phân thắng thua |
+| Boundary | BaseActivity | BaseActivity là lớp cha trừu tượng của mọi Activity trong chức năng. Lớp này giữ người chơi đang đăng nhập (me), lấy bằng SessionDAO.getPlayer trong onCreate, và cài đặt View.OnClickListener với onClick; Activity con chỉ viết phần riêng của màn mình. Danh sách trên màn hình (RecyclerView) do chính Activity đổ dữ liệu, bằng một lớp Adapter nội bộ nằm trong file Activity đó |
+| Boundary | OnlineActivity | Màn Chơi online, cài đặt View.OnClickListener, PlayerListCallback và ChallengeCallback. Giữ người chơi đang đăng nhập (me), lời mời mình đã gửi và đang chờ trả lời (sentChallenge), id các lời mời tới mình đã hiện hộp thoại (shownChallenges), hộp thoại chờ (waitingDialog).<br>- onCreate gọi bindViews, lấy me bằng SessionDAO.getPlayer, gọi watchOnlinePlayers và watchIncoming truyền chính nó (this) làm callback, rồi gọi goOnline.<br>- goOnline gọi PlayerApiDAO.getById trong Thread để có tổng điểm mới, xong thì gọi PresenceFirebaseDAO.goOnline.<br>- onPlayersChanged hiện thông tin của mình, đưa những người còn lại vào rvPlayers, danh sách rỗng thì hiện txtEmpty.<br>- onPlayerClick: đối thủ bận thì hiện Toast; đã có sentChallenge thì bỏ qua; ngược lại sendChallenge, watchChallenge rồi showWaitingDialog hiện hộp thoại chờ có nút Hủy.<br>- onChallengeChanged: lời mời tới mình chưa có trong shownChallenges thì showChallengeDialog; lời mình gửi được đồng ý thì closeSentChallenge rồi openMatch(challenge.getMatchId()); bị từ chối thì closeSentChallenge và hiện Toast.<br>- closeSentChallenge gọi ChallengeFirebaseDAO.stopWatchingSent, xóa sentChallenge và đóng hộp thoại chờ.<br>- acceptChallenge gọi MatchApiDAO.createMatch trong Thread, xong thì openMatch. Nút Từ chối gọi ChallengeFirebaseDAO.rejectChallenge.<br>- onClick của btnHistory, btnRanking mở HistoryActivity, mô tả ở chức năng Xem lịch sử đấu.<br>- onDestroy gọi stopWatching của PresenceFirebaseDAO và ChallengeFirebaseDAO rồi PresenceFirebaseDAO.goOffline: rời màn này là offline |
+| Boundary | MatchActivity | Màn thi đấu, cài đặt View.OnClickListener, MatchCallback và PlayerListCallback. Giữ me, mã trận (matchId, nhận qua Intent với khóa EXTRA_MATCH_ID), id đối thủ (opponentId), đồng hồ (timer, MATCH_MILLIS = 60 giây), đề (questions : List\<MathProblem>), bài làm (answers : List\<Answer>), chỉ số câu đang hiện (current) và thời điểm câu đó hiện ra (shownAt). 4 ô phương án gom thành mảng btnOptions : Button[4]; LETTERS giữ 4 chữ A, B, C, D. 7 cờ started, submitted, resultLoading, resultShown, opponentStopped, opponentForfeited, leaving chặn gọi lặp, vì onSuccess được gọi lại mỗi lần node trận thay đổi.<br>- onCreate gọi MatchFirebaseDAO.watchMatch, truyền chính nó làm MatchCallback.<br>- Lần đầu nhận trận có đề, onSuccess gọi startMatch: lưu opponentId bằng opponentOf, lấy đề vào questions, tạo 10 Answer rỗng, gọi showQuestion, createTimer rồi start, gọi PresenceFirebaseDAO.watchOnlinePlayers với chính nó làm PlayerListCallback.<br>- showQuestion hiện câu thứ current: số thứ tự "Câu 3/10", phép tính và chữ của 4 ô (optionText ghép chữ cái nhỏ với giá trị lớn), bật lại 4 ô và ghi shownAt = SystemClock.elapsedRealtime(). Khi current đã qua câu cuối thì showMessage "Đã làm xong 10 câu" và hiện btnSubmit.<br>- onClick của một ô gọi chooseOption(index): ghi giá trị phương án vào selectedOption và thời gian từ shownAt vào answerTime của answers[current], khóa 4 ô, làm mờ 3 ô không chọn, tăng current rồi sau NEXT_DELAY = 200 ms gọi lại showQuestion. Khóa 4 ô trong lúc chờ để bấm đúp không trả lời nhầm câu sau.<br>- showMessage ẩn 4 ô và phép tính, ghi thông báo vào txtProgress.<br>- onTick vẽ thời gian; onFinish showMessage "Hết giờ" rồi gọi submitAnswers; câu chưa làm giữ selectedOption = −1.<br>- submitAnswers (nút Nộp bài hoặc hết giờ) showMessage "Đang nộp bài...", gọi MatchApiDAO.submit(matchId, me.getId(), answers) trong Thread. Thành công thì onSubmitted hủy đồng hồ, ẩn btnSubmit, showMessage "Đã nộp bài, đang chờ đối thủ..."; lỗi thì onSubmitFailed hiện lại btnSubmit để nộp lại.<br>- Mỗi lần onSuccess gọi showOpponentStatus; trận đã xong thì loadResult gọi MatchApiDAO.getById rồi showResult.<br>- showResult dùng Match.getResult cho showResultTitle; showScores dùng getFinishTime, getPoints trên bản trận server trả về. mineOf, opponentOf tìm MatchPlayer của mình và của đối thủ.<br>- Nút Chơi tiếp / Dừng gọi sendChoice (MatchApiDAO.continueMatch). onNextMatch gọi openNextMatch: stopWatching trận cũ rồi mở trận mới. onStopped hiện Toast và đóng màn thi đấu, quay về màn Chơi online.<br>- Nút Thoát và onBackPressed gọi confirmLeave hỏi xác nhận rồi gọi leaveMatch (MatchApiDAO.forfeit).<br>- onPlayersChanged: khi trận đang đấu mà đối thủ biến khỏi danh sách online (mất kết nối), gọi forfeit(opponentId) thay cho đối thủ.<br>- onDestroy hủy đồng hồ, gọi stopWatching của MatchFirebaseDAO và PresenceFirebaseDAO.<br>Activity không tự chấm bài, không tự phân thắng thua |
 | Control | SessionDAO | Giữ prefs : SharedPreferences "session". getPlayer() đọc playerId, username, displayName, role và đóng gói thành Player |
 | Control | FirebaseDAO ← PresenceFirebaseDAO | FirebaseDAO giữ con (gốc Realtime Database). PresenceFirebaseDAO đọc / ghi node presence:<br>- goOnline ghi tên, tổng điểm, trạng thái free và đăng ký onDisconnect().removeValue(). goOffline xóa node của mình.<br>- watchOnlinePlayers thêm ValueEventListener; mỗi lần node presence đổi, onDataChange đóng gói từng node con thành Player kèm tổng điểm, trạng thái rồi gọi onPlayersChanged. stopWatching gỡ listener đang giữ trong watcher |
 | Control | FirebaseDAO ← ChallengeFirebaseDAO | Đọc / ghi node challenges:<br>- sendChallenge tạo node bằng push().<br>- watchIncoming lọc lời mời có opponentId là mình và status pending; giữ incomingQuery, incomingWatcher.<br>- watchChallenge theo dõi một lời mời đã gửi; giữ sentRef, sentWatcher.<br>- stopWatchingSent chỉ gỡ theo dõi lời mời đã gửi; stopWatching gỡ cả 2.<br>- rejectChallenge ghi status rejected.<br>- toChallenge đóng gói một node thành Challenge kèm 2 Player người mời và người được mời; watchIncoming và watchChallenge cùng dùng |
@@ -420,11 +419,11 @@ Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) 
 | Control | FirebaseAdminDAO | Giữ dbUrl, khóa truy cập secret, client : HttpClient và mapper : ObjectMapper; gọi REST API của Firebase:<br>- readPresence, readChallengeStatus gửi GET.<br>- Các hàm write..., update... gửi PUT hoặc PATCH tới đúng node trong tài liệu CSDL mục 2. updateStatus, updatePoints đi qua updatePresence.<br>- toQuestions, toPlayers chuyển đề (bỏ đáp án) và 2 người chơi thành dữ liệu node.<br>- send gửi yêu cầu và trả nội dung phản hồi |
 
 **Quan hệ giữa các lớp giao diện:**
-- OnlineActivity – MatchActivity nối nhau bằng quan hệ liên kết theo luồng màn hình. OnlineActivity – PlayerAdapter – PlayerViewHolder cũng vậy. Màn chính MainActivity chỉ mở OnlineActivity nên không vẽ.
-- Mỗi lớp nối với layout của nó: activity_online.xml, item_player.xml, activity_match.xml. Overlay kết quả nằm trong activity_match.xml.
+- OnlineActivity – MatchActivity nối nhau bằng quan hệ liên kết theo luồng màn hình. Màn chính MainActivity chỉ mở OnlineActivity nên không vẽ.
+- Mỗi Activity nối với layout của nó: activity_online.xml, activity_match.xml. Overlay kết quả nằm trong activity_match.xml.
 - Kết tập:
   - OnlineActivity và MatchActivity chứa thông tin người chơi trong thuộc tính me của lớp cha BaseActivity, nên Player kết tập vào BaseActivity.
-  - PlayerAdapter chứa danh sách Player.
+  - OnlineActivity chứa danh sách Player đang online, hiện trên rvPlayers.
   - MatchActivity chứa đề (10 MathProblem) và bài làm (10 Answer) trong questions, answers.
 - Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (kết tập); MatchPlayer gồm các Answer (kết tập, 10 khi đã nộp); Answer chứa thông tin MathProblem (kết tập, mỗi câu có 2 bài làm của 2 người).
 
@@ -484,10 +483,10 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
 24. Hàm onDataChange() gọi lớp Player để đóng gói từng người chơi kèm tổng điểm và trạng thái.
 25. Lớp Player trả đối tượng Player cho hàm onDataChange().
 26. PresenceFirebaseDAO gọi hàm onPlayersChanged() của PlayerListCallback đã đăng ký ở bước 7, chính là OnlineActivity, truyền danh sách người chơi online.
-27. Hàm onPlayersChanged() hiển thị tổng điểm của chính người chơi, rồi gọi hàm setPlayers() của PlayerAdapter với danh sách những người còn lại, xếp theo tổng điểm giảm dần.
-28. PlayerAdapter hiển thị danh sách người chơi online gồm tên, tổng điểm, trạng thái.
+27. Hàm onPlayersChanged() hiển thị tổng điểm của chính người chơi, rồi cập nhật danh sách rvPlayers với những người còn lại, xếp theo tổng điểm giảm dần.
+28. OnlineActivity hiển thị danh sách người chơi online gồm tên, tổng điểm, trạng thái.
 29. Người chơi bấm vào tên một đối thủ đang rỗi.
-30. Hàm onClick() của PlayerAdapter gọi hàm onPlayerClick() của OnlineActivity.
+30. Hàm onClick() của dòng đó trong danh sách gọi hàm onPlayerClick() của OnlineActivity.
 31. Hàm onPlayerClick() thấy đối thủ đang rỗi và người chơi chưa có lời mời nào đang chờ, gọi hàm sendChallenge() của ChallengeFirebaseDAO.
 32. Hàm sendChallenge() gọi lớp Challenge để tạo lời mời đang chờ, rồi ghi lời mời lên Firebase.
 33. Lớp Challenge trả đối tượng Challenge cho hàm sendChallenge().
@@ -514,6 +513,11 @@ Biểu đồ xoay quanh MatchActivity. MatchFirebaseDAO theo dõi node trận v�
   - Báo khi danh sách thay đổi (bước 23–26).
   - Chuyển lời mời giữa 2 máy (bước 31–40).
 - **Chỉ online khi ở màn Chơi online:** người chơi được ghi vào danh sách online khi mở OnlineActivity (bước 22). Khi rời màn này, hàm onDestroy() của OnlineActivity gỡ các theo dõi rồi gọi hàm goOffline() của PresenceFirebaseDAO. Lời mời thách đấu cũng chỉ nhận được trong lúc đó, vì watchIncoming() đăng ký ở bước 8.
+- **Bước 7, 8 không có thông điệp trả về** vì đó là lời đăng ký theo dõi (mẫu Observer), vẽ bằng mũi tên bất đồng bộ. Hàm watchOnlinePlayers(), watchIncoming() chỉ gắn listener lên node presence, challenges rồi trả về void ngay, không chờ dữ liệu. Dữ liệu đến sau, mỗi khi node thay đổi: Firebase gọi onDataChange() của DAO, DAO gọi lại OnlineActivity qua callback (bước 23–26 cho danh sách online, bước 37–40 cho lời mời). Thông điệp callback đó đóng vai trò kết quả trả về, và có thể đến nhiều lần cho một lần đăng ký. watchChallenge() ở bước 35 cũng vậy.
+- **Nhiều người thay đổi cùng lúc** không làm sai trạng thái:
+  - Firebase gọi các listener lần lượt trên main thread, cùng luồng với sự kiện bấm nút, nên 2 callback không chạy song song trên OnlineActivity. Vì thế onPlayersChanged() cập nhật giao diện trực tiếp mà không cần runOnUiThread().
+  - Mỗi lần onDataChange() nhận ảnh chụp toàn bộ node tại thời điểm đó, không phải phần thay đổi. Nhiều người vào, ra cùng lúc thì lần gọi sau thay danh sách bằng trạng thái mới nhất.
+  - Xung đột nghiệp vụ do server quyết định: hàm create() của MatchRestController là synchronized, đọc lại trạng thái lời mời và trạng thái 2 người trên Firebase. Lời mời đã hủy, hay một người đã bận vì nhận lời mời khác, thì server từ chối, ghi lời mời là rejected và trả lỗi 409. Ở app, onPlayerClick() bỏ qua đối thủ đang bận và chỉ cho 1 lời mời chờ trả lời.
 - **Bất đồng bộ:** onCreate() đăng ký theo dõi ở bước 7–8 trước, rồi hàm goOnline() mở Thread ở bước 10 và trả về ngay; yêu cầu REST ở bước 11–21 chạy trên Thread đó. watchOnlinePlayers(), watchIncoming(), watchChallenge() là lời đăng ký; kết quả đến sau qua onDataChange(). Bước 37 xảy ra khi đối thủ đồng ý ở đoạn B.
 - **Callback:** các FirebaseDAO không biết OnlineActivity, chỉ giữ interface PlayerListCallback, ChallengeCallback được truyền vào lúc đăng ký (bước 7, 8, 35). Bước 26 và 40 gọi qua interface đó; ở chức năng này đối tượng cài đặt là OnlineActivity.
 - Bước 41–42 gỡ theo dõi lời mời đã gửi trước khi mở trận, để lần ghi sau của server lên lời mời không gọi lại onChallengeChanged().
@@ -761,7 +765,7 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 | | btnRanking | ImageButton | Biểu tượng bảng xếp hạng dạng cột, góc phải ngoài cùng, mở màn Lịch sử đấu ở thẻ Bảng xếp hạng; contentDescription "Bảng xếp hạng" | subRanking |
 | HistoryActivity | tabLayout | TabLayout | 2 thẻ Trận của tôi, Bảng xếp hạng | subTabRanking |
 | | layoutMyMatches | LinearLayout | Khối thẻ Trận của tôi, ẩn khi chọn thẻ Bảng xếp hạng | |
-| | pieChart | PieChartView | Biểu đồ tròn tỉ lệ thắng, hòa, thua | outWinRateChart |
+| | pieChart | View tự vẽ | Biểu đồ tròn tỉ lệ thắng, hòa, thua | outWinRateChart |
 | | txtWins, txtDraws, txtLosses | TextView | Chú giải số trận thắng, hòa, thua | outSummary |
 | | txtTotal | TextView | Tổng số trận | outSummary |
 | | rvMatches | RecyclerView | Danh sách trận | outsubListMatch |
@@ -773,7 +777,7 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 | | txtPoints | TextView | "+1" | một dòng của outsubListMatch |
 | | txtScore | TextView | "10 – 10 câu" | một dòng của outsubListMatch |
 | | txtEndedAt | TextView | "25/10 20:15" | một dòng của outsubListMatch |
-| item_ranking.xml | txtRank, txtName, txtPoints, txtAvgOpponent, txtAvgWinTime | TextView | Hạng, tên, tổng điểm, trung bình điểm đối thủ, trung bình thời gian thắng ("—" nếu chưa thắng) | một dòng của outListRanking |
+| item_ranking.xml | txtRank, txtName, txtPoints | TextView | Hạng, tên, tổng điểm | một dòng của outListRanking |
 | MatchDetailActivity | txtTitle | TextView | "Trận #37 · 25/10/2026 20:15" | |
 | | txtResult | TextView | WIN! / LOSE! / TIE! | outResult |
 | | txtPoints | TextView | "+1 điểm" | outPoints |
@@ -793,19 +797,15 @@ Màn Chi tiết trận có thanh trên với tiêu đề CHI TIẾT TRẬN căn 
 
 *Hình 13: Biểu đồ lớp chi tiết chức năng Xem lịch sử đấu.*
 
-Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) ở giữa, Server (Spring Boot) bên phải. Package Common là thư viện mathdash-common.jar chứa các lớp thực thể; DAO của app và DAO của server cùng dùng một bộ thực thể này. Biểu đồ chỉ có các lớp tham gia vào logic của chức năng; màn chỉ dùng để mở sang màn khác không được vẽ. Lớp giao diện chỉ ghi các phương thức xử lý nghiệp vụ, các hàm chỉ để vẽ giao diện nằm trong mã nguồn. DAO cha ghi đối tượng kết nối dùng chung (con); mỗi DAO ghi hàm khởi tạo và mọi phương thức mà chức năng này gọi; DAO không ghi biến môi trường như địa chỉ server. Phần chung của các Activity và các Adapter nằm ở 2 lớp cha BaseActivity, BaseAdapter. Các View con, biến tạm, cờ trạng thái và hàm override của Android như onDestroy, onBackPressed nằm trong mã nguồn.
+Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) ở giữa, Server (Spring Boot) bên phải. Package Common là thư viện mathdash-common.jar chứa các lớp thực thể; DAO của app và DAO của server cùng dùng một bộ thực thể này. Biểu đồ chỉ có các lớp tham gia vào logic của chức năng; màn chỉ dùng để mở sang màn khác không được vẽ. Lớp giao diện chỉ ghi các phương thức xử lý nghiệp vụ, các hàm chỉ để vẽ giao diện nằm trong mã nguồn. DAO cha ghi đối tượng kết nối dùng chung (con); mỗi DAO ghi hàm khởi tạo và mọi phương thức mà chức năng này gọi; DAO không ghi biến môi trường như địa chỉ server. Phần chung của các Activity nằm ở lớp cha BaseActivity; danh sách trên mỗi màn do chính Activity đổ dữ liệu. Các View con, biến tạm, cờ trạng thái và hàm override của Android như onDestroy, onBackPressed nằm trong mã nguồn.
 
 **Package "Client (Android)".**
 
 | Loại | Lớp | Mô tả |
 |---|---|---|
-| Boundary | BaseActivity, BaseAdapter | BaseActivity là lớp cha trừu tượng của mọi Activity trong chức năng. Lớp này giữ người chơi đang đăng nhập (me), lấy bằng SessionDAO.getPlayer trong onCreate, và cài đặt View.OnClickListener với onClick; Activity con chỉ viết phần riêng của màn mình. BaseAdapter là lớp cha trừu tượng của mọi Adapter, kế thừa RecyclerView.Adapter, giữ danh sách phần tử (items : List\<T>) và cài đặt sẵn onCreateViewHolder, getItemCount; Adapter con chỉ còn onBindViewHolder và phần riêng của mình |
-| Boundary | HistoryActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer rồi gọi loadHistory; Intent có EXTRA_TAB = TAB_RANKING thì chọn sẵn thẻ Bảng xếp hạng bằng tabLayout.selectTab, onTabSelected được gọi và tải bảng xếp hạng. loadHistory gọi MatchApiDAO.getHistory trong Thread, rồi trong runOnUiThread gọi showSummary và gắn MatchHistoryAdapter. showSummary đếm Match.getResult theo id người chơi thành số trận thắng, hòa, thua, gọi PieChartView.setData và ghi chú giải. onTabSelected ẩn / hiện 2 khối layoutMyMatches, layoutRanking; chưa tải bảng xếp hạng (rankingLoaded sai) thì gọi loadRanking. loadRanking đặt rankingLoaded, lỗi thì đặt lại để lần chọn sau tải lại. onMatchClick mở MatchDetailActivity kèm matchId với khóa EXTRA_MATCH_ID. Lỗi mạng thì showError hiện Toast |
-| Boundary | PieChartView | View tự vẽ, kế thừa View của Android. Giữ 3 số wins, draws, losses, 3 Paint (arcPaint, percentPaint, labelPaint) và khung oval tạo sẵn để onDraw không cấp phát lại. setData lưu 3 số rồi gọi invalidate; onDraw gọi drawPart vẽ từng cung tròn bằng Canvas.drawArc theo tỉ lệ, khoét giữa thành vành khuyên và ghi tỉ lệ thắng. Cả 3 số bằng 0 thì vẽ vòng xám |
-| Boundary | MatchHistoryAdapter, MatchHistoryViewHolder | MatchHistoryAdapter giữ danh sách Match, id người xem, HistoryActivity chứa nó và timeFormat định dạng thời điểm kết thúc. onBindViewHolder gọi Match.getOpponent, getResult, getPoints để điền một dòng và tô màu dải kết quả; bấm vào dòng thì gọi onMatchClick của HistoryActivity, giống cách PlayerAdapter gọi về OnlineActivity. MatchHistoryViewHolder giữ các View của một dòng |
-| Boundary | RankingAdapter, RankingViewHolder | RankingAdapter hiện hạng bằng vị trí + 1, 3 tiêu chí của Player, tô nền dòng của người xem |
-| Boundary | MatchDetailActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer, đọc matchId từ Intent rồi gọi loadMatch. loadMatch gọi MatchApiDAO.getById trong Thread, rồi trong runOnUiThread gọi showMatch. showMatch dùng Match.getOpponent tìm MatchPlayer của đối thủ và của mình, showResult tô màu THẮNG / HÒA / THUA theo Match.getResult, getPoints ghi điểm trận; stats dùng getFinishTime ghi số câu đúng và thời gian của từng bên; ghi tên 2 người vào txtMyColumn, txtOpponentColumn; rồi gắn ProblemAdapter với đề và bài làm của 2 người. matchId giữ mã trận đọc từ Intent |
-| Boundary | ProblemAdapter, ProblemViewHolder | ProblemAdapter giữ 10 MathProblem (listProblem) và bài làm của mình, của đối thủ (myAnswers, opponentAnswers : List\<Answer>). onBindViewHolder ghi số thứ tự, MathProblem.getExpression thay dấu "?" bằng correctAnswer, rồi gọi showAnswer cho 2 ô bài làm. answerAt lấy bài làm ở vị trí câu, không có thì trả null (người bỏ trận khi chưa nộp). showAnswer dùng Answer.isAnswered, isCorrect để hiện "✓" xanh hoặc "✗" đỏ kèm phương án đã chọn và answerTime đổi ra giây; bỏ trống hiện "Bỏ trống", không có bài làm hiện "—". ProblemViewHolder giữ txtIndex, txtExpression, txtMyAnswer, txtOpponentAnswer |
+| Boundary | BaseActivity | BaseActivity là lớp cha trừu tượng của mọi Activity trong chức năng. Lớp này giữ người chơi đang đăng nhập (me), lấy bằng SessionDAO.getPlayer trong onCreate, và cài đặt View.OnClickListener với onClick; Activity con chỉ viết phần riêng của màn mình. Danh sách trên màn hình (RecyclerView) do chính Activity đổ dữ liệu, bằng một lớp Adapter nội bộ nằm trong file Activity đó |
+| Boundary | HistoryActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer rồi gọi loadHistory; Intent có EXTRA_TAB = TAB_RANKING thì chọn sẵn thẻ Bảng xếp hạng bằng tabLayout.selectTab, onTabSelected được gọi và tải bảng xếp hạng. loadHistory gọi MatchApiDAO.getHistory trong Thread, rồi trong runOnUiThread gọi showSummary và gắn danh sách trận vào rvMatches: mỗi dòng dùng Match.getOpponent, getResult, getPoints và tô màu dải kết quả, bấm vào dòng thì gọi onMatchClick. showSummary đếm Match.getResult theo id người chơi thành số trận thắng, hòa, thua, vẽ biểu đồ tròn lên pieChart và ghi chú giải. pieChart là View tự vẽ nằm trong HistoryActivity: vẽ từng cung tròn bằng Canvas.drawArc theo tỉ lệ, khoét giữa thành vành khuyên và ghi tỉ lệ thắng. onTabSelected ẩn / hiện 2 khối layoutMyMatches, layoutRanking; chưa tải bảng xếp hạng (rankingLoaded sai) thì gọi loadRanking. loadRanking đặt rankingLoaded, lỗi thì đặt lại để lần chọn sau tải lại. onMatchClick mở MatchDetailActivity kèm matchId với khóa EXTRA_MATCH_ID. Lỗi mạng thì showError hiện Toast |
+| Boundary | MatchDetailActivity | onCreate lấy người chơi bằng SessionDAO.getPlayer, đọc matchId từ Intent rồi gọi loadMatch. loadMatch gọi MatchApiDAO.getById trong Thread, rồi trong runOnUiThread gọi showMatch. showMatch dùng Match.getOpponent tìm MatchPlayer của đối thủ và của mình, showResult tô màu THẮNG / HÒA / THUA theo Match.getResult, getPoints ghi điểm trận; stats dùng getFinishTime ghi số câu đúng và thời gian của từng bên; ghi tên 2 người vào txtMyColumn, txtOpponentColumn; rồi gắn đề và bài làm của 2 người vào rvProblems: mỗi dòng ghi phép tính có đáp án đúng, answerAt lấy bài làm ở vị trí câu (null khi người bỏ trận chưa nộp), showAnswer dùng Answer.isAnswered, isCorrect để hiện "✓" xanh hoặc "✗" đỏ kèm phương án đã chọn và thời gian. matchId giữ mã trận đọc từ Intent |
 | Control | SessionDAO | Như ở Chơi online |
 | Control | ApiDAO ← MatchApiDAO | getHistory gửi GET /api/matches?playerId={id}; getById gửi GET /api/matches/{id}. Cả 2 đóng gói JSON thành Match bằng toMatch. Với getById, toMatch đóng gói cả bài làm của từng người và gắn câu thứ i của đề vào bài làm thứ i; lịch sử đấu không kèm bài làm nên danh sách bài làm rỗng |
 | Control | ApiDAO ← PlayerApiDAO | getRanking gửi GET /api/players/ranking, đóng gói từng phần tử thành Player bằng toPlayer |
@@ -827,10 +827,9 @@ Biểu đồ chia 3 package: Client (Android) bên trái, Common (Java Library) 
 
 **Quan hệ giữa các lớp giao diện:**
 - HistoryActivity – MatchDetailActivity nối nhau bằng quan hệ liên kết theo luồng màn hình. OnlineActivity chỉ mở HistoryActivity nên không vẽ.
-- HistoryActivity nối liên kết với PieChartView, MatchHistoryAdapter, RankingAdapter; mỗi Adapter nối với ViewHolder của nó. MatchDetailActivity – ProblemAdapter – ProblemViewHolder cũng vậy.
-- MatchHistoryAdapter giữ HistoryActivity để gọi lại onMatchClick khi một dòng được bấm.
-- Layout: HistoryActivity – activity_history.xml, MatchHistoryViewHolder – item_match_history.xml, RankingViewHolder – item_ranking.xml, MatchDetailActivity – activity_match_detail.xml, ProblemViewHolder – item_problem.xml.
-- **Kết tập:** HistoryActivity giữ me và danh sách trận; MatchHistoryAdapter giữ danh sách Match; RankingAdapter giữ danh sách Player; MatchDetailActivity giữ me và một Match; ProblemAdapter giữ 10 MathProblem và bài làm của 2 người. Hình thoi ở phía Activity hoặc Adapter.
+- Danh sách trận và bảng xếp hạng là 2 RecyclerView của HistoryActivity; 10 câu của trận là RecyclerView của MatchDetailActivity.
+- Layout: HistoryActivity – activity_history.xml, MatchDetailActivity – activity_match_detail.xml.
+- **Kết tập:** HistoryActivity giữ danh sách trận và danh sách người chơi của bảng xếp hạng; MatchDetailActivity giữ một Match gồm 10 MathProblem và bài làm của 2 người; me nằm ở BaseActivity. Hình thoi ở phía Activity.
 - Thực thể: Match gồm 2 MatchPlayer và 10 MathProblem (kết tập); MatchPlayer gồm các Answer (kết tập); Answer chứa thông tin MathProblem (kết tập).
 
 Chức năng dùng lại MatchApiDAO, PlayerApiDAO, MatchRestController, PlayerRestController, MatchDAO, PlayerDAO của Chơi online; biểu đồ chỉ vẽ các phương thức chức năng này dùng. Phần mới gồm MatchApiDAO.getHistory, MatchRestController.getHistory, MatchDAO.findByPlayer và Match.getOpponent.
@@ -843,7 +842,7 @@ Mỗi biểu đồ dưới đây chỉ có các lớp và phương thức mà m�
 
 *Hình 14: Biểu đồ lớp chi tiết use case Xem lịch sử đấu.*
 
-HistoryActivity lấy danh sách trận, đếm thắng, hòa, thua bằng showSummary và đưa vào PieChartView, MatchHistoryAdapter. MatchApiDAO.getHistory gọi MatchRestController.getHistory, và MatchDAO.findByPlayer đọc các trận đã kết thúc của người chơi. Thực thể dùng ở đây là Player, Match và MatchPlayer; lịch sử đấu không kèm đề và bài làm.
+HistoryActivity lấy danh sách trận, đếm thắng, hòa, thua bằng showSummary và vẽ biểu đồ tròn, rồi hiện danh sách trận trên rvMatches. MatchApiDAO.getHistory gọi MatchRestController.getHistory, và MatchDAO.findByPlayer đọc các trận đã kết thúc của người chơi. Thực thể dùng ở đây là Player, Match và MatchPlayer; lịch sử đấu không kèm đề và bài làm.
 
 ##### 4.2.2.2. Use case Xem chi tiết trận
 
@@ -851,7 +850,7 @@ HistoryActivity lấy danh sách trận, đếm thắng, hòa, thua bằng showS
 
 *Hình 15: Biểu đồ lớp chi tiết use case Xem chi tiết trận.*
 
-MatchDetailActivity lấy trận bằng MatchApiDAO.getById rồi gắn ProblemAdapter để hiện 10 câu cùng bài làm của 2 người. Phía server, MatchRestController.getById đọc đề và bài làm bằng MatchDAO.findById, findAnswers, rồi gán tổng điểm bằng PlayerDAO.getTotalPoints. Thực thể dùng ở đây là Player, Match, MatchPlayer, Answer và MathProblem.
+MatchDetailActivity lấy trận bằng MatchApiDAO.getById rồi hiện 10 câu cùng bài làm của 2 người trên rvProblems. Phía server, MatchRestController.getById đọc đề và bài làm bằng MatchDAO.findById, findAnswers, rồi gán tổng điểm bằng PlayerDAO.getTotalPoints. Thực thể dùng ở đây là Player, Match, MatchPlayer, Answer và MathProblem.
 
 ##### 4.2.2.3. Use case Xem bảng xếp hạng
 
@@ -859,7 +858,7 @@ MatchDetailActivity lấy trận bằng MatchApiDAO.getById rồi gắn ProblemA
 
 *Hình 16: Biểu đồ lớp chi tiết use case Xem bảng xếp hạng.*
 
-HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking và RankingAdapter hiện danh sách. PlayerApiDAO.getRanking gọi PlayerRestController.getRanking. PlayerDAO lấy mọi người chơi bằng findAllPlayers, lấy các trận đã xong bằng MatchDAO.findFinished, rồi rank tính 3 tiêu chí qua addMatch, averagePoints, averageSeconds. Thực thể dùng ở đây là Player, Match và MatchPlayer.
+HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking và hiện danh sách trên rvRanking. PlayerApiDAO.getRanking gọi PlayerRestController.getRanking. PlayerDAO lấy mọi người chơi bằng findAllPlayers, lấy các trận đã xong bằng MatchDAO.findFinished, rồi rank tính 3 tiêu chí qua addMatch, averagePoints, averageSeconds. Thực thể dùng ở đây là Player, Match và MatchPlayer.
 
 #### 4.2.3. Biểu đồ tuần tự chi tiết
 
@@ -883,18 +882,18 @@ HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking v
 16. Trong hàm runOnUiThread(), hàm loadHistory() gọi hàm showSummary() của chính nó.
 17. Hàm showSummary() gọi hàm getResult() của Match cho từng trận để đếm số trận thắng, hòa, thua.
 18. Match trả về kết quả trận của người chơi.
-19. Hàm showSummary() gọi hàm setData() của PieChartView với số trận thắng, hòa, thua.
-20. Hàm onDraw() của PieChartView vẽ biểu đồ tròn tỉ lệ thắng, hòa, thua cho người chơi.
-21. Hàm loadHistory() tạo MatchHistoryAdapter với danh sách trận và id của người chơi, rồi gắn vào danh sách.
-22. Hàm onBindViewHolder() của MatchHistoryAdapter gọi hàm getOpponent() của Match.
+19. Hàm showSummary() vẽ biểu đồ tròn tỉ lệ thắng, hòa, thua lên pieChart.
+20. HistoryActivity hiển thị biểu đồ tỉ lệ thắng, hòa, thua cho người chơi.
+21. Hàm loadHistory() gắn danh sách trận vào rvMatches.
+22. Với mỗi dòng của danh sách, HistoryActivity gọi hàm getOpponent() của Match.
 23. Match trả về đối thủ trong trận.
-24. Hàm onBindViewHolder() gọi hàm getResult() của Match.
+24. HistoryActivity gọi hàm getResult() của Match.
 25. Match trả về kết quả trận.
-26. Hàm onBindViewHolder() gọi hàm getPoints() của Match.
+26. HistoryActivity gọi hàm getPoints() của Match.
 27. Match trả về điểm trận.
-28. MatchHistoryAdapter hiển thị danh sách trận cho người chơi.
+28. HistoryActivity hiển thị danh sách trận cho người chơi.
 29. Người chơi bấm vào một trận trong danh sách.
-30. MatchHistoryAdapter gọi hàm onMatchClick() của HistoryActivity.
+30. Hàm onClick() của dòng đó gọi hàm onMatchClick() của HistoryActivity.
 31. Hàm onMatchClick() gọi hàm startActivity() mở MatchDetailActivity, kèm mã trận.
 32. Hàm onCreate() của MatchDetailActivity gọi hàm getPlayer() của SessionDAO.
 33. Hàm getPlayer() trả đối tượng Player cho hàm onCreate().
@@ -924,11 +923,11 @@ HistoryActivity ở thẻ Bảng xếp hạng: onTabSelected gọi loadRanking v
 57. Với người chơi và đối thủ, hàm showMatch() gọi hàm stats() của chính nó.
 58. Hàm stats() gọi hàm getFinishTime() của Match.
 59. Match trả về thời gian làm bài.
-60. Hàm showMatch() tạo ProblemAdapter với 10 câu hỏi của trận và bài làm từng câu của người chơi, của đối thủ, rồi gắn vào danh sách.
-61. Hàm onBindViewHolder() của ProblemAdapter gọi hàm getExpression() của MathProblem của câu đó.
-62. MathProblem trả về chuỗi phép tính; hàm onBindViewHolder() ghép đáp án đúng vào phép tính.
-63. Hàm onBindViewHolder() gọi hàm answerAt() của chính nó để lấy bài làm câu đó của người chơi và của đối thủ.
-64. Với từng bài làm, hàm onBindViewHolder() gọi hàm showAnswer() của chính nó.
+60. Hàm showMatch() gắn 10 câu hỏi của trận cùng bài làm từng câu của người chơi, của đối thủ vào rvProblems.
+61. Với mỗi dòng của danh sách, MatchDetailActivity gọi hàm getExpression() của MathProblem của câu đó.
+62. MathProblem trả về chuỗi phép tính; MatchDetailActivity ghép đáp án đúng vào phép tính.
+63. MatchDetailActivity gọi hàm answerAt() để lấy bài làm câu đó của người chơi và của đối thủ.
+64. Với từng bài làm, MatchDetailActivity gọi hàm showAnswer().
 65. Hàm showAnswer() gọi hàm isAnswered() của Answer.
 66. Answer trả về câu đó đã được làm.
 67. Hàm showAnswer() gọi hàm isCorrect() của Answer.
@@ -952,7 +951,7 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 - **Có 2 lời gọi REST:** bước 7 lấy danh sách trận, bước 36 lấy một trận đầy đủ. Server đi theo khuôn MatchRestController → MatchDAO → Match.
 - **Danh sách trận không kèm đề** (bước 9) để mỗi lần mở lịch sử chỉ đọc 2 bảng tblMatch, tblMatchPlayer. Đề, đáp án và bài làm từng câu chỉ được đọc khi người chơi mở một trận (bước 39–41).
 - **Biểu đồ tròn và từng dòng trận** đều dựa trên getResult(), getPoints(), getOpponent() của Match (bước 17, 22–27). Đây là cùng luật dùng khi kết thúc trận, nên lịch sử luôn khớp với kết quả đã báo cho 2 người.
-- **Từng câu của chi tiết trận** (bước 61–70): ProblemAdapter lấy bài làm câu đó của mỗi người bằng answerAt(), rồi showAnswer() hỏi Answer: isAnswered() để biết câu bỏ trống, isCorrect() để tô đúng / sai. Đúng / sai không lưu trong CSDL mà tính lại từ phương án đã chọn và đáp án đúng, bằng cùng hàm isCorrect() của MathProblem mà server dùng khi chấm. Người bỏ trận trước khi nộp không có bài làm, answerAt() không trả bài làm nào và ô đó hiện dấu gạch ngang.
+- **Từng câu của chi tiết trận** (bước 61–70): MatchDetailActivity lấy bài làm câu đó của mỗi người bằng answerAt(), rồi showAnswer() hỏi Answer: isAnswered() để biết câu bỏ trống, isCorrect() để tô đúng / sai. Đúng / sai không lưu trong CSDL mà tính lại từ phương án đã chọn và đáp án đúng, bằng cùng hàm isCorrect() của MathProblem mà server dùng khi chấm. Người bỏ trận trước khi nộp không có bài làm, answerAt() không trả bài làm nào và ô đó hiện dấu gạch ngang.
 - Lời gọi mạng chạy trong Thread (bước 6, 35). Phần vẽ giao diện chạy trong hàm runOnUiThread() (bước 16, 49).
 
 **Đoạn B: Xem bảng xếp hạng**
@@ -989,8 +988,8 @@ Các bước 61–70 lặp lại cho đến câu thứ 10.
 30. Với mỗi phần tử JSON, hàm toPlayer() của PlayerApiDAO gọi lớp Player để đóng gói.
 31. Lớp Player trả đối tượng Player cho PlayerApiDAO.
 32. PlayerApiDAO trả danh sách người chơi cho hàm loadRanking().
-33. Trong hàm runOnUiThread(), hàm loadRanking() tạo RankingAdapter với danh sách và id của người xem, rồi gắn vào danh sách xếp hạng.
-34. RankingAdapter hiển thị bảng xếp hạng, dòng của người xem được tô nổi bật.
+33. Trong hàm runOnUiThread(), hàm loadRanking() gắn danh sách người chơi vào rvRanking.
+34. HistoryActivity hiển thị bảng xếp hạng, dòng của người xem được tô nổi bật.
 35. Người chơi nhấn Back.
 36. HistoryActivity gọi hàm finish(), quay về OnlineActivity.
 37. OnlineActivity hiển thị lại màn Chơi online cho người chơi.
@@ -1153,10 +1152,10 @@ Bảng dữ liệu mẫu bài làm từng câu trận 37:
 | **Actor** | Người chơi: Hùng |
 | **Tiền điều kiện** | Hùng đã đăng nhập, máy có kết nối mạng, đang ở giao diện chơi online; hệ thống có 7 người chơi với tổng điểm và các trận đã kết thúc như bảng dữ liệu mẫu bảng xếp hạng bên dưới |
 | **Hậu điều kiện** | Hùng thấy thứ hạng của mọi người chơi; dữ liệu không thay đổi; giao diện chơi online hiện lại |
-| **Sự kiện chính** | 1. Ở giao diện chơi online, Hùng nhấn nút biểu tượng **Bảng xếp hạng** ở góc phải ngoài cùng.<br>2. Hệ thống lấy mọi người chơi và các trận đã kết thúc, tính 3 tiêu chí rồi sắp xếp. Giao diện lịch sử đấu hiện lên với thẻ **Bảng xếp hạng** được mở sẵn, thẻ Trận của tôi nằm bên cạnh để chọn qua lại. Thẻ Bảng xếp hạng hiện danh sách như bảng dữ liệu mẫu bảng xếp hạng bên dưới, dòng HUNG được tô nổi bật. HUNG và LAN cùng 13,5 điểm, HUNG đã gặp các đối thủ mạnh hơn, 11 so với 9, nên đứng trên. AN và NAM trùng cả 2 tiêu chí đầu, AN thắng nhanh hơn nên đứng trên.<br>3. Hùng xem danh sách rồi nhấn Back.<br>4. Giao diện chơi online hiện lại. |
+| **Sự kiện chính** | 1. Ở giao diện chơi online, Hùng nhấn nút biểu tượng **Bảng xếp hạng** ở góc phải ngoài cùng.<br>2. Hệ thống lấy mọi người chơi và các trận đã kết thúc, tính 3 tiêu chí rồi sắp xếp. Giao diện lịch sử đấu hiện lên với thẻ **Bảng xếp hạng** được mở sẵn, thẻ Trận của tôi nằm bên cạnh để chọn qua lại. Thẻ Bảng xếp hạng hiện danh sách gồm hạng, tên và tổng điểm theo thứ tự trong bảng dữ liệu mẫu bảng xếp hạng bên dưới, dòng HUNG được tô nổi bật. HUNG và LAN cùng 13,5 điểm, HUNG đã gặp các đối thủ mạnh hơn, 11 so với 9, nên đứng trên. AN và NAM trùng cả 2 tiêu chí đầu, AN thắng nhanh hơn nên đứng trên.<br>3. Hùng xem danh sách rồi nhấn Back.<br>4. Giao diện chơi online hiện lại. |
 | **Ngoại lệ** | 1a. Đang ở thẻ Trận của tôi của giao diện lịch sử đấu, Hùng chọn thẻ Bảng xếp hạng.<br>1a.1. Kịch bản tiếp tục từ bước 2.<br>2a. Máy mất mạng khi Hùng mở thẻ Bảng xếp hạng.<br>2a.1. Hệ thống báo "Không tải được bảng xếp hạng, kiểm tra kết nối mạng", danh sách để trống.<br>2a.2. Hùng chọn thẻ Trận của tôi rồi chọn lại thẻ Bảng xếp hạng để tải lại. Kịch bản tiếp tục từ bước 2.<br>3a. Đang ở thẻ Bảng xếp hạng, Hùng chọn thẻ Trận của tôi.<br>3a.1. Giao diện hiện biểu đồ tròn và danh sách trận như bước 2 của use case Xem lịch sử đấu; Hùng bấm vào một trận để xem chi tiết như use case Xem chi tiết trận. |
 
-Bảng dữ liệu mẫu bảng xếp hạng:
+Bảng dữ liệu mẫu bảng xếp hạng. Giao diện chỉ hiện 3 cột đầu; 2 cột cuối là tiêu chí phụ hệ thống dùng để sắp xếp khi trùng tổng điểm.
 
 | Hạng | Tên | Tổng điểm | TB điểm đối thủ | TB thời gian thắng |
 |---|---|---|---|---|

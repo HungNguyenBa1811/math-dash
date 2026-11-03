@@ -7,7 +7,6 @@ box "Client (Android)" #FFFFFF
 boundary OnlineActivity as OA
 boundary HistoryActivity as HA
 boundary TabLayout as TL
-boundary RankingAdapter as RAD
 control SessionDAO as SD
 control PlayerApiDAO as PAD
 entity Player as P
@@ -52,8 +51,8 @@ PRC --> PAD : List<Player> (JSON)
 PAD -> P : toPlayer(): đóng gói Player
 P --> PAD : Player
 PAD --> HA : List<Player>
-HA -> RAD : runOnUiThread(): new RankingAdapter()
-RAD --> U : hiển thị bảng xếp hạng
+HA -> HA : runOnUiThread(): gắn bảng xếp hạng vào rvRanking
+HA --> U : hiển thị bảng xếp hạng
 U -> HA : nhấn Back
 HA -> OA : finish()
 OA --> U : hiển thị lại màn Chơi online

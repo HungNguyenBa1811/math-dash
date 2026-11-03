@@ -2,13 +2,18 @@ package ptit.e23cnpm01.nguyenbahung.math_dash.view;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,10 +36,10 @@ import ptit.e23cnpm01.nguyenbahung.math_dash.dao.MatchApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerApiDAO;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PlayerListCallback;
 import ptit.e23cnpm01.nguyenbahung.math_dash.dao.PresenceFirebaseDAO;
+import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Challenge;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Match;
 import ptit.e23cnpm01.nguyenbahung.mathdash.entity.Player;
-import ptit.e23cnpm01.nguyenbahung.math_dash.util.PointFormat;
 
 // The player is online only while on this screen
 public class OnlineActivity extends BaseActivity implements PlayerListCallback, ChallengeCallback {
@@ -260,5 +265,61 @@ public class OnlineActivity extends BaseActivity implements PlayerListCallback, 
                 Toast.makeText(OnlineActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private static class PlayerAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
+        private List<Player> items = new ArrayList<>();
+        private OnlineActivity activity;
+
+        public PlayerAdapter(OnlineActivity activity) {
+            this.activity = activity;
+        }
+
+        public void setPlayers(List<Player> players) {
+            items = players;
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public PlayerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_player, parent, false);
+            return new PlayerViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PlayerViewHolder holder, int position) {
+            final Player player = items.get(position);
+            boolean busy = Player.BUSY.equals(player.getStatus());
+            holder.txtName.setText(player.getDisplayName());
+            holder.txtPoints.setText(activity.getString(R.string.label_points, PointFormat.format(player.getTotalPoints())));
+            holder.txtStatus.setText(busy ? R.string.status_busy : R.string.status_free);
+            holder.txtStatus.setTextColor(activity.getColor(busy ? R.color.ink_dim : R.color.win));
+            holder.txtStatus.setTypeface(ResourcesCompat.getFont(activity, R.font.body), busy ? Typeface.NORMAL : Typeface.BOLD);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    activity.onPlayerClick(player);
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+    }
+
+    private static class PlayerViewHolder extends RecyclerView.ViewHolder {
+        TextView txtName;
+        TextView txtPoints;
+        TextView txtStatus;
+
+        public PlayerViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtName = itemView.findViewById(R.id.txtName);
+            txtPoints = itemView.findViewById(R.id.txtPoints);
+            txtStatus = itemView.findViewById(R.id.txtStatus);
+        }
     }
 }

@@ -8,27 +8,19 @@ package "Client (Android)" as PC {
     # onCreate(savedInstanceState : Bundle) : void
     + onClick(v : View) : void
   }
-  abstract class BaseAdapter <<boundary>> {
-    # items : List<T>
-    + onCreateViewHolder(parent : ViewGroup, viewType : int) : ViewHolder
-    + getItemCount() : int
-  }
   class OnlineActivity <<boundary>> {
     - sentChallenge : Challenge
     + onPlayersChanged(players : List<Player>) : void
     + onChallengeChanged(challenge : Challenge) : void
     + onPlayerClick(opponent : Player) : void
+    # onDestroy() : void
     - goOnline() : void
+    - showChallengeDialog(challenge : Challenge) : void
     - acceptChallenge(challenge : Challenge) : void
     - closeSentChallenge() : void
     - openMatch(matchId : int) : void
   }
-  class PlayerAdapter <<boundary>> {
-    + setPlayers(players : List<Player>) : void
-  }
-  class PlayerViewHolder <<boundary>>
   class "activity_online.xml" as xmlOnline
-  class "item_player.xml" as xmlItemPlayer
 
   interface PlayerListCallback {
     + onPlayersChanged(players : List<Player>) : void
@@ -140,6 +132,7 @@ package "Server (Spring Boot)" as PS {
   class ProblemDAO <<control>> {
     + ProblemDAO()
     + generateProblems(count : int) : List<MathProblem>
+    + generateProblem() : MathProblem
   }
   class FirebaseAdminDAO <<control>> {
     + FirebaseAdminDAO()
@@ -151,15 +144,11 @@ package "Server (Spring Boot)" as PS {
   }
 }
 
+OnlineActivity o-- "n" Player
 OnlineActivity --|> BaseActivity
-PlayerAdapter --|> BaseAdapter
 BaseActivity o-- "1" Player
 BaseActivity -- SessionDAO
-OnlineActivity -- PlayerAdapter
-PlayerAdapter -- PlayerViewHolder
 OnlineActivity -- xmlOnline
-PlayerViewHolder -- xmlItemPlayer
-PlayerAdapter o-- "n" Player
 OnlineActivity ..|> PlayerListCallback
 OnlineActivity ..|> ChallengeCallback
 OnlineActivity -- PlayerApiDAO

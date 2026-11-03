@@ -103,6 +103,4 @@
     <string name="answer_blank">Bỏ trống</string>
     <string name="col_name">Tên</string>
     <string name="col_points">Điểm</string>
-    <string name="col_avg_opponent">TB đối thủ</string>
-    <string name="col_avg_win_time">TB thắng</string>
 </resources>

@@ -12,7 +12,7 @@ public class Challenge {
     private Date createdAt;
     private Player challenger;
     private Player opponent;
-    // 0 khi chưa có trận
+    // 0 until the match is created
     private int matchId;
 
     public Challenge() {

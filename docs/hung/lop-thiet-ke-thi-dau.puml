@@ -18,9 +18,12 @@ package "Client (Android)" as PC {
     - startMatch(match : Match) : void
     - chooseOption(index : int) : void
     - submitAnswers() : void
+    + onFinish() : void
     - loadResult() : void
     - sendChoice(choice : boolean) : void
     - openNextMatch(nextMatchId : int) : void
+    - leaveMatch() : void
+    - forfeit(playerId : int) : void
   }
   class "activity_match.xml" as xmlMatch
 
@@ -83,6 +86,7 @@ package "Common (Java Library)" as PM {
     + getFinishTime(playerId : int) : long
     + getResult(playerId : int) : String
     + getPoints(playerId : int) : double
+    + {static} judge(myCorrect : int, myTime : long, otherCorrect : int, otherTime : long) : String
   }
   class MatchPlayer <<entity>> {
     - id : int
@@ -116,6 +120,7 @@ package "Server (Spring Boot)" as PS {
     - waitingChoices : Map<Integer, Integer>
     + create(challenge : Challenge) : Match
     + submit(id : int, matchPlayer : MatchPlayer) : Match
+    + forfeit(id : int, playerId : int) : Match
     + continueMatch(id : int, playerId : int, choice : boolean) : Match
     + getById(id : int) : Match
     - startMatch(p1 : Player, p2 : Player) : Match
@@ -137,6 +142,7 @@ package "Server (Spring Boot)" as PS {
     + insert(match : Match) : boolean
     + findById(id : int) : Match
     + updateSubmission(matchId : int, mp : MatchPlayer) : boolean
+    + updateForfeit(matchId : int, playerId : int) : boolean
     + updateEndedAt(matchId : int, endedAt : Date) : boolean
     - updateMatchPlayer(matchId : int, mp : MatchPlayer) : boolean
     - insertAnswer(answer : Answer, matchPlayerId : int) : void
@@ -144,6 +150,7 @@ package "Server (Spring Boot)" as PS {
   class ProblemDAO <<control>> {
     + ProblemDAO()
     + generateProblems(count : int) : List<MathProblem>
+    + generateProblem() : MathProblem
   }
   class FirebaseAdminDAO <<control>> {
     + FirebaseAdminDAO()
@@ -151,9 +158,11 @@ package "Server (Spring Boot)" as PS {
     + updatePoints(playerId : int, totalPoints : double) : void
     + writeMatch(match : Match) : void
     + writeSubmitted(matchId : int, playerId : int) : void
+    + writeForfeited(matchId : int, playerId : int) : void
     + writeFinished(matchId : int) : void
     + writeChoice(matchId : int, playerId : int, choice : boolean) : void
     + writeNextMatch(matchId : int, nextMatchId : int) : void
+    + writeStopped(matchId : int, playerId : int) : void
   }
 }
 

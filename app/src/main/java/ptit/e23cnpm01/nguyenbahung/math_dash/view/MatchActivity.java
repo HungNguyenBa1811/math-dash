@@ -184,8 +184,7 @@ public class MatchActivity extends BaseActivity implements MatchCallback, Player
         }
     }
 
-    // stoppedBy is the opponent
-    // The server writes stoppedBy and status separately, so this may be called twice
+    // stoppedBy is the opponent; may be called twice since the server writes stoppedBy and status separately
     @Override
     public void onStopped(int playerId) {
         if (playerId == me.getId() || leaving) {

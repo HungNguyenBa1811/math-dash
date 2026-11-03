@@ -6,10 +6,7 @@ actor "Người chơi" as U
 box "Client (Android)" #FFFFFF
 boundary OnlineActivity as OA
 boundary HistoryActivity as HA
-boundary PieChartView as PC
-boundary MatchHistoryAdapter as MHA
 boundary MatchDetailActivity as MDA
-boundary ProblemAdapter as PA
 control SessionDAO as SD
 control MatchApiDAO as MAD
 entity Match as M
@@ -41,18 +38,18 @@ MAD --> HA : List<Match>
 HA -> HA : runOnUiThread(): showSummary()
 HA -> M : getResult()
 M --> HA : kết quả trận
-HA -> PC : setData()
-PC --> U : onDraw(): hiển thị biểu đồ tỉ lệ thắng, hòa, thua
-HA -> MHA : tạo MatchHistoryAdapter
-MHA -> M : onBindViewHolder(): getOpponent()
-M --> MHA : đối thủ trong trận
-MHA -> M : getResult()
-M --> MHA : kết quả trận
-MHA -> M : getPoints()
-M --> MHA : điểm trận
-MHA --> U : hiển thị danh sách trận
-U -> MHA : bấm vào một trận
-MHA -> HA : onMatchClick()
+HA -> HA : vẽ biểu đồ tròn lên pieChart
+HA --> U : hiển thị biểu đồ tỉ lệ thắng, hòa, thua
+HA -> HA : gắn danh sách trận vào rvMatches
+HA -> M : getOpponent()
+M --> HA : đối thủ trong trận
+HA -> M : getResult()
+M --> HA : kết quả trận
+HA -> M : getPoints()
+M --> HA : điểm trận
+HA --> U : hiển thị danh sách trận
+U -> HA : bấm vào một trận
+HA -> HA : onClick(): onMatchClick()
 HA -> MDA : startActivity()
 MDA -> SD : onCreate(): getPlayer()
 SD --> MDA : Player
@@ -82,18 +79,18 @@ M --> MDA : điểm trận
 MDA -> MDA : stats()
 MDA -> M : getFinishTime()
 M --> MDA : thời gian làm bài
-MDA -> PA : tạo ProblemAdapter
+MDA -> MDA : gắn câu hỏi và bài làm vào rvProblems
 loop 10 câu
-  PA -> Q : onBindViewHolder(): getExpression()
-  Q --> PA : phép tính
-  PA -> PA : answerAt()
-  PA -> PA : showAnswer()
-  PA -> A : isAnswered()
-  A --> PA : đã làm
-  PA -> A : isCorrect()
+  MDA -> Q : getExpression()
+  Q --> MDA : phép tính
+  MDA -> MDA : answerAt()
+  MDA -> MDA : showAnswer()
+  MDA -> A : isAnswered()
+  A --> MDA : đã làm
+  MDA -> A : isCorrect()
   A -> Q : isCorrect()
   Q --> A : kết quả so sánh
-  A --> PA : đúng / sai
+  A --> MDA : đúng / sai
 end
 MDA --> U : hiển thị chi tiết trận và từng câu
 U -> MDA : nhấn Back

@@ -21,7 +21,7 @@ public class Match {
     private List<MathProblem> questions = new ArrayList<>();
     private List<MatchPlayer> players = new ArrayList<>();
 
-    // Gắn câu thứ i của đề vào bài làm câu thứ i rồi đếm số câu đúng
+    // Attach problem i to answer i, then count the correct answers
     public int countCorrect(List<Answer> answers) {
         int count = 0;
         for (int i = 0; i < questions.size() && i < answers.size(); i++) {
@@ -47,7 +47,7 @@ public class Match {
         return players.size() == 2 && submitted == 2;
     }
 
-    // Chưa nộp thì coi như chậm nhất
+    // Not submitted counts as the slowest
     public long getFinishTime(int playerId) {
         MatchPlayer mp = find(playerId, true);
         if (mp.getSubmittedAt() == null) {
@@ -78,7 +78,7 @@ public class Match {
         return find(playerId, false);
     }
 
-    // Luật thắng thua của đề, dùng chung cho chơi với máy
+    // Win/lose rule, also used by the bot game
     public static String judge(int myCorrect, long myTime, int otherCorrect, long otherTime) {
         boolean meAll = myCorrect == QUESTION_COUNT;
         boolean otherAll = otherCorrect == QUESTION_COUNT;
@@ -91,7 +91,7 @@ public class Match {
         return myTime < otherTime ? WIN : LOSE;
     }
 
-    // mine = false
+    // mine = false returns the opponent
     private MatchPlayer find(int playerId, boolean mine) {
         for (MatchPlayer mp : players) {
             if ((mp.getPlayer().getId() == playerId) == mine) {
