@@ -419,4 +419,5 @@ Phạm vi ở mức MVP: chỉ giữ các chức năng cần để demo ngày 28
 - View chỉ gọi Activity, DAO và lớp control; không gọi hàm nghiệp vụ của entity. Entity chỉ xuất hiện khi DAO đóng gói: DAO → entity `call`, entity tự gọi hàm khởi tạo (`Player()`) hoặc setter khi đóng gói yêu cầu, entity → DAO `return`.
 - Mọi mũi tên trả về giữa các lớp ghi `return`; Activity → người chơi ghi `display`. Trước mỗi thao tác của người chơi và ở cuối biểu đồ phải có bước `display`.
 - Nhãn của Activity chỉ ghi hàm đầu (`onClick()`), lời gọi sang DAO ghi hàm của DAO; không ghi tên biến giao diện. Lời đăng ký theo dõi (`watch...`) vẽ bất đồng bộ.
+- Người chơi vẽ bằng actor hình người, không vẽ lifeline hình chữ nhật.
 - Chức năng đối kháng 1v1 vẽ 2 actor ở 2 bên, các lớp của mỗi máy ghi `(A)`, `(B)`.
